@@ -1,0 +1,99 @@
+
+;;; Functional Functions
+
+; Function Definitions
+(def {fun} (\ {f b} {
+  def (head f) (\ (tail f) b)
+}))
+
+; Open new scope
+(fun {let b} {
+  ((\ {_} b) ())
+})
+
+; Apply List to Function
+(fun {apply f l} {
+  eval (join (list f) l)
+})
+
+; Perform Several things in Sequence
+(fun {do & l} {
+  if (== l {})
+    {{}}
+    {last l}
+})
+
+(def {const} do)
+
+
+;;; Logical Functions
+
+; Boolean Values
+(def {true} 1)
+(def {false} 0)
+
+; Logical Functions
+(fun {not x}   {- 1 x})
+(fun {or x y}  {+ x y})
+(fun {and x y} {* x y})
+
+
+;;; List Functions
+
+; First or Second Items in List
+(fun {fst l} { eval (head l) })
+(fun {snd l} { eval (head (tail l)) })
+
+; List Length
+(fun {len l} {
+  if (== l {})
+    {0}
+    {+ 1 (len (tail l))}
+})
+
+; Nth item in List
+(fun {nth l n} {
+  if (== n 0)
+    {fst l}
+    {nth (tail l) (- n 1)}
+})
+
+; Last item in List
+(fun {last l} {nth l (- (len l) 1)})
+
+; Apply Function to List
+(fun {map f l} {
+  if (== l {})
+    {{}}
+    {join (list (apply f (head l))) (map f (tail l))}
+})
+
+
+;;; Conditional Functions
+
+(fun {case' x cs} {
+  if (== cs {}) { {no_case_found!} } {
+    if (== x (fst (fst cs))) {eval (snd (fst cs))} {case' x (tail cs)}
+  }
+})
+
+(fun {case x & cs} {case' x cs})
+
+(fun {select' cs} {
+  if (== cs {}) { {no_select_found!} } {
+    if (fst (fst cs)) {eval (snd (fst cs))} {select' (tail cs)}
+  }
+})
+
+(fun {select & cs} {select' cs})
+
+(def {otherwise} true)
+
+(fun {fib n} {
+  select
+    { (== n 0) {0} }
+    { (== n 1) {1} }
+    { otherwise {+ (fib (- n 1)) (fib (- n 2))} }
+})
+
+
