@@ -697,24 +697,22 @@ lval* lval_read_num(mpc_ast_t* t) {
 
 lval* lval_read(mpc_ast_t* t) {
     
-  if (t->children_num == 0) {
-    if (strchr("0123456789", t->contents[0])) {
-      return lval_read_num(t);
-    } else {
-      return lval_sym(t->contents);
-    }
-  }
+  if (strstr(t->tag, "number")) { return lval_read_num(t); }
+  if (strstr(t->tag, "symbol")) { return lval_sym(t->contents); }
   
-  lval* x;
-  if (strcmp(t->tag, "root")  == 0) { x = lval_sexpr(); }
-  if (strcmp(t->tag, "sexpr") == 0) { x = lval_sexpr(); }
-  if (strcmp(t->tag, "qexpr") == 0) { x = lval_qexpr(); }
+  lval* x = NULL;
+  if (strcmp(t->tag, ">") == 0) { x = lval_sexpr(); } 
+  if (strstr(t->tag, "sexpr"))  { x = lval_sexpr(); }
+  if (strstr(t->tag, "qexpr"))  { x = lval_qexpr(); }
   
-  int i = 1;
-  while (strcmp(t->children[i]->tag, "char")  != 0 &&
-         strcmp(t->children[i]->tag, "regex") != 0) {
-    x = lval_add(x, lval_read(t->children[i]));
-    i++;
+  for (int i = 0; i < t->children_num; i++) {
+    if (strcmp(t->children[i]->contents, "(") == 0) { continue; }
+    if (strcmp(t->children[i]->contents, ")") == 0) { continue; }
+    if (strcmp(t->children[i]->contents, "}") == 0) { continue; }
+    if (strcmp(t->children[i]->contents, "{") == 0) { continue; }
+    if (strcmp(t->children[i]->contents,  "") == 0) { continue; }
+    if (strstr(t->children[i]->tag, "comment")) { continue; }
+    x = lval_add(x, lval_read(t->children[i]));;
   }
   
   return x;
@@ -755,7 +753,6 @@ static void main_file(lenv* e, char* filename) {
   
   mpc_result_t r;
   if (mpc_fparse_contents(filename, Lispy, &r)) {
-    mpc_ast_print(r.output);
     lval* x = lval_eval(e, lval_read(r.output));
     if (x->type == LVAL_ERR) { lval_println(e, x); }
     lval_del(x);
@@ -777,21 +774,17 @@ int main(int argc, char** argv) {
   Expr    = mpc_new("expr");
   Lispy   = mpc_new("lispy");
   
-  /* TODO: Newline etc needs to be unescaped properly in regex literal */
-    
   mpca_lang(
     "                                                                 \
       number  : /-?[0-9]+/ ;                                          \
       symbol  : /[a-zA-Z_\\+\\-\\*\\/\\\\\\<\\>\\=\\!\\'\\.\\&]+/ ;   \
-      comment : /;[^\\n]*/ ;                                          \
+      comment : /;[^\\n\\r]*/ ;                                       \
       sexpr   : '(' <expr>* ')' ;                                     \
       qexpr   : '{' <expr>* '}' ;                                     \
       expr    : <number> | <symbol> | <sexpr> | <qexpr> | <comment> ; \
       lispy   : /^/ <expr>* /$/ ;                                     \
     ",
     Number, Symbol, Comment, Sexpr, Qexpr, Expr, Lispy);
-  
-  mpc_print(Comment);
   
   lenv* e = lenv_new(NULL);
   lenv_add_builtins(e);
