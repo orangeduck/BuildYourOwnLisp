@@ -1,3 +1,11 @@
+;;;
+;;;   Lispy Standard Prelude
+;;;
+
+;;; Defines
+(def {nil} {{}})
+(def {true} 1)
+(def {false} 0)
 
 ;;; Functional Functions
 
@@ -16,6 +24,9 @@
   eval (join (list f) l)
 })
 
+; Unapply List to Function
+(fun {pack f & xs} {f xs})
+
 ; Perform Several things in Sequence
 (fun {do & l} {
   if (== l {})
@@ -23,14 +34,7 @@
     {last l}
 })
 
-(def {const} do)
-
-
 ;;; Logical Functions
-
-; Boolean Values
-(def {true} 1)
-(def {false} 0)
 
 ; Logical Functions
 (fun {not x}   {- 1 x})
@@ -38,11 +42,62 @@
 (fun {and x y} {* x y})
 
 
+;;; Numeric Functions
+
+; Minimum of Arguments
+(fun {min & xs} {
+  if (== (tail xs) {}) {fst xs}
+    {do 
+      (= {rest} (apply min (tail xs)))
+      (= {item} (fst xs))
+      (if (< item rest) {item} {rest})
+    }
+})
+
+; Minimum of Arguments
+(fun {max & xs} {
+  if (== (tail xs) {}) {fst xs}
+    {do 
+      (= {rest} (apply max (tail xs)))
+      (= {item} (fst xs))
+      (if (> item rest) {item} {rest})
+    }  
+})
+
+;;; Conditional Functions
+
+(fun {case x & cs} {
+  if (== cs {}) { {no-case-found!} } {
+    if (== x (fst (fst cs))) {eval (snd (fst cs))} {apply case (list x (tail cs))}
+  }
+})
+
+(fun {select & cs} {
+  if (== cs {}) { {no-select-found!} } {
+    if (fst (fst cs)) {eval (snd (fst cs))} {apply select (tail cs)}
+  }
+})
+
+(def {otherwise} true)
+
+
+;;; Misc Functions
+
+(fun {id & xs} {xs})
+(fun {flip f a b} {f b a})
+(fun {ghost & xs} {eval xs})
+(fun {comp f g x} {f (g x)})
+
 ;;; List Functions
 
 ; First or Second Items in List
 (fun {fst l} { eval (head l) })
 (fun {snd l} { eval (head (tail l)) })
+(fun {trd l} { eval (head (tail l)) })
+
+; Curried and Uncurried calling
+(def {curry} {apply})
+(def {uncurry} {pack})
 
 ; List Length
 (fun {len l} {
@@ -52,14 +107,14 @@
 })
 
 ; Nth item in List
-(fun {nth l n} {
+(fun {nth n l} {
   if (== n 0)
     {fst l}
-    {nth (tail l) (- n 1)}
+    {nth (- n 1) (tail l)}
 })
 
 ; Last item in List
-(fun {last l} {nth l (- (len l) 1)})
+(fun {last l} {nth (- (len l) 1) l})
 
 ; Apply Function to List
 (fun {map f l} {
@@ -68,32 +123,143 @@
     {join (list (apply f (head l))) (map f (tail l))}
 })
 
-
-;;; Conditional Functions
-
-(fun {case' x cs} {
-  if (== cs {}) { {no_case_found!} } {
-    if (== x (fst (fst cs))) {eval (snd (fst cs))} {case' x (tail cs)}
-  }
+; Apply Filter to List
+(fun {filter f l} {
+  if (== l {})
+    {{}}
+    {join (if (apply f (head l)) {head l} {{}}) (filter f (tail l))}
 })
 
-(fun {case x & cs} {case' x cs})
-
-(fun {select' cs} {
-  if (== cs {}) { {no_select_found!} } {
-    if (fst (fst cs)) {eval (snd (fst cs))} {select' (tail cs)}
-  }
+; Return all of list but last element
+(fun {init l} {
+  if (== (tail l) {})
+    {{}}
+    {join (head l) (init (tail l))}
 })
 
-(fun {select & cs} {select' cs})
+; Reverse List
+(fun {reverse l} {
+  if (== l {})
+    {{}}
+    {join (reverse (tail l)) (head l)}
+})
 
-(def {otherwise} true)
+; Fold Left
+(fun {foldl f z l} {
+  if (== l {}) 
+    {z}
+    {foldl f (f z (fst l)) (tail l)}
+})
 
+; Fold Right
+(fun {foldr f z l} {
+  if (== l {}) 
+    {z}
+    {f (fst l) (foldr f z (tail l))}
+})
+
+(fun {product l} {foldl (*) 1 l})
+(fun {sum l} {foldl (+) 0 l})
+
+; Take N items
+(fun {take n l} {
+  if (== n 0)
+    {{}}
+    {join (head l) (take (- n 1) (tail l))}
+})
+
+; Drop N items
+(fun {drop n l} {
+  if (== n 0)
+    {l}
+    {drop (- n 1) (tail l)}
+})
+
+; Split at N
+(fun {split n l} {list (take n l) (drop n l)})
+
+; Take While
+(fun {take-while f l} {
+  if (not (apply f (head l)))
+    {{}}
+    {join (head l) (take-while f (tail l))}
+})
+
+; Drop While
+(fun {drop-while f l} {
+  if (not (apply f (head l)))
+    {l}
+    {drop-while f (tail l)}
+})
+
+(fun {elem x l} {
+  if (== l {})
+    {false}
+    {if (== x (fst l)) {true} {elem x (tail l)}}
+})
+
+(fun {lookup x l} {
+  if (== l {})
+    {{no-element-found!}}
+    {do
+      (= {key} (fst (fst l)))
+      (= {val} (snd (fst l)))
+      (if (== key x) {val} {lookup x (tail l)})
+    }
+})
+
+(fun {zip l0 l1} {
+  if (or (== l0 {}) (== l1 {}))
+    {{}}
+    {join (list (join (head l0) (head l1))) (zip (tail l0) (tail l1))}
+})
+
+(fun {unzip l} {
+  if (== l {})
+    {{{} {}}}
+    {do
+      (= {x} (fst l))
+      (= {xs} (unzip (tail l)))
+      (list (join (head x) (fst xs)) (join (tail x) (snd xs)))
+    }
+})
+
+;;; Other Fun
+
+; Fibonacci
 (fun {fib n} {
   select
     { (== n 0) {0} }
     { (== n 1) {1} }
     { otherwise {+ (fib (- n 1)) (fib (- n 2))} }
 })
+
+; Pipe
+(fun {-> x & fs} {foldl (\ {z f} {f z}) x fs})
+
+; Dollar Attempt
+(fun {$> b} {
+  if (== b {}) {
+    {}
+  } {
+    if (== (head b) {$}) {eval (list ($> (tail b)))}
+    {join (head b) ($> (tail b))}
+  }
+})
+
+(fun {for in cnd up b} {do
+  (eval in)
+  (
+    if (not (eval cnd)) {}
+    {do (eval b) (eval up) (for in cnd up b)}
+  )
+})
+
+(fun {for-range s e b} {
+  if (>= s e) {}
+  {do (eval b) (for-range (+ s 1) e b)}
+})
+
+
 
 
