@@ -1768,6 +1768,218 @@ TODO: Give example terminal output of error messages in use.
 Functions
 ---------
 
+Functions are the essence of all computer programming. Their foundation was the idea that we could reduce computation into these smaller and smaller bits of re-usable code. Given enough time, and a proper structure for libraries, eventually we would have written code for all the possible things needed to be computed. Obviously this is a flawed premise. If it were true we would be done by now, and writing functions would be no longer. Even so, the dream still persists. Each new programming paradigm that comes out promises better re-use of code than the last. Better abstractions, and an easier life for all.
+
+In reality each paradigm delivers not _better_, but _different_ abstractions. There is always a trade-off. For each higher level of programming developed, some piece is thrown away. No matter how well you decide what to keep and what to leave, occasionally someone will need that piece that has been lost.
+
+But one way or the other functions have always persisted, and have proven again and again to be effective. If you've programmed before you might know what functions _look like_, but you may not be sure exactly what they _are_. What functions _are_ isn't a concrete concept, but there are a few ways to think about them.
+
+One way to think about functions is as description of some computation you want to be performed later. When you define a function it is like saying "when I use _this_ name I want _that_ sort of computation to be performed". This is a very practical idea of a function. I feel it is very intuitive, and refers to language. It is like boxing up a list of commands under a given title. I also like this idea because it captures the delayed nature of functions. That they are defined once, and then can be called on repeatedly after.
+
+Another way to think about functions is as a black box that takes some input and produces some output. This idea is subtly different from the former. It is more algebraic, and doesn't talk about _computation_ or _commands_. This idea is a more mathematical concept, and is not tied to some particular machine, or language of commands. In some situations this is exceptionally useful. It allows us to think about functions without worrying about their internals, or how they are computed exactly. This is the core idea behind an abstraction, and is what allows layers of complexity to work together with each other rather than conflict. But it's strength can also be it's downfall. Because it does not mention anything about computation it does not deal with a number of real world concerns. "How long will this function take to run?", "Is this function efficient?", "Will it modify the state of my program? If so how?".
+
+I enjoy thinking of functions as _partial computations_. Like the Mathematical model I believe they take some inputs. These are the values still required before it can complete the computation. Like the computational model, the body consists of a computation specified in some language of commands, but it is _partial_ because it references _unbound variables_ - the inputs which haven't been fully defined. Therefore to finish the computation one simply supplies these inputs, which completes all that is needed for the computation to run, and it runs! The output of these _partial computations_ is just the final result.
+
+An advantage over the Mathematical Model is that we recognize that these computations _contain code_. We see that when the computation runs, some physical process is going on in a machine. This means we recognize the fact that certain things take time to elapse, or that a function might change the program state, or do anything else we're not sure about!
+
+I don't know which background you come from, or which idea may seem most familiar to you. If you want more information, the study of functions is essentially called _Lambda calculus_, a field of Logic, Maths, and Computer Science. The name comes from the fact that the Greek letter Lambda is used in the representation of binding variables. Using Lambda calculus gives a way of defining, composing and building _functions_ using a mathematical notation.
+
+We are going to use the above ideas to add functions to our language. Luckily for us Lisp is already well suited to this sort of playing around, so using our above concepts it wont take much for us to implement functions for real. The first step is to write a builtin function that takes some arguments and returns a user defined function. We can specify this builtin function as follows. For the first argument let the function take in a list of symbols, just like our `def` function. These symbols we call the _formal arguments_. These are the _unbound variables_ that act as the inputs to our _partial computation_. For the second argument we let the function take in another list, ready to be evaluated with our builtin `eval` function. We will call this function simply `\\`, in a homage to The Lambda Calculus (as the `\\` character looks a little bit like a Lambda).
+
+When completed the syntax to create a function which takes two inputs and adds them together would look something like this.
+
+```c
+(\ {x y} {+ x y})
+```
+
+With this setup the function is created, but it has no name. If we want to name this function we can pass it to our existing builtin `def` like any other value.
+
+```c
+(def {add-together} (\ {x y} {+ x y}))
+```
+
+To store a function as an `lval` we need to think what it consists of. Via this definition a function consists of three parts. First is the list of _formal arguments_, which we must set before we can evaluate the result. Second is a list that represents the body of the function, ready to be evaluated with the `eval` function. And Finally we implicitly require an _environment_. This is the environment in which the evaluation takes place. We use this environment to set symbols listed in the _formal arguments_ to whatever arguments are passed to the function. This ensures the evaluation is performed correctly. 
+
+We will store our builtin functions and user defined functions under the same type `LVAL_FUN`. A way to differentiate between them will be to check if the `lbuiltin` function pointer is `NULL` or not. If it is not `NULL` we know the `lval` is some builtin function, otherwise we know it is a user function.
+
+We should edit our `lval` definition to reflect this.
+
+```
+struct lval {
+  int type;
+
+  /* Basic */
+  long num;
+  char* err;
+  char* sym;
+  
+  /* Function */
+  lbuiltin builtin;
+  lenv* env;
+  lval* formals;
+  lval* body;
+  
+  /* Expression */
+  int count;
+  lval** cell;
+};
+```
+
+As possible data to contain in an `lval` we and the `formals` and `body` lists, as well as the `env` environment. We need to update our function `lval` constructors too.
+
+```c
+lval* lval_builtin(lbuiltin func) {
+  lval* v = malloc(sizeof(lval));
+  v->type = LVAL_FUN;
+  v->builtin = func;
+  return v;
+}
+```
+
+We need to create one for constructing builtins as before. But we also need to create one for constructing user created functions (which we'll call _lambdas_).
+
+```c
+/* Forward Declarations for environment functions */
+lenv* lenv_new(void);
+
+lval* lval_lambda(lval* formals, lval* body) {
+  lval* v = malloc(sizeof(lval));
+  v->type = LVAL_FUN;
+  
+  /* Set Builtin to Null */
+  v->builtin = NULL;
+  
+  /* Built new environment */
+  v->env = lenv_new();
+  
+  /* Set Formals and Body */
+  v->formals = formals;
+  v->body = body;
+  return v;  
+}
+```
+
+Here we built a new environment for the function and just assign the `formals` and `body` values to those passed in. As with whenever we change our `lval` type we need to update the functions for _deletion_, _copying_, and _printing_.
+
+For Deletion...
+
+```c
+case LVAL_FUN: 
+  if (v->builtin != NULL) {
+    lenv_del(v->env);
+    lval_del(v->formals);
+    lval_del(v->body);
+  }
+break;
+```
+
+For Copying...
+
+```c
+case LVAL_FUN:
+  x->builtin = v->builtin;
+  if (x->builtin != NULL) {
+    x->env = lenv_copy(v->env);
+    x->formals = lval_copy(v->formals);
+    x->body = lval_copy(v->body);
+  }
+break;
+```
+
+For Printing...
+
+```c
+case LVAL_FUN:
+  if (v->builtin) {
+    printf("<builtin>");
+  } else {
+    printf("(\\ "); lval_print(v->formals); putchar(' '); lval_print(v->body); putchar(')');
+  }
+break;
+```
+
+We will deal with the changes to function evaluation behaviour later...
+
+We've given functions their own environment to execute in. In this environment we know that their formal variables should be defined. Ideally we also want these functions to be able to access variables which are in the global environment, such as our builtin functions. This means we don't have to pass them into the function if we wish to use them.
+
+We can solve this problem by changing our definition of an environment such that it contains a reference to some _parent_ environment. When we want to evaluate a function we can then set this _parent_ environment to our global environment with all of our builtins defined within. Note that when we add this to our `lenv` struct, conceptually it will be a _reference_ to a parent environment, not an actual sub-environment or anything like this. Because of this we shouldn't delete it when our `lenv` gets deleted, or copy it when our `lenv` gets copied.
+
+It's main purpose is therefore this: if someone calls `lenv_get` on an environment and the symbol cannot be found. If it has a parent it should also check in this environment to see if a value exists.
+
+```c
+struct lenv {
+  lenv* par;
+  int count;
+  char** syms;
+  lval** vals;
+};
+
+lenv* lenv_new(void) {
+  lenv* e = malloc(sizeof(lenv));
+  e->par = NULL;
+  e->count = 0;
+  e->syms = NULL;
+  e->vals = NULL;
+  return e;
+}
+
+void lenv_del(lenv* e) {
+  for (int i = 0; i < e->count; i++) {
+    free(e->syms[i]);
+    lval_del(e->vals[i]);
+  }  
+  free(e->syms);
+  free(e->vals);
+  free(e);
+}
+
+lenv* lenv_copy(lenv* e) {
+  lenv* n = malloc(sizeof(lenv));
+  n->par = e->par;
+  n->count = e->count;
+  n->syms = malloc(sizeof(char*) * n->count);
+  n->vals = malloc(sizeof(lval*) * n->count);
+  for (int i = 0; i < e->count; i++) {
+    n->syms[i] = malloc(strlen(e->syms[i]) + 1);
+    strcpy(n->syms[i], e->syms[i]);
+    n->vals[i] = lval_copy(e->vals[i]);
+  }
+  return n;
+}
+
+lval* lenv_get(lenv* e, lval* k) {
+  
+  for (int i = 0; i < e->count; i++) {
+    if (strcmp(e->syms[i], k->sym) == 0) { return lval_copy(e->vals[i]); }
+  }
+  
+  /* If no symbol check in parent otherwise error */
+  if (e->par) {
+    return lenv_get(e->par, k);
+  } else {
+    return lval_err("Unbound Symbol '%s'", k->sym);
+  }
+}
+```
+
+TODO: Break up this code a little.
+
+This also changes our concept of _defining_ a variable in an environment. Do we wish to define this variable in the innermost environment, or do we wish to define it in the _global_ environment, following the parent chain up until there are no more parents. We will allow functionality for both. We'll leave the `lenv_put` method the same. It can be used for definition in the local environment. Then we'll add a new fuction `lenv_def` for definition in the global environment.
+
+```c
+void lenv_def(lenv* e, lval* k, lval* v) {
+  /* Iterate till e has no parent */
+  while (e->par) { e = e->par; }
+  /* Put value in e */
+  lenv_put(e, k, v);
+}
+```
+
+At the moment this distinction may seem useless, but we can write some functions that allow us to make use of it to do things such as write partial results of calculations to local variables.
+
+
+
+
 
 ### Tutorial Code
 
@@ -1805,15 +2017,14 @@ Standard Library
 
 ### Bonus Marks
 
-
-Conclusion
-----------
-
-
 Future Work
 -----------
 
+Although our lisp can do a lot already. There is still an awful lot it can't do. Unfortunately at this point it is still really a toy. There are a number of improvements that could be made to bring it more into the scope of a fully fledged programming language. Here are some of the key areas that require work. Some would take a few hundred lines of code, others a few thousand. They are listed in no particular order.
+
 ### Optimisation (Allocation)
+
+
 
 ### Garbage Collection (Non-Value Symbols)
 
@@ -1826,3 +2037,15 @@ Future Work
 ### Doubles & Other Native Types
 
 ### User Defined Types
+
+### Tail Call Optimisation
+
+### Lexical Scope
+
+### Static Typing
+
+Conclusion
+----------
+
+
+
