@@ -1562,7 +1562,7 @@ while (1) {
     lval_del(x);
     
     mpc_ast_delete(r.output);
-  } else {    
+  } else {
     mpc_err_print(r.error);
     mpc_err_delete(r.error);
   }
@@ -1798,6 +1798,12 @@ With this setup the function is created, but it has no name. If we want to name 
 (def {add-together} (\ {x y} {+ x y}))
 ```
 
+### Syntax Update
+
+TODO: Update Syntax. May as well include all of the symbols that are going to be required now such as the conditonal ones etc.
+
+### Function Type
+
 To store a function as an `lval` we need to think what it consists of. Via this definition a function consists of three parts. First is the list of _formal arguments_, which we must set before we can evaluate the result. Second is a list that represents the body of the function, ready to be evaluated with the `eval` function. And Finally we implicitly require an _environment_. This is the environment in which the evaluation takes place. We use this environment to set symbols listed in the _formal arguments_ to whatever arguments are passed to the function. This ensures the evaluation is performed correctly. 
 
 We will store our builtin functions and user defined functions under the same type `LVAL_FUN`. A way to differentiate between them will be to check if the `lbuiltin` function pointer is `NULL` or not. If it is not `NULL` we know the `lval` is some builtin function, otherwise we know it is a user function.
@@ -1927,7 +1933,7 @@ void lenv_del(lenv* e) {
   for (int i = 0; i < e->count; i++) {
     free(e->syms[i]);
     lval_del(e->vals[i]);
-  }  
+  }
   free(e->syms);
   free(e->vals);
   free(e);
@@ -1975,7 +1981,177 @@ void lenv_def(lenv* e, lval* k, lval* v) {
 }
 ```
 
-At the moment this distinction may seem useless, but we can write some functions that allow us to make use of it to do things such as write partial results of calculations to local variables.
+At the moment this distinction may seem useless, but we can write some functions that allow us to make use of it to do things such as write partial results of calculations to local variables. Now we have this distinction we should add another builtin for _local_ assignment. We'll call this `put` in C, but give it the `=` symbol when in Lisp code . We can adapt our `builtin_def` function so we can re-use the code in a similar way to how we have done for our maths operators.
+
+```c
+lval* builtin_var(lenv* e, lval* a, char* func) {
+  LASSERT(a, (a->cell[0]->type == LVAL_QEXPR), "Function '%s' passed incorrect type. Got %s, Expected %s.", func, ltype_name(a->cell[0]->type), ltype_name(LVAL_QEXPR));
+  
+  lval* syms = a->cell[0];  
+  for (int i = 0; i < syms->count; i++) {
+    LASSERT(a, (syms->cell[i]->type == LVAL_SYM), "Function '%s' cannot define non-symbol. Got %s, Expected %s.", func, ltype_name(syms->cell[i]->type), ltype_name(LVAL_SYM));
+  }
+  
+  LASSERT(a, (syms->count == a->count-1), "Function '%s' passed too many arguments for symbols. Got %i, Expected %i.", func, syms->count, a->count-1);
+  
+  for (int i = 0; i < syms->count; i++) {
+    /* If 'def' define in global scope. If 'put' define in local scope */
+    if (strcmp(func, "def") == 0) { lenv_def(e, syms->cell[i], a->cell[i+1]); }
+    if (strcmp(func, "put") == 0) { lenv_put(e, syms->cell[i], a->cell[i+1]); } 
+  }
+  
+  lval_del(a);
+  return lval_sexpr();
+}
+
+lval* builtin_def(lenv* e, lval* a) { return builtin_var(e, a, "def"); }
+lval* builtin_put(lenv* e, lval* a) { return builtin_var(e, a, "put"); }
+```
+
+Then we need to register this as a builtin.
+
+```c
+lenv_add_builtin(e, "def", builtin_def);
+lenv_add_builtin(e, "=",   builtin_put);
+```
+
+### Lambda Function
+
+We spoke before of an informal definition for our _lambda_ function. We want it to take as input some list of symbols (like our `def`) function, and a list that represents the code. After that it should return a function `lval`. We've built a number of builtins now and this follows the same format. It should be fairly straight forward.
+
+```c
+lval* builtin_lambda(lenv* e, lval* a) {
+  /* Check Two arguments, each of which are Q-Expressions */
+  LASSERT(a, (a->count == 2                 ), "Lambda passed too many arguments. Got %i, Expected %i", a->count, 2);
+  LASSERT(a, (a->cell[0]->type == LVAL_QEXPR), "Lambda passed incorrect type. Got %s, Expected %s.", ltype_name(a->cell[0]->type), ltype_name(LVAL_QEXPR));
+  LASSERT(a, (a->cell[1]->type == LVAL_QEXPR), "Lambda passed incorrect type. Got %s, Expected %s.", ltype_name(a->cell[1]->type), ltype_name(LVAL_QEXPR));
+  
+  /* Check first Q-Expression contains only Symbols */
+  for (int i = 0; i < a->cell[0]->count; i++) {
+    LASSERT(a, (a->cell[0]->cell[i]->type == LVAL_SYM), "Lambda cannot define non-symbol. Got %s, Expected %s.", ltype_name(a->cell[0]->cell[i]->type), ltype_name(LVAL_SYM));
+  }
+  
+  /* Pop first two arguments and pass them to lval_lambda */
+  lval* formals = lval_pop(a, 0);
+  lval* body = lval_pop(a, 0);
+  lval_del(a);
+  
+  return lval_lambda(formals, body);
+}
+```
+
+Like in `def` we do some error checking to ensure the argument types and count are correct. Then we just pop the first two arguments from the list and pass them to our previously constructed `lval_lambda` function.
+
+### Function Application
+
+Everything up to now has been infrastructure type code, but now is the time to write the real meat. We need to write the code that runs when you call a `LVAL_FUN` type. What this code should do is bind each of the arguments passed to it to the symbols in the `formals` variable. Once this is done it should evaluate the `body` list in an environment with `formals` bound, but also with everything else correctly defined. The way we do this is to set the parent of the function's environment to the current evaluation environment.
+
+A first attempt, without error checking or anything fancy might look like this:
+
+```c
+lval* lval_apply(lenv* e, lval* f, lval* a) {
+  
+  /* If Builtin then simply apply that */
+  if (f->builtin) { return f->builtin(e, a); }
+  
+  /* Assign each argument to each formal in order */
+  for (int i = 0; i < a->count; i++) {
+      lenv_put(f->env, f->formals->cell[i], a->cell[i]);
+  }
+  
+  lval_del(a);
+  
+  /* Set the parent environment */
+  f->env->par = e;
+  
+  /* Evaluate the body */
+  return builtin_eval(f->env, lval_add(lval_sexpr(), lval_copy(f->body)));
+}
+```
+
+The main issue with this function is that it does not deal correctly with the case where the number of arguments supplied and the number of formals differ.
+
+Actually this is an interesting case and leaves us with a number of options. For example we could throw an error when the argument count supplied is incorrect. This might be the only interesting way to act when too many arguments have been supplied, but one interesting way to act when too few are supplied is to return a function that has been _partially evaluated_. This is an idea which ties into our previous idea of a function being some kind of _partial computation_. Say we start with a function that takes two arguments. If we pass this function a single argument we could simply bind this and return a new function with it's first formal argument bound, and it's second remaining empty.
+
+With this metaphor we get another cute image of how functions can be imagined. In each Lisp expression we can imagine the function at the front first consuming the input directly to it's right. Once it has consumed the input to it's right, if it is complete (requires no more inputs) it evaluates, otherwise it returns another new, larger function, with one of it's variables bound. This sits in the list where the first function and it's inital argument were, and the whole process repeats again. So you can imagine a function like a little pacman, not consuming all inputs at once, but iteratively eating inputs and getting bigger and bigger until it is fun.
+
+This isn't actually how we're going to implement it in code, but it is fun to imagine these metaphors for the actual resultant behaviour of some systems!
+
+```c
+lval* lval_apply(lenv* e, lval* f, lval* a) {
+  
+  /* If Builtin then simply apply that */
+  if (f->builtin) { return f->builtin(e, a); }
+  
+  /* Record Argument Counts */
+  int given = a->count;
+  int total = f->formals->count;
+  
+  /* While arguments still remain to be processed */
+  while (a->count) {
+    
+    /* If we've ran out of formal arguments to bind */
+    if (f->formals->count == 0) {
+      lval_del(a); return lval_err("Function passed too many arguments. Got %i, Expected %i.", given, total); 
+    }
+    
+    /* Pop the first symbol from the formals */
+    lval* sym = lval_pop(f->formals, 0);
+    
+    /* Pop the next argument from the list */
+    lval* val = lval_pop(a, 0);
+    
+    /* Bind a copy into the function's environment */
+    lenv_put(f->env, sym, val);
+    
+    /* Delete symbol and value */
+    lval_del(sym); lval_del(val);
+  }
+  
+  /* Argument list is now bound so can be cleaned up */
+  lval_del(a);
+  
+  /* If all formals have been bound evaluate */
+  if (f->formals->count == 0) {
+  
+    /* Set Function Environment parent to current evaluation Environment */
+    f->env->par = e;
+    
+    /* Evaluate and return */
+    return builtin_eval(f->env, lval_add(lval_sexpr(), lval_copy(f->body)));
+  } else {
+    /* Otherwise return partially evaluated function */
+    return lval_copy(f);
+  }
+  
+}
+```
+
+TODO: Explain
+
+
+### Variable Arguments
+
+
+
+### Updated Evaluation
+
+Finally we just update our evaluation function to call `lval_apply` and again our system is ready to rock!
+
+```c
+lval* f = lval_pop(v, 0);
+if (f->type != LVAL_FUN) { lval* err = lval_err("S-Expression starts with incorrect type. Got %s, Expected %s.", ltype_name(f->type), ltype_name(LVAL_FUN)); lval_del(f); lval_del(v); return err; }
+  
+lval* result = lval_apply(e, f, v);
+lval_del(f);
+return result;
+}
+```
+
+### Examples
+
+
+### Some Interesting Functions
 
 
 

@@ -111,7 +111,9 @@ void lval_del(lval* v) {
   switch (v->type) {
     case LVAL_NUM: break;
     case LVAL_FUN: 
-      if (v->builtin != NULL) {
+      if (v->builtin) {
+        /* Do Nothing */
+      } else {
         lenv_del(v->env);
         lval_del(v->formals);
         lval_del(v->body);
@@ -138,8 +140,9 @@ lval* lval_copy(lval* v) {
   x->type = v->type;
   switch (v->type) {
     case LVAL_FUN:
-      x->builtin = v->builtin;
-      if (x->builtin != NULL) {
+      if (v->builtin) {
+        x->builtin = v->builtin;
+      } else {
         x->env = lenv_copy(v->env);
         x->formals = lval_copy(v->formals);
         x->body = lval_copy(v->body);
@@ -631,6 +634,8 @@ int main(int argc, char** argv) {
       lispy  : /^/ <expr>* /$/ ;                          \
     ",
     Number, Symbol, Sexpr, Qexpr, Expr, Lispy);
+  
+  mpc_print(Symbol);
   
   fputs("Lispy Version 0.0.0.0.4\n", stdout);
   fputs("Press Ctrl+c to Exit\n\n", stdout);
