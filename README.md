@@ -6,23 +6,23 @@ Introduction
 
 ### About
 
-In this tutorial I'll show you how to build a minimal Lisp in just a few lines of C. Okay so I'm cheating a little bit because we'll be using my Parser Combinator library `mpc` (a shameless advertisement) to the parsing for us, but the rest of the code remains simple.
+In this tutorial I'll show you how to build a minimal Lisp in just a few lines of C. Okay so I'm cheating a little bit because we'll be using my Parser Combinator library `mpc` (a shameless advertisement) to the parsing for us, but the rest of the code will be completely original!
 
-This tutorial is somewhat inspired by the fantastic [Write Yourself a Scheme in 48 Hours](http://en.wikibooks.org/wiki/Write_Yourself_a_Scheme_in_48_Hours). I wanted to show that this was possible in other languages too. And like Haskell, many people are interested in learning C but have nowhere to start - well here is your excuse. Follow along with this and I can ensure you'll at least get a cool new toy at the end - and hopefully knowledge of a new language.
+This tutorial is somewhat inspired by the fantastic [Write Yourself a Scheme in 48 Hours](http://en.wikibooks.org/wiki/Write_Yourself_a_Scheme_in_48_Hours). I wanted to show that this was possible in other languages. And like Haskell, many people are interested in learning C but have nowhere to start - well here is your excuse. Follow along with this and I can promise you'll at least get a cool new toy at the end - and hopefully knowledge of a new language.
 
-I've tried to make the tutorial as easy as possible, and friendly to beginners. But C is a difficult language, and not all of the concepts we are using are going to be familiar. If you've never seen C, or programmed before, then it is probably worth brushing up on some basics (at least the syntax, and pointers) before rushing on ahead. If you are already an expert in C then feel free to skip ahead. No matter how hard I try this type of tutorial will always be harder for the beginner than say, a book. But the advantage is that it teaches a number of implicit techniques and idioms that only a _real world_ project can capture.
+I've tried to make the tutorial as easy as possible, and friendly to beginners. But C is a difficult language, and not all of the concepts we are using are going to be familiar. If you've never seen C, or programmed before, then it is probably worth brushing up on some basics (at least the syntax) before rushing on ahead. If you are already an expert in C then feel free to skip ahead. No matter how hard I try this type of tutorial will always be harder for the beginner than say, a book. But that is because it attempts to teach a number of implicit techniques and idioms that only a _real world_ project can capture.
 
-My advice to beginners is to read over the first few exercises of [Learn C the Hard Way](http://c.learncodethehardway.org/book/) until you are confident that you can read and understand the first couple of examples. Otherwise when you come into issues or get stuck, it is going to be a real uphill battle later to try and find out where you are going wrong.
+My advice to beginners is to read over the first few exercises of [Learn C the Hard Way](http://c.learncodethehardway.org/book/) until you have your environment set up and are confident that you can read and understand the first two chapters. Otherwise when you come into issues or get stuck, it is going to be a real uphill battle later to try and find out where you are going wrong.
 
 ### Lisps
 
-Lisp is a family of programming languages characterized by the fact that all their computation is represented by lists. This may sound scarier than it is. Actually Lisps are very easy, distinctive, and powerful. As for the brand of Lisp we'll be building - it is one I've essentially created for the purposes of this tutorial. I've designed it for minimalism, simplicity and clarity, and I've become quite fond of it along the way. Conceptually, syntactically, and in implementation this brand of Lisp has a number of serious differences in comparison to other major brands of Lisp. Up to the point where I'm sure I will be getting e-mails from Lisp fundamentalists telling me it "isn't a Lisp" because it "doesn't do/have/look-like X".
+Lisp is a family of programming languages characterized by the fact that all their computation is represented by lists. This may sound scarier than it is. Actually Lisps are very easy, distinctive, and powerful. The type of Lisp we'll be building is one I've essentially invented for the purposes of this tutorial. I've designed it for minimalism, simplicity and clarity, and I've become quite fond of it along the way. Conceptually, syntactically, and in implementation this brand of Lisp has a number of serious differences to other major brands of Lisp. This is up to the point where I'm sure I will be getting e-mails from Lisp fundamentalists telling me it "isn't a Lisp" because it "doesn't do/have/look-like X".
 
-I should make it clear I've not made this Lisp different to confuse understanding or to spread untruths. The reason I've written this tutorial is to teach people interesting concepts, which they can then go on to use and express themselves, be creative, and have fun! Heed this disclaimer now. Not everything I am about to say is right or true!
+I've not made this Lisp different to confuse beginners or to spread untruths. If you're concerned about what is the _right_ way to built a Lisp perhaps this isn't for you. If you're interested in learning new and unique concepts, which you can then go on to use and express yourself, be creative, and have fun, well - this tutorial is probably for you. Either way, heed this disclaimer now. Not everything I am about to say is right or true!
 
 On a similar note the best way to follow this tutorial is to, as the title says, write _your own_ lisp. I want you to add your own features, modifications and changes so that it suites your own philosophy on what is right or true. Throughout the tutorial I'll be giving description and insight. But with it I'll be providing _a lot_ of code. This will make it easy to follow along, copy and pasting each section into your program without really understanding. But as you'd expect taking this approach won't really help anyone.
 
-Instead you should use my code as a reference for _your own_ lisp. Use it as an instruction booklet and guide as to how to build a programming language in C, both at the high level, and at the low level. Type all the code out yourself. I know it is tedious and boring, but by using this method you will come to understand the reasoning behind the code. Things will automatically click as you follow it along character by character. You may have an intuition as to why it _looks_ right, or what _may_ be going on but this will not always translate to a real understanding unless you do it yourself!
+Instead you should use my code as a reference for _your own_ lisp. Use it as an instruction booklet and guide as to how to build a programming language in C, both at the high level, and at the low level. Type all the code out yourself. Using this method you will come to understand the reasoning behind the code. Things will automatically click as you follow it along character by character. You may have an intuition as to why it _looks_ right, or what _may_ be going on but this will not always translate to a real understanding unless you do it yourself!
 
 
 The Basics
@@ -146,6 +146,8 @@ Now to create some kind of meaningful interaction!
 Introducing MPC
 ---------------
 
+### What is a Programming Language?
+
 A programming language is much like a real language. There is some logic behind how it is structured, some rules as to what is a valid thing to say, and some way in which we can generate sentences.
 
 A key observation in the understanding of language is that as well as rules, language contains repeated structures. The same is true of programming languages - an `if` statement body can contain any number of new statements, including another `if` statement itself (and so on). This means that although there might be an infinite number of different things that can be said in a language, we can still recognise and understand all of them with a finite number of rules and processes.
@@ -200,11 +202,11 @@ This code parses an input string and checks it is _either_ `Dan`, `Chess`, `Adam
 Here is a more complicated example builting on the first.
 
 ```c
-mpc_parser_t* Greet = mpc_also(
+mpc_parser_t* Greet = mpc_and(2, mpcf_strfold,
   mpc_string("Hello "), Flatmate, 
-  free, mpcf_strfold); 
+  free); 
 
-mpc_parser_t* Greetings = mpc_many(Greet, mpcf_strfold);
+mpc_parser_t* Greetings = mpc_many(mpcf_strfold, Greet);
 ```
 
 In this example `Greet` parses the string `"Hello "` followed by any `Flatmate` (_either_ `Dan`, `Chess`, `Adam` _or_ `Lewis`). It then returns these strings concatenated together (using the function `mpcf_strfold`). The parser `Greetings` recognizes zero or more occurrences of `Greet`, for example `"Hello Dan!"` or `"Hello DanHello Chess"` or `"Hello LewisHello LewisHello Lewis"` or any other combination! Again we can squint our eyes and try to read this like a grammar - "To parse a 'Greet', parse the string 'Hello ' followed by a 'Flatmate', and join them using 'mpcf_strfold'. To Parse a 'Greetings' parse many of 'Greet' and join them using 'mpcf_strfold'".
@@ -257,7 +259,7 @@ Enough theory - lets give this `mpc` thing a whirl.
 A Basic Maths Grammar
 ---------------------
 
-A simple grammar to implement would be a maths subset of Lisp that resembles [Polish Notation](http://en.wikipedia.org/wiki/Polish_notation). In this format the operator always comes first, followed by the operands. For example `(+ 1 2 6)` or `(+ 6 (* 2 9))`.
+A simple grammar to implement would be a maths subset of Lisp that resembles [Polish Notation](http://en.wikipedia.org/wiki/Polish_notation) In this format the operator always comes first, followed by the operands. For example `(+ 1 2 6)` or `(+ 6 (* 2 9))`.
 
 So a grammar for this, we can describe it in text something like this. "An _expression_ is either a _number_, or, in parenthesis, an _operator_ followed by one or more _expressions_". Now we can break this down into each of the individual parts and write it formally.
 
@@ -327,7 +329,7 @@ if (mpc_parse("<stdin>", input, Lispy, &r)) {
 }
 ```
 
-Here we use the `mpc_parse` function with our parser `Lispy` on the `input`. We have to give a name for the source this input is coming from (we just call it `"<stdin>"` for now) and also we need to output the result to some variable. For this we declare a variable `r` of type `mpc_result_t` and then use the _address of_ operator `&` to get a pointer to it. We then give `mpc_parse` this pointer. A pointer is like a house number that `mpc_parse` can deliver to. Rather than giving our whole house to the `mpc_parse`, so that he can place a parcel on the mat at the front door, and give it back to us, we just give him our house number and ask him to send the result from where he is.
+Here we use the `mpc_parse` function with our parser `Lispy` on the `input`. We have to give a name for the source this input is coming from (we just call it `<stdin>` for now) and also we need to output the result to some variable. For this we declare a variable `r` of type `mpc_result_t` and then use the _address of_ operator `&` to get a pointer to it. We then give `mpc_parse` this pointer. A pointer is like a house number that `mpc_parse` can deliver to. Rather than giving our whole house to the `mpc_parse`, so that he can place a parcel on the mat at the front door, and give it back to us, we just give him our house number and ask him to send the result from where he is.
 
 Don't worry too much for now if you don't understand, pointers are a famously hard part of C, so we'll cover them in more depth later.
 
@@ -2069,9 +2071,9 @@ lval* lval_apply(lenv* e, lval* f, lval* a) {
 }
 ```
 
-The main issue with this function is that it does not deal correctly with the case where the number of arguments supplied and the number of formals differ.
+The main issue with this function is that it does not deal correctly with the case where the number of arguments supplied, and the number of formal arguments required, differ.
 
-Actually this is an interesting case and leaves us with a number of options. For example we could throw an error when the argument count supplied is incorrect. This might be the only interesting way to act when too many arguments have been supplied, but one interesting way to act when too few are supplied is to return a function that has been _partially evaluated_. This is an idea which ties into our previous idea of a function being some kind of _partial computation_. Say we start with a function that takes two arguments. If we pass this function a single argument we could simply bind this and return a new function with it's first formal argument bound, and it's second remaining empty.
+Actually this is an interesting case and leaves us with a number of options. For example we could throw an error when the argument count supplied is incorrect. When too many arguments are supplied this might be the only real thing to do. But when too few are supplied are supplied we can do something interesting. We can return a function that has been _partially evaluated_. This is an idea which ties into our previous idea of a function being some kind of _partial computation_. Say we start with a function that takes two arguments. If we pass this function a single argument we could simply bind this and return a new function with it's first formal argument bound, and it's second remaining empty.
 
 With this metaphor we get another cute image of how functions can be imagined. In each Lisp expression we can imagine the function at the front first consuming the input directly to it's right. Once it has consumed the input to it's right, if it is complete (requires no more inputs) it evaluates, otherwise it returns another new, larger function, with one of it's variables bound. This sits in the list where the first function and it's inital argument were, and the whole process repeats again. So you can imagine a function like a little pacman, not consuming all inputs at once, but iteratively eating inputs and getting bigger and bigger until it is fun.
 
@@ -2132,6 +2134,61 @@ TODO: Explain
 
 ### Variable Arguments
 
+The way we've defined some of our builtin functions means that they can take in a variable number of arguments. Functions like `+` and `-` can take any number of arguments and operator on them logically. It'd be good for us to allow for a method of this.
+
+Unfortunately there isn't really an elegant way for us to allow for this and also have any form of pleasant syntax. At the cost of a few lines of code we're going to go down the _pretty syntax_ route and hard-code some system into our language.
+
+What we want is something like this. To be able to define formal arguments that look like `{x & xs}` which means that a function takes in a single argument `x` followed by zero or more other arguments, condensed into a list called `xs`.
+
+Our basic approach to adding this into our system is going to be this. When assigning our formal arguments we're going look for a `&` character and if it exists take the next formal argument and assign it any remainging supplied arguments we've been passed. It's important we convert this argument list to a proper list (like the builtin `list` does), and we need to also remember to check that `&` is followed by a symbol and if it isn't we should throw an error. We can add this special case just after the fist symbol is poped from the formals, in the `while` loop.
+
+```c
+/* Special Case to deal with '&' */
+if (strcmp(sym->sym, "&") == 0) {
+  
+  /* Ensure '&' is followed by another symbol */
+  if (f->formals->count != 1) {
+    lval_del(a);
+    return lval_err("Function format invalid. Symbol '&' not followed by single symbol.");
+  }
+  
+  /* Next formal should be bound to remaining arguments */
+  lval* nsym = lval_pop(f->formals, 0);
+  lenv_put(f->env, nsym, builtin_list(e, a));
+  lval_del(sym); lval_del(nsym);
+  break;
+}
+```
+
+There is another special case we need to deal with. Suppose the user doesn't supply any variable arguments, but only the first named ones. In this case we need to ensure we bind the symbol following `&` to the empty list.
+
+We can add the code to deal with this special case just after we delete the argument list, and before we check to see if all the formals have been evaluated.
+
+```c
+/* If '&' remains in formal list it should be bound to empty list */
+if (f->formals->count > 0 &&
+  strcmp(f->formals->cell[0]->sym, "&") == 0) {
+  
+  /* Check to ensure that & is not passed invalidly. */
+  if (f->formals->count != 2) {
+    return lval_err("Function format invalid. Symbol '&' not followed by single symbol.");
+  }
+  
+  /* Pop and delete '&' symbol */
+  lval_del(lval_pop(f->formals, 0));
+  
+  /* Pop next symbol and create empty list */
+  lval* sym = lval_pop(f->formals, 0);
+  lval* val = lval_qexpr();
+  
+  /* Bind to environment and delete */
+  lenv_put(f->env, sym, val);
+  lval_del(sym); lval_del(val);
+}
+```
+
+
+
 
 
 ### Updated Evaluation
@@ -2150,11 +2207,52 @@ return result;
 
 ### Examples
 
+TODO: define list functions
 
 ### Some Interesting Functions
 
+One annoying thing about using lambdas is that the syntax for defining functions is fairly clumbsy. Luckily we can use functions, to make this better. We can write a function that defines new functions.
 
+Here is a function that takes in some arguments and a body, and uses the first element of the arguments as the name to define, and the rest as the formal arguments.
 
+```
+\ {args body} {def (head args) (\ (tail args) body)}
+```
+
+We can define this function to be called `fun` as follows.
+
+```
+def {fun} (\ {args body} {def (head args) (\ (tail args) body)})
+```
+
+This means that we can now define functions in a much simpler and nicer way.
+
+```
+fun {add x y} {+ x y}
+```
+
+We can also define a function that performs a bunch of computations in series and returns the results. We'll call this function `do`. The definition is very simple.
+
+```
+(fun {do & xs} {last xs})
+```
+
+TODO: Mention we'll define `last` later.
+TODO: Mention `pack` and `apply`
+
+This can be used to simply computations be assigning to intermediate variables using `=`. This is where using `=` comes in particularly useful. Because a function executes in it's own environment, and variables defined with `=` when it is being run wont escape to the outer scope.
+
+```
+(fun {add-numbers w x y z} {
+  do 
+    (= temp0 (+ w x))
+    (= temp1 (+ y z))
+    (= temp2 (+ temp0 temp1)
+    (temp2)
+}
+```
+
+We can define a whole bunch of cool functions these ways but really we need some ability to do some comparisons.
 
 
 ### Tutorial Code
@@ -2168,14 +2266,193 @@ return result;
 Conditionals
 ------------
 
+Okay so we've come pretty far now. This chapter you should be able to do on your own. It basically consists of adding some builtin functions to perform conditional evaluation. Also while we're at it we're going to add some functions for doing equality, greater than, less than etc.
+
+The only tricky part may consists of defining an `if` function and equality testing between `lval`s but even that should be okay.
+
+For simplicity's sake we're going to re-use our number data type to do truth testing. We'll make a rule to say that any number that isn't `0` evaluates to true in an `if` statement while `0` always evaluates to false.
+
+### Ordering
+
+Our ordering functions are a little like a simplified version of our arithmetic functions. They'll only work on numbers, and we only want them to work on two arguments so we already have some initial error conditions.
+
+Once these conditions are held the maths is simple, we want to return an integer either `0` or `1` depending on the equality comparison between the two lisp values. We can use C's operators to do this. As before because these functions are simple we'll use a single function can can choose to perform any of the comparisons.
+
+```c
+lval* builtin_ord(lenv* e, lval* a, char* op) {
+  LASSERT(a, (a->count == 2               ), "Function '%s' passed too many arguments. Got %i, Expected %i.", op, a->count, 2);
+  LASSERT(a, (a->cell[0]->type == LVAL_NUM), "Function '%s' passed incorrect type. Got %s, Expected %s.", op, ltype_name(a->cell[0]->type), ltype_name(LVAL_NUM));
+  LASSERT(a, (a->cell[1]->type == LVAL_NUM), "Function '%s' passed incorrect type. Got %s, Expected %s.", op, ltype_name(a->cell[0]->type), ltype_name(LVAL_NUM));
+  int r;
+  if (strcmp(op, ">")  == 0) { r = (a->cell[0]->num >  a->cell[1]->num); }
+  if (strcmp(op, "<")  == 0) { r = (a->cell[0]->num <  a->cell[1]->num); }
+  if (strcmp(op, ">=") == 0) { r = (a->cell[0]->num >= a->cell[1]->num); }
+  if (strcmp(op, "<=") == 0) { r = (a->cell[0]->num <= a->cell[1]->num); }
+  lval_del(a);
+  return lval_num(r);
+}
+
+lval* builtin_gt(lenv* e, lval* a) { return builtin_ord(e, a, ">");  }
+lval* builtin_lt(lenv* e, lval* a) { return builtin_ord(e, a, "<");  }
+lval* builtin_ge(lenv* e, lval* a) { return builtin_ord(e, a, ">="); }
+lval* builtin_le(lenv* e, lval* a) { return builtin_ord(e, a, "<="); }
+```
+
+First we check the error conditions, then we compare the numbers in each of the arguments to get some result. Finally we return this result as a number value.
+
+### Equality
+
+Equality is a little more complicated than ordering because we'd wish for it to work on other types of data. For example it would be nice if as well as numbers we could compare symbols, or even functions!
+
+```c
+int lval_eq(lval* x, lval* y) {
+  
+  /* Different Types are always unequal */
+  if (x->type != y->type) { return 0; }
+  
+  /* Compare Based upon type */
+  switch (x->type) {
+    /* Compare Number Value */
+    case LVAL_NUM: return (x->num == y->num);
+    
+    /* Compare String Values */
+    case LVAL_ERR: return (strcmp(x->err, y->err) == 0);
+    case LVAL_SYM: return (strcmp(x->sym, y->sym) == 0);
+    
+    /* If Builtin compare functions, otherwise compare formals and body */
+    case LVAL_FUN: if (x->builtin) { return x->builtin == y->builtin; } else { return lval_eq(x->formals, y->formals) && lval_eq(x->body, y->body); }
+    
+    /* If list compare every individual element */
+    case LVAL_QEXPR:
+    case LVAL_SEXPR:
+      if (x->count != y->count) { return 0; }
+      for (int i = 0; i < x->count; i++) {
+        /* If any element not equal then whole list not equal */
+        if (!lval_eq(x->cell[0], y->cell[0])) { return 0; }
+      }
+      /* Otherwise lists must be equal */
+      return 1;
+    break;
+  }
+  return 0;
+}
+```
+
+TODO: Talk about this function
+
+With this our builtin functions become very simple. We just ensure there are two arguments and compare them.
+
+```c
+lval* builtin_cmp(lenv* e, lval* a, char* op) {
+  LASSERT(a, (a->count == 2), "Function '%s' passed too many arguments. Got %i, Expected %i.", op, a->count, 2);
+  int r;
+  if (strcmp(op, "==") == 0) { r =  lval_eq(a->cell[0], a->cell[1]); }
+  if (strcmp(op, "!=") == 0) { r = !lval_eq(a->cell[0], a->cell[1]); }
+  lval_del(a);
+  return lval_num(r);
+}
+
+lval* builtin_eq(lenv* e, lval* a) { return builtin_cmp(e, a, "=="); }
+lval* builtin_ne(lenv* e, lval* a) { return builtin_cmp(e, a, "!="); }
+```
+
+### An If Statement
+
+The final part of comparison is to create an `if` statement. This should perform one thing based upon if a condition is true, and another if a condition is false.
+
+To do this we can use a technique similar to how we create our functions. We can take as input a conditional value, and two Q-Expressions representing the two possible computations, one for when the condition is true, and another for when it false.
+
+We then simply check if the conditional value is `1` or `0` and evaluate one or the other of the Q-expressions. The one not evaluated can simply be deleted.
+
+```c
+lval* builtin_if(lenv* e, lval* a) {
+  LASSERT(a, (a->count == 3                 ), "Function 'if' passed too many arguments. Got %i, Expected %i.", a->count, 3);
+  LASSERT(a, (a->cell[0]->type == LVAL_NUM  ), "Function 'if' passed incorrect type. Got %s, Expected %s.", ltype_name(a->cell[0]->type), ltype_name(LVAL_NUM));
+  LASSERT(a, (a->cell[1]->type == LVAL_QEXPR), "Function 'if' passed incorrect type. Got %s, Expected %s.", ltype_name(a->cell[1]->type), ltype_name(LVAL_QEXPR));
+  LASSERT(a, (a->cell[2]->type == LVAL_QEXPR), "Function 'if' passed incorrect type. Got %s, Expected %s.", ltype_name(a->cell[2]->type), ltype_name(LVAL_QEXPR));
+  
+  /* Mark Both Expressions as evaluatable */
+  lval* x;
+  a->cell[1]->type = LVAL_SEXPR;
+  a->cell[2]->type = LVAL_SEXPR;
+  
+  if (a->cell[0]->num) {
+    /* If condition is true evaluate first expression */
+    x = lval_eval(e, lval_pop(a, 1));
+  } else {
+    /* Otherwise evaluate second expression */
+    x = lval_eval(e, lval_pop(a, 2));
+  }
+  
+  /* Delete argument list and return */
+  lval_del(a);
+  return x;
+}
+``` 
+
+TODO: Talk about this.
+
+Finally we can register all of these new functions as builtins and we are done.
+
+```c
+  /* Comparison Functions */
+  lenv_add_builtin(e, "if",   builtin_if);
+  lenv_add_builtin(e, "==",   builtin_eq); lenv_add_builtin(e, "!=",   builtin_ne);
+  lenv_add_builtin(e, ">",    builtin_gt); lenv_add_builtin(e, "<",    builtin_lt);
+  lenv_add_builtin(e, ">=",   builtin_ge); lenv_add_builtin(e, "<=",   builtin_le);
+```
+
+### Recursive Functions
+
+Having conditionals means we can effective implement recursive functions. These are essentially a form of looping used commonly in functional languages such as our Lisp. For example say we want a function `len` that can tell us the number of items in a list we can implement it like this.
+
+```
+(fun {len l} {
+  if (== l {})
+    {0}
+    {+ 1 (len (tail l))}
+})
+```
+
+It works like this. If we encounter the empty list we just return `0`. Otherwise we return `1`, plus the length of the `tail` of the list. Think for a while why that works. It repeatedly uses the `len` function until it reaches the empty list. At this point it returns `0` and adds all the other partial results together.
+
+There is a pleasant symmetry to this sort of recursive function. First we do something for the empty list (this is often called _the base case_). Then if we get something bigger, we take off a chunk (usually the head of the list) and do something to it, before combining it with the rest of the thing to which the function has been already applied. 
+
+Here is another function for reversing a list.
+
+```
+(fun {reverse l} {
+  if (== l {})
+    {{}}
+    {join (reverse (tail l)) (head l)}
+})
+```
+
+Again it checks for the empty list, but this time returns the empty list back. This makes sense - the reverse of the empty list is just the empty list. If it gets something bigger than the empty list it reverses the tail - and sticks this in front of the head. In fact we can build a whole bunch of functions like this, and doing so is good practice, because it is going to be the primary way to achieve looping in our language.
+
+Once we do start making all of these functions it might become labourious to keep typing them into the prompt. Instead we'd wish to write them all down in a file and have the ability to load them all at once. This is what we'll be covering in the next chapter!
+
 ### Tutorial Code
 
 [example9.c]()
 
 ### Bonus Marks
 
+* Implement a recursive function that given a list and an integer finds the `nth` item of that list.
+* Implement a recursive function that checks if a given element is a member of a list.
+* Implement a recursive function that gives the last element in a list.
+* Implement logical operator functions such as `or`, `and` and `not`.
+* In C add real `true` and `false` values to the language with a separate boolean type.
+
 Strings & IO
 ------------
+
+Our Lisp is finally pretty functional. We can write a whole bunch of different functions and end up with some quite complex constructs with the ability to do some really cool things. Even things that can't be done in lots of other heavyweight languages!
+
+But we still need a way to record all these inputs. In this chapter we'll add the functionality to load a file full of code and run it. We'll also add the ability to do some basic interactions with strings such as printing and a bit more.
+
+
+
 
 ### Tutorial Code
 
@@ -2196,21 +2473,56 @@ Standard Library
 Future Work
 -----------
 
-Although our lisp can do a lot already. There is still an awful lot it can't do. Unfortunately at this point it is still really a toy. There are a number of improvements that could be made to bring it more into the scope of a fully fledged programming language. Here are some of the key areas that require work. Some would take a few hundred lines of code, others a few thousand. They are listed in no particular order.
+Although our lisp can do a lot already. There is still an awful lot it can't do. Unfortunately at this point it is still really a toy. If you tried to use it for any sufficently large project there are a number of issues you would eventually run into, and improvements you'd have to make. These are the sorts of things that bring it more into the scope of a fully fledged programming language.
+
+If you've become fond of your language and are confident enough now in C here are some of these issues you would likely encounter - as well as some fun ideas for other improvements too. Some may take a few hundred lines of code, others a few thousand. The choice of what to tackle is up to you.
 
 ### Optimisation (Allocation)
 
+Our Lisp should actually be relatively fast in comparison to some scripting languages such as Python and Ruby. This mainly comes from it's simplicity. The majority of performance overhead in our program comes from the fact that we call `malloc` so often. When doing calculations there is lots of copying, allocation and deallocation of `lval` types.
+
+If we wish to alliviate this overhead we need to lower the number of calls to `malloc`. One method for doing this is to call `malloc` once at the beginning of the program allocating a large pool of memory. We should then replace all our `malloc` calls with calls to some function that slices and dices up this memory and uses it in the program. It means that we are emulating some of the behaviour of the operating system - but in a much faster way. This idea is called _memory pool allocation_ and is a common technique used in game development as well as other performance sensitive applications.
+
+This can be tricky to implement correctly but conceptually does not need to be complex. If you want a fast way to get large gains in performance looking into this might interest you.
 
 
 ### Garbage Collection (Non-Value Symbols)
 
+In almost all other implementations of Lisps when we assign a variable it does so differently to ours. It does not store a copy of that variable, but actually a pointer or reference to it. Like in C, there are many circumstances where using pointers is more efficient. Using pointers can remove the large overhead required when copying and moving large data structure.
+
+When we assign some data to a variable we want to ensure it is not deleted when the structure or expression containing it is. Instead we want it to get cleaned up when the variable goes out of scope. We can say that once data has been assigned to a variable the data is now _marked_ - and any marked variables should not be cleaned up as usual.
+
+We then want to write a separate algorithm that deals with all the _marked_ variables and cleans them up at the correct time. It is important this deals correctly with variables that reference other variables (or even variables that reference themselves).
+
+This is called _Garbage Collection_ and is an integral part to many programming languages. Implementing a _Garbage Collector_ does not need to be complicated, but it can be tricky - in particularly if you wish to make it efficient. Implementing this is essential to making this language practical for working with large amounts of data.
+
+
 ### Macros (Deferred Evaluation)
+
+In may other Lisps you can write things like `(def x 100)` to define the value `100` to `x`. In our lisp this wouldn't work because it would attempt to evaluate the `x` to whatever value was stored as `x`. These functions are called _macros_ and when encountered they stop the evaluation of their arguments and manipulate them un-evaluated.
+
+They let you write things that look like normal function calls, but actually which do complex and interesting things.
+
+These are kind of a fun thing to have in a language as they make it so you can add a little bit of _magic_ to some of the workings. In many cases this can make syntax nicer or stop a user from having to repeat themselves.
+
+Personally I like how our language handles things like `def` and `if` in a macro free way, but if you find it akward this might be something you are interested in implementing.
+
 
 ### List Literal
 
-### Real IO
+Some lisps use square brackets `[]` to give a literal notation for evaluated lists. Using this rather than writing `(list 100 200 300)` you can write `[100 200 300]`.  This is nicer in some situations.
+
+### Files & IO
+
+One essential part of bootstrapping a language is to give it proper abilities for opening files, reading and writing their contents, and whatever else. This means wrapping all the C functions such as `fread`, `fwrite`, `fgetc`, and others. This is a fairly straight forward task but does require writing quite a large number of wrapper functions, which is why we've not done it for our toy language.
+
+On a related note it would be good to give our language access to whatever operating systems are appropriate. We should give it the ability to change directory, list files in a directory and that sort of thing. This is an easy task but could require a lot of typing. It is essential for any real practical use of this language as something like a scripting language.
 
 ### Doubles & Other Native Types
+
+Currently our language only supports `ints` and `strings`. This is pretty limiting if you want to do any kind of useful computation. Our operations on these data types are also pretty limited. A fairly easy addition is to add decimal numbers in the form of `double` or to add 
+
+### Variable Lookup Hashtable
 
 ### User Defined Types
 

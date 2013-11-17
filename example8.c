@@ -111,9 +111,7 @@ void lval_del(lval* v) {
   switch (v->type) {
     case LVAL_NUM: break;
     case LVAL_FUN: 
-      if (v->builtin) {
-        /* Do Nothing */
-      } else {
+      if (!v->builtin) {
         lenv_del(v->env);
         lval_del(v->formals);
         lval_del(v->body);
@@ -143,6 +141,7 @@ lval* lval_copy(lval* v) {
       if (v->builtin) {
         x->builtin = v->builtin;
       } else {
+        x->builtin = NULL;
         x->env = lenv_copy(v->env);
         x->formals = lval_copy(v->formals);
         x->body = lval_copy(v->body);
@@ -627,15 +626,13 @@ int main(int argc, char** argv) {
   mpca_lang(
     "                                                     \
       number : /-?[0-9]+/ ;                               \
-      symbol : /[a-zA-Z_\\+\\-\\*\\/\\\\]+/ ;             \
+      symbol : /[a-zA-Z_+-*\\/\\\\=]+/ ;                  \
       sexpr  : '(' <expr>* ')' ;                          \
       qexpr  : '{' <expr>* '}' ;                          \
       expr   : <number> | <symbol> | <sexpr> | <qexpr> ;  \
       lispy  : /^/ <expr>* /$/ ;                          \
     ",
     Number, Symbol, Sexpr, Qexpr, Expr, Lispy);
-  
-  mpc_print(Symbol);
   
   fputs("Lispy Version 0.0.0.0.4\n", stdout);
   fputs("Press Ctrl+c to Exit\n\n", stdout);

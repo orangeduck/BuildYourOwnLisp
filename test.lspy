@@ -1,3 +1,5 @@
+(load "prelude.lspy")
+
 (print {hello})
 (print {my_name_is_dan})
 (def {stuff} (let 

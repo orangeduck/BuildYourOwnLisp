@@ -11,12 +11,12 @@ int main(int argc, char** argv) {
     mpc_string("Lewis")
   );
 
-  mpc_parser_t* Greet = mpc_also(
-    mpc_string("Hello "), Flatmate, 
-    free, mpcf_strfold); 
+  mpc_parser_t* Greet = mpc_and(2, mpcf_strfold,
+    mpc_string("Hello "),
+    Flatmate, 
+    free); 
 
-  mpc_parser_t* Greetings = mpc_many(Greet, mpcf_strfold);
-
+  mpc_parser_t* Greetings = mpc_many(mpcf_strfold, Greet);
 
   mpc_delete(Greetings);
   
