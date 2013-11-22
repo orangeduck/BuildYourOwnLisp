@@ -2,12 +2,13 @@
 
 (print {hello})
 (print {my_name_is_dan})
-(def {stuff} (let 
-  {= {x} 100}
-  {= {y} 50}
-  {= {result} (+ x y)}
-  {print result}
-  {result}
-))
 
-(print (+ stuff 20) (+ stuff 500))
+
+(fun {stuff _} {do
+  (= {x} 100)
+  (= {y} 50)
+  (= {result} (+ x y))
+  (result)
+})
+
+(print (+ (stuff ()) 20) (+ (stuff ()) 500))

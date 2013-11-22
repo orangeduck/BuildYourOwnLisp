@@ -401,6 +401,8 @@ lval* builtin_op(lenv* e, lval* a, char* op) {
   
   lval* x = lval_pop(a, 0);
   
+  if ((strcmp(op, "-") == 0) && a->count == 0) { x->num = -x->num; }
+  
   while (a->count > 0) {  
     lval* y = lval_pop(a, 0);
     
@@ -626,7 +628,7 @@ int main(int argc, char** argv) {
   mpca_lang(
     "                                                     \
       number : /-?[0-9]+/ ;                               \
-      symbol : /[a-zA-Z_+-*\\/\\\\=]+/ ;                  \
+      symbol : /[a-zA-Z0-9_+-*\\/\\\\=&]+/ ;              \
       sexpr  : '(' <expr>* ')' ;                          \
       qexpr  : '{' <expr>* '}' ;                          \
       expr   : <number> | <symbol> | <sexpr> | <qexpr> ;  \

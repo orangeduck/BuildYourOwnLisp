@@ -1,0 +1,114 @@
+<h2>Error Handling</h2>
+<p>Some of you may have noticed a problem with the previous chapter&#39;s code. Try entering this into the prompt and see what happens</p>
+<pre><code>$ example5
+Lispy Version 0.0.0.0.2
+Press Ctrl+c to Exit
+
+lispy&gt; (/ 10 0)</code></pre>
+<p>Ouch. The program crashed upon trying to divide by zero. Our program might be able to produce parse errors but it still has no functionality for reporting errors in the evaluation of expressions. We need to build in some kind of error handling functionality. This can be awkward in C. We can&#39;t use exceptions and need to ensure any memory allocated is cleaned up correctly - but if we start off on the right track, it will pay off later on when our system gets more complex.</p>
+<p>My preferred method for error handling in this context is to make errors a possible result of evaluating an expression. So we can say that, in lispy, an expression will evaluate to <em>either</em> a <em>long</em>, or an <em>error</em>. To do this we need to make a data structure that can act as either one thing or anything. There are several methods to do this in C but for simplicity sake we are going to use a struct. A struct in C is 
+like a collection of named values called fields. These values can be accessed with the <code>.</code> operator, giving the name of the field. A struct is declared using the <code>struct</code> keyword followed by, in curly brackets, a list of type-name pairs separated by semicolons.</p>
+<p>We can surround the declaration on one side with <code>typedef</code> and the other with some identifier to name it. </p>
+<p>In our situation we want to create a struct with a field for some error message, a field for some number value, and a field for some other value to differentiate between if it is a <em>number</em> or an <em>error</em>. The whole declaration looks like this:</p>
+<pre><code class="lang-c">/* Declare New lval Struct */
+typedef struct {
+  int type;
+  long num;
+  int err;
+} lval;</code></pre>
+<p>For the <code>type</code> field we need to give a list of potential values it can take. For this we can use an enumeration. An enumeration is like a list of values as might be given to represent days of the week, or months of the year.</p>
+<pre><code class="lang-c">/* Create Enumeration of Possible lval Types */
+enum { LVAL_NUM, LVAL_ERR };</code></pre>
+<p>We also want to declare another enumeration to represent what error the <em>error</em> lval actually is there for. We have three error cases in our particular program. As well as division by zero our program should also error if it somehow encounters an unknown operator, or it is passed a number that is too large to represented internally using a <code>long</code>. </p>
+<pre><code class="lang-c">/* Create Enumeration of Possible Error Types */
+enum { LERR_DIV_ZERO, LERR_BAD_OP, LERR_BAD_NUM };</code></pre>
+<p>This can now be used with syntax similar to other native C types. To make it easier to use we want to declare two functions that construct <code>lval</code>&#39;s of either an <em>error</em> type or a <em>number</em> type.</p>
+<pre><code class="lang-c">/* Create a new number type lval */
+lval lval_num(long x) {
+  lval v;
+  v.type = LVAL_NUM;
+  v.num = x;
+  return v;
+}
+
+/* Create a new error type lval */
+lval lval_err(int x) {
+  lval v;
+  v.type = LVAL_ERR;
+  v.err = x;
+  return v;
+}</code></pre>
+<p>See how first an <code>lval</code> called <code>v</code> is created. Then it&#39;s fields are assigned using the <code>.</code> operator. And finally it is returned from the functions. When we now use an <code>lval</code> in our functions, if we want to do different behaviour based upon the type of it, we have to compare it to our enumerated types above. There is a concise way to do this in C using the <code>switch</code> statement. This takes some value and compares it to other known values. When the values are equal it executes the code that follows.</p>
+<p>As an example of this we want to build a function that can print an <code>lval</code> no matter what type it is. For this we can use the <code>switch</code> statement.</p>
+<pre><code class="lang-c">void lval_print(lval v) {
+  switch (v.type) {
+    /* In the case the type is a number print it, then &#39;break&#39; out of the switch. */
+    case LVAL_NUM: printf(&quot;%li&quot;, v.num); break;
+
+    /* In the case the type is an error */
+    case LVAL_ERR:
+      /* Check What exact Type of error it is and print it */
+      if (v.err == LERR_DIV_ZERO) { printf(&quot;Error: Division By Zero!&quot;); }
+      if (v.err == LERR_BAD_OP)   { printf(&quot;Error: Invalid Operator!&quot;); }
+      if (v.err == LERR_BAD_NUM)  { printf(&quot;Error: Invalid Number!&quot;); }
+    break;
+  }
+}</code></pre>
+<p>We can also declare a cheeky function that does the above but appends a newline.</p>
+<pre><code class="lang-c">void lval_println(lval v) { lval_print(v); putchar(&#39;\n&#39;); }</code></pre>
+<p>The final stage is to edit our evaluation functions so that they work on <code>lval</code>s instead of <code>long</code>s. We need to ensure each of the functions works correctly upon encountering an error <code>lval</code>. In most cases this means passing the error out to the higher level of the evaluation so it can finally be reported at the end. First we&#39;ll take a look at our operator evaluation function:</p>
+<pre><code class="lang-c">lval eval_op(lval x, char* op, lval y) {
+
+  /* If either value is an error return it */
+  if (x.type == LVAL_ERR) { return x; }
+  if (y.type == LVAL_ERR) { return y; }
+
+  /* Otherwise do maths on the number values */
+  if (strcmp(op, &quot;+&quot;) == 0) { return lval_num(x.num + y.num); }
+  if (strcmp(op, &quot;-&quot;) == 0) { return lval_num(x.num - y.num); }
+  if (strcmp(op, &quot;*&quot;) == 0) { return lval_num(x.num * y.num); }
+  if (strcmp(op, &quot;/&quot;) == 0) {
+    /* If second operand is zero return error instead of result */
+    return y.num == 0 ? lval_err(LERR_DIV_ZERO) : lval_num(x.num / y.num);
+  }
+
+  return lval_err(LERR_BAD_OP);
+}</code></pre>
+<p>Notice that the type signature has changed to take <code>lval</code>s, and we no longer use <code>long</code>s anywhere.</p>
+<p>The first thing we check is that we&#39;ve not been passed in any <code>lval</code>s that are errorous. We can&#39;t operator on these so we need to return them right away if we do. Secondly we edit the division operator to return a <em>division by zero</em> error if the second operator is zero. This uses the C ternary operator which works something like this: <code>&lt;condition&gt; ? &lt;if_true&gt; : &lt;otherwise&gt;</code>. If the condition is true it returns what follows the <code>?</code>, otherwise it returns what follows <code>:</code>.</p>
+<p>Finally if the operator string matches none of our known operators we return a <em>bad operator</em> error.</p>
+<p>Now we need to apply similar treatment to our expression evaluation function.</p>
+<pre><code class="lang-c">lval eval_expr(mpc_ast_t* t) {
+
+  if (t-&gt;children_num == 0) {
+    long x = strtol(t-&gt;contents, NULL, 10);
+    /* Check if there is some error in conversion */
+    return errno != ERANGE ? lval_num(x) : lval_err(LERR_BAD_NUM);
+  }
+
+  int i = 3;
+  char* op = t-&gt;children[1]-&gt;contents;  
+  lval x = eval_expr(t-&gt;children[2]);
+
+  while (strcmp(t-&gt;children[i]-&gt;tag, &quot;expr&quot;) == 0) {
+    x = eval_op(x, op, eval_expr(t-&gt;children[i]));
+    i++;
+  }
+
+  return x;  
+}</code></pre>
+<p>This is largely similar, but with the type signatures changed - but we have also changed how we extract numbers from the <em>abstract syntax tree</em>. Now we use the <code>strtol</code> function which is considered better and more versatile than <code>atoi</code>. THe <code>strtol</code> function sets a variable <code>errno</code> if there is something wrong with the input number (such as it is too large). We can use this to check the number is valid, and if not return a <em>bad number</em> error.</p>
+<p>Finally the type signature of the root evaluation function needs changing.</p>
+<pre><code class="lang-c">lval eval(mpc_ast_t* t) { return eval_expr(t-&gt;children[0]); }</code></pre>
+<p>And we need to change how we print the result found by it to use our newly defined printing function.</p>
+<pre><code class="lang-c">lval result = eval(r.output);
+lval_println(result);
+mpc_ast_delete(r.output);</code></pre>
+<p>And we are done! It may have seemed likt this chapter has been a whole lot of fluff to solve a relatively minor issue, but we&#39;ve actually built a lot of groundwork that we are going to use in the rest of the program for more advanced stuff. Although boring, error handling shouldn&#39;t be avoided! It isn&#39;t just the life of the user that it enhances. It can make your own life much easier when you come to debug your program.</p>
+<h3>Tutorial Code</h3>
+<p><a href="">example5.c</a></p>
+<h3>Bonus Marks</h3>
+<ul>
+<li>Find out how <code>union</code>s work in C and use them to define <code>lval</code>. Hint: It doesn&#39;t just mean changing <code>struct</code> to <code>union</code>.</li>
+<li>Read about command line arguments in C. Can you make it such that if our program receives a file name as the first argument, it reads and evaluates the contents of this file, rather than going to the interactive prompt.</li>
+</ul>

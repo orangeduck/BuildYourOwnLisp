@@ -2,7 +2,7 @@
 ;;;   Lispy Standard Prelude
 ;;;
 
-;;; Defines
+;;; Atoms
 (def {nil} {{}})
 (def {true} 1)
 (def {false} 0)
@@ -26,6 +26,10 @@
 
 ; Unapply List to Function
 (fun {pack f & xs} {f xs})
+
+; Curried and Uncurried calling
+(def {curry} {apply})
+(def {uncurry} {pack})
 
 ; Perform Several things in Sequence
 (fun {do & l} {
@@ -66,16 +70,16 @@
 
 ;;; Conditional Functions
 
-(fun {case x & cs} {
-  if (== cs {}) { {no-case-found!} } {
-    if (== x (fst (fst cs))) {eval (snd (fst cs))} {apply case (list x (tail cs))}
-  }
+(fun {select & cs} {
+  if (== cs {})
+    {error "No Selection Found"}
+    {if (fst (fst cs)) {eval (snd (fst cs))} {apply select (tail cs)}}
 })
 
-(fun {select & cs} {
-  if (== cs {}) { {no-select-found!} } {
-    if (fst (fst cs)) {eval (snd (fst cs))} {apply select (tail cs)}
-  }
+(fun {case x & cs} {
+  if (== cs {})
+    {error "No Case Found"}
+    {if (== x (fst (fst cs))) {snd (fst cs)} {apply case (join (list x) (tail cs))}}
 })
 
 (def {otherwise} true)
@@ -83,21 +87,16 @@
 
 ;;; Misc Functions
 
-(fun {id & xs} {xs})
 (fun {flip f a b} {f b a})
 (fun {ghost & xs} {eval xs})
 (fun {comp f g x} {f (g x)})
 
 ;;; List Functions
 
-; First or Second Items in List
+; First, Second, or Third Item in List
 (fun {fst l} { eval (head l) })
 (fun {snd l} { eval (head (tail l)) })
-(fun {trd l} { eval (head (tail l)) })
-
-; Curried and Uncurried calling
-(def {curry} {apply})
-(def {uncurry} {pack})
+(fun {trd l} { eval (head (tail (tail l))) })
 
 ; List Length
 (fun {len l} {
@@ -158,8 +157,8 @@
     {f (fst l) (foldr f z (tail l))}
 })
 
-(fun {product l} {foldl (*) 1 l})
-(fun {sum l} {foldl (+) 0 l})
+(fun {sum l} {foldl + 0 l})
+(fun {product l} {foldl * 1 l})
 
 ; Take N items
 (fun {take n l} {
@@ -200,7 +199,7 @@
 
 (fun {lookup x l} {
   if (== l {})
-    {{no-element-found!}}
+    {error "No Element Found"}
     {do
       (= {key} (fst (fst l)))
       (= {val} (snd (fst l)))
@@ -229,37 +228,10 @@
 ; Fibonacci
 (fun {fib n} {
   select
-    { (== n 0) {0} }
-    { (== n 1) {1} }
-    { otherwise {+ (fib (- n 1)) (fib (- n 2))} }
+    { (== n 0) 0 }
+    { (== n 1) 1 }
+    { otherwise (+ (fib (- n 1)) (fib (- n 2))) }
 })
 
 ; Pipe
 (fun {-> x & fs} {foldl (\ {z f} {f z}) x fs})
-
-; Dollar Attempt
-(fun {$> b} {
-  if (== b {}) {
-    {}
-  } {
-    if (== (head b) {$}) {eval (list ($> (tail b)))}
-    {join (head b) ($> (tail b))}
-  }
-})
-
-(fun {for in cnd up b} {do
-  (eval in)
-  (
-    if (not (eval cnd)) {}
-    {do (eval b) (eval up) (for in cnd up b)}
-  )
-})
-
-(fun {for-range s e b} {
-  if (>= s e) {}
-  {do (eval b) (for-range (+ s 1) e b)}
-})
-
-
-
-

@@ -1,0 +1,352 @@
+<h2>Functions</h2>
+<p>Functions are the essence of all computer programming. Their foundation was the idea that we could reduce computation into these smaller and smaller bits of re-usable code. Given enough time, and a proper structure for libraries, eventually we would have written code for all the possible things needed to be computed. Obviously this is a flawed premise. If it were true we would be done by now, and writing functions would be no longer. Even so, the dream still persists. Each new programming paradigm that comes out promises better re-use of code than the last. Better abstractions, and an easier life for all.</p>
+<p>In reality each paradigm delivers not <em>better</em>, but <em>different</em> abstractions. There is always a trade-off. For each higher level of programming developed, some piece is thrown away. No matter how well you decide what to keep and what to leave, occasionally someone will need that piece that has been lost.</p>
+<p>But one way or the other functions have always persisted, and have proven again and again to be effective. If you&#39;ve programmed before you might know what functions <em>look like</em>, but you may not be sure exactly what they <em>are</em>. What functions <em>are</em> isn&#39;t a concrete concept, but there are a few ways to think about them.</p>
+<p>One way to think about functions is as description of some computation you want to be performed later. When you define a function it is like saying &quot;when I use <em>this</em> name I want <em>that</em> sort of computation to be performed&quot;. This is a very practical idea of a function. I feel it is very intuitive, and refers to language. It is like boxing up a list of commands under a given title. I also like this idea because it captures the delayed nature of functions. That they are defined once, and then can be called on repeatedly after.</p>
+<p>Another way to think about functions is as a black box that takes some input and produces some output. This idea is subtly different from the former. It is more algebraic, and doesn&#39;t talk about <em>computation</em> or <em>commands</em>. This idea is a more mathematical concept, and is not tied to some particular machine, or language of commands. In some situations this is exceptionally useful. It allows us to think about functions without worrying about their internals, or how they are computed exactly. This is the core idea behind an abstraction, and is what allows layers of complexity to work together with each other rather than conflict. But it&#39;s strength can also be it&#39;s downfall. Because it does not mention anything about computation it does not deal with a number of real world concerns. &quot;How long will this function take to run?&quot;, &quot;Is this function efficient?&quot;, &quot;Will it modify the state of my program? If so how?&quot;.</p>
+<p>I enjoy thinking of functions as <em>partial computations</em>. Like the Mathematical model I believe they take some inputs. These are the values still required before it can complete the computation. Like the computational model, the body consists of a computation specified in some language of commands, but it is <em>partial</em> because it references <em>unbound variables</em> - the inputs which haven&#39;t been fully defined. Therefore to finish the computation one simply supplies these inputs, which completes all that is needed for the computation to run, and it runs! The output of these <em>partial computations</em> is just the final result.</p>
+<p>An advantage over the Mathematical Model is that we recognize that these computations <em>contain code</em>. We see that when the computation runs, some physical process is going on in a machine. This means we recognize the fact that certain things take time to elapse, or that a function might change the program state, or do anything else we&#39;re not sure about!</p>
+<p>I don&#39;t know which background you come from, or which idea may seem most familiar to you. If you want more information, the study of functions is essentially called <em>Lambda calculus</em>, a field of Logic, Maths, and Computer Science. The name comes from the fact that the Greek letter Lambda is used in the representation of binding variables. Using Lambda calculus gives a way of defining, composing and building <em>functions</em> using a mathematical notation.</p>
+<p>We are going to use the above ideas to add functions to our language. Luckily for us Lisp is already well suited to this sort of playing around, so using our above concepts it wont take much for us to implement functions for real. The first step is to write a builtin function that takes some arguments and returns a user defined function. We can specify this builtin function as follows. For the first argument let the function take in a list of symbols, just like our <code>def</code> function. These symbols we call the <em>formal arguments</em>. These are the <em>unbound variables</em> that act as the inputs to our <em>partial computation</em>. For the second argument we let the function take in another list, ready to be evaluated with our builtin <code>eval</code> function. We will call this function simply <code>\\</code>, in a homage to The Lambda Calculus (as the <code>\\</code> character looks a little bit like a Lambda).</p>
+<p>When completed the syntax to create a function which takes two inputs and adds them together would look something like this.</p>
+<pre><code class="lang-c">(\ {x y} {+ x y})</code></pre>
+<p>With this setup the function is created, but it has no name. If we want to name this function we can pass it to our existing builtin <code>def</code> like any other value.</p>
+<pre><code class="lang-c">(def {add-together} (\ {x y} {+ x y}))</code></pre>
+<h3>Syntax Update</h3>
+<p>TODO: Update Syntax. May as well include all of the symbols that are going to be required now such as the conditonal ones etc.</p>
+<h3>Function Type</h3>
+<p>To store a function as an <code>lval</code> we need to think what it consists of. Via this definition a function consists of three parts. First is the list of <em>formal arguments</em>, which we must set before we can evaluate the result. Second is a list that represents the body of the function, ready to be evaluated with the <code>eval</code> function. And Finally we implicitly require an <em>environment</em>. This is the environment in which the evaluation takes place. We use this environment to set symbols listed in the <em>formal arguments</em> to whatever arguments are passed to the function. This ensures the evaluation is performed correctly. </p>
+<p>We will store our builtin functions and user defined functions under the same type <code>LVAL_FUN</code>. A way to differentiate between them will be to check if the <code>lbuiltin</code> function pointer is <code>NULL</code> or not. If it is not <code>NULL</code> we know the <code>lval</code> is some builtin function, otherwise we know it is a user function.</p>
+<p>We should edit our <code>lval</code> definition to reflect this.</p>
+<pre><code>struct lval {
+  int type;
+
+  /* Basic */
+  long num;
+  char* err;
+  char* sym;
+
+  /* Function */
+  lbuiltin builtin;
+  lenv* env;
+  lval* formals;
+  lval* body;
+
+  /* Expression */
+  int count;
+  lval** cell;
+};</code></pre>
+<p>As possible data to contain in an <code>lval</code> we and the <code>formals</code> and <code>body</code> lists, as well as the <code>env</code> environment. We need to update our function <code>lval</code> constructors too.</p>
+<pre><code class="lang-c">lval* lval_builtin(lbuiltin func) {
+  lval* v = malloc(sizeof(lval));
+  v-&gt;type = LVAL_FUN;
+  v-&gt;builtin = func;
+  return v;
+}</code></pre>
+<p>We need to create one for constructing builtins as before. But we also need to create one for constructing user created functions (which we&#39;ll call <em>lambdas</em>).</p>
+<pre><code class="lang-c">/* Forward Declarations for environment functions */
+lenv* lenv_new(void);
+
+lval* lval_lambda(lval* formals, lval* body) {
+  lval* v = malloc(sizeof(lval));
+  v-&gt;type = LVAL_FUN;
+
+  /* Set Builtin to Null */
+  v-&gt;builtin = NULL;
+
+  /* Built new environment */
+  v-&gt;env = lenv_new();
+
+  /* Set Formals and Body */
+  v-&gt;formals = formals;
+  v-&gt;body = body;
+  return v;  
+}</code></pre>
+<p>Here we built a new environment for the function and just assign the <code>formals</code> and <code>body</code> values to those passed in. As with whenever we change our <code>lval</code> type we need to update the functions for <em>deletion</em>, <em>copying</em>, and <em>printing</em>.</p>
+<p>For Deletion...</p>
+<pre><code class="lang-c">case LVAL_FUN: 
+  if (v-&gt;builtin != NULL) {
+    lenv_del(v-&gt;env);
+    lval_del(v-&gt;formals);
+    lval_del(v-&gt;body);
+  }
+break;</code></pre>
+<p>For Copying...</p>
+<pre><code class="lang-c">case LVAL_FUN:
+  x-&gt;builtin = v-&gt;builtin;
+  if (x-&gt;builtin != NULL) {
+    x-&gt;env = lenv_copy(v-&gt;env);
+    x-&gt;formals = lval_copy(v-&gt;formals);
+    x-&gt;body = lval_copy(v-&gt;body);
+  }
+break;</code></pre>
+<p>For Printing...</p>
+<pre><code class="lang-c">case LVAL_FUN:
+  if (v-&gt;builtin) {
+    printf(&quot;&lt;builtin&gt;&quot;);
+  } else {
+    printf(&quot;(\\ &quot;); lval_print(v-&gt;formals); putchar(&#39; &#39;); lval_print(v-&gt;body); putchar(&#39;)&#39;);
+  }
+break;</code></pre>
+<p>We will deal with the changes to function evaluation behaviour later...</p>
+<p>We&#39;ve given functions their own environment to execute in. In this environment we know that their formal variables should be defined. Ideally we also want these functions to be able to access variables which are in the global environment, such as our builtin functions. This means we don&#39;t have to pass them into the function if we wish to use them.</p>
+<p>We can solve this problem by changing our definition of an environment such that it contains a reference to some <em>parent</em> environment. When we want to evaluate a function we can then set this <em>parent</em> environment to our global environment with all of our builtins defined within. Note that when we add this to our <code>lenv</code> struct, conceptually it will be a <em>reference</em> to a parent environment, not an actual sub-environment or anything like this. Because of this we shouldn&#39;t delete it when our <code>lenv</code> gets deleted, or copy it when our <code>lenv</code> gets copied.</p>
+<p>It&#39;s main purpose is therefore this: if someone calls <code>lenv_get</code> on an environment and the symbol cannot be found. If it has a parent it should also check in this environment to see if a value exists.</p>
+<pre><code class="lang-c">struct lenv {
+  lenv* par;
+  int count;
+  char** syms;
+  lval** vals;
+};
+
+lenv* lenv_new(void) {
+  lenv* e = malloc(sizeof(lenv));
+  e-&gt;par = NULL;
+  e-&gt;count = 0;
+  e-&gt;syms = NULL;
+  e-&gt;vals = NULL;
+  return e;
+}
+
+void lenv_del(lenv* e) {
+  for (int i = 0; i &lt; e-&gt;count; i++) {
+    free(e-&gt;syms[i]);
+    lval_del(e-&gt;vals[i]);
+  }
+  free(e-&gt;syms);
+  free(e-&gt;vals);
+  free(e);
+}
+
+lenv* lenv_copy(lenv* e) {
+  lenv* n = malloc(sizeof(lenv));
+  n-&gt;par = e-&gt;par;
+  n-&gt;count = e-&gt;count;
+  n-&gt;syms = malloc(sizeof(char*) * n-&gt;count);
+  n-&gt;vals = malloc(sizeof(lval*) * n-&gt;count);
+  for (int i = 0; i &lt; e-&gt;count; i++) {
+    n-&gt;syms[i] = malloc(strlen(e-&gt;syms[i]) + 1);
+    strcpy(n-&gt;syms[i], e-&gt;syms[i]);
+    n-&gt;vals[i] = lval_copy(e-&gt;vals[i]);
+  }
+  return n;
+}
+
+lval* lenv_get(lenv* e, lval* k) {
+
+  for (int i = 0; i &lt; e-&gt;count; i++) {
+    if (strcmp(e-&gt;syms[i], k-&gt;sym) == 0) { return lval_copy(e-&gt;vals[i]); }
+  }
+
+  /* If no symbol check in parent otherwise error */
+  if (e-&gt;par) {
+    return lenv_get(e-&gt;par, k);
+  } else {
+    return lval_err(&quot;Unbound Symbol &#39;%s&#39;&quot;, k-&gt;sym);
+  }
+}</code></pre>
+<p>TODO: Break up this code a little.</p>
+<p>This also changes our concept of <em>defining</em> a variable in an environment. Do we wish to define this variable in the innermost environment, or do we wish to define it in the <em>global</em> environment, following the parent chain up until there are no more parents. We will allow functionality for both. We&#39;ll leave the <code>lenv_put</code> method the same. It can be used for definition in the local environment. Then we&#39;ll add a new fuction <code>lenv_def</code> for definition in the global environment.</p>
+<pre><code class="lang-c">void lenv_def(lenv* e, lval* k, lval* v) {
+  /* Iterate till e has no parent */
+  while (e-&gt;par) { e = e-&gt;par; }
+  /* Put value in e */
+  lenv_put(e, k, v);
+}</code></pre>
+<p>At the moment this distinction may seem useless, but we can write some functions that allow us to make use of it to do things such as write partial results of calculations to local variables. Now we have this distinction we should add another builtin for <em>local</em> assignment. We&#39;ll call this <code>put</code> in C, but give it the <code>=</code> symbol when in Lisp code . We can adapt our <code>builtin_def</code> function so we can re-use the code in a similar way to how we have done for our maths operators.</p>
+<pre><code class="lang-c">lval* builtin_var(lenv* e, lval* a, char* func) {
+  LASSERT(a, (a-&gt;cell[0]-&gt;type == LVAL_QEXPR), &quot;Function &#39;%s&#39; passed incorrect type. Got %s, Expected %s.&quot;, func, ltype_name(a-&gt;cell[0]-&gt;type), ltype_name(LVAL_QEXPR));
+
+  lval* syms = a-&gt;cell[0];  
+  for (int i = 0; i &lt; syms-&gt;count; i++) {
+    LASSERT(a, (syms-&gt;cell[i]-&gt;type == LVAL_SYM), &quot;Function &#39;%s&#39; cannot define non-symbol. Got %s, Expected %s.&quot;, func, ltype_name(syms-&gt;cell[i]-&gt;type), ltype_name(LVAL_SYM));
+  }
+
+  LASSERT(a, (syms-&gt;count == a-&gt;count-1), &quot;Function &#39;%s&#39; passed too many arguments for symbols. Got %i, Expected %i.&quot;, func, syms-&gt;count, a-&gt;count-1);
+
+  for (int i = 0; i &lt; syms-&gt;count; i++) {
+    /* If &#39;def&#39; define in global scope. If &#39;put&#39; define in local scope */
+    if (strcmp(func, &quot;def&quot;) == 0) { lenv_def(e, syms-&gt;cell[i], a-&gt;cell[i+1]); }
+    if (strcmp(func, &quot;put&quot;) == 0) { lenv_put(e, syms-&gt;cell[i], a-&gt;cell[i+1]); } 
+  }
+
+  lval_del(a);
+  return lval_sexpr();
+}
+
+lval* builtin_def(lenv* e, lval* a) { return builtin_var(e, a, &quot;def&quot;); }
+lval* builtin_put(lenv* e, lval* a) { return builtin_var(e, a, &quot;put&quot;); }</code></pre>
+<p>Then we need to register this as a builtin.</p>
+<pre><code class="lang-c">lenv_add_builtin(e, &quot;def&quot;, builtin_def);
+lenv_add_builtin(e, &quot;=&quot;,   builtin_put);</code></pre>
+<h3>Lambda Function</h3>
+<p>We spoke before of an informal definition for our <em>lambda</em> function. We want it to take as input some list of symbols (like our <code>def</code>) function, and a list that represents the code. After that it should return a function <code>lval</code>. We&#39;ve built a number of builtins now and this follows the same format. It should be fairly straight forward.</p>
+<pre><code class="lang-c">lval* builtin_lambda(lenv* e, lval* a) {
+  /* Check Two arguments, each of which are Q-Expressions */
+  LASSERT(a, (a-&gt;count == 2                 ), &quot;Lambda passed too many arguments. Got %i, Expected %i&quot;, a-&gt;count, 2);
+  LASSERT(a, (a-&gt;cell[0]-&gt;type == LVAL_QEXPR), &quot;Lambda passed incorrect type. Got %s, Expected %s.&quot;, ltype_name(a-&gt;cell[0]-&gt;type), ltype_name(LVAL_QEXPR));
+  LASSERT(a, (a-&gt;cell[1]-&gt;type == LVAL_QEXPR), &quot;Lambda passed incorrect type. Got %s, Expected %s.&quot;, ltype_name(a-&gt;cell[1]-&gt;type), ltype_name(LVAL_QEXPR));
+
+  /* Check first Q-Expression contains only Symbols */
+  for (int i = 0; i &lt; a-&gt;cell[0]-&gt;count; i++) {
+    LASSERT(a, (a-&gt;cell[0]-&gt;cell[i]-&gt;type == LVAL_SYM), &quot;Lambda cannot define non-symbol. Got %s, Expected %s.&quot;, ltype_name(a-&gt;cell[0]-&gt;cell[i]-&gt;type), ltype_name(LVAL_SYM));
+  }
+
+  /* Pop first two arguments and pass them to lval_lambda */
+  lval* formals = lval_pop(a, 0);
+  lval* body = lval_pop(a, 0);
+  lval_del(a);
+
+  return lval_lambda(formals, body);
+}</code></pre>
+<p>Like in <code>def</code> we do some error checking to ensure the argument types and count are correct. Then we just pop the first two arguments from the list and pass them to our previously constructed <code>lval_lambda</code> function.</p>
+<h3>Function Application</h3>
+<p>Everything up to now has been infrastructure type code, but now is the time to write the real meat. We need to write the code that runs when you call a <code>LVAL_FUN</code> type. What this code should do is bind each of the arguments passed to it to the symbols in the <code>formals</code> variable. Once this is done it should evaluate the <code>body</code> list in an environment with <code>formals</code> bound, but also with everything else correctly defined. The way we do this is to set the parent of the function&#39;s environment to the current evaluation environment.</p>
+<p>A first attempt, without error checking or anything fancy might look like this:</p>
+<pre><code class="lang-c">lval* lval_apply(lenv* e, lval* f, lval* a) {
+
+  /* If Builtin then simply apply that */
+  if (f-&gt;builtin) { return f-&gt;builtin(e, a); }
+
+  /* Assign each argument to each formal in order */
+  for (int i = 0; i &lt; a-&gt;count; i++) {
+      lenv_put(f-&gt;env, f-&gt;formals-&gt;cell[i], a-&gt;cell[i]);
+  }
+
+  lval_del(a);
+
+  /* Set the parent environment */
+  f-&gt;env-&gt;par = e;
+
+  /* Evaluate the body */
+  return builtin_eval(f-&gt;env, lval_add(lval_sexpr(), lval_copy(f-&gt;body)));
+}</code></pre>
+<p>The main issue with this function is that it does not deal correctly with the case where the number of arguments supplied, and the number of formal arguments required, differ.</p>
+<p>Actually this is an interesting case and leaves us with a number of options. For example we could throw an error when the argument count supplied is incorrect. When too many arguments are supplied this might be the only real thing to do. But when too few are supplied are supplied we can do something interesting. We can return a function that has been <em>partially evaluated</em>. This is an idea which ties into our previous idea of a function being some kind of <em>partial computation</em>. Say we start with a function that takes two arguments. If we pass this function a single argument we could simply bind this and return a new function with it&#39;s first formal argument bound, and it&#39;s second remaining empty.</p>
+<p>With this metaphor we get another cute image of how functions can be imagined. In each Lisp expression we can imagine the function at the front first consuming the input directly to it&#39;s right. Once it has consumed the input to it&#39;s right, if it is complete (requires no more inputs) it evaluates, otherwise it returns another new, larger function, with one of it&#39;s variables bound. This sits in the list where the first function and it&#39;s inital argument were, and the whole process repeats again. So you can imagine a function like a little pacman, not consuming all inputs at once, but iteratively eating inputs and getting bigger and bigger until it is fun.</p>
+<p>This isn&#39;t actually how we&#39;re going to implement it in code, but it is fun to imagine these metaphors for the actual resultant behaviour of some systems!</p>
+<pre><code class="lang-c">lval* lval_apply(lenv* e, lval* f, lval* a) {
+
+  /* If Builtin then simply apply that */
+  if (f-&gt;builtin) { return f-&gt;builtin(e, a); }
+
+  /* Record Argument Counts */
+  int given = a-&gt;count;
+  int total = f-&gt;formals-&gt;count;
+
+  /* While arguments still remain to be processed */
+  while (a-&gt;count) {
+
+    /* If we&#39;ve ran out of formal arguments to bind */
+    if (f-&gt;formals-&gt;count == 0) {
+      lval_del(a); return lval_err(&quot;Function passed too many arguments. Got %i, Expected %i.&quot;, given, total); 
+    }
+
+    /* Pop the first symbol from the formals */
+    lval* sym = lval_pop(f-&gt;formals, 0);
+
+    /* Pop the next argument from the list */
+    lval* val = lval_pop(a, 0);
+
+    /* Bind a copy into the function&#39;s environment */
+    lenv_put(f-&gt;env, sym, val);
+
+    /* Delete symbol and value */
+    lval_del(sym); lval_del(val);
+  }
+
+  /* Argument list is now bound so can be cleaned up */
+  lval_del(a);
+
+  /* If all formals have been bound evaluate */
+  if (f-&gt;formals-&gt;count == 0) {
+
+    /* Set Function Environment parent to current evaluation Environment */
+    f-&gt;env-&gt;par = e;
+
+    /* Evaluate and return */
+    return builtin_eval(f-&gt;env, lval_add(lval_sexpr(), lval_copy(f-&gt;body)));
+  } else {
+    /* Otherwise return partially evaluated function */
+    return lval_copy(f);
+  }
+
+}</code></pre>
+<p>TODO: Explain</p>
+<h3>Variable Arguments</h3>
+<p>The way we&#39;ve defined some of our builtin functions means that they can take in a variable number of arguments. Functions like <code>+</code> and <code>-</code> can take any number of arguments and operator on them logically. It&#39;d be good for us to allow for a method of this.</p>
+<p>Unfortunately there isn&#39;t really an elegant way for us to allow for this and also have any form of pleasant syntax. At the cost of a few lines of code we&#39;re going to go down the <em>pretty syntax</em> route and hard-code some system into our language.</p>
+<p>What we want is something like this. To be able to define formal arguments that look like <code>{x &amp; xs}</code> which means that a function takes in a single argument <code>x</code> followed by zero or more other arguments, condensed into a list called <code>xs</code>.</p>
+<p>Our basic approach to adding this into our system is going to be this. When assigning our formal arguments we&#39;re going look for a <code>&amp;</code> character and if it exists take the next formal argument and assign it any remainging supplied arguments we&#39;ve been passed. It&#39;s important we convert this argument list to a proper list (like the builtin <code>list</code> does), and we need to also remember to check that <code>&amp;</code> is followed by a symbol and if it isn&#39;t we should throw an error. We can add this special case just after the fist symbol is poped from the formals, in the <code>while</code> loop.</p>
+<pre><code class="lang-c">/* Special Case to deal with &#39;&amp;&#39; */
+if (strcmp(sym-&gt;sym, &quot;&amp;&quot;) == 0) {
+
+  /* Ensure &#39;&amp;&#39; is followed by another symbol */
+  if (f-&gt;formals-&gt;count != 1) {
+    lval_del(a);
+    return lval_err(&quot;Function format invalid. Symbol &#39;&amp;&#39; not followed by single symbol.&quot;);
+  }
+
+  /* Next formal should be bound to remaining arguments */
+  lval* nsym = lval_pop(f-&gt;formals, 0);
+  lenv_put(f-&gt;env, nsym, builtin_list(e, a));
+  lval_del(sym); lval_del(nsym);
+  break;
+}</code></pre>
+<p>There is another special case we need to deal with. Suppose the user doesn&#39;t supply any variable arguments, but only the first named ones. In this case we need to ensure we bind the symbol following <code>&amp;</code> to the empty list.</p>
+<p>We can add the code to deal with this special case just after we delete the argument list, and before we check to see if all the formals have been evaluated.</p>
+<pre><code class="lang-c">/* If &#39;&amp;&#39; remains in formal list it should be bound to empty list */
+if (f-&gt;formals-&gt;count &gt; 0 &amp;&amp;
+  strcmp(f-&gt;formals-&gt;cell[0]-&gt;sym, &quot;&amp;&quot;) == 0) {
+
+  /* Check to ensure that &amp; is not passed invalidly. */
+  if (f-&gt;formals-&gt;count != 2) {
+    return lval_err(&quot;Function format invalid. Symbol &#39;&amp;&#39; not followed by single symbol.&quot;);
+  }
+
+  /* Pop and delete &#39;&amp;&#39; symbol */
+  lval_del(lval_pop(f-&gt;formals, 0));
+
+  /* Pop next symbol and create empty list */
+  lval* sym = lval_pop(f-&gt;formals, 0);
+  lval* val = lval_qexpr();
+
+  /* Bind to environment and delete */
+  lenv_put(f-&gt;env, sym, val);
+  lval_del(sym); lval_del(val);
+}</code></pre>
+<h3>Updated Evaluation</h3>
+<p>Finally we just update our evaluation function to call <code>lval_apply</code> and again our system is ready to rock!</p>
+<pre><code class="lang-c">lval* f = lval_pop(v, 0);
+if (f-&gt;type != LVAL_FUN) { lval* err = lval_err(&quot;S-Expression starts with incorrect type. Got %s, Expected %s.&quot;, ltype_name(f-&gt;type), ltype_name(LVAL_FUN)); lval_del(f); lval_del(v); return err; }
+
+lval* result = lval_apply(e, f, v);
+lval_del(f);
+return result;
+}</code></pre>
+<h3>Examples</h3>
+<p>TODO: define list functions</p>
+<h3>Some Interesting Functions</h3>
+<p>One annoying thing about using lambdas is that the syntax for defining functions is fairly clumbsy. Luckily we can use functions, to make this better. We can write a function that defines new functions.</p>
+<p>Here is a function that takes in some arguments and a body, and uses the first element of the arguments as the name to define, and the rest as the formal arguments.</p>
+<pre><code>\ {args body} {def (head args) (\ (tail args) body)}</code></pre>
+<p>We can define this function to be called <code>fun</code> as follows.</p>
+<pre><code>def {fun} (\ {args body} {def (head args) (\ (tail args) body)})</code></pre>
+<p>This means that we can now define functions in a much simpler and nicer way.</p>
+<pre><code>fun {add x y} {+ x y}</code></pre>
+<p>We can also define a function that performs a bunch of computations in series and returns the results. We&#39;ll call this function <code>do</code>. The definition is very simple.</p>
+<pre><code>(fun {do &amp; xs} {last xs})</code></pre>
+<p>TODO: Mention we&#39;ll define <code>last</code> later.
+TODO: Mention <code>pack</code> and <code>apply</code></p>
+<p>This can be used to simply computations be assigning to intermediate variables using <code>=</code>. This is where using <code>=</code> comes in particularly useful. Because a function executes in it&#39;s own environment, and variables defined with <code>=</code> when it is being run wont escape to the outer scope.</p>
+<pre><code>(fun {add-numbers w x y z} {
+  do 
+    (= temp0 (+ w x))
+    (= temp1 (+ y z))
+    (= temp2 (+ temp0 temp1)
+    (temp2)
+}</code></pre>
+<p>We can define a whole bunch of cool functions these ways but really we need some ability to do some comparisons.</p>
+<h3>Tutorial Code</h3>
+<p><a href="">example8.c</a></p>
+<h3>Bonus Marks</h3>

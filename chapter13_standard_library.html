@@ -1,0 +1,206 @@
+<h2>Standard Library</h2>
+<p>The lisp we&#39;ve built has been purposefully minimal. The idea was to get the fewest number of core structures erected, which would allow us to add everything else required to the language.</p>
+<h3>Atoms</h3>
+<p>For example we added no <code>true</code> or <code>false</code> values, or boolean type. Instead we just use numbers. On a similar note many lisps use the work <code>nil</code> to mean the empty list <code>{}</code>. We can add all of these things in via the standard library.</p>
+<pre><code>; Atoms
+(def {nil} {{}})
+(def {true} 1)
+(def {false} 0)</code></pre>
+<h3>Building Blocks</h3>
+<p>There are also some more complicated constructs we&#39;ve not included in the core language, but these too can be added to the language via the means of a library. For example there is our <code>fun</code> function that allows us to declare functions in a neater way.</p>
+<pre><code>; Function Definitions
+(def {fun} (\ {f b} {
+  def (head f) (\ (tail f) b)
+}))</code></pre>
+<p>We can also define a function <code>let</code> that allows us to open a new scope. It simply create an empty function with some given body and evaluates it.</p>
+<pre><code>; Open new scope
+(fun {let b} {
+  ((\ {_} b) ())
+})</code></pre>
+<p>For example:</p>
+<pre><code>lispy&gt; let {do (= {x} 100) (x)}
+100
+lispy&gt; x
+Error: Unbound Symbol &#39;x&#39;
+lispy&gt;</code></pre>
+<p>This can be useful in conjunction with <code>do</code> to evaluate partial results to variables you don&#39;t wish to escape to an outer scope.</p>
+<p>With these small building blocks we create more and more expressive constructs with smaller code. For example what about these two functions <code>apply</code> and <code>pack</code>.</p>
+<pre><code>; Apply List to Function
+(fun {apply f l} {
+  eval (join (list f) l)
+})
+
+; Unapply List to Function
+(fun {pack f &amp; xs} {f xs})</code></pre>
+<p>The <code>apply</code> function takes as input some function and some list and applies this function to the arguments in the list. With our language this is easy. We just join the function to the head of the list and then use <code>eval</code>.</p>
+<p>Also we have a function <code>pack</code> that takes a function and some other number of arguments. It puts the other arguments into a list and calls the function with this single argument. It is like the opposite of our <code>apply</code> function!</p>
+<p>In many languages these are called <code>curry</code> and <code>uncurry</code>. TODO: Talk about this.</p>
+<pre><code>; Curried and Uncurried calling
+(def {curry} {apply})
+(def {uncurry} {pack})</code></pre>
+<p>Also we have the fabled <code>do</code> function which evaluates a number of statements in order and returns the last.</p>
+<pre><code>; Perform Several things in Sequence
+(fun {do &amp; l} {
+  if (== l {})
+    {{}}
+    {last l}
+})</code></pre>
+<h3>Logical Operators</h3>
+<p>We can also use maths to implement basic logical operators. Assuming our only input values are <code>0</code> and <code>1</code>, these perform the correct characteristics.</p>
+<pre><code>; Logical Functions
+(fun {not x}   {- 1 x})
+(fun {or x y}  {+ x y})
+(fun {and x y} {* x y})</code></pre>
+<h3>Misc Functions</h3>
+<p>Here are a couple of oddball functions that don&#39;t really fit in anywhere. See if you can guess what each of their intended functionality is.</p>
+<pre><code>(fun {flip f a b} {f b a})
+(fun {ghost &amp; xs} {eval xs})
+(fun {comp f g x} {f (g x)})</code></pre>
+<p>The <code>flip</code> function takes a function <code>f</code> and two arguments <code>a</code> and <code>b</code>. It then applies <code>f</code> to <code>a</code> and <code>b</code> in the reversed order. The question is why would you want to do this? Well if you remember before our functions can be <em>partially evaluated</em> by supplying it with arguments too few arguments. An issue arrises when you want to partially evaluate a function by only passing it in it&#39;s second argument. This is where <code>flip</code> comes in. If you apply <code>flip</code> to a function suddenly you get a new function back that takes an <code>a</code> and a <code>b</code> in reversed order.</p>
+<p>This means if you want to apply the second argument of a function you can just apply the first argument to the <code>flip</code> of this function.</p>
+<p>The <code>ghost</code> function I didn&#39;t really find a use for but it seemed interesting. It simply takes in any number of arguments and evaluates them as if they were the expression itself. So it sits at the front of an expression like a ghost - not interacting of changing the behaviour of the program at all.</p>
+<p>The <code>comp</code> function is used to compose two functions. It takes as input <code>f</code>, <code>g</code> and an argument to <code>g</code>. It then applies this to <code>g</code> and applies the result again to <code>f</code>. This can be used to compose two function together into a new function that applies both of them in series.</p>
+<p>For example we can compose two functions. One that negates a number and another that applies <code>*</code> to a list of numbers.</p>
+<pre><code>lispy&gt; comp - (apply *) {8 2}
+-15</code></pre>
+<h3>List Functions</h3>
+<p>When we use <code>head</code> we can get the first element of a list, but it is still wrapped in the list. If we want to actually work on the element on it&#39;s own we need to extact it somehow.</p>
+<p>To do this we can just evaluate the single element list with <code>eval</code>. We can define a couple of helper functions for aid extracting the first, second and third elements of a list.</p>
+<pre><code>; First, Second, or Third Item in List
+(fun {fst l} { eval (head l) })
+(fun {snd l} { eval (head (tail l)) })
+(fun {trd l} { eval (head (tail (tail l))) })</code></pre>
+<p>We don&#39;t have conventionl looping in our language via the method of a <code>for</code> loop or <code>while</code> loop. Instead we can use <em>recursion</em>.</p>
+<pre><code>; List Length
+(fun {len l} {
+  if (== l {})
+    {0}
+    {+ 1 (len (tail l))}
+})
+
+; Nth item in List
+(fun {nth n l} {
+  if (== n 0)
+    {fst l}
+    {nth (- n 1) (tail l)}
+})
+
+; Last item in List
+(fun {last l} {nth (- (len l) 1) l})</code></pre>
+<p>To find the length of a list we can recursive over it adding <code>1</code> to the length of the tail. To find the <code>nth</code> element of a list we can perform the <code>tail</code> operation and count down until we reach <code>0</code>. We can also provide methods akin to various looping functionality.</p>
+<p>If we wish to perform some operation on every element of a list we can define a function to do it. We call this <code>map</code> and it takes as input some function and some list. For each item in the list it applies <code>f</code> to that item and appends it back onto the front of the list. It also applies <code>map</code> to every other element in the tail of the list.</p>
+<pre><code>; Apply Function to List
+(fun {map f l} {
+  if (== l {})
+    {{}}
+    {join (list (apply f (head l))) (map f (tail l))}
+})</code></pre>
+<p>With this we can do some neat things that look like looping but aren&#39;t. When we think about things in this way we think about performing some function to each element of the list at once. It is like injecting this function into the list and evaluating.</p>
+<p>These metaphors help us think at a higher level of abstraction. Rather than moving around data and memory we can manipulate big structures in one go!</p>
+<pre><code>lispy&gt; map - {5 6 7 8 2 22 44}
+{-5 -6 -7 -8 -2 -22 -44}
+lispy&gt; map (\ {x} {+ x 10}) {5 2 11}
+{15 12 21}
+lispy&gt; print {&quot;hello&quot; &quot;world&quot;}
+{&quot;hello&quot; &quot;world&quot;}
+()
+lispy&gt; map print {&quot;hello&quot; &quot;world&quot;}
+&quot;hello&quot;
+&quot;world&quot;
+{() ()}
+lispy&gt;</code></pre>
+<p>We can use a similar idea to construct a <code>filter</code> function which takes in some condition and only includes items of a list which match that condition.</p>
+<pre><code>; Apply Filter to List
+(fun {filter f l} {
+  if (== l {})
+    {{}}
+    {join (if (apply f (head l)) {head l} {{}}) (filter f (tail l))}
+})</code></pre>
+<p>This is what it looks like in practice.</p>
+<pre><code>lispy&gt; filter (\ {x} {&gt; x 2}) {5 2 11 -7 8 1}
+{5 11 8}</code></pre>
+<p>What about looping functions such as sums and products. These loop over a list and collect some total. How can we express these without looping? Actually these are very similar to the <code>len</code> function and we call them <em>folds</em>.</p>
+<p>They work like this. Supplied with a function, a <em>base value</em> and a list they merge with the supplied function in turn each element of the list with the total, starting with the base value.</p>
+<pre><code>; Fold Left
+(fun {foldl f z l} {
+  if (== l {}) 
+    {z}
+    {foldl f (f z (fst l)) (tail l)}
+})</code></pre>
+<p>Using folds we can define <code>sum</code> and <code>product</code> in a really elegant way.</p>
+<pre><code>(fun {sum l} {foldl + 0 l})
+(fun {product l} {foldl * 1 l})</code></pre>
+<p>We can also define a bunch of other useful functions. Such as taking or dropping the first <code>n</code> elements from a list.</p>
+<pre><code>; Take N items
+(fun {take n l} {
+  if (== n 0)
+    {{}}
+    {join (head l) (take (- n 1) (tail l))}
+})
+
+; Drop N items
+(fun {drop n l} {
+  if (== n 0)
+    {l}
+    {drop (- n 1) (tail l)}
+})
+
+; Split at N
+(fun {split n l} {list (take n l) (drop n l)})</code></pre>
+<p>Or checking if an element is a member of a list.</p>
+<pre><code>(fun {elem x l} {
+  if (== l {})
+    {false}
+    {if (== x (fst l)) {true} {elem x (tail l)}}
+})</code></pre>
+<p>Any many many more...</p>
+<h3>Conditional Functions</h3>
+<p>In C <code>switch</code> and <code>case</code> are built into the language. But because our Lisp treats code as data and data as code we can define them as part of a library.</p>
+<p>We can define a function <code>select</code> that takes in any number of two-element lists as arguments. For each two element list in the arguments it first evaluates the first element of the pair. If this is true then it evaluates and returns the second item, otherwise it performs the same thing again on the rest of the list. </p>
+<pre><code>(fun {select &amp; cs} {
+  if (== cs {}) {
+    error &quot;No Selection Found&quot;
+  } {
+    if (fst (fst cs)) {snd (fst cs)} {apply select (tail cs)}
+  }
+})</code></pre>
+<p>We can also define a function <code>otherwise</code> to always evaluate to <code>true</code> - <code>(def {otherwise} true)</code>. Then we can write something as follows.</p>
+<pre><code>(fun {print-month-day-suffix i} {
+  select
+    {(== i 0)  (print &quot;st&quot;)}
+    {(== i 1)  (print &quot;nd&quot;)}
+    {(== i 3)  (print &quot;rd&quot;)}
+    {otherwise (print &quot;th&quot;)}
+})</code></pre>
+<p>We can also add a function for the special case where we wish to compare a value to a number of candiates, closer to how the C style case works. In this function we take some candidate value <code>x</code> and a number of cases in the form of a list of pairs again.</p>
+<pre><code>(fun {case x &amp; cs} {
+  if (== cs {}) {
+    error &quot;No Case Found&quot;
+  } {
+    if (== x (fst (fst cs))) {snd (fst cs)} {apply case (join (list x) (tail cs))}
+  }
+})</code></pre>
+<p>We can use this in a simiar way,</p>
+<pre><code>(fun {day-name x} {
+  case x
+    {0 &quot;Monday&quot;}
+    {1 &quot;Tuesday&quot;}
+    {2 &quot;Wednesday&quot;}
+    {3 &quot;Thursday&quot;}
+    {4 &quot;Friday&quot;}
+    {5 &quot;Saturday&quot;}
+    {6 &quot;Sunday&quot;}
+})</code></pre>
+<p>In fact we can use similar techniques to implement a whole bunch of new control structures and useful functions that deal with code.</p>
+<h3>Fibonacci</h3>
+<p>Using everything from the above we can write a cute little <code>fibonacci</code> function. The form it is written in is quite readable while still maintaining semantic clarity.</p>
+<pre><code>; Fibonacci
+(fun {fib n} {
+  select
+    { (== n 0) {0} }
+    { (== n 1) {1} }
+    { otherwise {+ (fib (- n 1)) (fib (- n 2))} }
+})</code></pre>
+<h3>Tutorial Code</h3>
+<p><a href="">prelude.lspy</a></p>
+<h3>Bonus Marks</h3>

@@ -1,0 +1,107 @@
+<h2>Introducing MPC</h2>
+
+
+<h3>What is a Programming Language?</h3>
+
+<p>A programming language is much like a real language. There is some logic behind how it is structured, some rules as to what is a valid thing to say, and some way in which we can generate sentences.</p>
+
+<p>A key observation in the understanding of language is that as well as rules, language contains repeated structures. The same is true of programming languages - an <code>if</code> statement body can contain any number of new statements, including another <code>if</code> statement itself (and so on). This means that although there might be an infinite number of different things that can be said in a language, we can still recognise and understand all of them with a finite number of rules and processes.</p>
+
+<p>These rules are called a <em>grammar</em> and can be written down using special notation. If we want to read, understand, and evaluate Lisp we need to write a <em>grammar</em> for it first. Using the rules in a grammar we can try to write a program that <em>reads</em> some sentence and builds an internal representation of it. Once we have this internal representation we can <em>evaluate</em> it and perform the commands encoded by it. This is where <code>mpc</code> comes in.</p>
+
+<p><code>mpc</code> is a <em>Parser Combinator</em> library. This is a library that allows you to build parsers. These are programs that understand and process languages. The key thing about a <em>Parser Combinator</em> library is that it lets you build a parser just by specifying the grammar...sort of.</p>
+
+<p>Many actually work by letting you write code that simply <em>looks</em> a bit like a grammar. <code>mpc</code> does both. As well as letting you write code that <em>looks</em> like a grammar you can actually write a grammar itself! For our purposes we are going to make use of the second option, but going over the first should be helpful too.</p>
+
+<p>So what does code that <em>looks like</em> a grammar..<em>look like</em>?</p>
+
+<pre><code class="lang-c">#include &quot;mpc.h&quot;
+
+int main(int argc, char** argv) {
+
+  /* Requires some input on the command line */
+  if (argc != 2) {
+    puts(&quot;Usage: parser &lt;flatmate&gt;&quot;);
+    return 0;
+  }
+
+  /* Build a new parser &#39;Flatmate&#39; */
+  mpc_parser_t* Flatmate = mpc_or(4, 
+    mpc_string(&quot;Dan&quot;),
+    mpc_string(&quot;Chess&quot;),
+    mpc_string(&quot;Adam&quot;),
+    mpc_string(&quot;Lewis&quot;)
+  );
+
+  /* Parse the result into result &#39;r&#39; */
+  mpc_result_t r;
+  if (mpc_parse(&quot;&lt;stdin&gt;&quot;, argv[1], Flatmate, &amp;r)) {
+    /* On success report flatmate */
+    printf(&quot;Got a flatmate %s!\n&quot;, (char*)r.output);
+    free(r.output);
+  } else {
+    /* On Failure report nothing */
+    printf(&quot;Not a flatmate!\n&quot;);
+    mpc_err_delete(r.error);
+  }
+
+  mpc_delete(Flatmate);
+
+  return 0;
+}</code></pre>
+
+<p>This code parses an input string and checks it is <em>either</em> <code>Dan</code>, <code>Chess</code>, <code>Adam</code> <em>or</em> <code>Lewis</code>. If it is, then it prints out the parsed string, otherwise it returns an error. If you squint your eyes you could attempt to read the above code like it is the definition of a language, <em>a grammar</em> - &quot;To Parse a &#39;Flatmate&#39;, parse (the string &#39;Dan&#39;) or (the string &#39;Chess&#39;) or (the string &#39;Adam&#39;) or (the string &#39;Lewis&#39;)&quot;.</p>
+
+<p>Here is a more complicated example builting on the first.</p>
+
+<pre><code class="lang-c">mpc_parser_t* Greet = mpc_and(2, mpcf_strfold,
+  mpc_string(&quot;Hello &quot;), Flatmate, 
+  free); 
+
+mpc_parser_t* Greetings = mpc_many(mpcf_strfold, Greet);</code></pre>
+
+<p>In this example <code>Greet</code> parses the string <code>&quot;Hello &quot;</code> followed by any <code>Flatmate</code> (<em>either</em> <code>Dan</code>, <code>Chess</code>, <code>Adam</code> <em>or</em> <code>Lewis</code>). It then returns these strings concatenated together (using the function <code>mpcf_strfold</code>). The parser <code>Greetings</code> recognizes zero or more occurrences of <code>Greet</code>, for example <code>&quot;Hello Dan!&quot;</code> or <code>&quot;Hello DanHello Chess&quot;</code> or <code>&quot;Hello LewisHello LewisHello Lewis&quot;</code> or any other combination! Again we can squint our eyes and try to read this like a grammar - &quot;To parse a &#39;Greet&#39;, parse the string &#39;Hello &#39; followed by a &#39;Flatmate&#39;, and join them using &#39;mpcf_strfold&#39;. To Parse a &#39;Greetings&#39; parse many of &#39;Greet&#39; and join them using &#39;mpcf_strfold&#39;&quot;.</p>
+
+<p>Using many more constructs we can slowly build up a parser that parse more and more complex languages. The code we use <em>sort of</em> looks like a grammar but is functional too. This isn&#39;t always an easy task but there are a whole set of helper functions that build on simple constructs to make frequent tasks easy. These are all documented on the <a href="http://github.com/orangeduck/mpc">mpc repository</a>.</p>
+
+<p>But as I mentioned before, <code>mpc</code> actually lets you simply write the grammar directly. You don&#39;t have to worry about <code>mpcf_strfold</code> or leaning how to use a bunch of functions. This is what we are going to use for our Lisp. As an example of this method, to recreate the above example parser <code>Greetings</code> we would write something that looks like this.</p>
+
+<pre><code class="lang-c">mpc_parser_t* Flatmate  = mpc_new(&quot;flatmate&quot;);
+mpc_parser_t* Greet     = mpc_new(&quot;greet&quot;);
+mpc_parser_t* Greetings = mpc_new(&quot;greetings&quot;);
+
+mpca_lang(
+  &quot;                                                            \
+    flatmate  : \&quot;Chess\&quot; | \&quot;Dan\&quot; | \&quot;Adam\&quot; | \&quot;Lewis\&quot;;    \
+    greet     : \&quot;Hello\&quot; &lt;flatmate&gt;;                          \
+    greetings : &lt;greet&gt;*;                                      \
+  &quot;,
+  Flatmate, Greet, Greetings
+);
+
+/* Do Some Parsing... */
+
+mpc_cleanup(3, Flatmate, Greet, Greetings);</code></pre>
+
+<p>Already without having a good understanding of what is going on it should be clear how much more <em>readable</em> the grammar is in this format. We barely have to squint our eyes any more. You should also notice the process is now in two steps. First we create and name several rules using <code>mpc_new</code> and then we define them using <code>mpca_lang</code>.</p>
+
+<p>The first argument to <code>mpca_lang</code> is a long multi-line string. This is the fabled <em>grammar</em> specification you&#39;ve heard so much about. It consists of a number of <em>rules</em>. Each rule has the name of a parser on the left, a colon <code>:</code>, and on the right it&#39;s definition terminated with a semicolon <code>;</code>. A definition consists of what needs to be parsed for this rule. To specify a string that needs to be parsed put it in <code>&quot;</code> marks (escaped using <code>\</code> because they are inside a C string themselves). To specify a number of options (like <em>or</em>) use the bar <code>|</code>. To specify zero or more use <code>*</code>, for one or more use <code>+</code>, and to reference another rule put it&#39;s name in inside <code>&lt;&gt;</code> like so.</p>
+
+<p>Hey, did anyone notice that the above paragraph sort of sounded like when I was specifying a <em>grammar</em> in text like we were doing before? That&#39;s because it was! <code>mpc</code> actually uses itself internally to parse the input you give it to <code>mpca_lang</code>. And it does it by specifying a <em>grammar</em> very similar to what I described above in text. How neat is that.</p>
+
+<p>Enough theory - lets give this <code>mpc</code> thing a whirl.</p>
+
+
+<h3>Tutorial Code</h3>
+
+<p><a href="chapter4">chapter4.c</a></p>
+<p><a href="chapter4">chapter4a.c</a></p>
+<p><a href="chapter4">chapter4b.c</a></p>
+
+
+<h3>Bonus Marks</h3>
+<ul>
+<li>What would the grammar be like for a decimal number?</li>
+<li>What might the grammar look like for a sentence in simple English?</li>
+<li>If you are familiar with JSON or XML, what might their grammars look like?</li>
+</ul>

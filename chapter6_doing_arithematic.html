@@ -1,0 +1,71 @@
+<h2>Doing Arithmetic</h2>
+<p>Now we can read input, but we are still unable to evaluate it. We need to somehow traverse the output <em>Abstract Sytnax Tree</em> from the previous section and use the information to calculate a result. The basic idea isn&#39;t too hard. For each <code>expr</code> node we should check if it is a list or a number. If it is a single number we should return that. If it is a list then we should look at the <code>operator</code> node and use that to decide what to do with the rest of the expressions contained inside.</p>
+<p>But first we need to know how to traverse and manipulate this <em>Abstract Syntax Tree</em>. If we peek inside <code>mpc.h</code> we can have a look at the definition of <code>mpc_ast_t</code>.</p>
+<pre><code class="lang-c">typedef struct mpc_ast_t {
+  char* tag;
+  char* contents;
+  int children_num;
+  struct mpc_ast_t** children;
+} mpc_ast_t;</code></pre>
+<p>This looks pretty confusing syntactically, but actually the concept behind it is very simple. It reads that inside every <code>mpc_ast_t</code> node we have string called a <code>tag</code>, a string called <code>contents</code>, some number of children, and a list of those child nodes.</p>
+<p>NOTE: Interlude on pointers</p>
+<p>Lets start to write some code that will traverse this tree. One thing we should notice from the previous chapter is that the root of the tree always has the same structure. It has two children, the first an <code>expr</code> and the second a <code>regex</code> with no contents. This <code>regex</code> symbolizes the end of the input and can be ignored. Therefore we know we can evaluate the root of the tree just by evaluating the first child of it.</p>
+<pre><code class="lang-c">long evaluate_root(mpc_ast_t* t) {
+  /* Root&#39;s first child is always the main expression */
+  return evaluate_expr(t-&gt;children[0]);  
+}</code></pre>
+<p>So now the question is how to we evaluate an <code>expr</code>. Again we can rely on a few observations from the previous chapter. First we can see that if the <code>expr</code> has no children it is always a number. In that case we can just convert the number right away and return it.</p>
+<p>If the expression does have children on the other hand it is more complicated. First we need to look at it&#39;s second child (the first child is open parenthesis) and see which operator it is. Then we need to apply this operator to the remaining children. We can iterate over the remaining children by continuously applying the operator until we reach a node that isn&#39;t tagged as <code>expr</code>. In our case this node will always be the closing parenthesis which are tagged as <code>char</code>.</p>
+<p>To represent numbers we&#39;ll use the C type <code>long</code> which means a <em>long</em> <em>integer</em>. To test the tag values for the nodes we can use the <code>strcmp</code> function. This function takes as input two strings and if they are equal it returns <code>0</code>.</p>
+<pre><code class="lang-c">long evaluate_expr(mpc_ast_t* t) {
+
+  /* If no children we know it is a number. Otherwise it is a list */ 
+  if (t-&gt;children_num == 0) { return atoi(t-&gt;contents); }
+
+  /* The operator is always second element (open parenthesis is first) */
+  char* op = t-&gt;children[1]-&gt;contents;
+
+  /* We store first expression value in &#39;x&#39; */
+  long x = evaluate_expr(t-&gt;children[2]);
+
+  /* Iterate the remaining expressions using our operator */
+  int i = 3;
+  while (strcmp(t-&gt;children[i]-&gt;tag, &quot;expr&quot;) == 0) {
+    x = evaluate_op(x, op, evaluate_expr(t-&gt;children[i]));
+    i++;
+  }
+
+  return x;  
+}</code></pre>
+<p>To apply this operator we need to check what the operator is and perform the correct arithmetic on the passed in evaluated expressions.</p>
+<pre><code class="lang-c">/* Use operator string to see which operation to perform */
+long evaluate_op(long x, char* op, long y) {
+  if (strcmp(op, &quot;+&quot;) == 0) { return x + y; }
+  if (strcmp(op, &quot;-&quot;) == 0) { return x - y; }
+  if (strcmp(op, &quot;*&quot;) == 0) { return x * y; }
+  if (strcmp(op, &quot;/&quot;) == 0) { return x / y; }
+  return 0;
+}</code></pre>
+<p>Finally we need to pass the parsed <em>Abstract Syntax Tree</em> to our new evaluation function for the root. And instead of printing the <em>AST</em> directly we now want to print the result of the evaluation. For this we use <code>fprintf</code> again with the specifier <code>%li</code> - which again means <em>long int</em>. We still need to remember to delete the output from the parser after we are done evaluating it.</p>
+<pre><code class="lang-c">long result = evaluate_root(r.output);
+fprintf(stdout, &quot;%li\n&quot;, result);
+mpc_ast_delete(r.output);</code></pre>
+<p>If all of this is successful you should be able to now do some basic maths with your new programming language!</p>
+<pre><code>Lispy Version 0.0.0.0.3
+Press Ctrl+c to Exit
+
+lispy&gt; (+ 5 6)
+11
+lispy&gt; (- (* 10 10) (+ 1 1 1))
+97
+lispy&gt; (- (/ 10 2) 20)
+-15
+lispy&gt;</code></pre>
+<h3>Tutorial Code</h3>
+<p><a href="">example4.c</a></p>
+<h3>Bonus Marks</h3>
+<ul>
+<li>Add support for the <code>%</code> operator, which returns the remained of a division. E.G <code>(% 10 6)</code> gives <code>4</code></li>
+<li>Add support for the <code>**</code> operator which raises a number to the power of another E.G <code>(** 4 2)</code> gives <code>16</code> (four squared).</li>
+<li>Add support for <code>min</code> and <code>max</code> function which return the smallest and biggest in of a list of numbers respectively E.G <code>(min 10 5 3)</code> gives <code>3</code>, <code>(max 1 20)</code> gives <code>20</code>.</li>
+</ul>

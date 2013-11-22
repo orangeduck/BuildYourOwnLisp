@@ -220,7 +220,20 @@ void lval_print_expr(lval* v, char open, char close) {
   putchar(close);
 }
 
+void lval_print_str(lval* v) {
+  /* Make a Copy of the string */
+  char* escaped = malloc(strlen(v->str)+1);
+  strcpy(escaped, v->str);
+  /* Pass it through the escape function */
+  escaped = mpcf_escape(escaped);
+  /* Print it between " characters */
+  printf("\"%s\"", escaped);
+  /* free the copied string */
+  free(escaped);
+}
+
 void lval_print(lval* v) {
+  char* escaped;
   switch (v->type) {
     case LVAL_FUN:
       if (v->builtin) {
@@ -232,7 +245,7 @@ void lval_print(lval* v) {
     case LVAL_NUM:   printf("%li", v->num); break;
     case LVAL_ERR:   printf("Error: %s", v->err); break;
     case LVAL_SYM:   printf("%s", v->sym); break;
-    case LVAL_STR:   printf("\"%s\"", v->str); break;
+    case LVAL_STR:   lval_print_str(v); break;
     case LVAL_SEXPR: lval_print_expr(v, '(', ')'); break;
     case LVAL_QEXPR: lval_print_expr(v, '{', '}'); break;
   }
@@ -433,6 +446,8 @@ lval* builtin_op(lenv* e, lval* a, char* op) {
   
   lval* x = lval_pop(a, 0);
   
+  if ((strcmp(op, "-") == 0) && a->count == 0) { x->num = -x->num; }
+  
   while (a->count > 0) {  
     lval* y = lval_pop(a, 0);
     
@@ -567,7 +582,7 @@ lval* builtin_load(lenv* e, lval* a) {
     mpc_err_delete(r.error);
     
     /* Create new error message using it */
-    lval* err = lval_err("Parse Error loading Library: %s", err_msg);
+    lval* err = lval_err("Could not load Library %s", err_msg);
     free(err_msg);
     lval_del(a);
     
@@ -588,6 +603,18 @@ lval* builtin_print(lenv* e, lval* a) {
   lval_del(a);
   
   return lval_sexpr();
+}
+
+lval* builtin_error(lenv* e, lval* a) {
+  LASSERT(a, (a->count == 1               ), "Function 'error' passed too many arguments. Got %i, Expected %i.", a->count, 1);
+  LASSERT(a, (a->cell[0]->type == LVAL_STR), "Function 'error' passed incorrect type. Got %s, Expected %s.", ltype_name(a->cell[0]->type), ltype_name(LVAL_STR));
+  
+  /* Construct Error from first argument */
+  lval* err = lval_err(a->cell[0]->str);
+  
+  /* Delete arguments and return */
+  lval_del(a);
+  return err;
 }
 
 void lenv_add_builtin(lenv* e, char* name, lbuiltin func) {
@@ -618,7 +645,8 @@ void lenv_add_builtins(lenv* e) {
   lenv_add_builtin(e, ">=",   builtin_ge); lenv_add_builtin(e, "<=",   builtin_le);
   
   /* String Functions */
-  lenv_add_builtin(e, "load", builtin_load); lenv_add_builtin(e, "print", builtin_print);
+  lenv_add_builtin(e, "load", builtin_load); 
+  lenv_add_builtin(e, "error", builtin_error); lenv_add_builtin(e, "print", builtin_print); 
 }
 
 /* Evaluation */
@@ -712,11 +740,16 @@ lval* lval_read_num(mpc_ast_t* t) {
 }
 
 lval* lval_read_str(mpc_ast_t* t) {
+  /* Cut off the final " character */
   t->contents[strlen(t->contents)-1] = '\0';
+  /* Copy the string missing out the first " character */
   char* unescaped = malloc(strlen(t->contents+1));
   strcpy(unescaped, t->contents+1);
+  /* Pass through the unescape function */
   unescaped = mpcf_unescape(unescaped);
+  /* Construct a new lval using the string */
   lval* str = lval_str(unescaped);
+  /* Free the string and return */
   free(unescaped);
   return str;
 }
@@ -761,16 +794,16 @@ int main(int argc, char** argv) {
   Lispy   = mpc_new("lispy");
   
   mpca_lang(
-    "                                                                \
-      number  : /-?[0-9]+/ ;                                         \
-      symbol  : /[a-zA-Z_+\\-*\\/\\\\=<>!]+/ ;                       \
-      string  : /\"(\\\\.|[^\"])*\"/ ;                               \
-      comment : /;[^\\n\\r]*/ ;                                      \
-      sexpr   : '(' <expr>* ')' ;                                    \
-      qexpr   : '{' <expr>* '}' ;                                    \
-      expr    : <number>  | <symbol> | <string>                      \
-              | <comment> | <sexpr>  | <qexpr>;                      \
-      lispy   : /^/ <expr>* /$/ ;                                    \
+    "                                              \
+      number  : /-?[0-9]+/ ;                       \
+      symbol  : /[a-zA-Z0-9_+\\-*\\/\\\\=<>!&]+/ ; \
+      string  : /\"(\\\\.|[^\"])*\"/ ;             \
+      comment : /;[^\\n\\r]*/ ;                    \
+      sexpr   : '(' <expr>* ')' ;                  \
+      qexpr   : '{' <expr>* '}' ;                  \
+      expr    : <number>  | <symbol> | <string>    \
+              | <comment> | <sexpr>  | <qexpr>;    \
+      lispy   : /^/ <expr>* /$/ ;                  \
     ",
     Number, Symbol, String, Comment, Sexpr, Qexpr, Expr, Lispy);
   
@@ -804,13 +837,21 @@ int main(int argc, char** argv) {
     }
   }
   
-  /* List of Files */
+  /* Supplied with list of files */
   if (argc >= 2) {
+  
+    /* loop over each supplied filename (starting from 1) */
     for (int i = 1; i < argc; i++) {
-      lval* args = lval_add(lval_qexpr(), lval_str(argv[i]));
+      
+      /* Create an argument list with a single argument being the filename */
+      lval* args = lval_add(lval_sexpr(), lval_str(argv[i]));
+      
+      /* Pass to builtin load and get the result */
       lval* x = builtin_load(e, args);
+      
+      /* If the result is an error be sure to print it */
+      if (x->type == LVAL_ERR) { lval_println(x); }
       lval_del(x);
-      lval_del(args);
     }
   }
   

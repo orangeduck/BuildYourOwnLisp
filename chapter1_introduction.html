@@ -1,0 +1,42 @@
+<h2>Chapter 1 - Introduction</h2>
+
+
+<h3>About</h3>
+
+<p>In this tutorial I'll show you how to build a minimal Lisp in under 1000 lines of C. Okay so I'm cheating a little bit because we'll be using a library to do some of the initial work, but the rest of the code will only use the standard library, and will be completely original.</p>
+
+<p>This tutorial is somewhat inspired by the fantastic <a href="http://en.wikibooks.org/wiki/Write_Yourself_a_Scheme_in_48_Hours">Write Yourself a Scheme in 48 Hours</a>. My goal in writing this was to show that this sort of tutorial was possible in other languages. I picked C because it is a interesting and fun language and, like Haskell, many people are interested in learning it but have nowhere to start. If you are someone in that situation here is your excuse. If you follow this tutorial I can promise that, in the very least, you'll get a cool new programming language to play with, and hopefully knowledge of C too!</p>
+
+
+<h3>Who is this for?</h3>
+
+<p>This tutorial is for anyone new or old to C, who has once wondered in their lifetime how to build their own programming language.</p>
+
+<p>I've tried to make this tutorial as friendly as possible to beginners. I welcome beginners the most. They have the most to discover! But beginners will also find this tutorial very hard. If you look for help you may find people are not patient with you. You may find that, rather than help, they take the time to express how much <em>they</em> know about the subject. People with lots of experience might tell you that you are wrong. The subtext to their tone might be that you should stop now, rather than inflict your bad code on the world.</p>
+
+<p>After a couple of engagements like this you may decide that you are <em>not a programmer</em>, or <em>don't really like programming</em>, or that you just <em>don't get it</em>. You may have thought that you <em>once enjoyed</em> the idea of building your own programming language, but now you have realized that it is too abstract and you <em>don't care anymore</em>. Now you are concerned with your real passion X, and any insight that may have been playful, joyful or interesting will now have become an obsticle.</p>
+
+<p>For this I can only apologize. Programmers can be hostile, macho, arrogant, insecure, and agressive. There is no excuse for this behaviour. Know that I am on your side. No one <em>gets it</em> at first. Everyone struggles and doubts their abilities. Please don't give up or let the joy be sucked out of the creative experience. Be proud of what you create no matter what it is. People like me don't want you to stop programming. We want to hear your voice, and what you have to say, even if you do not shout as loud as others. That's why we do things like this.<p>
+
+
+<h3>Learning C</h3>
+
+<p>There is no way around the fact that C is a difficult language. It has many concepts that are unfamiliar, and it makes no attempts to help a new user. In this tutorial I am <em>not</em> going to cover in detail things like the syntax of the language, or how to write loops and conditional statements. I will on the other hard show you how to build a <em>real world</em> program in C. This approach is always more difficult for the user, but will hopefully teach you many implicit things a traditional approach cannot. I can't make any promise that this tutorial will make you a confident user of C. What I can promise, is that those 1000 lines of code are going to be packed with content - and you will learn <em>something</em> worthwhile.</p>
+
+<p>My advice to worried beginners is this. Read over the first few exercises of <a href="http://c.learncodethehardway.org/book/">Learn C the Hard Way</a> until you have your environment set up and are confident that you understand how to read and understand the syntax of C.</p>
+
+
+<h3>Lisps</h3>
+
+<p>Lisp is a family of programming languages characterized by the fact that all their computation is represented by lists. This may sound scarier than it is. Actually Lisps are very easy, distinctive, and powerful. The type of Lisp we'll be building is one I've essentially invented for the purposes of this tutorial. I've designed it for minimalism, simplicity and clarity, and I've become quite fond of it along the way. Conceptually, syntactically, and in implementation this brand of Lisp has a number of serious differences to other major brands of Lisp. This is up to the point where I'm sure I will be getting e-mails from Lisp fundamentalists telling me it <em>isn't a Lisp</em> because it <em>doesn't do/have/look-like X</em>. I've not made this Lisp different to confuse beginners or to spread untruths. Different is good.</p>
+
+<p>If you're the type of person who is concerned about what is the <em>right</em> way to built a Lisp, perhaps this isn't the tutorial for you. This tutorial is for the people who are interested in learning new and unique concepts, to express themselves, be creative, and have fun. Either way heed this disclaimer now. Not everything I will cover is objectively right or true!</p>
+
+
+<h3>Building your own language</h3>
+
+<p>The best way to follow this tutorial is to, as the title says, write <em>your own</em> Lisp. If you are feeling confident enought I want you to add your own features, modifications and changes. Your Lisp should suite you and your own philosophy on what is right or true. Throughout the tutorial I'll be giving description and insight, but with it I'll be providing <em>a lot</em> of code. This will make it easy to follow along by copy and pasting each section into your program without really understanding. <em>Please do not do this!</em>.</p>
+
+<p>Type out each peice of sample code yourself. This is called <em>The Hard Way</em>. Not because it is hard technically, but because it requires dicipline. By doing things <em>The Hard Way</em> you will come to understand the reasoning behind what you are typing. Ideally things will click as you follow it along character by character. When <em>reading</em> you may have an intuition as to why it <em>looks</em> right, or what <em>may</em> be going on, but this will not always translate to a real understanding unless you do the <em>writing</em> yourself!</p>
+
+<p>In a perfect world you would use my code as a reference - an instruction booklet and guide as to building the programming langage you always dreamed of. In reality this isn't practical or viable. But the base philosophy remains. If you want to change something - do it.</p>

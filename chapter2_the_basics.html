@@ -1,0 +1,96 @@
+<h2>Chapter 2 - The Basics</h2>
+
+
+<h3>Setting up your environment</h3>
+
+<p>Before getting started programming C you'll have to install a C compiler and a text editor. The C compiler is what transforms the C source code into a program your computer can understand. A text editor a program that allows you to edit text files suitable for programming. The installation process for either of these is different depending on what operating system you are running. For this, and the rest of the tutorial, I am going to assume you are familiar with using the console. If you are not familiar you can use this <a href="http://learnpythonthehardway.org/book/appendixa.html">crash course</a> to get up to speed.</p>
+
+<p><strong>Linux</strong></p>
+
+<p>On Linux systems to instally a C compiler you will have to install some packages. If you are running Ubuntu or Debian you can install everything you need with the following command.</p>
+
+<pre><code>sudo apt-get install build-essential</code></pre>
+
+<p>If you are running Fedora or a similar Linux variant you can use this command.<p>
+
+<pre><code>su -c "yum groupinstall development-tools"</code></pre>
+
+<p>For a text editor I recommend using <a href="http://projects.gnome.org/gedit/">gedit</a> or whatever other basic text editor comes installed with your distribution</p>
+
+<p><strong>Mac</strong></p>
+
+<p>If you are on Mac OSX then you must install the latest version of XCode from Apply. This could take a long time as typically XCode is a big peice of software to install. If you face troubles search online for "installing xcode" and follow any advice shown.
+
+<p>Once XCode is installed you should have access to a C compiler from the console and be ready to go.</p>
+
+<p>A simple text editor that can be used on Mac is <a href="http://www.barebones.com/products/textwrangler/">TextWrangler</a>. Please don't use XCode for text editing as using an IDE hinders greatly the learning of a new language.</p>
+
+<p><strong>Windows</strong></p>
+
+<p>On windows I recommend downloading and installing <a href="http://www.mingw.org/">MinGW</a>. This will install a C compiler on your computer and allow you to run it from the console as if you were on a Linux system.</p>
+
+<p>My text editor of choice on windows is <a href="http://notepad-plus-plus.org/">Notepad++</a>, which is an excellent editor in all respects. If you have another preference please go with it, though <em>don't</em> use Visual Studio as it does not have proper support for C programming.</p>
+
+<p><strong>Testing Your Compiler</strong></p>
+
+<p>To test if your C compiler is installed correctly type the following into the console.<p>
+
+<pre><code>$ cc --version
+  cc (rubenvb-4.7.2-release) 4.7.2
+  ...</code></pre>
+
+<p>If you get something like the following echoed back your C compiler is installed correctly and you are ready to go!</p>
+
+
+<h3>Hello World</h3>
+
+<p>Now that your environment is set up, start by opening your text editor and inputting the following code. Save this file somewhere as <code>hello_world.c</code></p>
+
+<pre><code class="lang-c">#include &lt;stdio.h&gt;
+
+int main(int argc, char** argv) {
+  puts(&quot;Hello, world!&quot;);
+  return 0;
+}</code></pre>
+
+<p>There are three parts to this program. First we include a <em>header</em> called <code>stdio.h</code>. This allows us to use standard input and output functions which come included with C. One of these is the <code>puts</code> function you see later on in the program. This function outputs a string to the console.</p>
+
+<p>Secondly we create a function called <code>main</code>, returning an <code>int</code>, and taking as input an <code>int</code> called <code>argc</code> and a <code>char**</code> called <code>argv</code>. All C programs must contain this function. It acts as the entry point to execution. When you run your program it always starts at <code>main</code> and continues from there. For now don&#39;t worry about the inputs <code>argc</code> and <code>argv</code>. We will cover those later.</p>
+
+<p>Inside <code>main</code> we have <code>puts(&quot;Hello, world!&quot;);</code>. This outputs <code>Hello, world!</code> to the console. The function <code>puts</code> stands for <em>put string</em>. Also is the line <code>return 0;</code>, which tells the <code>main</code> function to finish and return <code>0</code>. The <code>0</code> indicates there have been no errors running the program.</p>
+
+<p>Save this code somewhere and browse to it on the command line. Next we want to compile the code and output an actual <em>program</em> we can run on our computer. For this we want to open up a console and browse to the directly we have saved our file. We can then run the following command.</p>
+
+<p><code>cc -std=c99 -Wall hello_world.c -o hello_world</code></p>
+
+<p>This compiles the code in <code>hello_world.c</code>, reporting any warnings, and outputs the program to a new file <code>hello_world</code>. If successful you should see a new file called <code>hello_world</code> in the current directory. This can be called by typing <code>./hello_world</code>. If all goes to plan you should see a friendly <code>Hello, world!</code> message appear.</p>
+
+<h3>Reference Documentation</h3>
+
+<p>If you spot a C function that you don't recognize you might wonder what it does. Often I will try to explain, but sometimes I may forget. In this case you will want to look toward the reference documentation found <a href="http://en.cppreference.com/w/c">here</a> which explains all the functions included in the C standard library.</p>
+
+<h3>Debugging</h3>
+
+<p>When there is a problem in a C program, it won't throw an error message telling you what when wrong. It will simply crash and close. This makes debugging C programs harder than usual. It can be an art in itself, far beyond the scope of this tutorial.<p>
+
+<p>My first port of call for debugging is to print out lots of information as the program is running. Using this method I can try to isolate exactly what part of the code is incorrect and what, if anything, is going wrong up until the crash. For beginners I would recommend this technique. It is <em>active</em> debugging - which is the important thing. As long as you are doing <em>something</em>, the process is less painful and the temptation to give up, or smash your stupid computer, is lessened.<p>
+
+<p>For people feeling more confident a program called <code>gdb</code> can be used to debug your C programs. This can be difficult and complicated to use, but it is also very powerful and can give you extremely valuable information and what went wrong and where.</p>
+
+<p>For those using Linux <code>valgrind</code> can be used to aid the debugging of memory leaks and other more nasty errors. Valgrind is a tool that can save you hours to days of debugging. It does not take much to get proficient at it, so investigating it is highly recommended.</p>
+
+<h3>Tutorial Code</h3>
+
+<p>In this subsection I&#39;ll link to the reference code for each chapter of the tutorial. This code can be used for reference if the explaination has been unclear. If you encounter a bug please do not copy and paste this code into your project. Try to track down the bug yourself and use my code as a reference to highlight what may be wrong.</p>
+
+<p><a href="chapter2.c">chapter2.c</a></p>
+
+
+<h3>Bonus Marks</h3>
+
+<p>In this subsection I'll list some things to try for bonus marks. It is good if you can attempt to do some of these challenges. Some will be easy, while some will be very difficult. For this reason don&#39;t worry if you can&#39;t figure them out. They are not essential for completion or understanding.</p>
+
+<ul>
+<li>Change the greeting given by the program to something else.</li>
+<li>Try making <code>main</code> return a different number. What does this do when you run the program?</li>
+</ul>

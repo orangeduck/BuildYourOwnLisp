@@ -1,0 +1,81 @@
+<h2>Chapter 3 - An Interactive Prompt</h2>
+
+
+<h3>Read, Evaluate, Print</h3>
+
+<p>To start we want to build an interactive prompt. This is a program that prompts the user for some input, and when supplied replies back with some message. Using this will be the easiest way to test our programming language and see how it acts. This system is called a <em>REPL</em> and stands for <em>read</em>, <em>evaluate</em>, <em>print</em> <em>loop</em>. It is a common way of interacting with a programming language. You may have used before in languages such as <em>Python</em>.</p>
+
+<p>Before building a full <em>REPL</em> we&#39;ll start with something simpler. We are going to make a system that prompts the user, and echos any input straight back. If we make this, later we can extend it to parse the user input and evaluate it, as if it were an actual Lisp program.</p>
+
+<p>For the basic setup in C we want to write a loop which repeatedly prompts the user for input. We can declare a statically sized input buffer and use the <code>fgets</code> function to read into it. This function will read any input from the user up until a newline. It wont read more than the size of the buffer passed to it. We can then print this input back to the user using <code>fprintf</code>. The user input from <code>fgets</code> will include the newline character so we don&#39;t need to add this to the end of <code>fprintf</code>.</p>
+
+<p>The following C code contains <em>comments</em>. These are sections of the code between <code>/*</code> <code>*/</code> symbols, which are not evaluated by the compiler. They are used to inform the person reading what is going on, and I'm going to be using a lot of them. Take a read over this code and see if you can understand it.</p>
+
+<pre><code class="lang-c">#include &lt;stdio.h&gt;
+
+/* Declare a static buffer for user input of size 2048 */
+static char input[2048];
+
+int main(int argc, char** argv) {
+
+  /* Print Version and Exit Information */
+  fputs(&quot;Lispy Version 0.0.0.0.1\n&quot;, stdout);
+  fputs(&quot;Press Ctrl+c to Exit\n\n&quot;, stdout);
+
+  /* In a never ending loop */
+  while (1) {
+
+    /* Output our prompt */
+    fputs(&quot;lispy&gt; &quot;, stdout);
+
+    /* Read a line of user input of maximum size 2047 */
+    fgets(input, 2047, stdin);
+
+    /* Echo input back to user */
+    fprintf(stdout, &quot;No You&#39;re a %s&quot;, input);
+  }
+
+  return 0;
+}</code></pre>
+
+<p>There are some new concepts here so lets go over them briefly.<p>
+
+<p>The line of code <code>static char input[2048];</code> declares a global array of 2048 characters. This is a reserved block of data we can acccess anywhere from our program. In it we are going to store the user input which is typed into the console. The <code>static</code> keyword is what makes it global and the <code>[2048]</code> section is what declares the size. <code>char</code> is the type, meaning <em>character</em>. In C arrays of <code>char</code> are the same as strings, so we are able to use this variable in all of our string functions.</p>
+
+<p>The <code>fputs</code> and <code>fgets</code> are functions for putting and getting strings from the console. <code>fputs</code> is similar to the <code>puts</code> function we saw in the previous chapter except that it takes as output location to write to. This is where <code>stdout</code> and <code>stdin</code> come in. In C these are the names for the console input and output, and we supply them to these variations of the functions prefixed by <code>f</code>.</p>
+
+<p>Finally there is <code>fprintf</code>, which is a way of printing messages consisting of several elements. It matches arguments to patterns in the input string. For example in our case we can see the <code>%s</code> pattern in the input string. This means that it will be replaced by whatever argument is passed in next, interprited as a string. In our case the <code>input</code> variable. For more information on these different patterns please see the <a href="http://en.cppreference.com/w/c/io/fprintf">reference documentation</a></p>
+
+<p>You can compile this with the same command as was used in the previous chapter. After compiling this you should have a play around with it. You can use <code>Ctrl+c</code> to quit the program when you are done. If everything is correct your interaction should resembles the following.</p>
+
+<pre><code>$ chapter3
+Lispy Version 0.0.0.0.1
+Press Ctrl+c to Exit
+
+lispy&gt; hello
+No You&#39;re a hello
+lispy&gt; my name is Dan
+No You&#39;re a my name is Dan
+lispy&gt; Stop being so rude!
+No You&#39;re a Stop being so rude!
+lispy&gt;</code></pre>
+
+<p>If your program does not compile examine the output from the compiler. Does it mention a line number? Can you see anything wrong on this line number? Try to fix any error mentioned by the compiler.</p>
+
+<p>If it works as intended well done, you are now out the door, and well on your way. In the next chapter we begin thinking about our actual language and what it is going to look like!</p>
+
+
+<h3>Tutorial Code</h3>
+
+<p><a href="chapter3.c">chapter3.c</a></p>
+
+<h3>Bonus Marks</h3>
+
+<ul>
+<li>What does <code>\n</code> mean in those C strings?</li>
+<li>Change the prompt from <code>lispy&gt;</code> to something of your choice.</li>
+<li>Add an extra message to the <em>Version</em> and <em>Exit</em> Information.</li>
+<li>Make the system echo something different back.</li>
+<li>Find out what other patterns you can use in <code>fprintf</code>.</li>
+<li>What happens when you pass <code>fprintf</code> a variable that is not a string, such as <code>argc</code>?</li>
+</ul>

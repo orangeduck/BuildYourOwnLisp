@@ -220,6 +220,9 @@ lval* builtin_op(lval* a, char* op) {
   /* Pop the first element */
   lval* x = lval_pop(a, 0);
   
+  /* If no arguments and sub then perform unary negation */
+  if ((strcmp(op, "-") == 0) && a->count == 0) { x->num = -x->num; }
+  
   /* While there are still elements remaining */
   while (a->count > 0) {
   

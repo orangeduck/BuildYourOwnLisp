@@ -1,0 +1,228 @@
+<h2>Strings &amp; IO</h2>
+<p>Our Lisp is finally pretty functional. We can write a whole bunch of different functions and end up with some quite complex constructs with the ability to do some really cool things. Even things that can&#39;t be done in lots of other heavyweight languages!</p>
+<p>But we still need a way to record all these inputs. In this chapter we&#39;ll add the functionality to load a file of code and run it. We&#39;ll also add support for code comments, strings, and printing.</p>
+<h3>String Type</h3>
+<p>When we load a file we want the user to be able to pass in a string of the file name. Our language supports symbols but still doesn&#39;t support strings which can include spaces and escape characters. We need to add a new <code>lval</code> type for our strings. We&#39;ve added a bunch of <code>lval</code> types before - and this time we do the same process.</p>
+<p>First we add an entry to our enum.</p>
+<pre><code class="lang-c">enum { LVAL_ERR, LVAL_NUM, LVAL_SYM, LVAL_STR, LVAL_FUN, LVAL_SEXPR, LVAL_QEXPR };</code></pre>
+<p>Then we add an entry to our <code>lval</code> struct to store the actual string data.</p>
+<pre><code class="lang-c">  /* Basic */
+  long num;
+  char* err;
+  char* sym;
+  char* str;</code></pre>
+<p>We&#39;ll add a function for constructing string lvals, much like our function for constructing symbol lvals.</p>
+<pre><code class="lang-c">lval* lval_str(char* s) {
+  lval* v = malloc(sizeof(lval));
+  v-&gt;type = LVAL_STR;
+  v-&gt;str = malloc(strlen(s) + 1);
+  strcpy(v-&gt;str, s);
+  return v;
+}</code></pre>
+<p>We also need to add the relevant entries into the deletion <code>case LVAL_STR: free(v-&gt;str); break;</code>, copying <code>case LVAL_STR: x-&gt;str = malloc(strlen(v-&gt;str) + 1); strcpy(x-&gt;str, v-&gt;str); break;</code>, equality <code>case LVAL_STR: return (strcmp(x-&gt;str, y-&gt;str) == 0);</code>, and type name <code>case LVAL_STR: return &quot;String&quot;;</code> functions.</p>
+<p>We also need to add an entry for the printing function. This is a little bit more complicated as we want to make sure we escape any characters such as newlines. Luckily there is a <code>mpc</code> function that can do this for us.</p>
+<p><code>case LVAL_STR:   lval_print_str(v); break;</code></p>
+<p>where</p>
+<pre><code class="lang-c">void lval_print_str(lval* v) {
+  /* Make a Copy of the string */
+  char* escaped = malloc(strlen(v-&gt;str)+1);
+  strcpy(escaped, v-&gt;str);
+  /* Pass it through the escape function */
+  escaped = mpcf_escape(escaped);
+  /* Print it between &quot; characters */
+  printf(&quot;\&quot;%s\&quot;&quot;, escaped);
+  /* free the copied string */
+  free(escaped);
+}</code></pre>
+<p>Now we want to actually add support for parsing these strings. We need to add a new grammar construct. Create a new parser called <code>string</code> and add it to our <code>mpca_lang</code> function. We can define it like this.</p>
+<p><code>string  : /\&quot;(\\\\.|[^\&quot;])*\&quot;/ ;</code> </p>
+<p>We also need to remember to add it as a possible option for the <code>expr</code> parser.</p>
+<p>This looks pretty complicated on face value but it isn&#39;t too hard in reality. It reads like this. A string is a <code>&quot;</code> character, followed by zero or more of either a backslash <code>\\</code> followed by any other character <code>.</code> or <code>|</code> anything that isn&#39;t a <code>&quot;</code> character <code>[^\\&quot;]</code>. Finally ending with another <code>&quot;</code> character. We can add a case for this parse in our <code>lval_read</code> function.</p>
+<p><code>if (strstr(t-&gt;tag, &quot;string&quot;)) { return lval_read_str(t); }</code></p>
+<p>where we call a function <code>lval_read_str</code>. This function is a little tricky because it has to do a few tasks. First it must strip the input string of the <code>&quot;</code> characters on either side. Then it must unescape the string, converting characters like <code>\n</code> to actual newlines. Finally it has to create a new <code>lval</code> and clean up anything that has happened inbetween.</p>
+<pre><code class="lang-c">lval* lval_read_str(mpc_ast_t* t) {
+  /* Cut off the final &quot; character */
+  t-&gt;contents[strlen(t-&gt;contents)-1] = &#39;\0&#39;;
+  /* Copy the string missing out the first &quot; character */
+  char* unescaped = malloc(strlen(t-&gt;contents+1));
+  strcpy(unescaped, t-&gt;contents+1);
+  /* Pass through the unescape function */
+  unescaped = mpcf_unescape(unescaped);
+  /* Construct a new lval using the string */
+  lval* str = lval_str(unescaped);
+  /* Free the string and return */
+  free(unescaped);
+  return str;
+}</code></pre>
+<p>If this all works we should be able to play around with string lvals, although there isn&#39;t much we can do with them yet.</p>
+<pre><code>lispy&gt; &quot;hello&quot;
+&quot;hello&quot;
+lispy&gt; &quot;hello\n&quot;
+&quot;hello\n&quot;
+lispy&gt; &quot;hello\&quot;&quot;
+&quot;hello\&quot;&quot;
+lispy&gt; head {&quot;hello&quot; &quot;world&quot;}
+{&quot;hello&quot;}
+lispy&gt; eval (head {&quot;hello&quot; &quot;world&quot;})
+&quot;hello&quot;
+lispy&gt;</code></pre>
+<h3>Comments</h3>
+<p>While we&#39;re builting some new syntax into the language we may as well look at comments. We can use comments in inform other people (or ourselves) about what the code is meant to do or why it has been written. We&#39;ve been using C comments between <code>/*</code> and <code>*/</code>. Lisp comments on the other hand start with <code>;</code> and run to the end of the line. The reason for why Lisp uses <code>;</code> for comments appears to have been lost in the origins of time. I like to imagine it as being a cute rebellion against the imperative languages such as C and Java which use them so shamelessly to separate/terminate statements.</p>
+<p>So in lisp a comment is defined as a semicolon followed by any number of characters that are not newline characters. We can use another regex to define it as follows.</p>
+<p><code>comment : /;[^\\n\\r]*/ ;</code></p>
+<p>We need to add a new parser for comments and add this to our <code>mpca_lang</code> function and add <code>&lt;comment&gt;</code> as a possible case of an expression. Also remember to add both to <code>mpc_cleanup</code> and update the first integer argument to reflect the new number of parsers passed in. Our final grammar look like this.</p>
+<pre><code>  mpca_lang(
+    &quot;                                              \
+      number  : /-?[0-9]+/ ;                       \
+      symbol  : /[a-zA-Z0-9_+\\-*\\/\\\\=&lt;&gt;!&amp;]+/ ; \
+      string  : /\&quot;(\\\\.|[^\&quot;])*\&quot;/ ;             \
+      comment : /;[^\\n\\r]*/ ;                    \
+      sexpr   : &#39;(&#39; &lt;expr&gt;* &#39;)&#39; ;                  \
+      qexpr   : &#39;{&#39; &lt;expr&gt;* &#39;}&#39; ;                  \
+      expr    : &lt;number&gt;  | &lt;symbol&gt; | &lt;string&gt;    \
+              | &lt;comment&gt; | &lt;sexpr&gt;  | &lt;qexpr&gt;;    \
+      lispy   : /^/ &lt;expr&gt;* /$/ ;                  \
+    &quot;,
+    Number, Symbol, String, Comment, Sexpr, Qexpr, Expr, Lispy);</code></pre>
+<p>And the cleanup function looks like this.</p>
+<pre><code class="lang-c">  mpc_cleanup(8, Number, Symbol, String, Comment, Sexpr, Qexpr, Expr, Lispy);</code></pre>
+<p>Luckily for us comments are only for the programmer so handling them with the compiler is easy, we just ignore them. We can add a clause to deal with them in a similar way to brackets and parenthesis in <code>lval_read</code>.</p>
+<pre><code class="lang-c">    if (strstr(t-&gt;children[i]-&gt;tag, &quot;comment&quot;)) { continue; }</code></pre>
+<p>For now this means comments wont be of much use on the interactive prompt, but we can still experiment to check they work.</p>
+<pre><code>lispy&gt; ; testing
+()
+lispy&gt; + 1 2 3 ; 4 5 6
+6
+lispy&gt; * 4 4 ; I can write anything here
+16
+lispy&gt; head { 1 2 3 ; 5 6 this is a comment }
+&lt;stdin&gt;:0:5: error: expected end of input at &#39;{&#39;</code></pre>
+<h3>Load Function</h3>
+<p>We want to built a function that can load and evaluate a file when passed it&#39;s name. This is going to take us full loop. We want to make use of our grammar to read in the file contents and then evaluate them. This means we know our load function is going to rely on calling <code>lval_read</code> and also is going to rely on our <code>Lispy</code> mpc parser.</p>
+<p>So we need to forward declare these and add them to the top of the file.</p>
+<pre><code class="lang-c">mpc_parser_t* Number; 
+mpc_parser_t* Symbol; 
+mpc_parser_t* String; 
+mpc_parser_t* Comment;
+mpc_parser_t* Sexpr;  
+mpc_parser_t* Qexpr;  
+mpc_parser_t* Expr; 
+mpc_parser_t* Lispy;
+
+lval* lval_read(mpc_ast_t* t);</code></pre>
+<p>Now we need to create our builtin load function. We can start the same way as usual by ensuing it is only passed one argument and that this argument is a string.</p>
+<p>Then we can use <code>mpcf_parse_contents</code> to parse the contents of a file into some <code>mpc_result</code> object. This function returns <code>1</code> on success and <code>0</code> on failure so we can test this condition to see if our parse was successful. If it wasn&#39;t successful we can extract the parse error message an return it as an <code>lval_err</code>.</p>
+<p>Differently to our command prompt on successfully parsing a file we shouldn&#39;t treat it like one big expression. When typing into a file we let users list multiple expressions and evaluate all of them individually. This is like implicitly wrapping the contents of the file in a <code>do</code> block.</p>
+<p>So to achieve this behaviour we need to loop over each expression in the contents of the file and evaluate it one by one. If any is errorous we should print the error and continue. Finally we can simply return the empty expression.</p>
+<p>The full code for this looks as follows.</p>
+<pre><code class="lang-c">lval* builtin_load(lenv* e, lval* a) {
+  LASSERT(a, (a-&gt;count == 1               ), &quot;Function &#39;load&#39; passed too many arguments. Got %i, Expected %i.&quot;, a-&gt;count, 1);
+  LASSERT(a, (a-&gt;cell[0]-&gt;type == LVAL_STR), &quot;Function &#39;load&#39; passed incorrect type. Got %s, Expected %s.&quot;, ltype_name(a-&gt;cell[0]-&gt;type), ltype_name(LVAL_STR));
+
+  /* Parse File given by string name */
+  mpc_result_t r;
+  if (mpc_fparse_contents(a-&gt;cell[0]-&gt;str, Lispy, &amp;r)) {
+
+    /* Read contents */
+    lval* expr = lval_read(r.output);
+    mpc_ast_delete(r.output);
+
+    /* Evaluate each Expression */
+    while (expr-&gt;count) {
+      lval* x = lval_eval(e, lval_pop(expr, 0));
+      /* If Evaluation leads to error print it */
+      if (x-&gt;type == LVAL_ERR) { lval_println(x); }
+      lval_del(x);
+    }
+
+    /* Delete expressions and arguments */
+    lval_del(expr);    
+    lval_del(a);
+
+    /* Return empty list */
+    return lval_sexpr();
+
+  } else {
+    /* Get Parse Error as String */
+    char* err_msg;
+    mpc_err_string(r.error, &amp;err_msg);
+    mpc_err_delete(r.error);
+
+    /* Create new error message using it */
+    lval* err = lval_err(&quot;Could not load Library %s&quot;, err_msg);
+    free(err_msg);
+    lval_del(a);
+
+    /* Cleanup and return error */
+    return err;
+  }
+}</code></pre>
+<h3>Command Line Arguments</h3>
+<p>Now that we can load files we can add in some functionality typical of other programming languages. That is - if you pass them filenames as arguments then they run these files. We are used to this with <code>python filename.py</code> and such.</p>
+<p>In C we use <code>argc</code> and <code>argv</code> to access the command line arguments. <code>argc</code> gives the number and <code>argv</code> specifies each string. <code>argc</code> is always set to at least one, where the first argument is always the actual command invoked. So if we recieve just one argument we can invoke the interpeter, otherwise we can run each of the arguments through <code>builtin_load</code>.</p>
+<pre><code class="lang-c">  /* Supplied with list of files */
+  if (argc &gt;= 2) {
+
+    /* loop over each supplied filename (starting from 1) */
+    for (int i = 1; i &lt; argc; i++) {
+
+      /* Create an argument list with a single argument being the filename */
+      lval* args = lval_add(lval_sexpr(), lval_str(argv[i]));
+
+      /* Pass to builtin load and get the result */
+      lval* x = builtin_load(e, args);
+
+      /* If the result is an error be sure to print it */
+      if (x-&gt;type == LVAL_ERR) { lval_println(x); }
+      lval_del(x);
+    }
+  }</code></pre>
+<p>Now we can run files from the command line using our program.</p>
+<pre><code>lispy example.lspy</code></pre>
+<h3>Print Function</h3>
+<p>This just to call our <code>lval_print</code> function. In this way we can write programs that print outputs rather than return a single result at the end.</p>
+<p>All this function does is print each argument separated by a space and then print a newline character to finish. It can just return the empty expression to finish.</p>
+<pre><code class="lang-c">lval* builtin_print(lenv* e, lval* a) {
+
+  /* Print each argument followed by a space */
+  for (int i = 0; i &lt; a-&gt;count; i++) {
+    lval_print(a-&gt;cell[i]); putchar(&#39; &#39;);
+  }
+
+  /* Print a newline and delete arguments */
+  putchar(&#39;\n&#39;);
+  lval_del(a);
+
+  return lval_sexpr();
+}</code></pre>
+<h3>Error Function</h3>
+<p>Because we have strings we can finally add in a basic error function. All this does is take a user string and uses it as an error message for <code>lval_err</code>.</p>
+<pre><code class="lang-c">lval* builtin_error(lenv* e, lval* a) {
+  LASSERT(a, (a-&gt;count == 1               ), &quot;Function &#39;error&#39; passed too many arguments. Got %i, Expected %i.&quot;, a-&gt;count, 1);
+  LASSERT(a, (a-&gt;cell[0]-&gt;type == LVAL_STR), &quot;Function &#39;error&#39; passed incorrect type. Got %s, Expected %s.&quot;, ltype_name(a-&gt;cell[0]-&gt;type), ltype_name(LVAL_STR));
+
+  /* Construct Error from first argument */
+  lval* err = lval_err(a-&gt;cell[0]-&gt;str);
+
+  /* Delete arguments and return */
+  lval_del(a);
+  return err;
+}</code></pre>
+<p>We have to remember to add all of these to our builtins.</p>
+<pre><code class="lang-c">  /* String Functions */
+  lenv_add_builtin(e, &quot;load&quot;, builtin_load); 
+  lenv_add_builtin(e, &quot;error&quot;, builtin_error); lenv_add_builtin(e, &quot;print&quot;, builtin_print);</code></pre>
+<h3>Finishing</h3>
+<p>This is all we&#39;re going to do on the C side of things. It&#39;s clear that there are still plenty of improvements to be made. For example at the moment there is no way for the user to manipulate or use strings other than by passing them to <code>load</code>.</p>
+<p>To add these things I will have to leave it up to you. In the final chapter I&#39;ve listed many of the possible improvements with information about what they are, why they should be done, how to do them, and what they might achieve.</p>
+<p>If you&#39;ve enjoyed this tutorial, and made it this far, I expect your fingers may be restless ready to diverge from the book and add X. If this is the case I say give it a shot!</p>
+<p>The next chapter is a fun one though - as we get to built and design the standard library.</p>
+<h3>Tutorial Code</h3>
+<p><a href="">example10.c</a></p>
+<h3>Bonus Marks</h3>
+<ul>
+<li>Let <code>join</code> work on strings</li>
+<li>Let <code>head</code> work on strings</li>
+<li>Let <code>tail</code> work on strings</li>
+<li>Add the ability to print the contents of strings as they are (unescaped)</li>
+</ul>
