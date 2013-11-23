@@ -1,16 +1,40 @@
 <h2>A Basic Maths Grammar</h2>
+
+
+<h3>Polish Notation</h3>
+
 <p>A simple grammar to implement would be a maths subset of Lisp that resembles <a href="http://en.wikipedia.org/wiki/Polish_notation">Polish Notation</a> In this format the operator always comes first, followed by the operands. For example <code>(+ 1 2 6)</code> or <code>(+ 6 (* 2 9))</code>.</p>
+
 <p>So a grammar for this, we can describe it in text something like this. &quot;An <em>expression</em> is either a <em>number</em>, or, in parenthesis, an <em>operator</em> followed by one or more <em>expressions</em>&quot;. Now we can break this down into each of the individual parts and write it formally.</p>
-<p>A number is an optional minus sign, followed by one or more of the characters in the range 0-9.</p>
-<p><code>number : /-?[0-9]+/ ;</code></p>
-<p>You&#39;ll notice this is written between two forward slashes <code>/</code>, which means it is a <em>regular expression</em> (another type of grammar). For now don&#39;t worry to much about the syntax as there are a lot to say about regular expressions that are beyond the scope of this tutorial. Basically the <code>?</code> means optional, the <code>+</code> means one or more of, and the <code>[0-9]</code> means in the range <code>0</code> to <code>9</code>. The next one is easy.</p>
+
 <p>An operator is either &#39;+&#39;, &#39;-&#39;, &#39;*&#39; or &#39;/&#39;.</p>
+
 <p><code>operator : &#39;+&#39; | &#39;-&#39; | &#39;*&#39; | &#39;/&#39; ;</code></p>
+
 <p>An expression is either a <em>number</em> or, in parenthesis, an <em>operator</em> followed by one or more <em>expressions</em>.</p>
+
 <p><code>expr : &lt;number&gt; | &#39;(&#39; &lt;operator&gt; &lt;expr&gt;+ &#39;)&#39; ;</code></p>
+
 <p>Finally a, program is an expression followed by the end of the input.</p>
-<p><code>lispy : &lt;expr&gt; /$/ ;</code></p>
+
+<p><code>lispy : /^/ &lt;expr&gt; /$/ ;</code></p>
+
+
+
+<h3>Regular Expressions</h3>
+
+
+<p>A number is an optional minus sign, followed by one or more of the characters in the range 0-9.</p>
+
+<p><code>number : /-?[0-9]+/ ;</code></p>
+
+<p>You&#39;ll notice this is written between two forward slashes <code>/</code>, which means it is a <em>regular expression</em> (another type of grammar). For now don&#39;t worry to much about the syntax as there are a lot to say about regular expressions that are beyond the scope of this tutorial. Basically the <code>?</code> means optional, the <code>+</code> means one or more of, and the <code>[0-9]</code> means in the range <code>0</code> to <code>9</code>. The next one is easy.</p>
+
+
+<h3> All Together </h3>
+
 <p>Putting it all together we get the following.</p>
+
 <pre><code class="lang-c">/* Create Some Parsers */
 mpc_parser_t* Number = mpc_new(&quot;number&quot;);
 mpc_parser_t* Operator = mpc_new(&quot;operator&quot;);
@@ -31,8 +55,11 @@ mpca_lang(
 
 /* Undefine and Delete our Parsers */
 mpc_cleanup(4, Number, Operator, Expr, Lispy);</code></pre>
+
 <p>So we create our four parsers using <code>mpc_new</code> and then define them using <code>mpca_lang</code>. We should put the first part of this code right at the beginning of our program, before any message is printed, and we should put the <code>mpc_cleanup</code> command at the end of our program right before returning from <code>main</code>.</p>
+
 <p>Next we need to edit our <code>while</code> loop so that rather than just annoyingly echoing user input back it actually attempts to parse the input using our maths grammar. So take out the line with <code>fprintf</code> on and replace it with this code that attempts to parse the user input using our polish maths grammar.</p>
+
 <pre><code>/* Attempt to Parse the Input */
 mpc_result_t r;
 if (mpc_parse(&quot;&lt;stdin&gt;&quot;, input, Lispy, &amp;r)) {
@@ -49,12 +76,21 @@ if (mpc_parse(&quot;&lt;stdin&gt;&quot;, input, Lispy, &amp;r)) {
   mpc_err_delete(r.error);
 
 }</code></pre>
+
 <p>Here we use the <code>mpc_parse</code> function with our parser <code>Lispy</code> on the <code>input</code>. We have to give a name for the source this input is coming from (we just call it <code>&lt;stdin&gt;</code> for now) and also we need to output the result to some variable. For this we declare a variable <code>r</code> of type <code>mpc_result_t</code> and then use the <em>address of</em> operator <code>&amp;</code> to get a pointer to it. We then give <code>mpc_parse</code> this pointer. A pointer is like a house number that <code>mpc_parse</code> can deliver to. Rather than giving our whole house to the <code>mpc_parse</code>, so that he can place a parcel on the mat at the front door, and give it back to us, we just give him our house number and ask him to send the result from where he is.</p>
+
 <p>Don&#39;t worry too much for now if you don&#39;t understand, pointers are a famously hard part of C, so we&#39;ll cover them in more depth later.</p>
+
 <p><code>mpc_parse</code> returns true or false depending on if the result of the parse was successful. If it is successful we just print out the <em>ast</em>, or <em>abstract syntax tree</em> it returns, otherwise we print out the error. Both the error and the <em>ast</em> returned have been newly created by <code>mpc_parse</code>, and it is our responsibility to delete them using the appropriate functions.</p>
+
+<h3>Compilation and Running</h3>
+
 <p>To compile this program you&#39;ll need to make sure you include <code>mpc</code>. For this go to the <code>mpc</code> repo <a href="http://github.com/orangeduck/mpc"><a href="http://github.com/orangeduck/mpc">http://github.com/orangeduck/mpc</a></a> and download <code>mpc.h</code> and <code>mpc.c</code>. Put these in the same directory as your source file. To the top of your source file add <code>#include &quot;mpc.h&quot;</code> to give you access to all the new mpc functions. Say your code is in a file called <code>example3.c</code> you can now attempt to compile this using:</p>
+
 <p><code>cc -std=c99 -Wall example3.c mpc.c -lm -o example3</code></p>
+
 <p>You should be able to run it in the same way as before. If successful it should look something like this.</p>
+
 <pre><code>Lispy Version 0.0.0.0.2
 Press Ctrl+c to Exit
 
@@ -101,11 +137,16 @@ root:
 
 
 lispy&gt;</code></pre>
+
+
 <h3>Tutorial Code</h3>
-<p><a href="">example3.c</a></p>
+
+<p><a href="">chapter5.c</a></p>
+
 <h3>Bonus Marks</h3>
+
 <ul>
-<li>Make a new operator like <code>%</code> available to use.</li>
-<li>Make the operators infix (that is between two numbers rather than before).</li>
-<li>Make the parser recognize some form of numbers in written format (e.g <code>one</code>, <code>two</code>, <code>three</code> ...).</li>
+  <li>Make a new operator like <code>%</code> available to use.</li>
+  <li>Make the operators infix (that is between two numbers rather than before).</li>
+  <li>Make the parser recognize some form of numbers in written format (e.g <code>one</code>, <code>two</code>, <code>three</code> ...).</li>
 </ul>

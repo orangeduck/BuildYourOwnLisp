@@ -11,11 +11,10 @@ int main(int argc, char** argv) {
   mpca_lang(
     "                                                            \
       flatmate  : \"Chess\" | \"Dan\" | \"Adam\" | \"Lewis\";    \
-      greet     : \"Hello\" <flatmate>;                          \
+      greet     : \"Hello \" <flatmate>;                         \
       greetings : <greet>*;                                      \
     ",
-    Flatmate, Greet, Greetings
-  );
+    Flatmate, Greet, Greetings);
 
   /* Do Some Parsing... */
 
