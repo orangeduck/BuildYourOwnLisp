@@ -3,43 +3,35 @@
 
 <h3>Polish Notation</h3>
 
-<p>A simple grammar to implement would be a maths subset of Lisp that resembles <a href="http://en.wikipedia.org/wiki/Polish_notation">Polish Notation</a> In this format the operator always comes first, followed by the operands. For example <code>(+ 1 2 6)</code> or <code>(+ 6 (* 2 9))</code>.</p>
+<p>To try out <code>mpc</code> we're going to implement a simple grammar that resembles a mathematical subset of our lisp. It's called <a href="http://en.wikipedia.org/wiki/Polish_notation">Polish Notation</a> and is like standard mathematical expressions except for the fact that the operator (such as the <code>+</code> symbol), comes before the operands (such as the number <code>5</code>. Some examples of this notation might be <code>+ 1 2 6</code> or <code>+ 6 (* 2 9)</code>.</p>
 
-<p>So a grammar for this, we can describe it in text something like this. &quot;An <em>expression</em> is either a <em>number</em>, or, in parenthesis, an <em>operator</em> followed by one or more <em>expressions</em>&quot;. Now we can break this down into each of the individual parts and write it formally.</p>
+<p>A good way to get started is to first describe the grammar <em>textually</em> as we've been doing in the previous chapters. We can state something like this 'an <em>expression</em> is either a <em>number</em>, or, in parenthesis, an <em>operator</em> followed by one or more <em>expression</em>s'. We can break this down again and more formally.
 
-<p>An operator is either &#39;+&#39;, &#39;-&#39;, &#39;*&#39; or &#39;/&#39;.</p>
-
-<p><code>operator : &#39;+&#39; | &#39;-&#39; | &#39;*&#39; | &#39;/&#39; ;</code></p>
-
-<p>An expression is either a <em>number</em> or, in parenthesis, an <em>operator</em> followed by one or more <em>expressions</em>.</p>
-
-<p><code>expr : &lt;number&gt; | &#39;(&#39; &lt;operator&gt; &lt;expr&gt;+ &#39;)&#39; ;</code></p>
-
-<p>Finally a, program is an expression followed by the end of the input.</p>
-
-<p><code>lispy : /^/ &lt;expr&gt; /$/ ;</code></p>
-
-
+<ul>
+  <li>An <code>Expression</code> is a <code>Number</code> or <code>'('</code> and an <code>Operator</code> and one or more <code>Expression</code> and an <code>')'</code>.</li>
+  <li>An Operator is <code>'+'</code> or <code>'-'</code> or <code>'*'</code> or <code>'/'</code>.</li>
+  <li>A Number is an optional <code>-</code> and one or more characters between <code>0</code> and <code>9</code></li>
+  <li>A Program is the start of input and an <code>Operator</code> and one or more <code>Expression</code> and the end of input.</li>
+</ul>
 
 <h3>Regular Expressions</h3>
 
+<p>Most of the above we can write using our grammar as usual, but <em>Number</em> might pose some trouble. It contains a couple of constructs we've not learnt how to express yet. It consists of two parts. First is an optional character, and secondly is a range of characters.</p>
 
-<p>A number is an optional minus sign, followed by one or more of the characters in the range 0-9.</p>
-
-<p><code>number : /-?[0-9]+/ ;</code></p>
+<p>This can be written using something called a <em>Regular Expression</em>. This is another way to write a <em>grammar</em>. Regular expressions are a way of writing grammars for small sections of text such as words or numbers. Grammars written using regular expressions can't consist of multiple rules, but they do give precise, and consise, control over what is matched and what isn't.</p>
 
 <p>You&#39;ll notice this is written between two forward slashes <code>/</code>, which means it is a <em>regular expression</em> (another type of grammar). For now don&#39;t worry to much about the syntax as there are a lot to say about regular expressions that are beyond the scope of this tutorial. Basically the <code>?</code> means optional, the <code>+</code> means one or more of, and the <code>[0-9]</code> means in the range <code>0</code> to <code>9</code>. The next one is easy.</p>
 
 
-<h3> All Together </h3>
+<h3>Maths Grammar</h3>
 
-<p>Putting it all together we get the following.</p>
+<p>Putting everything together, the code for our maths language will look something like this.</p>
 
 <pre><code class="lang-c">/* Create Some Parsers */
-mpc_parser_t* Number = mpc_new(&quot;number&quot;);
+mpc_parser_t* Number   = mpc_new(&quot;number&quot;);
 mpc_parser_t* Operator = mpc_new(&quot;operator&quot;);
-mpc_parser_t* Expr = mpc_new(&quot;expr&quot;);
-mpc_parser_t* Lispy = mpc_new(&quot;lispy&quot;);
+mpc_parser_t* Expr     = mpc_new(&quot;expr&quot;);
+mpc_parser_t* Lispy    = mpc_new(&quot;lispy&quot;);
 
 /* Define them with the following Language */
 mpca_lang(
@@ -47,7 +39,7 @@ mpca_lang(
     number   : /-?[0-9]+/ ;                             \
     operator : &#39;+&#39; | &#39;-&#39; | &#39;*&#39; | &#39;/&#39; ;                  \
     expr     : &lt;number&gt; | &#39;(&#39; &lt;operator&gt; &lt;expr&gt;+ &#39;)&#39; ;  \
-    lispy    : &lt;expr&gt; /$/ ;                             \
+    lispy    : /^/ &lt;expr&gt; /$/ ;                         \
   &quot;,
   Number, Operator, Expr, Lispy);
 
