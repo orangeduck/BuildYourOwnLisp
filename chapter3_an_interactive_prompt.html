@@ -32,7 +32,7 @@ int main(int argc, char** argv) {
     fgets(input, 2047, stdin);
 
     /* Echo input back to user */
-    fprintf(stdout, &quot;No You&#39;re a %s&quot;, input);
+    fprintf(stdout, &quot;No you&#39;re a %s&quot;, input);
   }
 
   return 0;
@@ -64,8 +64,142 @@ lispy&gt;</code></pre>
 
 <p>If your program does not compile examine the output from the compiler. Does it mention a line number? Can you see anything wrong on this line number? Try to fix any error mentioned by the compiler.</p>
 
-<p>If it works as intended well done! In the next chapter we begin thinking about our actual language and what it is going to look like.</p>
+<h3>Editing input</h3>
 
+<p>If you're working on Linux or Mac you'll notice some weird behaviour when you use the arrow keys to attempt to edit your input.</p>
+
+<pre><code>$ ./chapter3
+  Lispy Version 0.0.0.0.3
+  Press Ctrl+c to Exit
+  
+  lispy> + 1 2^[[D^[[C           
+</code></pre>
+
+<p>Using the arrow keys is creating these weird characters <code>^[[D</code> or <code>^[[C</code>, rather than moving the cursor around in the input. What we really want is to be able to move around in the line, deleting and editing the input in case we make a mistake.</p>
+
+<p>On windows this behaviour is built in, but on Linux and Mac we have to use a library called <code>editline</code> to do it. If we replace our calls to <code>fputs</code> and <code>fgets</code> with calls to this library we can get the correct behaviour.</p>
+
+<p>This library is called <code>editline</code> and it provides two functions we are going to use called <code>readline</code> and <code>add_history</code>. This first function, <code>readline</code> is used to read input from some prompt while allowing for editing of that input. The second function <code>add_history</code> lets us record the history of inputs so that they can be retrived with the up and down arrows.</p>
+
+<p>When we use this library it looks like the following.</p>
+
+<pre><code>#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+#include &lt;editline/readline.h&gt;
+#include &lt;editline/history.h&gt;
+
+static char input[2048];
+
+int main(int argc, char** argv) {
+   
+  /* Print Version and Exit Information */
+  fputs("Lispy Version 0.0.0.0.1\n", stdout);
+  fputs("Press Ctrl+c to Exit\n\n", stdout);
+   
+  /* In a never ending loop */
+  while (1) {
+    
+    /* Output our prompt an get input */
+    char* input = readline("lispy> ");
+    
+    /* Add input to history */
+    add_history(input);
+    
+    /* Echo input back to user */    
+    fprintf(stdout, "No you're a %s\n", input);
+
+    /* Free retrived input */
+    free(input);
+    
+  }
+  
+  return 0;
+}</code></pre>
+
+<p>The first difference is that we have included a few new headers at the top of the file. Firstly we have added <code>#include &lt;stdlib.h&gt;</code>. This is because we need to use the function from there called <code>free</code>. Secondly we include the headers for the <code>editline</code> library. These are added as <code>#include &lt;editline/readline.h&gt;</code> and <code>#include &lt;editline/history.h&gt;</code>. These give us access to the previously mentioned <code>readline</code> and <code>add_history</code> functions.</p>
+
+<p>Inside our finite loop there is a change to the process. Now instead of prompting and getting our input with <code>fgets</code> we get it in one go using <code>readline</code>. We then pass this to the <code>add_history</code> function to record it, and print it out as before using <code>fprintf</code>. Unlike <code>fgets</code>, the <code>readline</code> function strips the trailing newline character from the input, so we need to add this to our <code>fprintf</code> function. Finally we need to delete the input given to us by the <code>readline</code> function. This is because unlike <code>fgets</code> which writes to some existing memory, the <code>readline</code> function allocates new memory when it is called. Don't worry too much about this as we will cover it in depth later.</p>
+
+<p>If you try to compile this right away its likely you'll get an error such as the following: <code>fatal error: editline/readline.h: No such file or directory #include <&lt;editline/readline.h&gt;</code>. This is because you first need to install the <code>editline</code> library.</p>
+
+<p>On Ubuntu or similar Linux distributions this can be done using the following console command.</p>
+
+<pre><code>sudo apt-get install libedit-dev</code></pre>
+
+<p>TODO: How to install on mac</p>
+
+<p>You will also need to change your command your are compiling your program with to include it there. This is done by adding the flag <code>-ledit</code> before the output flag.</p>
+
+<pre><code>cc -std=c99 -Wall -Werror -Wno-unused -g chapter3.c -lm -ledit -o chapter3</code></pre>
+
+<p>Hopefully now you can compile without issues and editing the line is possible<p>
+
+
+<h3>The C Preprocessor</h3>
+
+<p>The above situation is all well and good when developing on one platform, but what if I want to send my source code to a friend who uses a different operating system. Ideally I'd wish for my source code to be able to compile no matter where, or on what computer, it is being compiled. This is a universal problem in C and there is no easy or always correct solution.<p>
+
+<p>Luckily C does provide a mechanism to help, called the C preprocessor.</p>
+
+<p>The C preprocessor is a program that runs before the compiler. It has a number of purposes, and we've actually be using it already, without knowing. Any line the starts with a hash <code>#</code> character is a preprocessor line, and we've been using it to <em>include</em> header files, giving us access to functions from the standard library and others.</p>
+
+<p>The preprocessor can also be used to detect which operating system the code is being compiled on, and to emit different code depending on it</p>
+
+<p>The way we're going to use it is like this. If we are running Windows we're going to let the preprocessor emit code with some fake <code>readline</code> and <code>add_history</code> functions I've prepared, otherwise we are going to include the headers from <code>editline</code> and use these.</p>
+
+<pre><code>#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+/* If we are compiling on Windows include these functions */
+#ifdef _WIN32
+
+static char input[2048];
+
+char* readline(char* prompt) {
+  
+  fputs("lispy> ", stdout);
+  fgets(input, 2047, stdin);
+    
+  char* cpy = malloc(strlen(input)+1);
+  strcpy(cpy, input);
+  input[strlen(input)] = '\0';
+  
+  return input;
+}
+
+void add_history(char* unused) {}
+
+/* Otherwise include the editline headers */
+#else
+
+#include &lt;editline/readline.h&gt;
+#include &lt;editline/history.h&gt;
+
+#endif
+
+int main(int argc, char** argv) {
+   
+  fputs("Lispy Version 0.0.0.0.1\n", stdout);
+  fputs("Press Ctrl+c to Exit\n\n", stdout);
+   
+  while (1) {
+    
+    /* In either case readline will be defined */
+    char* input = readline("lispy> ");
+    add_history(input);
+
+    fprintf(stdout, "No you're a %s\n", input);
+    free(input);
+    
+  }
+  
+  return 0;
+}</code></pre>
+
+<p>The <code>#ifdef</code> preprocessor function is like an <code>if</code> function that happens before the code is compiled. All the contents of the file up until the next <code>#else</code> are used if the condition is true. Otherwise all the contents from the <code>#else</code> to the final <code>#endif</code> are used instead.</p>
+
+<p>Now our code should be able to be compiled on Windows, Linux or Mac!</p>
 
 <h3>Tutorial Code</h3>
 
@@ -75,10 +209,13 @@ lispy&gt;</code></pre>
 <h3>Bonus Marks</h3>
 
 <ul>
-  <li>What does <code>\n</code> mean in those C strings?</li>
+  <li>Can you work out what <code>\n</code> means in those C strings?</li>
   <li>Change the prompt from <code>lispy&gt;</code> to something of your choice.</li>
   <li>Add an extra message to the <em>Version</em> and <em>Exit</em> Information.</li>
-  <li>Make the system echo something different back.</li>
+  <li>Make the system echo something different back to the user.</li>
   <li>Find out what other patterns you can use in <code>fprintf</code>.</li>
   <li>What happens when you pass <code>fprintf</code> a variable that is not a string, such as <code>argc</code>?</li>
+   <li>Can you find out what does the preprocessor command <code>#ifndef</code> does?</li>
+   <li>Can you find out what does the preprocessor command <code>#define</code> does?</li>
+   <li>If <code>_WIN32</code> is defined on windows, can you find our what is defined for Linux or Mac?</li>
 </ul>
