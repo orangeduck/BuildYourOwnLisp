@@ -1,11 +1,21 @@
-<h2>Chapter 2 - The Basics</h2>
+<h1>Installation <small>&bull; Chapter 2</small></h1>
 
+<div class='pull-right alert alert-warning' style="margin: 15px; text-align: center;">
+  <img src="/static/img/cattop.png" alt="capttop"/>
+  <p><small>Cats &bull; An ideal programming environment</small></p>
+</div>
 
-<h3>Setting up your environment</h3>
+<h2>Compiler &amp; Text Editor</h2>
 
-<p>Before getting started programming C you'll have to install a C compiler and a text editor. The C compiler is what transforms the C source code into a program your computer can understand. A text editor is a program that allows you to edit text files suitable for programming. The installation process for these is different depending on what operating system you are running. Compiling and running C programs is also going to make use of the console. For this, and the rest of the tutorial, I am going to assume you are familiar with using the console. If you are not familiar you can use this <a href="http://learnpythonthehardway.org/book/appendixa.html">crash course</a> to get up to speed.</p>
+<p>Before getting started programming C you'll have to install a <strong>compiler</strong> and a <strong>text editor</strong>.</p>
 
-<p><strong>Linux</strong></p>
+<p>The compiler is what transforms the C source code into a program your computer can run. A text editor will allow you to edit text files in a way suitable for programming.</p>
+
+<p>The installation process for these is different depending on what operating system you are running.</p>
+
+<p>Compiling and running C programs is also going to make use of the command line. For this, and the rest of the book, I am going to assume you are familiar with using the command line. If you are not familiar then search online for information on using it, relevant to your operating system.</p>
+
+<h3>Linux</h3>
 
 <p>On Linux systems to install a C compiler you will have to download some packages. If you are running Ubuntu or Debian you can install everything you need with the following command.</p>
 
@@ -17,34 +27,36 @@
 
 <p>For a text editor I recommend using <a href="http://projects.gnome.org/gedit/">gedit</a> or whatever other basic text editor comes installed with your distribution. If you are a Vim or Emacs user these are also fine. Please don't use an IDE. It isn't required for such a small project and wont help in understanding what is going on.</p>
 
-<p><strong>Mac</strong></p>
+<h3>Mac</h3>
 
-<p>If you are on Mac OSX then you should install the latest version of XCode from Apple. This could take a long time as typically XCode is a big peice of software to install. If you face troubles search online for "installing xcode" and follow any advice shown.
+<p>If you are on Mac OSX then you should install the latest version of XCode from Apple. This could take a long time as typically XCode is a big peice of software to install. If you are unsure of how to do this you can search online for "installing xcode" and follow any advice shown. You may also have to install the XCode command line tools in a separate package.</p>
 
-<p>Once XCode is installed you should have access to a C compiler from the console and be ready to go.</p>
+<p>Once XCode is installed you should have access to a C compiler from the command line and be ready to go.</p>
 
-<p>A simple text editor that can be used on Mac is <a href="http://www.barebones.com/products/textwrangler/">TextWrangler</a>, but any other one is fine if you have a preference. Please don't use XCode for text editing as this is a small project and using an IDE wont help you understand what is going on.</p>
+<p>A simple text editor that can be used on Mac is <a href="http://www.barebones.com/products/textwrangler/">TextWrangler</a>. If you have a different preference this is fine. Please don't use XCode for text editing as this is a small project and using an IDE wont help you understand what is going on.</p>
 
-<p><strong>Windows</strong></p>
+<h3>Windows</h3>
 
-<p>On windows I recommend downloading and installing <a href="http://www.mingw.org/">MinGW</a>. This will install a C compiler on your computer and allow you to run it from the console as if you were on a Linux system. It will create programs ending in the <code>.exe</code> suffix which should be run by using their full name without the leading <code>./</code>.</p>
+<p>On windows I recommend downloading and installing <a href="http://www.mingw.org/">MinGW</a>. This will install a C compiler and allow you to run it from the command line <code>cmd.exe</code>. It will create programs ending in the <code>.exe</code> suffix which should be run by using their full name without the leading <code>./</code>.</p>
 
-<p>My text editor of choice on windows is <a href="http://notepad-plus-plus.org/">Notepad++</a>. If you have another preference please go with it, though <em>don't</em> use Visual Studio as it does not have proper support for C programming and so you will face a large number of issues if you attempt to use it.</p>
+<p>My text editor of choice on windows is <a href="http://notepad-plus-plus.org/">Notepad++</a>. If you have another preference this is fine. Please <em>don't</em> use <em>Visual Studio</em> as it does not have proper support for C programming. It you attempt to use it you will run into many problems.</p>
 
-<p><strong>Testing Your Compiler</strong></p>
+<h3>Testing</h3>
 
-<p>To test if your C compiler is installed correctly type the following into the console (without the <code>$</code> sign, which is used by convention to mean the command should be written to the console).<p>
+<p>To test if your C compiler is installed correctly type the following into the command line.<p>
 
 <pre><code>$ cc --version
   cc (rubenvb-4.7.2-release) 4.7.2
   ...</code></pre>
 
-<p>If you get something like the following echoed back your C compiler is installed correctly and you are ready to go!</p>
+<p>If you get something like the following echoed back, then your C compiler is installed correctly and you are ready to go!</p>
+
+<p>Don't include the <code>$</code> sign! This is simply used to indicate this command should be run from the command line.</p>
 
 
-<h3>Hello World</h3>
+<h2>Hello World</h2>
 
-<p>Now that your environment is set up, start by opening your text editor and inputting the following code. Save this file somewhere as <code>hello_world.c</code>. This is your first C program.</p>
+<p>Now that your environment is set up, start by opening your text editor and inputting the following code. Create a directory where you are going to work on this book and save this file as <code>hello_world.c</code>. This is your first C program!</p>
 
 <pre><code class="lang-c">#include &lt;stdio.h&gt;
 
@@ -53,47 +65,124 @@ int main(int argc, char** argv) {
   return 0;
 }</code></pre>
 
-<p>There are three parts to this program. First we include a <em>header</em> called <code>stdio.h</code>. This allows us to use standard input and output functions which come included with C. One of these is the <code>puts</code> function you see later on in the program. This function outputs a string to the console.</p>
+<!--
+<div class='pull-right alert alert-warning' style="margin: 15px; text-align: center;">
+  <img src="/static/img/toast.png" alt="toast"/>
+  <p><small>Toast &bull; A typical toast</small></p>
+</div>
+-->
 
-<p>Secondly we create a function called <code>main</code>, returning an <code>int</code>, and taking as input an <code>int</code> called <code>argc</code> and a <code>char**</code> called <code>argv</code>. All C programs must contain this function. It acts as the entry point to execution. When you run your program it always starts at <code>main</code> and continues from there. For now don&#39;t worry about the inputs <code>argc</code> and <code>argv</code>. We will cover those later.</p>
+<p>Depending on your programming experience this may look like a lot of crazy symbols that make very little sense. I'll try to explain it step by step.</p>
 
-<p>Inside <code>main</code> we have <code>puts(&quot;Hello, world!&quot;);</code>. This outputs <code>Hello, world!</code> to the console. The function <code>puts</code> stands for <em>put string</em>. Also is the line <code>return 0;</code>, which tells the <code>main</code> function to finish and return <code>0</code>. The <code>0</code> indicates there have been no errors running the program.</p>
+<p>In the first line we <em>include</em> what is called a <em>header</em>. This statement allows us to use the functions from <code>stdio.h</code>, the standard input and output library which comes included with C. One of these is the <code>puts</code> function you see later on in the program.</p>
 
-<p>Save this code somewhere and browse to it on the command line. Next we want to compile the code and output an actual <em>program</em> we can run on our computer. For this we want to open up a console and browse to the directly we have saved our file. We can then run the following command.</p>
+<p>Next we declare a function called <code>main</code>. This function is declared to <em>return</em> an <code>int</code>, and <em>take as input</em> an <code>int</code> called <code>argc</code> and a <code>char**</code> called <code>argv</code>. All C programs must contain this function. It acts as the entry point to execution. When you run a C program it always starts at <code>main</code> and continues from there.</p>
 
-<pre><code>$ cc -std=c99 -Wall hello_world.c -o hello_world</code></pre>
+<p>For now don&#39;t worry about the inputs <code>argc</code> and <code>argv</code>. We will cover those in later chapters.</p>
 
-<p>This compiles the code in <code>hello_world.c</code>, reporting any warnings, and outputs the program to a new file <code>hello_world</code> (or <code>hello_world.exe</code> on windows). If successful you should see the output file in the current directory. This can be called by typing <code>./hello_world</code> (or <code>hello_world.exe</code> on windows). If all goes to plan you should see a friendly <code>Hello, world!</code> message appear as output.</p>
+<p>Inside <code>main</code> we see the line <code>puts(&quot;Hello, world!&quot;);</code>. This is a call to the function <code>puts</code>, which outputs <code>Hello, world!</code> to the command line. The function <code>puts</code> stands for <em>put string</em>.</p>
 
-
-<h3>Reference Documentation</h3>
-
-<p>If you spot a C function in some example code that you don't recognize you might wonder what it does. Often I will try to explain in the text, but sometimes I may forget, or it may have been mentioned some other time. In this case you will want to look toward the <a href="http://en.cppreference.com/w/c">reference documentation</a>, which explains all the functions included in the C standard library.</p>
+<p>Finally we see <code>return 0;</code>. This tells the <code>main</code> function to finish and return <code>0</code>. When a C program returns <code>0</code> this indicates there have been no errors running the program.</p>
 
 
-<h3>Debugging</h3>
+<h2>Compilation</h2>
 
-<p>When there is a problem in a C program, it won't throw an error message telling you what when wrong. It will simply crash and close. This makes debugging C programs harder than usual. It can be an art in and of itself, far beyond the scope of this tutorial.<p>
+<p>Before we can run this program we need to compile it. This will produce the actual <em>executable</em> we can run on our computer. Open up a terminal and browse to the directory that <code>hello_world.c</code> is saved in. Compile you program using the following command.</p>
 
-<p>My first port of call for debugging a C program is to print out lots of information as the program is running. Using this method I can try to isolate exactly what part of the code is incorrect and what, if anything, is going wrong up until the crash. For beginners I would recommend this technique. It is <em>active</em> debugging - which is the important thing. As long as you are doing <em>something</em>, the process is less painful and the temptation to give up, or smash your stupid computer in, is lessened.<p>
+<pre><code>$ cc -std=c99 -Wall hello_world.c -lm -o hello_world</code></pre>
+
+<p>This compiles the code in <code>hello_world.c</code>, reporting any warnings <code>-Wall</code>, and outputs <code>-o</code> the program to a new file <code>hello_world</code>.</p>
+
+<p>If successful you should see the output file in the current directory. This can be run by typing <code>./hello_world</code> (or <code>hello_world.exe</code> on windows). If all goes to plan you should see a friendly <code>Hello, world!</code> message appear as output.</p>
+
+<p><strong>Congratulations!</strong> You've just compiled and run your first C program.</p>
+
+
+<h2>Compiler Errors</h2>
+
+<p>If there are some problems with your C program the compilation process may fail. These issues can range from simple syntax errors, to other complicated problems that are hard to understand.</p>
+
+<p>Sometimes the error message from the compiler will make sense, but if you are having trouble understanding it try searching online for it. You should see if you can find a concise explaination of what it means, and work out how to correct it. Remember this: there are many people before you who have struggled with exactly the same problems.</p>
+
+<p>Sometimes there will be many compiler errors stemming from one source. Always work through compiler errors from first to last.</p>
+
+
+<h2>Runtime Errors</h2>
+
+<p>Sometimes the compiler will compile a program, but when you run it it will crash. Debugging C programs in this situation is hard. It can be an art far beyond the scope of this book. But it still needs to be done.<p>
+
+<div class='pull-left alert alert-warning' style="margin: 15px; text-align: center;">
+  <img src="/static/img/smash.png" alt="smash"/>
+  <p><small>Rage &bull; A poor debugging technique</small></p>
+</div>
+
+<p>My first port of call for debugging a crashing C program is to print out lots of information as the program is running. Using this method I can try to isolate exactly what part of the code is incorrect and what, if anything, is going wrong up until the crash. For beginners I would recommend this technique. It is <em>active</em> debugging - which is the important thing. As long as you are doing <em>something</em>, the process is less painful and the temptation to give up is lessened.<p>
 
 <p>For people feeling more confident a program called <code>gdb</code> can be used to debug your C programs. This can be difficult and complicated to use, but it is also very powerful and can give you extremely valuable information and what went wrong and where. Information on how to use <code>gdb</code> can be found online.</p>
 
 <p>For those using Linux <code>valgrind</code> can be used to aid the debugging of memory leaks and other more nasty errors. Valgrind is a tool that can save you hours, or even days, of debugging. It does not take much to get proficient at it, so investigating it is highly recommended. Again information on how to use it can be found online.</p>
 
 
-<h3>Tutorial Code</h3>
+<h2>Reference Documentation</h2>
 
-<p>This subsection will be included in all the following chapters. In it I&#39;ll link to the code I've created for each chapter of the tutorial. This code can be used for reference if the explaination has been unclear. If you encounter a bug please do not copy and paste this code into your project. Try to track down the bug yourself and use my code as a reference to highlight what may be wrong, or where the error lies.</p>
-
-<p><a href="chapter2.c">chapter2.c</a></p>
+<p>If you spot a C function in some example code that you don't recognize you might wonder what it does. In this case you will want to look toward the <a href="http://en.cppreference.com/w/c">reference documentation</a>, which explains all the functions included in the C standard library.</p>
 
 
-<h3>Bonus Marks</h3>
+<h2>Chapter Code</h2>
 
-<p>This subsection will be included in all the following chapters. In it I'll list some things to try for bonus marks and a better understanding. It is good if you can attempt to do some of these challenges. Some will be easy, while some will be very difficult. For this reason don&#39;t worry if you can&#39;t figure them out. Some might not even be possible. They are not essential for completion or understanding but thinking about them is a good way to challenge yourself.</p>
+<div class="alert alert-warning">
+  <p><strong>What is this section for?</strong></p>
+  
+  <p>In this subsection I&#39;ll link to the code I've created for this particular chapter of the book.</p>
 
-<ul>
-  <li>Change the greeting given by the program to something else.</li>
-  <li>Try making <code>main</code> return a different number. What does this do when you run the program?</li>
-</ul>
+  <p>This code can be used for reference if the explaination has been unclear. If you encounter a bug please do not copy and paste this code into your project. Try to track down the bug yourself and use my code as a reference to highlight what may be wrong, or where the error may lie.</p>
+</div>
+
+<div class="panel-group alert alert-warning" id="accordion">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+          hello_world.c
+        </a>
+      </h4>
+    </div>
+    <div id="collapseOne" class="panel-collapse collapse">
+      <div class="panel-body">
+<pre><code data-language='C'>#include &lt;stdio.h&gt;
+
+int main(int argc, char** argv) {
+  puts("Hello, world!");
+  return 0;
+}</code></pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<h2>Bonus Marks</h2>
+
+<div class="alert alert-warning">
+  <p><strong>What is this section for?</strong></p>
+
+  <p>In this subsection I'll list some things to try for fun, and learning.</p>
+
+  <p>It is good if you can attempt to do some of these challenges. Some will be easy, while some will be very difficult. For this reason don&#39;t worry if you can&#39;t figure them all out. Some might not even be possible!</p>
+
+  <p>Many will require some research on the internet. This is an integral part of learning a new language so should not be avoided. The ability to teach yourself things is one of the most valuable skills in programming.</p>
+</div>
+  
+<div class="alert alert-warning">
+  <ul class="list-group">
+    <li class="list-group-item">&bull; Change the greeting given by the program to something else.</li>
+    <li class="list-group-item">&bull; Change the <code>main</code> function to return <code>1</code>. What does this do?</li>
+  </ul>
+</div>
+
+<h2>Navigation</h2>
+
+<p><a href="chapter3_crash_course"><strong>Next Chapter &bull; A Crash Course</strong></a></p>
+
+<p><a href="chapter1_introduction"><strong>Previous Chapter &bull; Introduction</strong></a></p>
+

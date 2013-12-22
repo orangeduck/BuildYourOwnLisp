@@ -1,0 +1,281 @@
+<h1>Evaluation <small>&bull; Chapter 7</small></h1>
+
+
+<h2>Abstract Syntax Tree</h2>
+
+<p>Now we can read input, and we have it structured in a nice tree structure, but we are still unable to evaluate it. In this chapter we add the code that evaluates this tree and actually performs computations.</p>
+
+<p>This tree is called an <em>Abstract Sytnax Tree</em> and it represents the structure of the program as input by the user. At the leaves of this tree is the actual data to be processed - numbers and operators. At the branches is the information on how to traverse and evaluate it.</p>
+
+<div class='pull-left alert alert-warning' style="margin: 15px; text-align: center;">
+  <img src="/static/img/tree.png" alt="tree"/>
+  <p><small>Beech Tree &bull; Another type of tree</small></p>
+</div>
+
+<p>Before working out exactly how we are going to do this traversal, lets see how this structure is defined internally. If we peek inside <code>mpc.h</code> we can have a look at the definition of <code>mpc_ast_t</code>, which is the data structure we got from the parse.</p>
+
+<pre style='margin-left: 375px;'><code class="lang-c">typedef struct mpc_ast_t {
+  char* tag;
+  char* contents;
+  int children_num;
+  struct mpc_ast_t** children;
+} mpc_ast_t;</code></pre>
+
+<p>This <code>struct</code> has a number of fields we can access. Lets take a look at them one by one.</p>
+
+<p>The first field is <code>tag</code>. When we printed out the <em>abstract syntax tree</em> this was the information that precluded the contents of the node. It was a string containing a list of all the rules used to parse that particular item. For example <code>expr|number|regex</code>.</p>
+
+<p>This <code>tag</code> field is going to be important as it lets us see what type of thing the node is.</p>
+
+<p>The second field is <code>contents</code>. This will contain the actual contents of the node such as <code>'*'</code>, <code>'('</code> or <code>'5'</code>. You'll notice for branches this is empty, but for leaves we can use it to find the operator or number to use.</p>
+
+<p>Finally we see two fields that are going to help us traverse the tree. These are <code>children_num</code> and <code>children</code>. The first field tells us how many children a node has, and the second is an array of these children.</p>
+
+<p>The type of the <code>children</code> field is <code>mpc_ast_t**</code>. This is a double pointer type we've not seen before. This will be explained in greater detail in later chapters. For now you can think of it as an array of the child nodes of the tree.</p>
+
+<p>We can access a child node, by accessing this field using array notation. This is done by writing the field name <code>children</code> and suffixing it with square brackets containing the index of the child to access.</p>
+
+<p>For example to access the first child of the node we can use <code>children[0]</code>.</p>
+
+<p>Because the type <code>mpc_ast_t*</code> is a pointer type there is a slightly different syntax to access its fields. We need to use an arrow <code>-></code> instead of a dot <code>.</code>. This is explained in greater depth in later chapters.</p>
+
+<pre><code data-language='C'>/* Load AST from output */
+mpc_ast_t* a = r.output;
+printf("Tag: %s\n", a->tag);
+printf("Contents: %s\n", a->contents);
+printf("Number of children: %i\n", a->children_num);
+
+/* Get First Child */
+mpc_ast_t* c0 = a->children[0];
+printf("First Child Tag: %s\n", c0->tag);
+printf("First Child Contents: %s\n", c0->contents);
+printf("First Child Number of children: %i\n", c0->children_num);
+</code></pre>
+
+
+<h2>Evaluation</h2>
+
+<p>Now we can think of how to evaluate a particular tree node. To do this we can rely on a few observations from the previous chapter. Try printing out some parses using your program from the previous chapter and see what you can notice.</p>
+
+<pre><code>lispy> + 1 (* 5 4)
+&gt;:
+  regex:
+  operator|char: '+'
+  expr|number|regex: '1'
+  expr|&gt;:
+    char: '('
+    operator|char: '*'
+    expr|number|regex: '5'
+    expr|number|regex: '4'
+    char: ')'
+  regex:
+</code></pre>
+
+<p>One obseravation is that if a node is tagged with <code>number</code> it is always a number, and we just need to convert the contents to an integer and return it.</p>
+
+<p>If a node is tagged with <code>expr</code>, and has children, we need to look at it&#39;s second child (the first child is always <code>'('</code>) and see which operator it is. Then we need to apply this operator to the evaluation of the remaining children (excluding the final child which is always <code>')'</code>). We should also perform this behaviour at the root node, which is untagged.</p>
+
+<p>To represent numbers we&#39;ll use the C type <code>long</code> which means a <em>long</em> <em>integer</em>. To do our tests and conversions of <code>tag</code> and <code>contents</code> we can use a few new string functions.
+
+<table class='table'>
+  <tr><td><code>atoi</code></td><td>Converts a string to a <code>long</code>.</td></tr>
+  <tr><td><code>strcmp</code></td><td>Takes as input two strings and if they are equal it returns <code>0</code>.</td></tr>
+  <tr><td><code>strstr</code></td><td>Takes as input two strings and returns a pointer to the location of the second in the first, or <code>0</code> if the second is not a substring of the first.</td></tr>
+</table>
+
+<p>We can use <code>strmp</code> to check if some content is equal to something, and <code>strstr</code> to check if a tag contains a parse rule.</p>
+
+<pre><code data-language='C'>long eval(mpc_ast_t* t) {
+  
+  /* If tagged as number return it directly. */ 
+  if (strstr(t->tag, "number")) { return atoi(t->contents); }
+  
+  /* The operator is always second child. */
+  char* op = t->children[1]->contents;
+  
+  /* We store the third child in `x` */
+  long x = eval(t->children[2]);
+  
+  /* Iterate the remaining children, combining using our operator */
+  int i = 3;
+  while (strstr(t->children[i]->tag, "expr")) {
+    x = eval_op(x, op, eval(t->children[i]));
+    i++;
+  }
+  
+  return x;  
+}</code></pre>
+
+<p>This leaves us to define the <code>eval_op</code> function. This takes in a number, an operator string, and another number. It should test for what operator is passed in an perform the corrisponding C operation on the inputs.</p>
+
+<pre><code data-language='C'>/* Use operator string to see which operation to perform */
+long eval_op(long x, char* op, long y) {
+  if (strcmp(op, &quot;+&quot;) == 0) { return x + y; }
+  if (strcmp(op, &quot;-&quot;) == 0) { return x - y; }
+  if (strcmp(op, &quot;*&quot;) == 0) { return x * y; }
+  if (strcmp(op, &quot;/&quot;) == 0) { return x / y; }
+  return 0;
+}</code></pre>
+
+<p>Instead of printing the <em>abstract syntax tree</em> we now want to print the result of the evaluation.</p>
+
+<p>Therefore we need to pass the tree into our <code>eval</code> function and print the result using <code>fprintf</code> and the specifier <code>%li</code> (used for <code>long</code> type).</p>
+
+<p>We still need to remember to delete the output <em>abstract syntax tree</em> after we are done evaluating it.</p>
+
+<pre><code data-language='C'>long result = eval(r.output);
+fprintf(stdout, &quot;%li\n&quot;, result);
+mpc_ast_delete(r.output);</code></pre>
+
+<p>If all of this is successful you should be able to now do some basic maths with your new programming language!</p>
+
+<pre><code>Lispy Version 0.0.0.0.3
+Press Ctrl+c to Exit
+
+lispy&gt; + 5 6
+11
+lispy&gt; - (* 10 10) (+ 1 1 1)
+97
+lispy&gt; - (/ 10 2) 20
+-15
+lispy&gt;</code></pre>
+
+
+<h2>Tutorial Code</h2>
+
+<div class="panel-group alert alert-warning" id="accordion">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+          evaluation.c
+        </a>
+      </h4>
+    </div>
+    <div id="collapseOne" class="panel-collapse collapse">
+      <div class="panel-body">
+<pre><code data-language='C'>#include "mpc.h"
+
+#ifdef _WIN32
+
+static char input[2048];
+
+char* readline(char* prompt) {
+  
+  fputs("lispy> ", stdout);
+  fgets(input, 2047, stdin);
+    
+  char* cpy = malloc(strlen(input)+1);
+  strcpy(cpy, input);
+  cpy[strlen(cpy)] = '\0';
+  
+  return cpy;
+}
+
+void add_history(char* unused) {}
+
+#else
+
+#include &lt;editline/readline.h&gt;
+#include &lt;editline/history.h&gt;
+
+#endif
+
+/* Use operator string to see which operation to perform */
+long eval_op(long x, char* op, long y) {
+  if (strcmp(op, "+") == 0) { return x + y; }
+  if (strcmp(op, "-") == 0) { return x - y; }
+  if (strcmp(op, "*") == 0) { return x * y; }
+  if (strcmp(op, "/") == 0) { return x / y; }
+  return 0;
+}
+
+long eval(mpc_ast_t* t) {
+  
+  /* If tagged as number return it directly. */ 
+  if (strstr(t->tag, "number")) { return atoi(t->contents); }
+  
+  /* The operator is always second child. */
+  char* op = t->children[1]->contents;
+  
+  /* We store the third child in `x` */
+  long x = eval(t->children[2]);
+  
+  /* Iterate the remaining children, combining using our operator */
+  int i = 3;
+  while (strstr(t->children[i]->tag, "expr")) {
+    x = eval_op(x, op, eval(t->children[i]));
+    i++;
+  }
+  
+  return x;  
+}
+
+int main(int argc, char** argv) {
+  
+  mpc_parser_t* Number = mpc_new("number");
+  mpc_parser_t* Operator = mpc_new("operator");
+  mpc_parser_t* Expr = mpc_new("expr");
+  mpc_parser_t* Lispy = mpc_new("lispy");
+  
+  mpca_lang(
+    "                                                     \
+      number   : /-?[0-9]+/ ;                             \
+      operator : '+' | '-' | '*' | '/' ;                  \
+      expr     : &lt;number&gt; | '(' &lt;operator&gt; &lt;expr&gt;+ ')' ;  \
+      lispy    : /^/ &lt;operator&gt; &lt;expr&gt;+ /$/ ;             \
+    ",
+    Number, Operator, Expr, Lispy);
+  
+  fputs("Lispy Version 0.0.0.0.3\n", stdout);
+  fputs("Press Ctrl+c to Exit\n\n", stdout);
+  
+  while (1) {
+  
+    char* input = readline("lispy&gt; ");
+    add_history(input);
+    
+    mpc_result_t r;
+    if (mpc_parse("&lt;stdin&gt;", input, Lispy, &r)) {
+      
+      long result = eval(r.output);
+      fprintf(stdout, "%li\n", result);
+      mpc_ast_delete(r.output);
+      
+    } else {    
+      mpc_err_print(r.error);
+      mpc_err_delete(r.error);
+    }
+    
+    free(input);
+    
+  }
+  
+  mpc_cleanup(4, Number, Operator, Expr, Lispy);
+  
+  return 0;
+}</code></pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h2>Bonus Marks</h2>
+
+<div class="alert alert-warning">
+  <ul class="list-group">
+    <li class="list-group-item">&bull; Add support for the operator <code>%</code>, which returns the remainder of division. For example <code>% 10 6</code> evaluates to <code>4</code>.</li>
+    <li class="list-group-item">&bull; Add support for the operator <code>^</code>, which raises one number to another. For example <code>^ 4 2</code> evaluates to <code>16</code>.</li>
+    <li class="list-group-item">&bull; Add support for the function <code>min</code>, which returns the smallest number. For example <code>min 1 5 3</code> evaluates to <code>1</code>.</li>
+    <li class="list-group-item">&bull; Add support for the function <code>max</code>, which returns the biggest number. For example <code>max 1 5 3</code> evaluates to <code>5</code>.</li>
+    <li class="list-group-item">&bull; Change the minus operator <code>-</code> so that when it recieves one argument it negates it.</li>
+  </ul>
+</div>
+
+
+<h2>Navigation</h2>
+
+<p><a href="chapter8_error_handling"><strong>Next Chapter &bull; Error Handling</strong></a></p>
+
+<p><a href="chapter6_parsing"><strong>Previous Chapter &bull; Parsing</strong></a></p>
+

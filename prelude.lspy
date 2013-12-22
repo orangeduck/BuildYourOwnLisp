@@ -19,8 +19,8 @@
   ((\ {_} b) ())
 })
 
-; Apply List to Function
-(fun {apply f l} {
+; Unpack List to Function
+(fun {unpack f l} {
   eval (join (list f) l)
 })
 
@@ -28,7 +28,7 @@
 (fun {pack f & xs} {f xs})
 
 ; Curried and Uncurried calling
-(def {curry} {apply})
+(def {curry} {unpack})
 (def {uncurry} {pack})
 
 ; Perform Several things in Sequence

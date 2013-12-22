@@ -1,0 +1,442 @@
+<h1>An Interactive Prompt <small>&bull; Chapter 4</small></h1>
+
+
+<h2>Read, Evaluate, Print</h2>
+
+<div class='pull-right alert alert-warning' style="margin: 15px; text-align: center;">
+  <img src="/static/img/reptile.png" alt="reptile"/>
+  <p><small>Reptile &bull; Sort of like REPL</small></p>
+</div>
+
+<p>As we build our programming language we'll need some way to interact with it. As we've discovered C uses a compiler where you can change the program, recompile and run it. It'd be good if we could do something better - and interact with the language dynamically. Then we could see how it behaves under a number of conditions very quickly. For this we can built something called an <em>interactive prompt</em>.</p>
+
+<p>This is a program that prompts the user for some input, and when supplied with it, replies back with some message. Using this will be the easiest way to test our programming language and see how it acts. This system is also called a <em>REPL</em>, which stands for <em>read</em>-<em>evaluate</em>-<em>print</em> <em>loop</em>. It is a common way of interacting with a programming language which you may have used before in languages such as <em>Python</em>.</p>
+
+<p>Before building a full <em>REPL</em> we&#39;ll start with something simpler. We are going to make a system that prompts the user, and echos any input straight back. If we make this we can later extend it to parse the user input and evaluate it, as if it were an actual Lisp program.</p>
+
+
+<h2>An Interactive Prompt</h2>
+
+<p>For the basic setup we want to write a loop which repeatedly writes out a message, and then waits for some input. To get user input we can use the <code>fgets</code> function, which reads any input up until a newline. We need somewhere to store this user input. For this we can declare a constantly sized input buffer.</p>
+
+<p>Once we have this user input scored we can then print it back to the user using <code>fprintf</code>.</p>
+
+<pre><code data-language="C">#include &lt;stdio.h&gt;
+
+/* Declare a static buffer for user input of maximum size 2048 */
+static char input[2048];
+
+int main(int argc, char** argv) {
+
+  /* Print Version and Exit Information */
+  fputs(&quot;Lispy Version 0.0.0.0.1\n&quot;, stdout);
+  fputs(&quot;Press Ctrl+c to Exit\n\n&quot;, stdout);
+
+  /* In a never ending loop */
+  while (1) {
+
+    /* Output our prompt */
+    fputs(&quot;lispy&gt; &quot;, stdout);
+
+    /* Read a line of user input of maximum size 2047 */
+    fgets(input, 2047, stdin);
+
+    /* Echo input back to user */
+    fprintf(stdout, &quot;No you&#39;re a %s&quot;, input);
+  }
+
+  return 0;
+}</code></pre>
+
+<div class="alert alert-warning">
+  <p><strong>What is that text in light grey?</strong></p>
+
+  <p>The following C code contains <em>comments</em>. These are sections of the code between <code>/*</code> <code>*/</code> symbols, which are not evaluated by the compiler, but are used to inform the person reading what is going on. Take notice of them!</p>
+</div>
+
+<p>There are some new concepts here so lets go over them briefly.<p>
+
+<p>The line of code <code>static char input[2048];</code> declares a global array of 2048 characters. This is a reserved block of data we can acccess anywhere from our program. In it we are going to store the user input which is typed into the command line. The <code>static</code> keyword is what makes it global and the <code>[2048]</code> section is what declares the size.</p>
+
+<p>We write an infinite loop using <code>while (1)</code>. In a conditional block <code>1</code> always evaluates to true. Therefore commands inside this loop will run forever.</p>
+
+<p>The <code>fputs</code> and <code>fgets</code> are functions for putting and getting strings from the command line. <code>fputs</code> is similar to the <code>puts</code> function we saw in the second chapter except that it takes as output location to write to. This is where <code>stdout</code> and <code>stdin</code> come in. In C these are the names for the command line input and output, and we supply them to these variations of the functions prefixed by <code>f</code>.</p>
+
+<p>The <code>fgets</code> function will wait for a user to input a line of text, and when it has it it will store it into the <code>input</code> buffer, including the newline character.</p>
+
+<p>Finally there is <code>fprintf</code>, which is a way of printing messages consisting of several elements. It matches arguments to patterns in the input string. For example in our case we can see the <code>%s</code> pattern in the input string. This means that it will be replaced by whatever argument is passed in next, interprited as a string.</p>
+
+<p>In our case this is the <code>input</code> variable. For more information on these different patterns please see the <a href="http://en.cppreference.com/w/c/io/fprintf">reference documentation</a></p>
+
+<div class="alert alert-warning">
+  <p><strong>How am I meant to know about functions like <code>fgets</code> and <code>fputs</code>?</strong></p>
+  
+  <p>It isn't immediately obvious to a beginner how someone like me can know about these standard functions, and when to use them. When faced with a problem it takes experience to know when it has been solved for you by library functions.</p>
+
+  <p>Luckily C has a very small standard library and almost all of it can be learnt in practice. If you want to do something that seems quite basic or fundamental it is worth looking at the <a href="http://en.cppreference.com/w/c/io/fprintf">reference documentation</a> for the standard library and checking if it looks like there are any functions included that do what you want.</p>
+</div>
+
+<h2>Compilation</h2>
+
+<p>You can compile this with the same command as was used in the second chapter.</p>
+
+<pre><code>$ cc -std=c99 -Wall chapter3.c -lm -o chapter3</code></pre>
+
+<p>After compiling this you should try to run it. You can use <code>Ctrl+c</code> to quit the program when you are done. If everything is correct your program should run something like this.</p>
+
+<pre><code data-language="shell">$ chapter3
+Lispy Version 0.0.0.0.1
+Press Ctrl+c to Exit
+
+lispy&gt; hello
+No You&#39;re a hello
+lispy&gt; my name is Dan
+No You&#39;re a my name is Dan
+lispy&gt; Stop being so rude!
+No You&#39;re a Stop being so rude!
+lispy&gt;</code></pre>
+
+
+<h2>Editing input</h2>
+
+<p>If you're working on Linux or Mac you'll notice some weird behaviour when you use the arrow keys to attempt to edit your input.</p>
+
+<pre><code data-language="shell">$ ./chapter3
+  Lispy Version 0.0.0.0.3
+  Press Ctrl+c to Exit
+  
+  lispy> hel^[[D^[[C           
+</code></pre>
+
+<p>Using the arrow keys is creating these weird characters <code>^[[D</code> or <code>^[[C</code>, rather than moving the cursor around in the input. What we really want is to be able to move around in the line, deleting and editing the input in case we make a mistake.</p>
+
+<p>On Windows this behaviour is built in. On Linux and Mac it is provided by a library called <code>editline</code>. Therefore on Linux and Mac we need to replace our calls to <code>fputs</code> and <code>fgets</code> with calls to functions this library provides.</p>
+
+<p>If you're developing on Windows and just want to get going, feel free to skip to the end of this chapter as the next few sections may not be relevant.</p>
+
+
+<h2>Using Editline</h2>
+
+<p>The library <code>editline</code> provides two functions we are going to use called <code>readline</code> and <code>add_history</code>. This first function, <code>readline</code> is used to read input from some prompt, while allowing for editing of that input. The second function <code>add_history</code> lets us record the history of inputs so that they can be retrived with the up and down arrows.</p>
+
+<p>We replace <code>fputs</code> and <code>fgets</code> with calls to these functions to get the following.</p>
+
+<pre><code data-language="C">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+#include &lt;editline/readline.h&gt;
+#include &lt;editline/history.h&gt;
+
+static char input[2048];
+
+int main(int argc, char** argv) {
+   
+  /* Print Version and Exit Information */
+  fputs("Lispy Version 0.0.0.0.1\n", stdout);
+  fputs("Press Ctrl+c to Exit\n\n", stdout);
+   
+  /* In a never ending loop */
+  while (1) {
+    
+    /* Output our prompt an get input */
+    char* input = readline("lispy> ");
+    
+    /* Add input to history */
+    add_history(input);
+    
+    /* Echo input back to user */    
+    fprintf(stdout, "No you're a %s\n", input);
+
+    /* Free retrived input */
+    free(input);
+    
+  }
+  
+  return 0;
+}</code></pre>
+
+<p>To start we <em>include</em> a few new <em>headers</em>. We have added <code>#include &lt;stdlib.h&gt;</code>, which gives us access to the <code>free</code> function user later on in the code. We have also added <code>#include &lt;editline/readline.h&gt;</code> and <code>#include &lt;editline/history.h&gt;</code> which give us access to the <code>editline</code> functions, <code>readline</code> and <code>add_history</code>.</p>
+
+<p>Now instead of prompting, and getting input with <code>fgets</code>, we do it in one go using <code>readline</code>. The result of this we pass to <code>add_history</code> to record it. Finally we print it out as before using <code>fprintf</code>.</p>
+
+<p>Unlike <code>fgets</code>, the <code>readline</code> function strips the trailing newline character from the input, so we need to add this to our <code>fprintf</code> function. We also need to delete the input given to us by the <code>readline</code> function using <code>free</code>. This is because unlike <code>fgets</code>, which writes to some existing buffer, the <code>readline</code> function allocates new memory when it is called. When to free memory is something we cover in depth in later chapters.</p>
+
+
+<h2>Compiling with Editline</h2>
+
+<p>If you try to compile this right away with the previous command you'll get an error.
+
+<pre><code>fatal error: editline/readline.h: No such file or directory #include &lt;editline/readline.h&gt;</code></pre>
+
+<p>This is because you first need to install the <code>editline</code> library on your computer. On Ubuntu or similar Linux distributions this can be done using the following command line command.</p>
+
+<pre><code data-language="shell">sudo apt-get install libedit-dev</code></pre>
+
+<p>Or for Fedora and similar linux variants you can use</p>
+
+<pre><code data-language="shell">su -c "yum groupinstall libedit-dev"</code></pre>
+
+<p>TODO: How to install on mac</p>
+
+<p>Once you have installed this you can try to compile it again. This time you'll get a different error.</p>
+
+<p>TODO: Linker error</p>
+
+<pre><code></code></pre>
+
+<p>This means that you haven't <em>linked</em> your program to <code>editline</code>. This <em>linking</em> process allows the compiler to directly embed calls to <code>editline</code> in your program. You can make it link by adding the flag <code>-ledit</code> to your compile command, just before the output flag.</p>
+
+<pre><code data-language="shell">cc -std=c99 -Wall -g chapter3.c -lm -ledit -o chapter3</code></pre>
+
+<p>Hopefully now you should be able to <em>compile</em> and <em>link</em> your program with <code>editline</code> and edit inputs you type in!<p>
+
+
+<h2>The C Preprocessor</h2>
+
+<p>The fact that we have to program differently, depending on what operating system we are using, might not cause trouble when developing on one platform, but what if I want to send my source code to a friend who uses a different operating system. In an ideal world I'd wish for my source code to be able to compile no matter where, or on what computer, it is being compiled. This is a universal problem in C called <em>portability</em> and there is no easy or always correct solution.<p>
+
+<p>But C does provide a mechanism to help, called the C preprocessor.</p>
+
+<p>The C preprocessor is a program that runs before the compiler. It has a number of purposes, and we've actually be using it already, without knowing. Any line the starts with a hash <code>#</code> character is a preprocessor line, and we've been using it to <em>include</em> header files, giving us access to functions from the standard library and others.</p>
+
+<p>The preprocessor can also be used to detect which operating system the code is being compiled on, and to emit different code depending on it</p>
+
+<p>The way we're going to use it is like this. If we are running Windows we're going to let the preprocessor emit code with some fake <code>readline</code> and <code>add_history</code> functions I've prepared, otherwise we are going to include the headers from <code>editline</code> and use these.</p>
+
+<pre><code data-language="C">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+/* If we are compiling on Windows compile these functions */
+#ifdef _WIN32
+
+#include &lt;string.h&gt;
+
+static char input[2048];
+
+char* readline(char* prompt) {
+  
+  fputs("lispy> ", stdout);
+  fgets(input, 2047, stdin);
+    
+  char* cpy = malloc(strlen(input)+1);
+  strcpy(cpy, input);
+  cpy[strlen(cpy)] = '\0';
+  
+  return cpy;
+}
+
+void add_history(char* unused) {}
+
+/* Otherwise include the editline headers */
+#else
+
+#include &lt;editline/readline.h&gt;
+#include &lt;editline/history.h&gt;
+
+#endif
+
+int main(int argc, char** argv) {
+   
+  fputs("Lispy Version 0.0.0.0.1\n", stdout);
+  fputs("Press Ctrl+c to Exit\n\n", stdout);
+   
+  while (1) {
+    
+    /* Now in either case readline will be correctly defined */
+    char* input = readline("lispy> ");
+    add_history(input);
+
+    fprintf(stdout, "No you're a %s\n", input);
+    free(input);
+    
+  }
+  
+  return 0;
+}</code></pre>
+
+<p>The <code>#ifdef</code> preprocessor function is like an <code>if</code> function that happens before the code is compiled. All the contents of the file up until the next <code>#else</code> are used if the condition is true. Otherwise all the contents from the <code>#else</code> to the final <code>#endif</code> are used instead.</p>
+
+<p>Now our code should be able to be compiled on Windows, Linux or Mac!</p>
+
+
+<h2>Chapter Code</h2>
+
+<div class="panel-group alert alert-warning" id="accordion">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+          prompt_windows.c
+        </a>
+      </h4>
+    </div>
+    <div id="collapseOne" class="panel-collapse collapse">
+      <div class="panel-body">
+<pre><code data-language='C'>#include &lt;stdio.h&gt;
+
+/* Declare a static buffer for user input of maximum size 2048 */
+static char input[2048];
+
+int main(int argc, char** argv) {
+
+  /* Print Version and Exit Information */
+  fputs("Lispy Version 0.0.0.0.1\n", stdout);
+  fputs("Press Ctrl+c to Exit\n\n", stdout);
+
+  /* In a never ending loop */
+  while (1) {
+
+    /* Output our prompt */
+    fputs("lispy&gt; ", stdout);
+
+    /* Read a line of user input of maximum size 2047 */
+    fgets(input, 2047, stdin);
+
+    /* Echo input back to user */
+    fprintf(stdout, "No you're a %s", input);
+  }
+
+  return 0;
+}</code></pre>
+      </div>
+    </div>
+  </div>
+  
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">
+          prompt_unix.c
+        </a>
+      </h4>
+    </div>
+    <div id="collapseTwo" class="panel-collapse collapse">
+      <div class="panel-body">
+<pre><code data-language='C'>#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+#include &lt;editline/readline.h&gt;
+#include &lt;editline/history.h&gt;
+
+static char input[2048];
+
+int main(int argc, char** argv) {
+   
+  /* Print Version and Exit Information */
+  fputs("Lispy Version 0.0.0.0.1\n", stdout);
+  fputs("Press Ctrl+c to Exit\n\n", stdout);
+   
+  /* In a never ending loop */
+  while (1) {
+    
+    /* Output our prompt an get input */
+    char* input = readline("lispy&gt; ");
+    
+    /* Add input to history */
+    add_history(input);
+    
+    /* Echo input back to user */    
+    fprintf(stdout, "No you're a %s\n", input);
+
+    /* Free retrived input */
+    free(input);
+    
+  }
+  
+  return 0;
+}</code></pre>
+      </div>
+    </div>
+  </div>
+  
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree">
+          prompt_portable.c
+        </a>
+      </h4>
+    </div>
+    <div id="collapseThree" class="panel-collapse collapse">
+      <div class="panel-body">
+<pre><code data-language='C'>#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+/* If we are compiling on Windows compile these functions */
+#ifdef _WIN32
+
+#include &lt;string.h&gt;
+
+static char input[2048];
+
+char* readline(char* prompt) {
+  
+  fputs("lispy> ", stdout);
+  fgets(input, 2047, stdin);
+    
+  char* cpy = malloc(strlen(input)+1);
+  strcpy(cpy, input);
+  cpy[strlen(cpy)] = '\0';
+  
+  return cpy;
+}
+
+void add_history(char* unused) {}
+
+/* Otherwise include the editline headers */
+#else
+
+#include &lt;editline/readline.h&gt;
+#include &lt;editline/history.h&gt;
+
+#endif
+
+int main(int argc, char** argv) {
+   
+  fputs("Lispy Version 0.0.0.0.1\n", stdout);
+  fputs("Press Ctrl+c to Exit\n\n", stdout);
+   
+  while (1) {
+    
+    /* Now in either case readline will be correctly defined */
+    char* input = readline("lispy&gt; ");
+    add_history(input);
+
+    fprintf(stdout, "No you're a %s\n", input);
+    free(input);
+    
+  }
+  
+  return 0;
+}
+</code></pre>
+      </div>
+    </div>
+  </div>
+  
+</div>
+
+
+<h2>Bonus Marks</h2>
+
+<div class="alert alert-warning">
+<ul class="list-group">
+  <li class="list-group-item">&bull; Can you work out what <code>\n</code> means in those C strings?</li>
+  <li class="list-group-item">&bull; Change the prompt from <code>lispy&gt;</code> to something of your choice.</li>
+  <li class="list-group-item">&bull; Add an extra message to the <em>Version</em> and <em>Exit</em> Information.</li>
+  <li class="list-group-item">&bull; Make the system echo something different back to the user.</li>
+  <li class="list-group-item">&bull; Find out what other patterns you can use in <code>fprintf</code>.</li>
+  <li class="list-group-item">&bull; What happens when you pass <code>fprintf</code> a variable does not match the pattern?</li>
+  <li class="list-group-item">&bull; Can you find out what does the preprocessor command <code>#ifndef</code> does?</li>
+  <li class="list-group-item">&bull; Can you find out what does the preprocessor command <code>#define</code> does?</li>
+  <li class="list-group-item">&bull; If <code>_WIN32</code> is defined on windows, can you find our what is defined for Linux or Mac?</li>
+</ul>
+</div>
+
+
+<h2>Navigation</h2>
+
+<p><a href="chapter5_introducing_mpc"><strong>Next Chapter &bull; Introducing MPC</strong></a></p>
+
+<p><a href="chapter3_crash_course"><strong>Previous Chapter &bull; A Crash Course</strong></a></p>
+
