@@ -36,19 +36,19 @@
 
 <p>This function we'll call <code>\</code>, a homage to The Lambda Calculus. (As the <code>\</code> character looks a little bit like a Lambda). To create a function which takes two inputs and adds them together, we would like to write something like this.</p>
 
-<pre><code class="lang-c">\ {x y} {+ x y}</code></pre>
+<pre><code data-language='lispy'>\ {x y} {+ x y}</code></pre>
 
 <p>We can call the function by including it as the first argument in a normal S-Expression</p>
 
-<pre><code class="lang-c">(\ {x y} {+ x y}) 10 20</code></pre>
+<pre><code data-language='lispy'>(\ {x y} {+ x y}) 10 20</code></pre>
 
 <p>If we want to name this function we can pass it to our existing builtin <code>def</code> like any other value and store it in the environment.</p>
 
-<pre><code class="lang-c">def {add-together} (\ {x y} {+ x y})</code></pre>
+<pre><code data-language='lispy'>def {add-together} (\ {x y} {+ x y})</code></pre>
 
 <p>Then we can call it by refering to it by name.</p>
 
-<pre><code class="lang-c">add-together 10 20</code></pre>
+<pre><code data-language='lispy'>add-together 10 20</code></pre>
 
 
 <h2>Function Type</h2>
@@ -59,7 +59,7 @@
 
 <p>We will store our builtin functions and user defined functions under the same type <code>LVAL_FUN</code>. This means we need a way internally to differentiate between them. To do this we can check if the <code>lbuiltin</code> function pointer is <code>NULL</code> or not. If it is not <code>NULL</code> we know the <code>lval</code> is some builtin function, otherwise we know it is a user function.</p>
 
-<pre><code>struct lval {
+<pre><code data-language='c'>struct lval {
   int type;
 
   /* Basic */
@@ -82,7 +82,7 @@
 
 <p>We also need to create a constructor for user defined <code>lval</code> functions. Here we build a new environment for the function, and assign the <code>formals</code> and <code>body</code> values to those passed in. </p>
 
-<pre><code class="lang-c">lval* lval_lambda(lval* formals, lval* body) {
+<pre><code data-language='c'>lval* lval_lambda(lval* formals, lval* body) {
   lval* v = malloc(sizeof(lval));
   v-&gt;type = LVAL_FUN;
 
@@ -102,7 +102,7 @@
 
 <p>For Deletion...</p>
 
-<pre><code class="lang-c">case LVAL_FUN: 
+<pre><code data-language='c'>case LVAL_FUN: 
   if (v-&gt;builtin != NULL) {
     lenv_del(v-&gt;env);
     lval_del(v-&gt;formals);
@@ -112,7 +112,7 @@ break;</code></pre>
 
 <p>For Copying...</p>
 
-<pre><code class="lang-c">case LVAL_FUN:
+<pre><code data-language='c'>case LVAL_FUN:
   x-&gt;builtin = v-&gt;builtin;
   if (x-&gt;builtin != NULL) {
     x-&gt;env = lenv_copy(v-&gt;env);
@@ -123,7 +123,7 @@ break;</code></pre>
 
 <p>For Printing...</p>
 
-<pre><code class="lang-c">case LVAL_FUN:
+<pre><code data-language='c'>case LVAL_FUN:
   if (v-&gt;builtin) {
     printf(&quot;&lt;builtin&gt;&quot;);
   } else {
@@ -138,7 +138,7 @@ break;</code></pre>
 
 <p>We can now add a builtin for our lambda function. We want it to take as input some list of symbols, and a list that represents the code. After that it should return a function <code>lval</code>. We&#39;ve built a number of builtins now, and this one will follow the same format. Like in <code>def</code> we do some error checking to ensure the argument types and count are correct. Then we just pop the first two arguments from the list and pass them to our previously constructed <code>lval_lambda</code> function.</p>
 
-<pre><code class="lang-c">lval* builtin_lambda(lenv* e, lval* a) {
+<pre><code data-language='c'>lval* builtin_lambda(lenv* e, lval* a) {
   /* Check Two arguments, each of which are Q-Expressions */
   LASSERT_NUM("\\", a, 2);
   LASSERT_TYPE("\\", a, 0, LVAL_QEXPR);
@@ -160,6 +160,11 @@ break;</code></pre>
 }</code></pre>
 
 
+<div class='pull-right alert alert-warning' style="margin: 15px; text-align: center;">
+  <img src="/static/img/playgroup.png" alt="playgroup"/>
+  <p><small>Playgroup &bull; Your typical parent environment.</small></p>
+</div>
+
 <h2>Parent Environment</h2>
 
 <p>We&#39;ve given functions their own environment. In this environment we will place the values that their formal variables are set to. Then we can evaluate the body in this environment and know that those variables will have values. But ideally we also want these functions to be able to access variables which are in the global environment, such as our builtin functions.</p>
@@ -172,7 +177,7 @@ break;</code></pre>
 
 <p>The constructor and destructor functions only require basic changes to allow for this.</p>
 
-<pre><code data-language='C'>struct lenv {
+<pre><code data-language='c'>struct lenv {
   lenv* par;
   int count;
   char** syms;
@@ -201,7 +206,7 @@ void lenv_del(lenv* e) {
 
 <p>To get a value from an environment we need to add in the search of the parent environment in the case that a symbol is not found intially.</p>
 
-<pre><code data-language='C'>lval* lenv_get(lenv* e, lval* k) {
+<pre><code data-language='c'>lval* lenv_get(lenv* e, lval* k) {
 
   for (int i = 0; i &lt; e-&gt;count; i++) {
     if (strcmp(e-&gt;syms[i], k-&gt;sym) == 0) { return lval_copy(e-&gt;vals[i]); }
@@ -217,7 +222,7 @@ void lenv_del(lenv* e) {
 
 <p>Because the <code>lval</code> struct now contains an environment internally we need a function for copying environments to use for when we copy <code>lval</code> structs.</p>
 
-<pre><code data-language='C'>lenv* lenv_copy(lenv* e) {
+<pre><code data-language='c'>lenv* lenv_copy(lenv* e) {
   lenv* n = malloc(sizeof(lenv));
   n-&gt;par = e-&gt;par;
   n-&gt;count = e-&gt;count;
@@ -235,7 +240,7 @@ void lenv_del(lenv* e) {
 
 <p>There are two ways we could define a variable now. Either we could define it in the local, innermost environment, or we could define it in the global, outermost environment. We will allow functionality for both. We&#39;ll leave the <code>lenv_put</code> method the same. It can be used for definition in the local environment. But we&#39;ll add a new fuction <code>lenv_def</code> for definition in the global environment. This works by simply following the parent chain up before using <code>lval_put</code> to define locally.</p>
 
-<pre><code class="lang-c">void lenv_def(lenv* e, lval* k, lval* v) {
+<pre><code data-language='c'>void lenv_def(lenv* e, lval* k, lval* v) {
   /* Iterate till e has no parent */
   while (e-&gt;par) { e = e-&gt;par; }
   /* Put value in e */
@@ -244,7 +249,7 @@ void lenv_del(lenv* e) {
 
 <p>At the moment this distinction may seem useless, but later on we will use it to write partial results of calculations to local variables inside a function. We should add another builtin for <em>local</em> assignment. We&#39;ll call this <code>put</code> in C, but give it the <code>=</code> symbol when in Lisp. We can adapt our <code>builtin_def</code> function and re-use the common code, just like we do with our mathematical operators.</p>
 
-<pre><code class="lang-c">lval* builtin_var(lenv* e, lval* a, char* func) {
+<pre><code data-language='c'>lval* builtin_var(lenv* e, lval* a, char* func) {
   LASSERT_TYPE(func, a, 0, LVAL_QEXPR);
   
   lval* syms = a-&gt;cell[0];
@@ -273,7 +278,7 @@ lval* builtin_put(lenv* e, lval* a) { return builtin_var(e, a, &quot;=&quot;); }
 
 <p>Then we need to register this as a builtin.</p>
 
-<pre><code class="lang-c">lenv_add_builtin(e, &quot;def&quot;, builtin_def);
+<pre><code data-language='c'>lenv_add_builtin(e, &quot;def&quot;, builtin_def);
 lenv_add_builtin(e, &quot;=&quot;,   builtin_put);</code></pre>
 
 
@@ -285,7 +290,7 @@ lenv_add_builtin(e, &quot;=&quot;,   builtin_put);</code></pre>
 
 <p>A first attempt, without error checking, might look like this:</p>
 
-<pre><code class="lang-c">lval* lval_call(lenv* e, lval* f, lval* a) {
+<pre><code data-language='c'>lval* lval_call(lenv* e, lval* f, lval* a) {
 
   /* If Builtin then simply call that */
   if (f-&gt;builtin) { return f-&gt;builtin(e, a); }
@@ -314,7 +319,7 @@ lenv_add_builtin(e, &quot;=&quot;,   builtin_put);</code></pre>
 
 <p>So you can imagine functions like a little pacman, not consuming all inputs at once, but iteratively eating inputs to the right and getting bigger and bigger until it is full. This isn't actually how we&#39;re going to implement it in code, but in the words of Feinman, it is <em>fun to imagine</em>.</p>
 
-<pre><code class="lang-c">lval* lval_call(lenv* e, lval* f, lval* a) {
+<pre><code data-language='c'>lval* lval_call(lenv* e, lval* f, lval* a) {
 
   /* If Builtin then simply apply that */
   if (f-&gt;builtin) { return f-&gt;builtin(e, a); }
@@ -366,7 +371,7 @@ lenv_add_builtin(e, &quot;=&quot;,   builtin_put);</code></pre>
 
 <p>If we update our evaluation function <code>lval_eval_sexpr</code> to call <code>lval_call</code>, we can give our new system a spin.</p>
 
-<pre><code class="lang-c">lval* f = lval_pop(v, 0);
+<pre><code data-language='c'>lval* f = lval_pop(v, 0);
 if (f->type != LVAL_FUN) {
   lval* err = lval_err(
     "S-Expression starts with incorrect type. Got %s, Expected %s.",
@@ -391,7 +396,7 @@ lval* result = lval_call(e, f, v);
 
 <p>Just after the first symbol is popped from the formals in the <code>while</code> loop of <code>lval_call</code> we can add this special case.</p>
 
-<pre><code class="lang-c">/* Special Case to deal with &#39;&amp;&#39; */
+<pre><code data-language='c'>/* Special Case to deal with &#39;&amp;&#39; */
 if (strcmp(sym-&gt;sym, &quot;&amp;&quot;) == 0) {
 
   /* Ensure &#39;&amp;&#39; is followed by another symbol */
@@ -409,7 +414,7 @@ if (strcmp(sym-&gt;sym, &quot;&amp;&quot;) == 0) {
 
 <p>Suppose when calling the function the user doesn&#39;t supply any variable arguments, but only the first named ones. In this case we need to set the symbol following <code>&amp;</code> to the empty list. Just after we delete the argument list, and before we check to see if all the formals have been evaluated add in this special case.</p>
 
-<pre><code class="lang-c">/* If &#39;&amp;&#39; remains in formal list it should be bound to empty list */
+<pre><code data-language='c'>/* If &#39;&amp;&#39; remains in formal list it should be bound to empty list */
 if (f-&gt;formals-&gt;count &gt; 0 &amp;&amp;
   strcmp(f-&gt;formals-&gt;cell[0]-&gt;sym, &quot;&amp;&quot;) == 0) {
 
@@ -440,20 +445,20 @@ if (f-&gt;formals-&gt;count &gt; 0 &amp;&amp;
 
 <p>Essentially what we want is a function that can perform two steps at once. First creating a new function and then defining it some name. We could let the user supply the name and the formal arguments altogether and then separate these out for them and use them in the definition. Here is a function that does that. It takes as input some arguments and some body. It takes the head of the arguments to be the function name and the rest to be the formals to the function body.</p>
 
-<pre><code>\ {args body} {def (head args) (\ (tail args) body)}</code></pre>
+<pre><code data-language='lispy'>\ {args body} {def (head args) (\ (tail args) body)}</code></pre>
 
 <p>We can name this function something like <code>fun</code> by passing it to <code>def</code> as usual.</p>
 
-<pre><code>def {fun} (\ {args body} {def (head args) (\ (tail args) body)})</code></pre>
+<pre><code data-language='lispy'>def {fun} (\ {args body} {def (head args) (\ (tail args) body)})</code></pre>
 
 <p>This means that we can now define functions in a much simpler and nicer way. To define our previously mentioned <code>add-together</code> we can do the following. Functions that can define functions. That is certainly something we could never do in C. How cool is that!</p>
 
-<pre><code>fun {add-together x y} {+ x y}</code></pre>
+<pre><code data-language='lispy'>fun {add-together x y} {+ x y}</code></pre>
 
 
 <div class='pull-right alert alert-warning' style="margin: 15px; text-align: center;">
   <img src="/static/img/curry.png" alt="curry"/>
-  <p><small>Currying &bull; Or something like that.</small></p>
+  <p><small>Currying &bull; Not as good as it sounds.</small></p>
 </div>
 
 <h3>Currying</h3>
@@ -464,15 +469,15 @@ if (f-&gt;formals-&gt;count &gt; 0 &amp;&amp;
 
 <p>We can define a function <code>unpack</code> that does this. It takes as input some function and some list and appends the function to the front of the list, before evaluating it.</p>
 
-<pre><code>fun {unpack f xs} {eval (join (list f) xs)}</code></pre>
+<pre><code data-language='lispy'>fun {unpack f xs} {eval (join (list f) xs)}</code></pre>
 
 <p>In some situations we might be faced with the opposite dilema. We may have a function that takes as input some list, but we wish to call it using variable arguments. In this case the solution is even simpler. We use the fact that our <code>&amp;</code> syntax for variable arguments packs up variable arguments into a list for us.</p>
 
-<pre><code>fun {pack f &amp; xs} {f xs}</code></pre>
+<pre><code data-language='lispy'>fun {pack f &amp; xs} {f xs}</code></pre>
 
 <p>In some languages this is called <em>currying</em> and <em>uncurrying</em> respectively. This is named after <em>Haskell Curry</em> and unfortunately has nothing to do with our favourite spicy food.</p>
 
-<pre><code>lispy> uncurry head 5 6 7
+<pre><code data-language='lispy'>lispy> uncurry head 5 6 7
 {5}
 lispy> curry + {5 6 7}
 18
@@ -480,9 +485,9 @@ lispy> curry + {5 6 7}
 
 <p>Because of the way our <em>partial evaluation</em> works we don't need to think of <em>currying</em> with a specific set of arguments. We can think of functions themselves being in <em>curried</em> or <em>uncurried</em> form.
 
-<pre><code>lispy> def {add-list} (curry +)
+<pre><code data-language='lispy'>lispy> def {add-unpacked} (curry +)
 ()
-lispy> add-list {5 6 7}
+lispy> add-unpacked {5 6 7}
 18
 </code></pre>
 
@@ -502,7 +507,7 @@ lispy> add-list {5 6 7}
     </div>
     <div id="collapseOne" class="panel-collapse collapse">
       <div class="panel-body">
-<pre><code data-language='C'>#include "mpc.h"
+<pre><code data-language='c'>#include "mpc.h"
 
 #ifdef _WIN32
 
@@ -1178,7 +1183,7 @@ int main(int argc, char** argv) {
   mpca_lang(
     "                                                     \
       number : /-?[0-9]+/ ;                               \
-      symbol  : /[a-zA-Z0-9_+\\-*\\/\\\\=&lt;&gt;!&]+/ ;        \
+      symbol  : /[a-zA-Z0-9_+\\-*\\/\\\\=&lt;&gt;!&amp;]+/ ;        \
       sexpr  : '(' &lt;expr&gt;* ')' ;                          \
       qexpr  : '{' &lt;expr&gt;* '}' ;                          \
       expr   : &lt;number&gt; | &lt;symbol&gt; | &lt;sexpr&gt; | &lt;qexpr&gt; ;  \

@@ -21,7 +21,7 @@
 
 <p>Once we have this user input scored we can then print it back to the user using <code>fprintf</code>.</p>
 
-<pre><code data-language="C">#include &lt;stdio.h&gt;
+<pre><code data-language='c'>#include &lt;stdio.h&gt;
 
 /* Declare a static buffer for user input of maximum size 2048 */
 static char input[2048];
@@ -49,7 +49,7 @@ int main(int argc, char** argv) {
 }</code></pre>
 
 <div class="alert alert-warning">
-  <p><strong>What is that text in light grey?</strong></p>
+  <p><strong>What is that text in light green?</strong></p>
 
   <p>The following C code contains <em>comments</em>. These are sections of the code between <code>/*</code> <code>*/</code> symbols, which are not evaluated by the compiler, but are used to inform the person reading what is going on. Take notice of them!</p>
 </div>
@@ -84,8 +84,7 @@ int main(int argc, char** argv) {
 
 <p>After compiling this you should try to run it. You can use <code>Ctrl+c</code> to quit the program when you are done. If everything is correct your program should run something like this.</p>
 
-<pre><code data-language="shell">$ chapter3
-Lispy Version 0.0.0.0.1
+<pre><code data-language='lispy'>Lispy Version 0.0.0.0.1
 Press Ctrl+c to Exit
 
 lispy&gt; hello
@@ -101,11 +100,10 @@ lispy&gt;</code></pre>
 
 <p>If you're working on Linux or Mac you'll notice some weird behaviour when you use the arrow keys to attempt to edit your input.</p>
 
-<pre><code data-language="shell">$ ./chapter3
-  Lispy Version 0.0.0.0.3
-  Press Ctrl+c to Exit
+<pre><code data-language='lispy'>Lispy Version 0.0.0.0.3
+Press Ctrl+c to Exit
   
-  lispy> hel^[[D^[[C           
+lispy> hel^[[D^[[C           
 </code></pre>
 
 <p>Using the arrow keys is creating these weird characters <code>^[[D</code> or <code>^[[C</code>, rather than moving the cursor around in the input. What we really want is to be able to move around in the line, deleting and editing the input in case we make a mistake.</p>
@@ -121,7 +119,7 @@ lispy&gt;</code></pre>
 
 <p>We replace <code>fputs</code> and <code>fgets</code> with calls to these functions to get the following.</p>
 
-<pre><code data-language="C">#include &lt;stdio.h&gt;
+<pre><code data-language='c'>#include &lt;stdio.h&gt;
 #include &lt;stdlib.h&gt;
 
 #include &lt;editline/readline.h&gt;
@@ -203,7 +201,7 @@ int main(int argc, char** argv) {
 
 <p>The way we're going to use it is like this. If we are running Windows we're going to let the preprocessor emit code with some fake <code>readline</code> and <code>add_history</code> functions I've prepared, otherwise we are going to include the headers from <code>editline</code> and use these.</p>
 
-<pre><code data-language="C">#include &lt;stdio.h&gt;
+<pre><code data-language='c'>#include &lt;stdio.h&gt;
 #include &lt;stdlib.h&gt;
 
 /* If we are compiling on Windows compile these functions */
@@ -272,7 +270,7 @@ int main(int argc, char** argv) {
     </div>
     <div id="collapseOne" class="panel-collapse collapse">
       <div class="panel-body">
-<pre><code data-language='C'>#include &lt;stdio.h&gt;
+<pre><code data-language='c'>#include &lt;stdio.h&gt;
 
 /* Declare a static buffer for user input of maximum size 2048 */
 static char input[2048];
@@ -312,7 +310,7 @@ int main(int argc, char** argv) {
     </div>
     <div id="collapseTwo" class="panel-collapse collapse">
       <div class="panel-body">
-<pre><code data-language='C'>#include &lt;stdio.h&gt;
+<pre><code data-language='c'>#include &lt;stdio.h&gt;
 #include &lt;stdlib.h&gt;
 
 #include &lt;editline/readline.h&gt;
@@ -359,7 +357,7 @@ int main(int argc, char** argv) {
     </div>
     <div id="collapseThree" class="panel-collapse collapse">
       <div class="panel-body">
-<pre><code data-language='C'>#include &lt;stdio.h&gt;
+<pre><code data-language='c'>#include &lt;stdio.h&gt;
 #include &lt;stdlib.h&gt;
 
 /* If we are compiling on Windows compile these functions */

@@ -42,7 +42,7 @@
 
 <p>In the previous chapter our builtin functions took a <code>lval*</code> as input and returned a <code>lval*</code> as output. In this chapter the builtin functions will also take a pointer to the environment <code>lenv*</code>. So we can declare a new function pointer type called <code>lbuiltin</code>, for this type of function, like this.</p>
 
-<pre><code class="lang-c">typedef lval*(*lbuiltin)(lenv*, lval*);</code></pre>
+<pre><code data-language='c'>typedef lval*(*lbuiltin)(lenv*, lval*);</code></pre>
 
 <div class="alert alert-warning">
   <p><strong>Why is that syntax so odd?</strong></p>
@@ -70,7 +70,7 @@
 
 <p>Then we can define our <code>lbuiltin</code> function pointer type. And finally we can define the body of our <code>lval</code> struct. Now all our type issues are resolved and the compiler wont complain any more.</p>
 
-<pre><code class="lang-c">/* Forward Declarations */
+<pre><code data-language='c'>/* Forward Declarations */
 
 struct lval;
 struct lenv;
@@ -102,7 +102,7 @@ struct lval {
 
 <p>We can start by making a new constructor function for this type.</p>
 
-<pre><code data-language='C'>lval* lval_fun(lbuiltin func) {
+<pre><code data-language='c'>lval* lval_fun(lbuiltin func) {
   lval* v = malloc(sizeof(lval));
   v-&gt;type = LVAL_FUN;
   v-&gt;fun = func;
@@ -111,15 +111,15 @@ struct lval {
 
 <p>In the delete function we don't need to do anything special for function pointers.</p>
 
-<pre><code data-language='C'>case LVAL_FUN: break;</code></pre>
+<pre><code data-language='c'>case LVAL_FUN: break;</code></pre>
 
 <p>In the print function we ca just print out some nominal string.</p>
 
-<pre><code data-language='C'>case LVAL_FUN:   printf("&lt;function&gt;"); break;</code></pre>
+<pre><code data-language='c'>case LVAL_FUN:   printf("&lt;function&gt;"); break;</code></pre>
 
 <p>We're also going to add a new function for copying an <code>lval</code>. This is going to come in useful when we put things into, and take things out of, the environment. For numbers and functions we can just copy the relevant fields directly. For strings we need to copy using <code>malloc</code> and <code>strcpy</code>. To copy lists we need to allocate the correct amount of space and then copy each sub expression.</p>
 
-<pre><code data-language='C'>lval* lval_copy(lval* v) {
+<pre><code data-language='c'>lval* lval_copy(lval* v) {
   
   lval* x = malloc(sizeof(lval));
   x->type = v-&gt;type;
@@ -155,7 +155,7 @@ struct lval {
 
 <p>We can create a structure in C that does this as follows.</p>
 
-<pre><code class="lang-c">struct lenv {
+<pre><code data-language='c'>struct lenv {
   int count;
   char** syms;
   lval** vals;
@@ -163,7 +163,7 @@ struct lval {
 
 <p>To start we need some functions to create and delete this structure. These are pretty simple. Creation initialises the struct fields, while deletion iterates over the items in both lists and deletes or frees them.</p>
 
-<pre><code class="lang-c">lenv* lenv_new(void) {
+<pre><code data-language='c'>lenv* lenv_new(void) {
   lenv* e = malloc(sizeof(lenv));
   e-&gt;count = 0;
   e-&gt;syms = NULL;
@@ -189,7 +189,7 @@ void lenv_del(lenv* e) {
 
 <p>If existing value is found with that name we need to allocate some more space to put it in. For this we can use <code>realloc</code>, and store a copy of the <code>lval</code> and its name at the newly allocated locations.</p>
 
-<pre><code data-language='C'>lval* lenv_get(lenv* e, lval* k) {
+<pre><code data-language='c'>lval* lenv_get(lenv* e, lval* k) {
 
   /* Iterate over all items in environment */
   for (int i = 0; i &lt; e-&gt;count; i++) {
@@ -234,7 +234,7 @@ void lenv_put(lenv* e, lval* k, lval* v) {
 
 <p>Our evaluation function now depends on the some environment. We should pass this in as an argument and use it to extract get a value if we encounter a symbol type.</p>
 
-<pre><code data-language='C'>lval* lval_eval(lenv* e, lval* v) {
+<pre><code data-language='c'>lval* lval_eval(lenv* e, lval* v) {
   if (v-&gt;type == LVAL_SYM)   { return lenv_get(e, v); }
   if (v-&gt;type == LVAL_SEXPR) { return lval_eval_sexpr(e, v); }
   return v;
@@ -242,7 +242,7 @@ void lenv_put(lenv* e, lval* k, lval* v) {
 
 <p>Because we've added a function type our evaluation of S-Expressions also needs to change. Instead of checking for a symbol type we want to ensure it is a function type. If this condition holds we can call the <code>fun</code> field of the <code>lval</code> using the same notation as standard function calls.</p>
 
-<pre><code data-language='C'>lval* lval_eval_sexpr(lenv* e, lval* v) {
+<pre><code data-language='c'>lval* lval_eval_sexpr(lenv* e, lval* v) {
 
   for (int i = 0; i &lt; v-&gt;count; i++) { v-&gt;cell[i] = lval_eval(e, v-&gt;cell[i]); }
   for (int i = 0; i &lt; v-&gt;count; i++) { if (v-&gt;cell[i]-&gt;type == LVAL_ERR) { return lval_take(v, i); } }
@@ -274,7 +274,7 @@ void lenv_put(lenv* e, lval* k, lval* v) {
 
 <p>If we split this task into two functions we can neatly register all of our builtins with some environment.</p>
 
-<pre><code class="lang-c">void lenv_add_builtin(lenv* e, char* name, lbuiltin func) {
+<pre><code data-language='c'>void lenv_add_builtin(lenv* e, char* name, lbuiltin func) {
   lval* k = lval_sym(name);
   lval* v = lval_fun(func);
   lenv_put(e, k, v);
@@ -294,7 +294,7 @@ void lenv_add_builtins(lenv* e) {
 
 <p>The final step is to call this function before we create the interactive prompt. We also need to remember to delete the environment once we are finished.</p>
 
-<pre><code class="lang-c">lenv* e = lenv_new();
+<pre><code data-language='c'>lenv* e = lenv_new();
 lenv_add_builtins(e);
 
 while (1) {
@@ -321,7 +321,7 @@ lenv_del(e);</code></pre>
 
 <p>If everything is working correctly we should have a play around in the prompt. Now it should be clear functions are actually a new type of value, not symbols.</p>
 
-<pre><code>lispy&gt; +
+<pre><code data-language='lispy'>lispy&gt; +
 &lt;function&gt;
 lispy&gt; eval (head {5 10 11 15})
 5
@@ -344,7 +344,7 @@ lispy&gt;</code></pre>
 
 <p>This function we create to act like any other builtin. It first checks that the input arguments are the correct types. It then iterates over each symbol and value and puts them into the environment. Unless there is an error, there is no sensible value for this function to return, so for now, on success, we will simply return the empty expression <code>()</code>.</p>
 
-<pre><code data-language='C'>lval* builtin_def(lenv* e, lval* a) {
+<pre><code data-language='c'>lval* builtin_def(lenv* e, lval* a) {
   LASSERT(a, (a-&gt;cell[0]-&gt;type == LVAL_QEXPR), &quot;Function &#39;def&#39; passed incorrect type!&quot;);
 
   /* First argument is symbol list */
@@ -369,12 +369,12 @@ lispy&gt;</code></pre>
 
 <p>We need to register this new builtin using our builtin registration function <code>lenv_add_builtins</code>.</p>
 
-<pre><code class="lang-c">/* Variable Functions */
+<pre><code data-language='c'>/* Variable Functions */
 lenv_add_builtin(e, &quot;def&quot;,  builtin_def);</code></pre>
 
 <p>And now we should be able to have user defined variables! As our <code>def</code> function takes in a list of symbols we can do some cool things storing and manipulating symbols in lists before passing them to be defined. Have a play around in the prompt and ensure everything is working correctly. You should get behaviour like this. See what other complex methods are possible for the definition and evaluation of variables. Once we get to defining functions we'll really see some of the neat things that can be done with this approach.</p>
 
-<pre><code>lispy&gt; def {x} 100
+<pre><code data-language='lispy'>lispy&gt; def {x} 100
 ()
 lispy&gt; def {y} 200
 ()
@@ -416,7 +416,7 @@ lispy&gt;</code></pre>
 
 <p>To declare that a function takes variables arguments in the type signature you use ellipsis <code>...</code> to represent the rest of the arguments.</p>
 
-<p><code class="lang-c">lval* lval_err(char* fmt, ...);</code></p>
+<p><code data-language='c'>lval* lval_err(char* fmt, ...);</code></p>
 
 <p>Inside the function there are some standard library functions we can use to examine what the caller has passed in.</p>
 
@@ -426,7 +426,7 @@ lispy&gt;</code></pre>
 
 <p>Putting it altogether our new error function looks like this.</p>
 
-<pre><code class="lang-c">lval* lval_err(char* fmt, ...) {
+<pre><code data-language='c'>lval* lval_err(char* fmt, ...) {
   lval* v = malloc(sizeof(lval));
   v-&gt;type = LVAL_ERR;
 
@@ -453,7 +453,7 @@ lispy&gt;</code></pre>
 
 <p>To start we can look at <code>lenv_get</code> when a symbol can&#39;t be found, rather than reporting a generic error, we can actually return it&#39;s name.</p>
 
-<pre><code class="lang-c">return lval_err(&quot;Unbound Symbol &#39;%s&#39;&quot;, k-&gt;sym);</code></pre>
+<pre><code data-language='c'>return lval_err(&quot;Unbound Symbol &#39;%s&#39;&quot;, k-&gt;sym);</code></pre>
 
 <p>We can also adapt our <code>LASSERT</code> macro such that it can take variable arguments too. Because this is a macro and not a standard function the syntax is slightly different. On the left hand side of the definition we use the ellipses notation again, but on the right hand side we use a special variable <code>__VA_ARGS__</code> to paste in the contents.</p>
 
@@ -461,15 +461,15 @@ lispy&gt;</code></pre>
 
 <p>Because we might use <code>args</code> in the construction of the error message we need to make sure we don't delete it until we've created the error value.</p>
 
-<pre><code class="lang-c">#define LASSERT(args, cond, fmt, ...) if (!(cond)) { lval* err = lval_err(fmt, ##__VA_ARGS__); lval_del(args); return err; }</code></pre>
+<pre><code data-language='c'>#define LASSERT(args, cond, fmt, ...) if (!(cond)) { lval* err = lval_err(fmt, ##__VA_ARGS__); lval_del(args); return err; }</code></pre>
 
 <p>Now we can update some of our error messages to make them more informative. For example if the incorrect number of arguments were passed we can specify how many were required and how many were given.</p>
 
-<pre><code class="lang-c">LASSERT(a, (a-&gt;count == 1), &quot;Function &#39;head&#39; passed too many arguments. Got %i, Expected %i.&quot;, a-&gt;count, 1);</code></pre>
+<pre><code data-language='c'>LASSERT(a, (a-&gt;count == 1), &quot;Function &#39;head&#39; passed too many arguments. Got %i, Expected %i.&quot;, a-&gt;count, 1);</code></pre>
 
 <p>We can also improve our error reporting for type errors. We should attempt to report what type was expected by a function and what type it actually got. Before we can do this it would be useful to have a function that took as input some type and returned a string representation of that type.</p>
 
-<pre><code class="lang-c">char* ltype_name(int t) {
+<pre><code data-language='c'>char* ltype_name(int t) {
   switch(t) {
     case LVAL_FUN: return &quot;Function&quot;;
     case LVAL_NUM: return &quot;Number&quot;;
@@ -483,14 +483,14 @@ lispy&gt;</code></pre>
 
 <p>Then we can use this function in our <code>LASSERT</code> functions to report what was retrieved and what was expected in a useful way.</p>
 
-<pre><code class="lang-c">LASSERT(a, (a-&gt;cell[0]-&gt;type == LVAL_QEXPR), 
+<pre><code data-language='c'>LASSERT(a, (a-&gt;cell[0]-&gt;type == LVAL_QEXPR), 
   &quot;Function &#39;head&#39; passed incorrect type for argument 0. Got %s, Expected %s.&quot;,
   ltype_name(a-&gt;cell[0]-&gt;type), type_name(LVAL_QEXPR));
 </code></pre>
 
 <p>Go ahead and improve the error reporting in all situations where we return an error in the code. This should make debugging many of the next stages much easier as we begin to write real, and complicated code using our new language! See if you can use macros to save on typing and automatically generate code for common methods of error reporting.</p>
 
-<pre><code>lispy&gt; + 1 {5 6 7}
+<pre><code data-language='lispy'>lispy&gt; + 1 {5 6 7}
 Error: Function '+' passed incorrect type for argument 1. Got Q-Expression, Expected Number.
 lispy&gt; head {1 2 3} {4 5 6}
 Error: Function 'head' passed incorrect number of arguments. Got 2, Expected 1.
@@ -509,7 +509,7 @@ lispy&gt;</code></pre>
     </div>
     <div id="collapseOne" class="panel-collapse collapse">
       <div class="panel-body">
-<pre><code data-language='C'>#include "mpc.h"
+<pre><code data-language='c'>#include "mpc.h"
 
 #ifdef _WIN32
 
@@ -1040,7 +1040,7 @@ int main(int argc, char** argv) {
   mpca_lang(
     "                                                     \
       number : /-?[0-9]+/ ;                               \
-      symbol : /[a-zA-Z0-9_+\\-*\\/\\\\=&lt;&gt;!&]+/ ;         \
+      symbol : /[a-zA-Z0-9_+\\-*\\/\\\\=&lt;&gt;!&amp;]+/ ;         \
       sexpr  : '(' &lt;expr&gt;* ')' ;                          \
       qexpr  : '{' &lt;expr&gt;* '}' ;                          \
       expr   : &lt;number&gt; | &lt;symbol&gt; | &lt;sexpr&gt; | &lt;qexpr&gt; ;  \

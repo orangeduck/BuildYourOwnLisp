@@ -3,7 +3,7 @@
 ;;;
 
 ;;; Atoms
-(def {nil} {{}})
+(def {nil} {})
 (def {true} 1)
 (def {false} 0)
 
@@ -191,12 +191,14 @@
     {drop-while f (tail l)}
 })
 
+; Element of List
 (fun {elem x l} {
   if (== l {})
     {false}
     {if (== x (fst l)) {true} {elem x (tail l)}}
 })
 
+; Find element in list of pairs
 (fun {lookup x l} {
   if (== l {})
     {error "No Element Found"}
@@ -207,12 +209,14 @@
     }
 })
 
+; Zip two lists together into a list of pairs
 (fun {zip l0 l1} {
   if (or (== l0 {}) (== l1 {}))
     {{}}
     {join (list (join (head l0) (head l1))) (zip (tail l0) (tail l1))}
 })
 
+; Unzip a list of pairs into two lists
 (fun {unzip l} {
   if (== l {})
     {{{} {}}}
@@ -233,5 +237,3 @@
     { otherwise (+ (fib (- n 1)) (fib (- n 2))) }
 })
 
-; Pipe
-(fun {-> x & fs} {foldl (\ {z f} {f z}) x fs})

@@ -1,0 +1,91 @@
+/**
+ * GitHub theme
+ *
+ * @author Craig Campbell
+ * @version 1.0.4
+ */
+pre {
+    border: 1px solid #ccc;
+    word-wrap: break-word;
+    padding: 6px 10px;
+    line-height: 19px;
+    margin-bottom: 20px;
+}
+
+code {
+    border: 1px solid #eaeaea;
+    margin: 0px 2px;
+    padding: 0px 5px;
+    font-size: 12px;
+}
+
+pre code {
+    border: 0px;
+    padding: 0px;
+    margin: 0px;
+    -moz-border-radius: 0px;
+    -webkit-border-radius: 0px;
+    border-radius: 0px;
+}
+
+pre, code {
+    font-family: Consolas, 'Liberation Mono', Courier, monospace;
+    color: #333;
+    background: #fcfcfc;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+}
+
+pre, pre code {
+    font-size: 13px;
+}
+
+pre .comment {
+    color: #679b7c;
+}
+
+pre .keyword {
+    font-weight: bold;
+    color: #0080c0;
+}
+
+pre .keyword.operator {
+    color: #0000a0;
+}
+
+pre .keyword.builtin {
+    color: #800000;
+}
+
+pre .constant.numeric {
+    color: #ff8000;
+}
+
+pre .constant.string {
+    color: #808080;
+}
+
+pre .constant.character {
+    color: #808080;
+}
+
+pre .meta {
+    font-weight: bold;
+    color: #2f2f46;
+}
+
+pre .meta.preprocessor {
+    font-weight: normal;
+    color: #808040;
+}
+
+pre .support.type {
+    font-weight: bold;
+    color: #800000;
+}
+
+pre .storage {
+    font-weight: bold;
+    color: #ae3f71;
+}

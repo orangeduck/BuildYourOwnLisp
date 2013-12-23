@@ -119,7 +119,7 @@
 
 <p>We also change our <code>operator</code> rule to now be <code>symbol</code>. This is because later on we are going to be using variables and other symbols which are not all operators.</p>
 
-<pre><code data-language='C'>  mpc_parser_t* Number = mpc_new(&quot;number&quot;);
+<pre><code data-language='c'>  mpc_parser_t* Number = mpc_new(&quot;number&quot;);
   mpc_parser_t* Symbol = mpc_new(&quot;symbol&quot;);
   mpc_parser_t* Sexpr  = mpc_new(&quot;sexpr&quot;);
   mpc_parser_t* Qexpr  = mpc_new(&quot;qexpr&quot;);
@@ -139,14 +139,14 @@
 
 <p>We should also remember to cleanup these rules on exit.</p>
 
-<pre><code data-language='C'>mpc_cleanup(6, Number, Symbol, Sexpr, Qexpr, Expr, Lispy);</code></pre>
+<pre><code data-language='c'>mpc_cleanup(6, Number, Symbol, Sexpr, Qexpr, Expr, Lispy);</code></pre>
 
 
 <h2>Expression Structure</h2>
 
 <p>We can now parse lists of expressions, but we still need to store them internally as an <code>lval</code>. We're therefore going to add three new types to the <code>type</code> enum we were using to encode <code>lval</code> types. The first new type is <em>symbol</em>, which we're going to use to represent operators such as <code>+</code>, and later on variables and functions. The other two new types are for <em>S-Expressions</em> and <em>Q-Expressions</em>.</p>
 
-<pre><code data-language="C">/* Add SYM, SEXPR, and QEXPR as possible lval types. */
+<pre><code data-language='c'>/* Add SYM, SEXPR, and QEXPR as possible lval types. */
 enum { LVAL_ERR, LVAL_NUM, LVAL_SYM, LVAL_SEXPR, LVAL_QEXPR };
 </code></pre>
 
@@ -156,7 +156,7 @@ enum { LVAL_ERR, LVAL_NUM, LVAL_SYM, LVAL_SEXPR, LVAL_QEXPR };
 
 <p>Finally we also change the data representing an <em>error</em> from an <code>int</code> to a string. This means we can store a unique error message rather than just an error code. This will make our error reporting better and more flexible, and we can get rid of the original error <code>enum</code>.</p>
 
-<pre><code data-language="C">
+<pre><code data-language='c'>
 typedef struct lval {
   int type;
 
@@ -181,7 +181,7 @@ typedef struct lval {
 
 <p>We can change our <code>lval</code> construction functions to return pointers to an <code>lval</code>, rather than one directly. For this we need to use <code>malloc</code> to allocate enough space for the <code>lval</code> struct, and then to fill in the fields with the relevant information. Using this arrow operator <code>-&gt;</code> this doesn't require too many changes.</p>
 
-<pre><code data-language="C">/* Construct a pointer to a new Number lval */ 
+<pre><code data-language='c'>/* Construct a pointer to a new Number lval */ 
 lval* lval_num(long x) {
   lval* v = malloc(sizeof(lval));
   v-&gt;type = LVAL_NUM;
@@ -349,13 +349,13 @@ void lval_println(lval* v) { lval_print(v); putchar(&#39;\n&#39;); }</code></pre
 
 <p>In our main loop, instead of evaluation, we can try reading in the result and printing out what we have read.</p>
 
-<pre><code data-language="C">lval* x = lval_read(r.output);
+<pre><code data-language='c'>lval* x = lval_read(r.output);
 lval_println(x);
 lval_del(x);</code></pre>
 
 <p>If this is successful you should see something like the following when entering input to your program.</p>
 
-<pre><code>lispy&gt; + 2 2
+<pre><code data-language='lispy'>lispy&gt; + 2 2
 (+ 2 2)
 lispy&gt; + 2 (* 7 6) (* 2 5)
 (+ 2 (* 7 6) (* 2 5))
@@ -495,14 +495,14 @@ lval* lval_take(lval* v, int i) {
 
 <p>Our evalation functions are complete! We just need to change <code>main</code> again to pass the input through evaluation and print out the result.</p>
 
-<pre><code data-language='C'>lval* x = lval_eval(lval_read(r.output));
+<pre><code data-language='c'>lval* x = lval_eval(lval_read(r.output));
 lval_println(x);
 lval_del(x);
 </code></pre>
 
 <p>If all this is successful then you should now be able to evaluate expressions correctly in the same way as in the previous chapter. Take a little breather and have a play around with the new evaluation. Make sure everything is working and sane.</p>
 
-<pre><code>lispy&gt; + 1 2 3
+<pre><code data-language='lispy'>lispy&gt; + 1 2 3
 6
 lispy&gt; + 1 (* 7 5) 3
 39
@@ -635,7 +635,7 @@ lval* builtin_tail(lval* a) {
 
 <p>The <code>eval</code> function is somewhat like the opposite. It takes as input some single Q-Expression, which it should convert to an S-Expression, and evaluate using <code>lval_eval</code>.</p>
 
-<pre><code data-language='C'>lval* builtin_list(lval* a) {
+<pre><code data-language='c'>lval* builtin_list(lval* a) {
   a-&gt;type = LVAL_QEXPR;
   return a;
 }
@@ -688,7 +688,7 @@ lval* lval_join(lval* x, lval* y) {
 
 <p>We have all of our builtin functions so now we need to make a function that can call the correct one depending on what symbol it encounters. We can do this using <code>strcmp</code> and <code>strstr</code>.</p>
 
-<pre><code data-language='C'>lval* builtin(lval* a, char* func) {
+<pre><code data-language='c'>lval* builtin(lval* a, char* func) {
   if (strcmp(&quot;list&quot;, func) == 0) { return builtin_list(a); }
   if (strcmp(&quot;head&quot;, func) == 0) { return builtin_head(a); }
   if (strcmp(&quot;tail&quot;, func) == 0) { return builtin_tail(a); }
@@ -701,14 +701,14 @@ lval* lval_join(lval* x, lval* y) {
 
 <p>Then we can change our evaluation line in <code>lval_eval_sexpr</code> to call <code>builtin</code> rather than <code>builtin_op</code>.</p>
 
-<pre><code data-language='C'>/* Call builtin with operator */
+<pre><code data-language='c'>/* Call builtin with operator */
 lval* result = builtin(v, func-&gt;sym);
 lval_del(func);
 return result;</code></pre>
 
 <p>Now lists should now be supported in our language! Compile and run the latest version and see what you can do with the new list operators. Try putting code and symbols into our lists and evaluating them in different ways. The ability to put S-Expressions inside a list using Q-Expressions is pretty awesome. It means we can treat code like data itself. We can't even do this in C!</p>
 
-<pre><code>lispy&gt; list 1 2 3 4
+<pre><code data-language='lispy'>lispy&gt; list 1 2 3 4
 {1 2 3 4}
 lispy&gt; {head (list 1 2 3 4)}
 {head (list 1 2 3 4)}
@@ -735,7 +735,7 @@ lispy&gt; eval (head {(+ 1 2) (+ 10 20)})
     </div>
     <div id="collapseOne" class="panel-collapse collapse">
       <div class="panel-body">
-<pre><code data-language='C'>#include "mpc.h"
+<pre><code data-language='c'>#include "mpc.h"
 
 #ifdef _WIN32
 
