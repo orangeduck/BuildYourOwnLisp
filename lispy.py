@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask
 
 header = """
@@ -52,7 +54,8 @@ app = Flask(__name__)
 def route_page(page):
     page = page + '.html'
     if not page in pages: return '404!'
-    contents = open(page, 'r').read()
+    path = os.path.join(os.path.split(__file__)[0], page)
+    contents = open(path, 'r').read()
     contents = header + contents + footer
     return contents
     
