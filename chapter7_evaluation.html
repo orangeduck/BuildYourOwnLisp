@@ -14,7 +14,7 @@
 
 <p>Before working out exactly how we are going to do this traversal, lets see how this structure is defined internally. If we peek inside <code>mpc.h</code> we can have a look at the definition of <code>mpc_ast_t</code>, which is the data structure we got from the parse.</p>
 
-<pre style='margin-left: 375px;'><code class="lang-c">typedef struct mpc_ast_t {
+<pre style='margin-left: 375px;'><code data-language='c'>typedef struct mpc_ast_t {
   char* tag;
   char* contents;
   int children_num;
@@ -39,7 +39,7 @@
 
 <p>Because the type <code>mpc_ast_t*</code> is a pointer type there is a slightly different syntax to access its fields. We need to use an arrow <code>-></code> instead of a dot <code>.</code>. This is explained in greater depth in later chapters.</p>
 
-<pre><code data-language='C'>/* Load AST from output */
+<pre><code data-language='c'>/* Load AST from output */
 mpc_ast_t* a = r.output;
 printf("Tag: %s\n", a->tag);
 printf("Contents: %s\n", a->contents);
@@ -57,7 +57,7 @@ printf("First Child Number of children: %i\n", c0->children_num);
 
 <p>Now we can think of how to evaluate a particular tree node. To do this we can rely on a few observations from the previous chapter. Try printing out some parses using your program from the previous chapter and see what you can notice.</p>
 
-<pre><code>lispy> + 1 (* 5 4)
+<pre><code data-language='lispy'>lispy> + 1 (* 5 4)
 &gt;:
   regex:
   operator|char: '+'
@@ -85,7 +85,7 @@ printf("First Child Number of children: %i\n", c0->children_num);
 
 <p>We can use <code>strmp</code> to check if some content is equal to something, and <code>strstr</code> to check if a tag contains a parse rule.</p>
 
-<pre><code data-language='C'>long eval(mpc_ast_t* t) {
+<pre><code data-language='c'>long eval(mpc_ast_t* t) {
   
   /* If tagged as number return it directly. */ 
   if (strstr(t->tag, "number")) { return atoi(t->contents); }
@@ -108,7 +108,7 @@ printf("First Child Number of children: %i\n", c0->children_num);
 
 <p>This leaves us to define the <code>eval_op</code> function. This takes in a number, an operator string, and another number. It should test for what operator is passed in an perform the corrisponding C operation on the inputs.</p>
 
-<pre><code data-language='C'>/* Use operator string to see which operation to perform */
+<pre><code data-language='c'>/* Use operator string to see which operation to perform */
 long eval_op(long x, char* op, long y) {
   if (strcmp(op, &quot;+&quot;) == 0) { return x + y; }
   if (strcmp(op, &quot;-&quot;) == 0) { return x - y; }
@@ -123,13 +123,13 @@ long eval_op(long x, char* op, long y) {
 
 <p>We still need to remember to delete the output <em>abstract syntax tree</em> after we are done evaluating it.</p>
 
-<pre><code data-language='C'>long result = eval(r.output);
+<pre><code data-language='c'>long result = eval(r.output);
 fprintf(stdout, &quot;%li\n&quot;, result);
 mpc_ast_delete(r.output);</code></pre>
 
 <p>If all of this is successful you should be able to now do some basic maths with your new programming language!</p>
 
-<pre><code>Lispy Version 0.0.0.0.3
+<pre><code data-language='lispy'>Lispy Version 0.0.0.0.3
 Press Ctrl+c to Exit
 
 lispy&gt; + 5 6
@@ -154,7 +154,7 @@ lispy&gt;</code></pre>
     </div>
     <div id="collapseOne" class="panel-collapse collapse">
       <div class="panel-body">
-<pre><code data-language='C'>#include "mpc.h"
+<pre><code data-language='c'>#include "mpc.h"
 
 #ifdef _WIN32
 

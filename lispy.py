@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask
 
 header = """
@@ -8,8 +10,9 @@ header = """
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Bootstrap -->
     <link href="static/css/bootstrap.css" rel="stylesheet">
-    <link href="static/css/github.css" rel="stylesheet">
-
+    <link href="static/css/code.css" rel="stylesheet">
+    <link rel="icon" type="image/png" href="/static/img/favicon.png" />
+    
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -30,10 +33,13 @@ footer = """
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://code.jquery.com/jquery.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="static/js/bootstrap.min.js"></script>
+    <script src="static/js/bootstrap.js"></script>
 
     <!-- Syntax Highlighting -->
-    <script src="static/js/rainbow.min.js"></script>
+    <script src="static/js/rainbow.js"></script>
+    <script src="static/js/language/generic.js"></script>
+    <script src="static/js/language/c.js"></script>
+    <script src="static/js/language/lispy.js"></script>
   </body>
 </html>
 """
@@ -52,7 +58,8 @@ app = Flask(__name__)
 def route_page(page):
     page = page + '.html'
     if not page in pages: return '404!'
-    contents = open(page, 'r').read()
+    path = os.path.join(os.path.split(__file__)[0], page)
+    contents = open(path, 'r').read()
     contents = header + contents + footer
     return contents
     

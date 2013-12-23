@@ -24,7 +24,7 @@
 
 <p>First we check the error conditions, then we compare the numbers in each of the arguments to get some result. Finally we return this result as a number value.</p>
 
-<pre><code data-language='C'>lval* builtin_ord(lenv* e, lval* a, char* op) {
+<pre><code data-language='c'>lval* builtin_ord(lenv* e, lval* a, char* op) {
   LASSERT_NUM(op, a, 2);
   LASSERT_TYPE(op, a, 0, LVAL_NUM);
   LASSERT_TYPE(op, a, 1, LVAL_NUM);
@@ -51,7 +51,7 @@ lval* builtin_le(lenv* e, lval* a) { return builtin_ord(e, a, "&lt;="); }
 
 <p>This function essentially checks that, whatever type of <code>lval</code> is input, all the fields which make up that <code>lval</code> data are equal. If all the fields are equal, the whole thing is considered equal. Otherwise if there are any differences the whole thing is considered unequal.</p>
 
-<pre><code class="lang-c">int lval_eq(lval* x, lval* y) {
+<pre><code data-language='c'>int lval_eq(lval* x, lval* y) {
 
   /* Different Types are always unequal */
   if (x-&gt;type != y-&gt;type) { return 0; }
@@ -90,7 +90,7 @@ lval* builtin_le(lenv* e, lval* a) { return builtin_ord(e, a, "&lt;="); }
 
 <p>Using this function the new builtin function we need to create become really simple to add. Like in the ordering builtins we just ensure we compare the two arguments and store the result of the comparison into a new lval.</p>
 
-<pre><code class="lang-c">lval* builtin_cmp(lenv* e, lval* a, char* op) {
+<pre><code data-language='c'>lval* builtin_cmp(lenv* e, lval* a, char* op) {
   LASSERT_NUM(op, a, 2);
   int r;
   if (strcmp(op, "==") == 0) { r =  lval_eq(a-&gt;cell[0], a-&gt;cell[1]); }
@@ -111,7 +111,7 @@ lval* builtin_ne(lenv* e, lval* a) { return builtin_cmp(e, a, "!="); }</code></p
 
 <p>So our <code>if</code> function takes three arguments. The first is the result of some comparison, either <code>0</code> or <code>1</code>. The second is a Q-Expression representing the code to evaluate given the condition is true. The third argument is another Q-Expression representing the code to evaluate given the condition is false. This is not too different to some of the existing builtins we've made. We can add it like this.</p>
 
-<pre><code class="lang-c">lval* builtin_if(lenv* e, lval* a) {
+<pre><code data-language='c'>lval* builtin_if(lenv* e, lval* a) {
   LASSERT_NUM("if", a, 3);
   LASSERT_TYPE("if", a, 0, LVAL_NUM);
   LASSERT_TYPE("if", a, 1, LVAL_QEXPR);
@@ -137,7 +137,7 @@ lval* builtin_ne(lenv* e, lval* a) { return builtin_cmp(e, a, "!="); }</code></p
 
 <p>All that remains is for us to register all of these new functions as builtins and we are again ready to go!</p>
 
-<pre><code class="lang-c">/* Comparison Functions */
+<pre><code data-language='c'>/* Comparison Functions */
 lenv_add_builtin(e, &quot;if&quot;,   builtin_if);
 lenv_add_builtin(e, &quot;==&quot;,   builtin_eq); lenv_add_builtin(e, &quot;!=&quot;,   builtin_ne);
 lenv_add_builtin(e, &quot;&gt;&quot;,    builtin_gt); lenv_add_builtin(e, &quot;&lt;&quot;,    builtin_lt);
@@ -146,7 +146,7 @@ lenv_add_builtin(e, &quot;&gt;=&quot;,   builtin_ge); lenv_add_builtin(e, &quot;
 
 <p>Have a quick mess around to check that everything is working correctly.</p>
 
-<pre><code>lispy&gt; &gt; 10 5
+<pre><code data-language='lispy'>lispy&gt; &gt; 10 5
 1
 lispy&gt; &lt;= 88 5
 0
@@ -177,7 +177,7 @@ lispy&gt; if (== x y) {+ x y} {- x y}
 
 <p>It works like this. If we encounter the empty list we just return <code>0</code>. Otherwise we return <code>1</code>, plus the length of the <code>tail</code> of the input list. Think about why this works. It repeatedly uses the <code>len</code> function until it reaches the empty list. At this point it returns <code>0</code> and adds all the other partial results together.</p>
 
-<pre><code>(fun {len l} {
+<pre><code data-language='lispy'>(fun {len l} {
   if (== l {})
     {0}
     {+ 1 (len (tail l))}
@@ -187,7 +187,7 @@ lispy&gt; if (== x y) {+ x y} {- x y}
 
 <p>For example here is another function for reversing a list. Like before it checks for the empty list, but this time returns the empty list back. This makes sense. The reverse of the empty list is just the empty list. But if it gets something bigger than the empty list, it reverses the tail, and stick this in front of the head.</p>
 
-<pre><code>(fun {reverse l} {
+<pre><code data-language='lispy'>(fun {reverse l} {
   if (== l {})
     {{}}
     {join (reverse (tail l)) (head l)}
@@ -209,7 +209,7 @@ lispy&gt; if (== x y) {+ x y} {- x y}
     </div>
     <div id="collapseOne" class="panel-collapse collapse">
       <div class="panel-body">
-<pre><code data-language='C'>#include "mpc.h"
+<pre><code data-language='c'>#include "mpc.h"
 
 #ifdef _WIN32
 
@@ -812,7 +812,7 @@ void lenv_add_builtins(lenv* e) {
 
 /* Evaluation */
 
-lval* lval_apply(lenv* e, lval* f, lval* a) {
+lval* lval_call(lenv* e, lval* f, lval* a) {
   
   if (f-&gt;builtin) { return f-&gt;builtin(e, a); }
   
@@ -889,7 +889,7 @@ lval* lval_eval_sexpr(lenv* e, lval* v) {
     return err;
   }
   
-  lval* result = lval_apply(e, f, v);
+  lval* result = lval_call(e, f, v);
   lval_del(f);
   return result;
 }
@@ -943,7 +943,7 @@ int main(int argc, char** argv) {
   mpca_lang(
     "                                                     \
       number : /-?[0-9]+/ ;                               \
-      symbol : /[a-zA-Z0-9_+\\-*\\/\\\\=&lt;&gt;!&]+/ ;         \
+      symbol : /[a-zA-Z0-9_+\\-*\\/\\\\=&lt;&gt;!&amp;]+/ ;         \
       sexpr  : '(' &lt;expr&gt;* ')' ;                          \
       qexpr  : '{' &lt;expr&gt;* '}' ;                          \
       expr   : &lt;number&gt; | &lt;symbol&gt; | &lt;sexpr&gt; | &lt;qexpr&gt; ;  \

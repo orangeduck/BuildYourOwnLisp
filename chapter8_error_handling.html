@@ -5,7 +5,7 @@
 
 <p>Some of you may have noticed a problem with the previous chapter&#39;s program. Try entering this into the prompt and see what happens.</p>
 
-<pre><code>Lispy Version 0.0.0.0.2
+<pre><code data-language='lispy'>Lispy Version 0.0.0.0.2
 Press Ctrl+c to Exit
 
 lispy&gt; / 10 0</code></pre>
@@ -23,7 +23,7 @@ lispy&gt; / 10 0</code></pre>
 
 <p>This we are going to call an <code>lval</code>, which stands for <em>Lisp value</em>.</p>
 
-<pre><code class="lang-c">/* Declare New lval Struct */
+<pre><code data-language='c'>/* Declare New lval Struct */
 typedef struct {
   int type;
   long num;
@@ -41,14 +41,14 @@ typedef struct {
 
 <p>In C this is supported using something called an <code>enum</code>.</p>
 
-<pre><code class="lang-c">/* Create Enumeration of Possible lval Types */
+<pre><code data-language='c'>/* Create Enumeration of Possible lval Types */
 enum { LVAL_NUM, LVAL_ERR };</code></pre>
 
 <p>An <code>enum</code> is a declaration of variables which under the hood are automatically assigned integer constant values. Above are our enumerated values for the <code>type</code> field.</p>
 
 <p>We also want to declare an enumeration for the <em>error</em> field. We have three error cases in our particular program. There is division by zero, an unknown operator, or being passed a number that is too large to represented internally using a <code>long</code>. These can be enumerated as follows.</p>
 
-<pre><code class="lang-c">/* Create Enumeration of Possible Error Types */
+<pre><code data-language='c'>/* Create Enumeration of Possible Error Types */
 enum { LERR_DIV_ZERO, LERR_BAD_OP, LERR_BAD_NUM };</code></pre>
 
 
@@ -56,7 +56,7 @@ enum { LERR_DIV_ZERO, LERR_BAD_OP, LERR_BAD_NUM };</code></pre>
 
 <p>Our <code>lval</code> type is ready to go. Unlike the previous <code>long</code> we have no current method for creating new instances of it. To do this we can declare two functions that construct an <code>lval</code> of either an <em>error</em> type or a <em>number</em> type.</p>
 
-<pre><code class="lang-c">/* Create a new number type lval */
+<pre><code data-language='c'>/* Create a new number type lval */
 lval lval_num(long x) {
   lval v;
   v.type = LVAL_NUM;
@@ -78,7 +78,7 @@ lval lval_err(int x) {
 
 <p>For example we can build a function that can print an <code>lval</code> no matter what type it is like this.</p>
 
-<pre><code data-language='C'>void lval_print(lval v) {
+<pre><code data-language='c'>void lval_print(lval v) {
   switch (v.type) {
     /* In the case the type is a number print it, then &#39;break&#39; out of the switch. */
     case LVAL_NUM: printf(&quot;%li&quot;, v.num); break;
@@ -95,7 +95,7 @@ lval lval_err(int x) {
 
 <p>We'll also make use of a cheeky function that does the above but appends a newline.</p>
 
-<pre><code class="lang-c">void lval_println(lval v) { lval_print(v); putchar(&#39;\n&#39;); }</code></pre>
+<pre><code data-language='c'>void lval_println(lval v) { lval_print(v); putchar(&#39;\n&#39;); }</code></pre>
 
 
 <h2>Evaluating Errors</h2>
@@ -106,7 +106,7 @@ lval lval_err(int x) {
 
 <p>In our <code>eval_op</code> function, if we encounter an error we should return it right away, and only do computation if both the arguments are numbers. We also should add our code to return an error rather than attempt to divide by zero. To fix the crash from right at the beginning of this chapter.</p>
 
-<pre><code class="lang-c">lval eval_op(lval x, char* op, lval y) {
+<pre><code data-language='c'>lval eval_op(lval x, char* op, lval y) {
 
   /* If either value is an error return it */
   if (x.type == LVAL_ERR) { return x; }
@@ -138,7 +138,7 @@ lval lval_err(int x) {
 
 <p>In this case we us the <code>strtol</code> function to convert from string to <code>long</code> and can check <code>errno</code> to ensure the conversion goes correctly. This is a more robust way to convert numbers in C.</p>
 
-<pre><code class="lang-c">lval eval(mpc_ast_t* t) {
+<pre><code data-language='c'>lval eval(mpc_ast_t* t) {
   
   if (strstr(t-&gt;tag, "number")) {
     /* Check if there is some error in conversion */
@@ -160,13 +160,13 @@ lval lval_err(int x) {
 
 <p>The final small step is to change how we print the result found by our evaluation it to use our newly defined printing function which can print any type of <code>lval</code>.</p>
 
-<pre><code class="lang-c">lval result = eval(r.output);
+<pre><code data-language='c'>lval result = eval(r.output);
 lval_println(result);
 mpc_ast_delete(r.output);</code></pre>
 
 <p>And we are done! Try running this new problem and make sure there are no crashes when dividing by zero!</p>
 
-<pre><code>lispy> / 10 0
+<pre><code data-language='lispy'>lispy> / 10 0
 Error: Division By Zero!
 lispy> / 10 2
 5</code></pre>
@@ -207,7 +207,7 @@ lispy> / 10 2
     </div>
     <div id="collapseOne" class="panel-collapse collapse">
       <div class="panel-body">
-<pre><code data-language='C'>#include "mpc.h"
+<pre><code data-language='c'>#include "mpc.h"
 
 #ifdef _WIN32
 

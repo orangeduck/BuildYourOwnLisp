@@ -601,7 +601,7 @@ void lenv_add_builtins(lenv* e) {
 
 /* Evaluation */
 
-lval* lval_apply(lenv* e, lval* f, lval* a) {
+lval* lval_call(lenv* e, lval* f, lval* a) {
   
   if (f->builtin) { return f->builtin(e, a); }
   
@@ -678,7 +678,7 @@ lval* lval_eval_sexpr(lenv* e, lval* v) {
     return err;
   }
   
-  lval* result = lval_apply(e, f, v);
+  lval* result = lval_call(e, f, v);
   lval_del(f);
   return result;
 }

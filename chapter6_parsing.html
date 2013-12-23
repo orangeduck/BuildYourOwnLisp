@@ -46,7 +46,7 @@
 
 <p>Formalising the above rules, and using our newly found regular expression knowledge, we can write the grammar for our polish notation language in code as...</p>
 
-<pre><code data-language="C">/* Create Some Parsers */
+<pre><code data-language='c'>/* Create Some Parsers */
 mpc_parser_t* Number   = mpc_new(&quot;number&quot;);
 mpc_parser_t* Operator = mpc_new(&quot;operator&quot;);
 mpc_parser_t* Expr     = mpc_new(&quot;expr&quot;);
@@ -67,7 +67,7 @@ mpca_lang(
 
 <p>This we put right at the beginning of our <code>main</code> function before we print the <em>Version</em> and <em>Exit</em> info. At the end of our program we also need to delete the parsers when we are done with them. Right before <code>main</code> returns we should place the following cleanup code</p>
 
-<pre><code data-language="C">/* Undefine and Delete our Parsers */
+<pre><code data-language='c'>/* Undefine and Delete our Parsers */
 mpc_cleanup(4, Number, Operator, Expr, Lispy);</code></pre>
 
 <p>We've now successfully used <code>mpc</code> to create a parser for our <em>Polish Notation</em> language, but we still need to use it on the user input supplied each time from the prompt.</p>
@@ -77,7 +77,7 @@ mpc_cleanup(4, Number, Operator, Expr, Lispy);</code></pre>
 
 <p>Now we have our grammar specified we need to edit our <code>while</code> loop so that rather than just echoing user input back, it actually attempts to parse the input using our <em>Polish Notation</em> parser. We replace <code>fprintf</code> with the following code that uses our main parser <code>Lispy</code>.</p>
 
-<pre><code data-language="C">/* Attempt to Parse the user Input */
+<pre><code data-language='c'>/* Attempt to Parse the user Input */
 mpc_result_t r;
 if (mpc_parse(&quot;&lt;stdin&gt;&quot;, input, Lispy, &amp;r)) {
   /* On Success Print the AST */
@@ -100,7 +100,7 @@ if (mpc_parse(&quot;&lt;stdin&gt;&quot;, input, Lispy, &amp;r)) {
 
 <p>The variable <code>r</code> has the type <code>mpc_result_t</code>. This is defined in <code>mpc.h</code> as follows:</p>
 
-<pre><code data-language='C'>typedef union {
+<pre><code data-language='c'>typedef union {
   mpc_err_t* error;
   mpc_val_t* output;
 } mpc_result_t;</code></pre>
@@ -138,7 +138,7 @@ if (mpc_parse(&quot;&lt;stdin&gt;&quot;, input, Lispy, &amp;r)) {
 
 <p>If successful the program should print out the <em>abstract syntax tree</em> of a parse when the input is valid, and an error when it is invalid.</p>
 
-<pre><code>Lispy Version 0.0.0.0.2
+<pre><code data-language='lispy'>Lispy Version 0.0.0.0.2
 Press Ctrl+c to Exit
 
 lispy&gt; + 5 (* 2 2)
@@ -161,7 +161,7 @@ lispy&gt;</code></pre>
 
 <p>If unsuccessful you might get something that looks like the following:</p>
 
-<pre><code>Lispy Version 0.0.0.0.2
+<pre><code data-language='lispy'>Lispy Version 0.0.0.0.2
 Press Ctrl+c to Exit
 
 lispy&gt;
@@ -184,7 +184,7 @@ lispy&gt;
     </div>
     <div id="collapseOne" class="panel-collapse collapse">
       <div class="panel-body">
-<pre><code data-language='C'>#include "mpc.h"
+<pre><code data-language='c'>#include "mpc.h"
 
 #ifdef _WIN32
 

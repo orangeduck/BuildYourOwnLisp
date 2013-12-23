@@ -1,29 +1,72 @@
-<h2>Strings &amp; IO</h2>
-<p>Our Lisp is finally pretty functional. We can write a whole bunch of different functions and end up with some quite complex constructs with the ability to do some really cool things. Even things that can&#39;t be done in lots of other heavyweight languages!</p>
-<p>But we still need a way to record all these inputs. In this chapter we&#39;ll add the functionality to load a file of code and run it. We&#39;ll also add support for code comments, strings, and printing.</p>
-<h3>String Type</h3>
-<p>When we load a file we want the user to be able to pass in a string of the file name. Our language supports symbols but still doesn&#39;t support strings which can include spaces and escape characters. We need to add a new <code>lval</code> type for our strings. We&#39;ve added a bunch of <code>lval</code> types before - and this time we do the same process.</p>
-<p>First we add an entry to our enum.</p>
-<pre><code class="lang-c">enum { LVAL_ERR, LVAL_NUM, LVAL_SYM, LVAL_STR, LVAL_FUN, LVAL_SEXPR, LVAL_QEXPR };</code></pre>
-<p>Then we add an entry to our <code>lval</code> struct to store the actual string data.</p>
-<pre><code class="lang-c">  /* Basic */
-  long num;
-  char* err;
-  char* sym;
-  char* str;</code></pre>
-<p>We&#39;ll add a function for constructing string lvals, much like our function for constructing symbol lvals.</p>
-<pre><code class="lang-c">lval* lval_str(char* s) {
+<h1>Strings <small>&bull; Chapter 13</small></h1>
+
+
+<h2>Libraries</h2>
+
+<div class='pull-right alert alert-warning' style="margin: 15px; text-align: center;">
+  <img src="/static/img/string.png" alt="string"/>
+  <p><small>String &bull; How long is it.</small></p>
+</div>
+
+<p>Our Lisp is finally pretty functional. We should be able to write almost any functions we want. We can build some quite complex constructs using it, and even do some cool things that can&#39;t be done in lots of other heavyweight and popular languages!</p>
+
+<p>Every time we update our program and run it again it is getting annoying having to type in again all of our functions. In this chapter we&#39;ll add the functionality to load code from a file and run it. This will allow us to start building a standard library up. Along the way we&#39;ll also add support for code comments, strings, and printing.</p>
+
+
+<h2>String Type</h2>
+
+<p>For the user to load a file we'll have to let them supply a string consisting of the file name. Our language supports symbols, but still doesn&#39;t support strings, which can include spaces and other characters. We need to add this possible <code>lval</code> type to specify the file names we need.</p>
+
+<p>We start, as in other chapters, by adding an entry to our enum and adding an entry to our <code>lval</code> to represent the type's data.</p>
+
+<pre><code data-language='c'>enum { LVAL_ERR, LVAL_NUM, LVAL_SYM, LVAL_STR, LVAL_FUN, LVAL_SEXPR, LVAL_QEXPR };</code></pre>
+
+<pre><code data-language='c'>/* Basic */
+long num;
+char* err;
+char* sym;
+char* str;
+</code></pre>
+
+<p>Next we can add a function for constructing string <code>lval</code>, very similar to how we construct constructing symbols.</p>
+
+<pre><code data-language='c'>lval* lval_str(char* s) {
   lval* v = malloc(sizeof(lval));
   v-&gt;type = LVAL_STR;
   v-&gt;str = malloc(strlen(s) + 1);
   strcpy(v-&gt;str, s);
   return v;
 }</code></pre>
-<p>We also need to add the relevant entries into the deletion <code>case LVAL_STR: free(v-&gt;str); break;</code>, copying <code>case LVAL_STR: x-&gt;str = malloc(strlen(v-&gt;str) + 1); strcpy(x-&gt;str, v-&gt;str); break;</code>, equality <code>case LVAL_STR: return (strcmp(x-&gt;str, y-&gt;str) == 0);</code>, and type name <code>case LVAL_STR: return &quot;String&quot;;</code> functions.</p>
-<p>We also need to add an entry for the printing function. This is a little bit more complicated as we want to make sure we escape any characters such as newlines. Luckily there is a <code>mpc</code> function that can do this for us.</p>
-<p><code>case LVAL_STR:   lval_print_str(v); break;</code></p>
-<p>where</p>
-<pre><code class="lang-c">void lval_print_str(lval* v) {
+
+<p>We also need to add the relevant entries into our functions that deal with <code>lval</code>.
+
+<p>For Deletion...</p>
+
+<pre><code data-language='c'>case LVAL_STR: free(v-&gt;str); break;</code></pre>
+
+<p>For Copying...</p>
+
+<pre><code data-language='c'>case LVAL_STR: x-&gt;str = malloc(strlen(v-&gt;str) + 1); strcpy(x-&gt;str, v-&gt;str); break;</code></pre>
+
+<p>For Equality..</p>
+
+<pre><code data-language='c'>case LVAL_STR: return (strcmp(x-&gt;str, y-&gt;str) == 0);</code></pre>
+
+<p>For Type Name...</p>
+
+<pre><code data-language='c'>case LVAL_STR: return &quot;String&quot;;</code></pre>
+
+<p>For the printing function we need to do a little more. The string we store internally is different to the string we want to print. We want to print a string as a user might input it, using <code>\n</code> to represent a newline and allowing for other escape characters.</p>
+
+<p>We therefore need to escape it before we print it. Luckily we can make use of a <code>mpc</code> function that will do this for us.</p>
+
+<p>In the printing function we add the following...</p>
+
+<pre><code data-language='c'>case LVAL_STR:   lval_print_str(v); break;</code></pre>
+
+<p>Where...</p>
+
+<pre><code data-language='c'>void lval_print_str(lval* v) {
   /* Make a Copy of the string */
   char* escaped = malloc(strlen(v-&gt;str)+1);
   strcpy(escaped, v-&gt;str);
@@ -34,16 +77,30 @@
   /* free the copied string */
   free(escaped);
 }</code></pre>
-<p>Now we want to actually add support for parsing these strings. We need to add a new grammar construct. Create a new parser called <code>string</code> and add it to our <code>mpca_lang</code> function. We can define it like this.</p>
-<p><code>string  : /\&quot;(\\\\.|[^\&quot;])*\&quot;/ ;</code> </p>
-<p>We also need to remember to add it as a possible option for the <code>expr</code> parser.</p>
-<p>This looks pretty complicated on face value but it isn&#39;t too hard in reality. It reads like this. A string is a <code>&quot;</code> character, followed by zero or more of either a backslash <code>\\</code> followed by any other character <code>.</code> or <code>|</code> anything that isn&#39;t a <code>&quot;</code> character <code>[^\\&quot;]</code>. Finally ending with another <code>&quot;</code> character. We can add a case for this parse in our <code>lval_read</code> function.</p>
-<p><code>if (strstr(t-&gt;tag, &quot;string&quot;)) { return lval_read_str(t); }</code></p>
-<p>where we call a function <code>lval_read_str</code>. This function is a little tricky because it has to do a few tasks. First it must strip the input string of the <code>&quot;</code> characters on either side. Then it must unescape the string, converting characters like <code>\n</code> to actual newlines. Finally it has to create a new <code>lval</code> and clean up anything that has happened inbetween.</p>
-<pre><code class="lang-c">lval* lval_read_str(mpc_ast_t* t) {
-  /* Cut off the final &quot; character */
+
+
+<h2>Reading Strings</h2>
+
+<p>Now we need to add support for parsing strings. As usual this requires first adding a new grammar rule called <code>string</code> and add it to our parser.</p>
+
+<p>Our strings input are like C strings. This means they are essentially a series of characters between two quotation marks <code>""</code>. We can specify this as a regular expression inside our grammar string as follows</p>
+
+<pre><code>string  : /\&quot;(\\\\.|[^\&quot;])*\&quot;/ ;</code></pre>
+
+<p>This looks pretty complicated but it isn&#39;t too hard in reality. It reads like this. A string is a <code>&quot;</code> character, followed by zero or more of either a backslash <code>\\</code> followed by any other character <code>.</code>, or anything that isn&#39;t a <code>&quot;</code> character <code>[^\\&quot;]</code>. Finally it ends with another <code>&quot;</code> character.</p>
+
+<p>We also need to add a case to deal with this in the <code>lval_read</code> function.</p>
+
+<p>Because the input string is input in an escaped form we need to create a function <code>lval_read_str</code> which deals with this, and converts it to a normal form.</p>
+
+<p>This function is a little tricky because it has to do a few tasks. First it must strip the input string of the <code>&quot;</code> characters on either side. Then it must unescape the string, converting characters like <code>\n</code> to actual newlines. Finally it has to create a new <code>lval</code> and clean up anything that has happened inbetween.</p>
+
+<pre><code data-language='c'>if (strstr(t-&gt;tag, &quot;string&quot;)) { return lval_read_str(t); }</code></pre>
+
+<pre><code data-language='c'>lval* lval_read_str(mpc_ast_t* t) {
+  /* Cut off the final quote character */
   t-&gt;contents[strlen(t-&gt;contents)-1] = &#39;\0&#39;;
-  /* Copy the string missing out the first &quot; character */
+  /* Copy the string missing out the first quote character */
   char* unescaped = malloc(strlen(t-&gt;contents+1));
   strcpy(unescaped, t-&gt;contents+1);
   /* Pass through the unescape function */
@@ -54,8 +111,10 @@
   free(unescaped);
   return str;
 }</code></pre>
-<p>If this all works we should be able to play around with string lvals, although there isn&#39;t much we can do with them yet.</p>
-<pre><code>lispy&gt; &quot;hello&quot;
+
+<p>If this all works we should be able to play around with strings in the prompt, although there isn&#39;t much we can do with them yet.</p>
+
+<pre><code data-language='lispy'>lispy&gt; &quot;hello&quot;
 &quot;hello&quot;
 lispy&gt; &quot;hello\n&quot;
 &quot;hello\n&quot;
@@ -66,30 +125,50 @@ lispy&gt; head {&quot;hello&quot; &quot;world&quot;}
 lispy&gt; eval (head {&quot;hello&quot; &quot;world&quot;})
 &quot;hello&quot;
 lispy&gt;</code></pre>
-<h3>Comments</h3>
-<p>While we&#39;re builting some new syntax into the language we may as well look at comments. We can use comments in inform other people (or ourselves) about what the code is meant to do or why it has been written. We&#39;ve been using C comments between <code>/*</code> and <code>*/</code>. Lisp comments on the other hand start with <code>;</code> and run to the end of the line. The reason for why Lisp uses <code>;</code> for comments appears to have been lost in the origins of time. I like to imagine it as being a cute rebellion against the imperative languages such as C and Java which use them so shamelessly to separate/terminate statements.</p>
-<p>So in lisp a comment is defined as a semicolon followed by any number of characters that are not newline characters. We can use another regex to define it as follows.</p>
-<p><code>comment : /;[^\\n\\r]*/ ;</code></p>
-<p>We need to add a new parser for comments and add this to our <code>mpca_lang</code> function and add <code>&lt;comment&gt;</code> as a possible case of an expression. Also remember to add both to <code>mpc_cleanup</code> and update the first integer argument to reflect the new number of parsers passed in. Our final grammar look like this.</p>
-<pre><code>  mpca_lang(
-    &quot;                                              \
-      number  : /-?[0-9]+/ ;                       \
-      symbol  : /[a-zA-Z0-9_+\\-*\\/\\\\=&lt;&gt;!&amp;]+/ ; \
-      string  : /\&quot;(\\\\.|[^\&quot;])*\&quot;/ ;             \
-      comment : /;[^\\n\\r]*/ ;                    \
-      sexpr   : &#39;(&#39; &lt;expr&gt;* &#39;)&#39; ;                  \
-      qexpr   : &#39;{&#39; &lt;expr&gt;* &#39;}&#39; ;                  \
-      expr    : &lt;number&gt;  | &lt;symbol&gt; | &lt;string&gt;    \
-              | &lt;comment&gt; | &lt;sexpr&gt;  | &lt;qexpr&gt;;    \
-      lispy   : /^/ &lt;expr&gt;* /$/ ;                  \
-    &quot;,
-    Number, Symbol, String, Comment, Sexpr, Qexpr, Expr, Lispy);</code></pre>
+
+
+<h2>Comments</h2>
+
+<p>While we&#39;re building in new syntax to the language we may as well look at comments.</p>
+
+<p>Just like in C, we can use comments in inform other people (or ourselves) about what the code is meant to do or why it has been written. In C comments go between <code>/*</code> and <code>*/</code>. Lisp comments, on the other hand, start with <code>;</code> and run to the end of the line.</p>
+
+<p>I tried to find out why Lisp uses <code>;</code> for comments, but it appears that the origins of this have been lost in the mists of time. In absence of real truth I like to imagine it as being an acute rebellion against the imperative languages such as C and Java which use them so shamelessly to separate/terminate statements. It is like saying programming in any other language is contentless!</p>
+
+<p>So in lisp a comment is defined by a semicolon <code>;</code> followed by any number of characters that are not newline characters. We can use another regex to define it.</p>
+
+<pre><code>comment : /;[^\\r\\n]*/ ;</code></pre>
+
+<p>As with strings we need to create a new parser and use this to update our language in <code>mpca_lang</code>. We also need to remember to add the parser to <code>mpc_cleanup</code>, and update the first integer argument to reflect the new number of parsers passed in.</p>
+
+<p>Our final grammar now look like this.</p>
+
+<pre><code data-language='c'>mpca_lang(
+  &quot;                                              \
+    number  : /-?[0-9]+/ ;                       \
+    symbol  : /[a-zA-Z0-9_+\\-*\\/\\\\=&lt;&gt;!&amp;]+/ ; \
+    string  : /\&quot;(\\\\.|[^\&quot;])*\&quot;/ ;             \
+    comment : /;[^\\r\\n]*/ ;                    \
+    sexpr   : &#39;(&#39; &lt;expr&gt;* &#39;)&#39; ;                  \
+    qexpr   : &#39;{&#39; &lt;expr&gt;* &#39;}&#39; ;                  \
+    expr    : &lt;number&gt;  | &lt;symbol&gt; | &lt;string&gt;    \
+            | &lt;comment&gt; | &lt;sexpr&gt;  | &lt;qexpr&gt;;    \
+    lispy   : /^/ &lt;expr&gt;* /$/ ;                  \
+  &quot;,
+  Number, Symbol, String, Comment, Sexpr, Qexpr, Expr, Lispy);
+</code></pre>
+
 <p>And the cleanup function looks like this.</p>
-<pre><code class="lang-c">  mpc_cleanup(8, Number, Symbol, String, Comment, Sexpr, Qexpr, Expr, Lispy);</code></pre>
-<p>Luckily for us comments are only for the programmer so handling them with the compiler is easy, we just ignore them. We can add a clause to deal with them in a similar way to brackets and parenthesis in <code>lval_read</code>.</p>
-<pre><code class="lang-c">    if (strstr(t-&gt;children[i]-&gt;tag, &quot;comment&quot;)) { continue; }</code></pre>
-<p>For now this means comments wont be of much use on the interactive prompt, but we can still experiment to check they work.</p>
-<pre><code>lispy&gt; ; testing
+
+<pre><code data-language='c'>mpc_cleanup(8, Number, Symbol, String, Comment, Sexpr, Qexpr, Expr, Lispy);</code></pre>
+
+<p>Because comments are only for programmings reading the code, our internal function for reading them in just consts of ignoring them. We can add a clause to deal with them in a similar way to brackets and parenthesis in <code>lval_read</code>.</p>
+
+<pre><code data-language='c'>if (strstr(t-&gt;children[i]-&gt;tag, &quot;comment&quot;)) { continue; }</code></pre>
+
+<p>Comments wont be of much use on the interactive prompt, but we can still experiment to check they work. They will be very helpful for adding into files of code to annotate them.</p>
+
+<pre><code data-language='lispy'>lispy&gt; ; testing
 ()
 lispy&gt; + 1 2 3 ; 4 5 6
 6
@@ -97,10 +176,15 @@ lispy&gt; * 4 4 ; I can write anything here
 16
 lispy&gt; head { 1 2 3 ; 5 6 this is a comment }
 &lt;stdin&gt;:0:5: error: expected end of input at &#39;{&#39;</code></pre>
-<h3>Load Function</h3>
-<p>We want to built a function that can load and evaluate a file when passed it&#39;s name. This is going to take us full loop. We want to make use of our grammar to read in the file contents and then evaluate them. This means we know our load function is going to rely on calling <code>lval_read</code> and also is going to rely on our <code>Lispy</code> mpc parser.</p>
-<p>So we need to forward declare these and add them to the top of the file.</p>
-<pre><code class="lang-c">mpc_parser_t* Number; 
+
+
+<h2>Load Function</h2>
+
+<p>We want to built a function that can load and evaluate a file when passed a string of its name. To implement this function we'll need to make used of our grammar. We'll need it to to read in the file contents and evaluate them. Our load function is going to rely on calling <code>lval_read</code>, and also is going to rely on our <code>Lispy</code> <code>mpc_parser*</code>.</p>
+
+<p>Therefore just like functions we need to forward declare these pointers, and add them to the top of the file.</p>
+
+<pre><code data-language='c'>mpc_parser_t* Number; 
 mpc_parser_t* Symbol; 
 mpc_parser_t* String; 
 mpc_parser_t* Comment;
@@ -108,21 +192,26 @@ mpc_parser_t* Sexpr;
 mpc_parser_t* Qexpr;  
 mpc_parser_t* Expr; 
 mpc_parser_t* Lispy;
+</code></pre>
 
-lval* lval_read(mpc_ast_t* t);</code></pre>
-<p>Now we need to create our builtin load function. We can start the same way as usual by ensuing it is only passed one argument and that this argument is a string.</p>
-<p>Then we can use <code>mpcf_parse_contents</code> to parse the contents of a file into some <code>mpc_result</code> object. This function returns <code>1</code> on success and <code>0</code> on failure so we can test this condition to see if our parse was successful. If it wasn&#39;t successful we can extract the parse error message an return it as an <code>lval_err</code>.</p>
-<p>Differently to our command prompt on successfully parsing a file we shouldn&#39;t treat it like one big expression. When typing into a file we let users list multiple expressions and evaluate all of them individually. This is like implicitly wrapping the contents of the file in a <code>do</code> block.</p>
-<p>So to achieve this behaviour we need to loop over each expression in the contents of the file and evaluate it one by one. If any is errorous we should print the error and continue. Finally we can simply return the empty expression.</p>
-<p>The full code for this looks as follows.</p>
-<pre><code class="lang-c">lval* builtin_load(lenv* e, lval* a) {
-  LASSERT(a, (a-&gt;count == 1               ), &quot;Function &#39;load&#39; passed too many arguments. Got %i, Expected %i.&quot;, a-&gt;count, 1);
-  LASSERT(a, (a-&gt;cell[0]-&gt;type == LVAL_STR), &quot;Function &#39;load&#39; passed incorrect type. Got %s, Expected %s.&quot;, ltype_name(a-&gt;cell[0]-&gt;type), ltype_name(LVAL_STR));
+<p>Our <code>load</code> function we be a builtin like any other. So we need to start by checking that the input arguments are correct. We need a single argument of the string type.</p>
 
+<p>To read in the contents of a file using a grammar we can use the <code>mpc_fparse_contents</code> function. Just like <code>mpc_parse</code> this parses the contents of a file into some <code>mpc_result</code> object, which is our case is an <em>abstract syntax tree</em> again or an <em>error</em>.</p>
+
+<p>Slightly differently to our command prompt, on successfully parsing a file we shouldn&#39;t treat it like one expression. When typing into a file we let users list multiple expressions and evaluate all of them individually.</p>
+
+<p>So to achieve this behaviour we need to loop over each expression in the contents of the file and evaluate it one by one. If there are any errors we should print them and continue.</p>
+
+<p>If there is a parse error instead of chucking it away we're going to extract the message and put it into a error <code>lval</code> which we return. Finally the return value for this builtin can just be the empty expression. The full code for this looks like this.</p>
+
+<pre><code data-language='c'>lval* builtin_load(lenv* e, lval* a) {
+  LASSERT_NUM("load", a, 1);
+  LASSERT_TYPE("load", a, 0, LVAL_STR);
+  
   /* Parse File given by string name */
   mpc_result_t r;
-  if (mpc_fparse_contents(a-&gt;cell[0]-&gt;str, Lispy, &amp;r)) {
-
+  if (mpc_fparse_contents(a-&gt;cell[0]-&gt;str, Lispy, &r)) {
+    
     /* Read contents */
     lval* expr = lval_read(r.output);
     mpc_ast_delete(r.output);
@@ -134,33 +223,40 @@ lval* lval_read(mpc_ast_t* t);</code></pre>
       if (x-&gt;type == LVAL_ERR) { lval_println(x); }
       lval_del(x);
     }
-
+    
     /* Delete expressions and arguments */
     lval_del(expr);    
     lval_del(a);
-
+    
     /* Return empty list */
     return lval_sexpr();
-
+    
   } else {
     /* Get Parse Error as String */
     char* err_msg;
-    mpc_err_string(r.error, &amp;err_msg);
+    mpc_err_string(r.error, &err_msg);
     mpc_err_delete(r.error);
-
+    
     /* Create new error message using it */
-    lval* err = lval_err(&quot;Could not load Library %s&quot;, err_msg);
+    lval* err = lval_err("Could not load Library %s", err_msg);
     free(err_msg);
     lval_del(a);
-
+    
     /* Cleanup and return error */
     return err;
   }
 }</code></pre>
-<h3>Command Line Arguments</h3>
-<p>Now that we can load files we can add in some functionality typical of other programming languages. That is - if you pass them filenames as arguments then they run these files. We are used to this with <code>python filename.py</code> and such.</p>
-<p>In C we use <code>argc</code> and <code>argv</code> to access the command line arguments. <code>argc</code> gives the number and <code>argv</code> specifies each string. <code>argc</code> is always set to at least one, where the first argument is always the actual command invoked. So if we recieve just one argument we can invoke the interpeter, otherwise we can run each of the arguments through <code>builtin_load</code>.</p>
-<pre><code class="lang-c">  /* Supplied with list of files */
+
+
+<h2>Command Line Arguments</h2>
+
+<p>With the ability to load files, we can take the chance to add in some functionality typical of other programming languages. When file names are given as arguments to the command line we can try to run these files. For example to run a python file one might write <code>python filename.py</code>.</p>
+
+<p>These command line arguments are accessible using the <code>argc</code> and <code>argv</code> variables that are given to <code>main</code>. The <code>argc</code> variable gives the number of arguments, and <code>argv</code> specifies each string. The <code>argc</code> is always set to at least one, where the first argument is always the full actual command invoked.</p>
+
+<p>That means if <code>argc</code> is set to <code>1</code> we can invoke the interpeter, otherwise we can run each of the arguments through the <code>builtin_load</code> function.</p>
+
+<pre><code data-language='c'>  /* Supplied with list of files */
   if (argc &gt;= 2) {
 
     /* loop over each supplied filename (starting from 1) */
@@ -176,13 +272,21 @@ lval* lval_read(mpc_ast_t* t);</code></pre>
       if (x-&gt;type == LVAL_ERR) { lval_println(x); }
       lval_del(x);
     }
-  }</code></pre>
-<p>Now we can run files from the command line using our program.</p>
+  }
+</code></pre>
+
+<p>Write some basic program and try to invoke it using this method.</p>
+
 <pre><code>lispy example.lspy</code></pre>
-<h3>Print Function</h3>
-<p>This just to call our <code>lval_print</code> function. In this way we can write programs that print outputs rather than return a single result at the end.</p>
-<p>All this function does is print each argument separated by a space and then print a newline character to finish. It can just return the empty expression to finish.</p>
-<pre><code class="lang-c">lval* builtin_print(lenv* e, lval* a) {
+
+
+<h2>Print Function</h2>
+
+<p>If we are running programs from the command line we might want them to output some data, rather than just define functions and other values. We can add a <code>print</code> function that just to call our <code>lval_print</code> function.</p>
+
+<p>This function prints each argument separated by a space and then prints a newline character to finish. It can just return the empty expression.</p>
+
+<pre><code data-language='c'>lval* builtin_print(lenv* e, lval* a) {
 
   /* Print each argument followed by a space */
   for (int i = 0; i &lt; a-&gt;count; i++) {
@@ -195,11 +299,15 @@ lval* lval_read(mpc_ast_t* t);</code></pre>
 
   return lval_sexpr();
 }</code></pre>
-<h3>Error Function</h3>
-<p>Because we have strings we can finally add in a basic error function. All this does is take a user string and uses it as an error message for <code>lval_err</code>.</p>
-<pre><code class="lang-c">lval* builtin_error(lenv* e, lval* a) {
-  LASSERT(a, (a-&gt;count == 1               ), &quot;Function &#39;error&#39; passed too many arguments. Got %i, Expected %i.&quot;, a-&gt;count, 1);
-  LASSERT(a, (a-&gt;cell[0]-&gt;type == LVAL_STR), &quot;Function &#39;error&#39; passed incorrect type. Got %s, Expected %s.&quot;, ltype_name(a-&gt;cell[0]-&gt;type), ltype_name(LVAL_STR));
+
+
+<h2>Error Function</h2>
+
+<p>We can also make use of strings to add in an error reporting function. This can take a user string and supply it as an error message for <code>lval_err</code>.</p>
+
+<pre><code data-language='c'>lval* builtin_error(lenv* e, lval* a) {
+  LASSERT_NUM("error", a, 1);
+  LASSERT_TYPE("error", a, 0, LVAL_STR);
 
   /* Construct Error from first argument */
   lval* err = lval_err(a-&gt;cell[0]-&gt;str);
@@ -208,21 +316,984 @@ lval* lval_read(mpc_ast_t* t);</code></pre>
   lval_del(a);
   return err;
 }</code></pre>
-<p>We have to remember to add all of these to our builtins.</p>
-<pre><code class="lang-c">  /* String Functions */
-  lenv_add_builtin(e, &quot;load&quot;, builtin_load); 
-  lenv_add_builtin(e, &quot;error&quot;, builtin_error); lenv_add_builtin(e, &quot;print&quot;, builtin_print);</code></pre>
-<h3>Finishing</h3>
-<p>This is all we&#39;re going to do on the C side of things. It&#39;s clear that there are still plenty of improvements to be made. For example at the moment there is no way for the user to manipulate or use strings other than by passing them to <code>load</code>.</p>
-<p>To add these things I will have to leave it up to you. In the final chapter I&#39;ve listed many of the possible improvements with information about what they are, why they should be done, how to do them, and what they might achieve.</p>
-<p>If you&#39;ve enjoyed this tutorial, and made it this far, I expect your fingers may be restless ready to diverge from the book and add X. If this is the case I say give it a shot!</p>
-<p>The next chapter is a fun one though - as we get to built and design the standard library.</p>
-<h3>Tutorial Code</h3>
-<p><a href="">example10.c</a></p>
-<h3>Bonus Marks</h3>
-<ul>
-<li>Let <code>join</code> work on strings</li>
-<li>Let <code>head</code> work on strings</li>
-<li>Let <code>tail</code> work on strings</li>
-<li>Add the ability to print the contents of strings as they are (unescaped)</li>
-</ul>
+
+<p>The final step is to register these as builtins. We should be read to start building up libraries we can load from file!</p>
+
+<pre><code data-language='c'>/* String Functions */
+lenv_add_builtin(e, &quot;load&quot;, builtin_load); 
+lenv_add_builtin(e, &quot;error&quot;, builtin_error); lenv_add_builtin(e, &quot;print&quot;, builtin_print);
+</code></pre>
+
+<pre><code data-language='lispy'>lispy&gt; print "Hello World!"
+"Hello World!"
+()
+lispy&gt; error "This is an error"
+Error: This is an error
+lispy&gt; load "hello.lspy"
+"Hello World!"
+()
+lispy&gt;
+</code></pre>
+
+
+<h2>Finishing Up</h2>
+
+<p>This is the last chapter where we are going to explicitly work on our C implementation of Lisp. This means this is the final state of your C program as far as I am involved. The final line count clocks in at just under 1000 lines of code. This is considerable, as it brings a program over the bridge from a toy, to a real project.</p>
+
+<p>If you've got this far then major congratulations. You now have a complex and beautiful program you should be proud of. Go show it off to your friends!</p>
+
+<h2>Tutorial Code</h2>
+
+<div class="panel-group alert alert-warning" id="accordion">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+          strings.c
+        </a>
+      </h4>
+    </div>
+    <div id="collapseOne" class="panel-collapse collapse">
+      <div class="panel-body">
+<pre><code data-language='c'>#include "mpc.h"
+
+#ifdef _WIN32
+
+static char input[2048];
+
+char* readline(char* prompt) {
+  
+  fputs("lispy&gt; ", stdout);
+  fgets(input, 2047, stdin);
+    
+  char* cpy = malloc(strlen(input)+1);
+  strcpy(cpy, input);
+  cpy[strlen(cpy)] = '\0';
+  
+  return cpy;
+}
+
+void add_history(char* unused) {}
+
+#else
+
+#include &lt;editline/readline.h&gt;
+#include &lt;editline/history.h&gt;
+
+#endif
+
+/* Parser Declariations */
+
+mpc_parser_t* Number; 
+mpc_parser_t* Symbol; 
+mpc_parser_t* String; 
+mpc_parser_t* Comment;
+mpc_parser_t* Sexpr;  
+mpc_parser_t* Qexpr;  
+mpc_parser_t* Expr; 
+mpc_parser_t* Lispy;
+
+/* Forward Declarations */
+
+struct lval;
+struct lenv;
+typedef struct lval lval;
+typedef struct lenv lenv;
+
+/* Lisp Value */
+
+enum { LVAL_ERR, LVAL_NUM, LVAL_SYM, LVAL_STR, LVAL_FUN, LVAL_SEXPR, LVAL_QEXPR };
+
+typedef lval*(*lbuiltin)(lenv*, lval*);
+
+struct lval {
+  int type;
+
+  /* Basic */
+  long num;
+  char* err;
+  char* sym;
+  char* str;
+  
+  /* Function */
+  lbuiltin builtin;
+  lenv* env;
+  lval* formals;
+  lval* body;
+  
+  /* Expression */
+  int count;
+  lval** cell;
+};
+
+lval* lval_num(long x) {
+  lval* v = malloc(sizeof(lval));
+  v-&gt;type = LVAL_NUM;
+  v-&gt;num = x;
+  return v;
+}
+
+lval* lval_err(char* fmt, ...) {
+  lval* v = malloc(sizeof(lval));
+  v-&gt;type = LVAL_ERR;  
+  va_list va;
+  va_start(va, fmt);  
+  v-&gt;err = malloc(512);  
+  vsnprintf(v-&gt;err, 511, fmt, va);  
+  v-&gt;err = realloc(v-&gt;err, strlen(v-&gt;err)+1);
+  va_end(va);  
+  return v;
+}
+
+lval* lval_sym(char* s) {
+  lval* v = malloc(sizeof(lval));
+  v-&gt;type = LVAL_SYM;
+  v-&gt;sym = malloc(strlen(s) + 1);
+  strcpy(v-&gt;sym, s);
+  return v;
+}
+
+lval* lval_str(char* s) {
+  lval* v = malloc(sizeof(lval));
+  v-&gt;type = LVAL_STR;
+  v-&gt;str = malloc(strlen(s) + 1);
+  strcpy(v-&gt;str, s);
+  return v;
+}
+
+lval* lval_builtin(lbuiltin func) {
+  lval* v = malloc(sizeof(lval));
+  v-&gt;type = LVAL_FUN;
+  v-&gt;builtin = func;
+  return v;
+}
+
+lenv* lenv_new(void);
+
+lval* lval_lambda(lval* formals, lval* body) {
+  lval* v = malloc(sizeof(lval));
+  v-&gt;type = LVAL_FUN;  
+  v-&gt;builtin = NULL;  
+  v-&gt;env = lenv_new();  
+  v-&gt;formals = formals;
+  v-&gt;body = body;
+  return v;  
+}
+
+lval* lval_sexpr(void) {
+  lval* v = malloc(sizeof(lval));
+  v-&gt;type = LVAL_SEXPR;
+  v-&gt;count = 0;
+  v-&gt;cell = NULL;
+  return v;
+}
+
+lval* lval_qexpr(void) {
+  lval* v = malloc(sizeof(lval));
+  v-&gt;type = LVAL_QEXPR;
+  v-&gt;count = 0;
+  v-&gt;cell = NULL;
+  return v;
+}
+
+void lenv_del(lenv* e);
+
+void lval_del(lval* v) {
+
+  switch (v-&gt;type) {
+    case LVAL_NUM: break;
+    case LVAL_FUN: 
+      if (!v-&gt;builtin) {
+        lenv_del(v-&gt;env);
+        lval_del(v-&gt;formals);
+        lval_del(v-&gt;body);
+      }
+    break;
+    case LVAL_ERR: free(v-&gt;err); break;
+    case LVAL_SYM: free(v-&gt;sym); break;
+    case LVAL_STR: free(v-&gt;str); break;
+    case LVAL_QEXPR:
+    case LVAL_SEXPR:
+      for (int i = 0; i &lt; v-&gt;count; i++) {
+        lval_del(v-&gt;cell[i]);
+      }
+      free(v-&gt;cell);
+    break;
+  }
+  
+  free(v);
+}
+
+lenv* lenv_copy(lenv* e);
+
+lval* lval_copy(lval* v) {
+  lval* x = malloc(sizeof(lval));
+  x-&gt;type = v-&gt;type;
+  switch (v-&gt;type) {
+    case LVAL_FUN:
+      if (v-&gt;builtin) {
+        x-&gt;builtin = v-&gt;builtin;
+      } else {
+        x-&gt;builtin = NULL;
+        x-&gt;env = lenv_copy(v-&gt;env);
+        x-&gt;formals = lval_copy(v-&gt;formals);
+        x-&gt;body = lval_copy(v-&gt;body);
+      }
+    break;
+    case LVAL_NUM: x-&gt;num = v-&gt;num; break;
+    case LVAL_ERR: x-&gt;err = malloc(strlen(v-&gt;err) + 1); strcpy(x-&gt;err, v-&gt;err); break;
+    case LVAL_SYM: x-&gt;sym = malloc(strlen(v-&gt;sym) + 1); strcpy(x-&gt;sym, v-&gt;sym); break;
+    case LVAL_STR: x-&gt;str = malloc(strlen(v-&gt;str) + 1); strcpy(x-&gt;str, v-&gt;str); break;
+    case LVAL_SEXPR:
+    case LVAL_QEXPR:
+      x-&gt;count = v-&gt;count;
+      x-&gt;cell = malloc(sizeof(lval*) * x-&gt;count);
+      for (int i = 0; i &lt; x-&gt;count; i++) {
+        x-&gt;cell[i] = lval_copy(v-&gt;cell[i]);
+      }
+    break;
+  }
+  return x;
+}
+
+lval* lval_add(lval* v, lval* x) {
+  v-&gt;count++;
+  v-&gt;cell = realloc(v-&gt;cell, sizeof(lval*) * v-&gt;count);
+  v-&gt;cell[v-&gt;count-1] = x;
+  return v;
+}
+
+lval* lval_join(lval* x, lval* y) {  
+  for (int i = 0; i &lt; y-&gt;count; i++) {
+    x = lval_add(x, y-&gt;cell[i]);
+  }
+  free(y-&gt;cell);
+  free(y);  
+  return x;
+}
+
+lval* lval_pop(lval* v, int i) {
+  lval* x = v-&gt;cell[i];  
+  memmove(&v-&gt;cell[i], &v-&gt;cell[i+1], sizeof(lval*) * (v-&gt;count-i-1));  
+  v-&gt;count--;  
+  v-&gt;cell = realloc(v-&gt;cell, sizeof(lval*) * v-&gt;count);
+  return x;
+}
+
+lval* lval_take(lval* v, int i) {
+  lval* x = lval_pop(v, i);
+  lval_del(v);
+  return x;
+}
+
+void lval_print(lval* v);
+
+void lval_print_expr(lval* v, char open, char close) {
+  putchar(open);
+  for (int i = 0; i &lt; v-&gt;count; i++) {
+    lval_print(v-&gt;cell[i]);    
+    if (i != (v-&gt;count-1)) {
+      putchar(' ');
+    }
+  }
+  putchar(close);
+}
+
+void lval_print_str(lval* v) {
+  /* Make a Copy of the string */
+  char* escaped = malloc(strlen(v-&gt;str)+1);
+  strcpy(escaped, v-&gt;str);
+  /* Pass it through the escape function */
+  escaped = mpcf_escape(escaped);
+  /* Print it between " characters */
+  printf("\"%s\"", escaped);
+  /* free the copied string */
+  free(escaped);
+}
+
+void lval_print(lval* v) {
+  char* escaped;
+  switch (v-&gt;type) {
+    case LVAL_FUN:
+      if (v-&gt;builtin) {
+        printf("&lt;builtin&gt;");
+      } else {
+        printf("(\\ "); lval_print(v-&gt;formals); putchar(' '); lval_print(v-&gt;body); putchar(')');
+      }
+    break;
+    case LVAL_NUM:   printf("%li", v-&gt;num); break;
+    case LVAL_ERR:   printf("Error: %s", v-&gt;err); break;
+    case LVAL_SYM:   printf("%s", v-&gt;sym); break;
+    case LVAL_STR:   lval_print_str(v); break;
+    case LVAL_SEXPR: lval_print_expr(v, '(', ')'); break;
+    case LVAL_QEXPR: lval_print_expr(v, '{', '}'); break;
+  }
+}
+
+void lval_println(lval* v) { lval_print(v); putchar('\n'); }
+
+int lval_eq(lval* x, lval* y) {
+  
+  if (x-&gt;type != y-&gt;type) { return 0; }
+  
+  switch (x-&gt;type) {
+    case LVAL_NUM: return (x-&gt;num == y-&gt;num);    
+    case LVAL_ERR: return (strcmp(x-&gt;err, y-&gt;err) == 0);
+    case LVAL_SYM: return (strcmp(x-&gt;sym, y-&gt;sym) == 0);    
+    case LVAL_STR: return (strcmp(x-&gt;str, y-&gt;str) == 0);    
+    case LVAL_FUN:
+      if (x-&gt;builtin) {
+        return x-&gt;builtin == y-&gt;builtin;
+      } else {
+        return lval_eq(x-&gt;formals, y-&gt;formals) && lval_eq(x-&gt;body, y-&gt;body);
+      }    
+    case LVAL_QEXPR:
+    case LVAL_SEXPR:
+      if (x-&gt;count != y-&gt;count) { return 0; }
+      for (int i = 0; i &lt; x-&gt;count; i++) {
+        if (!lval_eq(x-&gt;cell[0], y-&gt;cell[0])) { return 0; }
+      }
+      return 1;
+    break;
+  }
+  return 0;
+}
+
+char* ltype_name(int t) {
+  switch(t) {
+    case LVAL_FUN: return "Function";
+    case LVAL_NUM: return "Number";
+    case LVAL_ERR: return "Error";
+    case LVAL_SYM: return "Symbol";
+    case LVAL_STR: return "String";
+    case LVAL_SEXPR: return "S-Expression";
+    case LVAL_QEXPR: return "Q-Expression";
+    default: return "Unknown";
+  }
+}
+
+/* Lisp Environment */
+
+struct lenv {
+  lenv* par;
+  int count;
+  char** syms;
+  lval** vals;
+};
+
+lenv* lenv_new(void) {
+  lenv* e = malloc(sizeof(lenv));
+  e-&gt;par = NULL;
+  e-&gt;count = 0;
+  e-&gt;syms = NULL;
+  e-&gt;vals = NULL;
+  return e;
+}
+
+void lenv_del(lenv* e) {
+  for (int i = 0; i &lt; e-&gt;count; i++) {
+    free(e-&gt;syms[i]);
+    lval_del(e-&gt;vals[i]);
+  }  
+  free(e-&gt;syms);
+  free(e-&gt;vals);
+  free(e);
+}
+
+lenv* lenv_copy(lenv* e) {
+  lenv* n = malloc(sizeof(lenv));
+  n-&gt;par = e-&gt;par;
+  n-&gt;count = e-&gt;count;
+  n-&gt;syms = malloc(sizeof(char*) * n-&gt;count);
+  n-&gt;vals = malloc(sizeof(lval*) * n-&gt;count);
+  for (int i = 0; i &lt; e-&gt;count; i++) {
+    n-&gt;syms[i] = malloc(strlen(e-&gt;syms[i]) + 1);
+    strcpy(n-&gt;syms[i], e-&gt;syms[i]);
+    n-&gt;vals[i] = lval_copy(e-&gt;vals[i]);
+  }
+  return n;
+}
+
+lval* lenv_get(lenv* e, lval* k) {
+  
+  for (int i = 0; i &lt; e-&gt;count; i++) {
+    if (strcmp(e-&gt;syms[i], k-&gt;sym) == 0) { return lval_copy(e-&gt;vals[i]); }
+  }
+  
+  if (e-&gt;par) {
+    return lenv_get(e-&gt;par, k);
+  } else {
+    return lval_err("Unbound Symbol '%s'", k-&gt;sym);
+  }
+}
+
+void lenv_put(lenv* e, lval* k, lval* v) {
+  
+  for (int i = 0; i &lt; e-&gt;count; i++) {
+    if (strcmp(e-&gt;syms[i], k-&gt;sym) == 0) {
+      lval_del(e-&gt;vals[i]);
+      e-&gt;vals[i] = lval_copy(v);
+      e-&gt;syms[i] = realloc(e-&gt;syms[i], strlen(k-&gt;sym)+1);
+      strcpy(e-&gt;syms[i], k-&gt;sym);
+      return;
+    }
+  }
+  
+  e-&gt;count++;
+  e-&gt;vals = realloc(e-&gt;vals, sizeof(lval*) * e-&gt;count);
+  e-&gt;syms = realloc(e-&gt;syms, sizeof(char*) * e-&gt;count);  
+  e-&gt;vals[e-&gt;count-1] = lval_copy(v);
+  e-&gt;syms[e-&gt;count-1] = malloc(strlen(k-&gt;sym)+1);
+  strcpy(e-&gt;syms[e-&gt;count-1], k-&gt;sym);
+}
+
+void lenv_def(lenv* e, lval* k, lval* v) {
+  while (e-&gt;par) { e = e-&gt;par; }
+  lenv_put(e, k, v);
+}
+
+/* Builtins */
+
+#define LASSERT(args, cond, fmt, ...) \
+  if (!(cond)) { lval* err = lval_err(fmt, ##__VA_ARGS__); lval_del(args); return err; }
+
+#define LASSERT_TYPE(func, args, index, expect) \
+  LASSERT(args, args-&gt;cell[index]-&gt;type == expect, \
+    "Function '%s' passed incorrect type for argument %i. Got %s, Expected %s.", \
+    func, index, ltype_name(args-&gt;cell[index]-&gt;type), ltype_name(expect))
+
+#define LASSERT_NUM(func, args, num) \
+  LASSERT(args, args-&gt;count == num, \
+    "Function '%s' passed incorrect number of arguments. Got %i, Expected %i.", \
+    func, args-&gt;count, num)
+
+#define LASSERT_NOT_EMPTY(func, args, index) \
+  LASSERT(args, args-&gt;cell[index]-&gt;count != 0, \
+    "Function '%s' passed {} for argument %i.", func, index);
+
+lval* lval_eval(lenv* e, lval* v);
+
+lval* builtin_lambda(lenv* e, lval* a) {
+  LASSERT_NUM("\\", a, 2);
+  LASSERT_TYPE("\\", a, 0, LVAL_QEXPR);
+  LASSERT_TYPE("\\", a, 1, LVAL_QEXPR);
+  
+  for (int i = 0; i &lt; a-&gt;cell[0]-&gt;count; i++) {
+    LASSERT(a, (a-&gt;cell[0]-&gt;cell[i]-&gt;type == LVAL_SYM),
+      "Cannot define non-symbol. Got %s, Expected %s.",
+      ltype_name(a-&gt;cell[0]-&gt;cell[i]-&gt;type), ltype_name(LVAL_SYM));
+  }
+  
+  lval* formals = lval_pop(a, 0);
+  lval* body = lval_pop(a, 0);
+  lval_del(a);
+  
+  return lval_lambda(formals, body);
+}
+
+lval* builtin_list(lenv* e, lval* a) {
+  a-&gt;type = LVAL_QEXPR;
+  return a;
+}
+
+lval* builtin_head(lenv* e, lval* a) {
+  LASSERT_NUM("head", a, 1);
+  LASSERT_TYPE("head", a, 0, LVAL_QEXPR);
+  LASSERT_NOT_EMPTY("head", a, 0);
+  
+  lval* v = lval_take(a, 0);  
+  while (v-&gt;count &gt; 1) { lval_del(lval_pop(v, 1)); }
+  return v;
+}
+
+lval* builtin_tail(lenv* e, lval* a) {
+  LASSERT_NUM("tail", a, 1);
+  LASSERT_TYPE("tail", a, 0, LVAL_QEXPR);
+  LASSERT_NOT_EMPTY("tail", a, 0);
+
+  lval* v = lval_take(a, 0);  
+  lval_del(lval_pop(v, 0));
+  return v;
+}
+
+lval* builtin_eval(lenv* e, lval* a) {
+  LASSERT_NUM("eval", a, 1);
+  LASSERT_TYPE("tail", a, 0, LVAL_QEXPR);
+  
+  lval* x = lval_take(a, 0);
+  x-&gt;type = LVAL_SEXPR;
+  return lval_eval(e, x);
+}
+
+lval* builtin_join(lenv* e, lval* a) {
+  
+  for (int i = 0; i &lt; a-&gt;count; i++) { LASSERT_TYPE("join", a, i, LVAL_QEXPR); }
+  
+  lval* x = lval_pop(a, 0);
+  
+  while (a-&gt;count) {
+    lval* y = lval_pop(a, 0);
+    x = lval_join(x, y);
+  }
+  
+  lval_del(a);
+  return x;
+}
+
+lval* builtin_op(lenv* e, lval* a, char* op) {
+  
+  for (int i = 0; i &lt; a-&gt;count; i++) { LASSERT_TYPE(op, a, i, LVAL_NUM); }
+  
+  lval* x = lval_pop(a, 0);
+  
+  if ((strcmp(op, "-") == 0) && a-&gt;count == 0) { x-&gt;num = -x-&gt;num; }
+  
+  while (a-&gt;count &gt; 0) {  
+    lval* y = lval_pop(a, 0);
+    
+    if (strcmp(op, "+") == 0) { x-&gt;num += y-&gt;num; }
+    if (strcmp(op, "-") == 0) { x-&gt;num -= y-&gt;num; }
+    if (strcmp(op, "*") == 0) { x-&gt;num *= y-&gt;num; }
+    if (strcmp(op, "/") == 0) {
+      if (y-&gt;num != 0) {
+        lval_del(x); lval_del(y); lval_del(a);
+        return lval_err("Division By Zero.");
+      }
+      x-&gt;num /= y-&gt;num;
+    }
+    
+    lval_del(y);
+  }
+  
+  lval_del(a);
+  return x;
+}
+
+lval* builtin_add(lenv* e, lval* a) { return builtin_op(e, a, "+"); }
+lval* builtin_sub(lenv* e, lval* a) { return builtin_op(e, a, "-"); }
+lval* builtin_mul(lenv* e, lval* a) { return builtin_op(e, a, "*"); }
+lval* builtin_div(lenv* e, lval* a) { return builtin_op(e, a, "/"); }
+
+lval* builtin_var(lenv* e, lval* a, char* func) {
+  LASSERT_TYPE(func, a, 0, LVAL_QEXPR);
+  
+  lval* syms = a-&gt;cell[0];
+  for (int i = 0; i &lt; syms-&gt;count; i++) {
+    LASSERT(a, (syms-&gt;cell[i]-&gt;type == LVAL_SYM),
+      "Function '%s' cannot define non-symbol. Got %s, Expected %s.",
+      func, ltype_name(syms-&gt;cell[i]-&gt;type), ltype_name(LVAL_SYM));
+  }
+  
+  LASSERT(a, (syms-&gt;count == a-&gt;count-1),
+    "Function '%s' passed too many arguments for symbols. Got %i, Expected %i.",
+    func, syms-&gt;count, a-&gt;count-1);
+    
+  for (int i = 0; i &lt; syms-&gt;count; i++) {
+    if (strcmp(func, "def") == 0) { lenv_def(e, syms-&gt;cell[i], a-&gt;cell[i+1]); }
+    if (strcmp(func, "=")   == 0) { lenv_put(e, syms-&gt;cell[i], a-&gt;cell[i+1]); } 
+  }
+  
+  lval_del(a);
+  return lval_sexpr();
+}
+
+lval* builtin_def(lenv* e, lval* a) { return builtin_var(e, a, "def"); }
+lval* builtin_put(lenv* e, lval* a) { return builtin_var(e, a, "="); }
+
+lval* builtin_ord(lenv* e, lval* a, char* op) {
+  LASSERT_NUM(op, a, 2);
+  LASSERT_TYPE(op, a, 0, LVAL_NUM);
+  LASSERT_TYPE(op, a, 1, LVAL_NUM);
+  
+  int r;
+  if (strcmp(op, "&gt;")  == 0) { r = (a-&gt;cell[0]-&gt;num &gt;  a-&gt;cell[1]-&gt;num); }
+  if (strcmp(op, "&lt;")  == 0) { r = (a-&gt;cell[0]-&gt;num &lt;  a-&gt;cell[1]-&gt;num); }
+  if (strcmp(op, "&gt;=") == 0) { r = (a-&gt;cell[0]-&gt;num &gt;= a-&gt;cell[1]-&gt;num); }
+  if (strcmp(op, "&lt;=") == 0) { r = (a-&gt;cell[0]-&gt;num &lt;= a-&gt;cell[1]-&gt;num); }
+  lval_del(a);
+  return lval_num(r);
+}
+
+lval* builtin_gt(lenv* e, lval* a) { return builtin_ord(e, a, "&gt;");  }
+lval* builtin_lt(lenv* e, lval* a) { return builtin_ord(e, a, "&lt;");  }
+lval* builtin_ge(lenv* e, lval* a) { return builtin_ord(e, a, "&gt;="); }
+lval* builtin_le(lenv* e, lval* a) { return builtin_ord(e, a, "&lt;="); }
+
+lval* builtin_cmp(lenv* e, lval* a, char* op) {
+  LASSERT_NUM(op, a, 2);
+  int r;
+  if (strcmp(op, "==") == 0) { r =  lval_eq(a-&gt;cell[0], a-&gt;cell[1]); }
+  if (strcmp(op, "!=") == 0) { r = !lval_eq(a-&gt;cell[0], a-&gt;cell[1]); }
+  lval_del(a);
+  return lval_num(r);
+}
+
+lval* builtin_eq(lenv* e, lval* a) { return builtin_cmp(e, a, "=="); }
+lval* builtin_ne(lenv* e, lval* a) { return builtin_cmp(e, a, "!="); }
+
+lval* builtin_if(lenv* e, lval* a) {
+  LASSERT_NUM("if", a, 3);
+  LASSERT_TYPE("if", a, 0, LVAL_NUM);
+  LASSERT_TYPE("if", a, 1, LVAL_QEXPR);
+  LASSERT_TYPE("if", a, 2, LVAL_QEXPR);
+  
+  lval* x;
+  a-&gt;cell[1]-&gt;type = LVAL_SEXPR;
+  a-&gt;cell[2]-&gt;type = LVAL_SEXPR;
+  
+  if (a-&gt;cell[0]-&gt;num) {
+    x = lval_eval(e, lval_pop(a, 1));
+  } else {
+    x = lval_eval(e, lval_pop(a, 2));
+  }
+  
+  lval_del(a);
+  return x;
+}
+
+lval* lval_read(mpc_ast_t* t);
+
+lval* builtin_load(lenv* e, lval* a) {
+  LASSERT_NUM("load", a, 1);
+  LASSERT_TYPE("load", a, 0, LVAL_STR);
+  
+  /* Parse File given by string name */
+  mpc_result_t r;
+  if (mpc_fparse_contents(a-&gt;cell[0]-&gt;str, Lispy, &r)) {
+    
+    /* Read contents */
+    lval* expr = lval_read(r.output);
+    mpc_ast_delete(r.output);
+
+    /* Evaluate each Expression */
+    while (expr-&gt;count) {
+      lval* x = lval_eval(e, lval_pop(expr, 0));
+      /* If Evaluation leads to error print it */
+      if (x-&gt;type == LVAL_ERR) { lval_println(x); }
+      lval_del(x);
+    }
+    
+    /* Delete expressions and arguments */
+    lval_del(expr);    
+    lval_del(a);
+    
+    /* Return empty list */
+    return lval_sexpr();
+    
+  } else {
+    /* Get Parse Error as String */
+    char* err_msg;
+    mpc_err_string(r.error, &err_msg);
+    mpc_err_delete(r.error);
+    
+    /* Create new error message using it */
+    lval* err = lval_err("Could not load Library %s", err_msg);
+    free(err_msg);
+    lval_del(a);
+    
+    /* Cleanup and return error */
+    return err;
+  }
+}
+
+lval* builtin_print(lenv* e, lval* a) {
+  
+  /* Print each argument followed by a space */
+  for (int i = 0; i &lt; a-&gt;count; i++) {
+    lval_print(a-&gt;cell[i]); putchar(' ');
+  }
+  
+  /* Print a newline and delete arguments */
+  putchar('\n');
+  lval_del(a);
+  
+  return lval_sexpr();
+}
+
+lval* builtin_error(lenv* e, lval* a) {
+  LASSERT_NUM("error", a, 1);
+  LASSERT_TYPE("error", a, 0, LVAL_STR);
+  
+  /* Construct Error from first argument */
+  lval* err = lval_err(a-&gt;cell[0]-&gt;str);
+  
+  /* Delete arguments and return */
+  lval_del(a);
+  return err;
+}
+
+void lenv_add_builtin(lenv* e, char* name, lbuiltin func) {
+  lval* k = lval_sym(name);
+  lval* v = lval_builtin(func);
+  lenv_put(e, k, v);
+  lval_del(k); lval_del(v);
+}
+
+void lenv_add_builtins(lenv* e) {
+  /* Variable Functions */
+  lenv_add_builtin(e, "\\",  builtin_lambda); 
+  lenv_add_builtin(e, "def", builtin_def); lenv_add_builtin(e, "=", builtin_put);
+  
+  /* List Functions */
+  lenv_add_builtin(e, "list", builtin_list);
+  lenv_add_builtin(e, "head", builtin_head); lenv_add_builtin(e, "tail",  builtin_tail);
+  lenv_add_builtin(e, "eval", builtin_eval); lenv_add_builtin(e, "join",  builtin_join);
+  
+  /* Mathematical Functions */
+  lenv_add_builtin(e, "+",    builtin_add); lenv_add_builtin(e, "-",     builtin_sub);
+  lenv_add_builtin(e, "*",    builtin_mul); lenv_add_builtin(e, "/",     builtin_div);
+  
+  /* Comparison Functions */
+  lenv_add_builtin(e, "if",   builtin_if);
+  lenv_add_builtin(e, "==",   builtin_eq); lenv_add_builtin(e, "!=",   builtin_ne);
+  lenv_add_builtin(e, "&gt;",    builtin_gt); lenv_add_builtin(e, "&lt;",    builtin_lt);
+  lenv_add_builtin(e, "&gt;=",   builtin_ge); lenv_add_builtin(e, "&lt;=",   builtin_le);
+  
+  /* String Functions */
+  lenv_add_builtin(e, "load", builtin_load); 
+  lenv_add_builtin(e, "error", builtin_error); lenv_add_builtin(e, "print", builtin_print); 
+}
+
+/* Evaluation */
+
+lval* lval_call(lenv* e, lval* f, lval* a) {
+  
+  if (f-&gt;builtin) { return f-&gt;builtin(e, a); }
+  
+  int given = a-&gt;count;
+  int total = f-&gt;formals-&gt;count;
+  
+  while (a-&gt;count) {
+    
+    if (f-&gt;formals-&gt;count == 0) {
+      lval_del(a);
+      return lval_err("Function passed too many arguments. Got %i, Expected %i.", given, total); 
+    }
+    
+    lval* sym = lval_pop(f-&gt;formals, 0);
+    
+    if (strcmp(sym-&gt;sym, "&") == 0) {
+      
+      if (f-&gt;formals-&gt;count != 1) {
+        lval_del(a);
+        return lval_err("Function format invalid. Symbol '&' not followed by single symbol.");
+      }
+      
+      lval* nsym = lval_pop(f-&gt;formals, 0);
+      lenv_put(f-&gt;env, nsym, builtin_list(e, a));
+      lval_del(sym); lval_del(nsym);
+      break;
+    }
+    
+    lval* val = lval_pop(a, 0);    
+    lenv_put(f-&gt;env, sym, val);    
+    lval_del(sym); lval_del(val);
+  }
+  
+  lval_del(a);
+  
+  if (f-&gt;formals-&gt;count &gt; 0 &&
+    strcmp(f-&gt;formals-&gt;cell[0]-&gt;sym, "&") == 0) {
+    
+    if (f-&gt;formals-&gt;count != 2) {
+      return lval_err("Function format invalid. Symbol '&' not followed by single symbol.");
+    }
+    
+    lval_del(lval_pop(f-&gt;formals, 0));
+    
+    lval* sym = lval_pop(f-&gt;formals, 0);
+    lval* val = lval_qexpr();    
+    lenv_put(f-&gt;env, sym, val);
+    lval_del(sym); lval_del(val);
+  }
+  
+  if (f-&gt;formals-&gt;count == 0) {  
+    f-&gt;env-&gt;par = e;    
+    return builtin_eval(f-&gt;env, lval_add(lval_sexpr(), lval_copy(f-&gt;body)));
+  } else {
+    return lval_copy(f);
+  }
+  
+}
+
+lval* lval_eval_sexpr(lenv* e, lval* v) {
+  
+  for (int i = 0; i &lt; v-&gt;count; i++) { v-&gt;cell[i] = lval_eval(e, v-&gt;cell[i]); }
+  for (int i = 0; i &lt; v-&gt;count; i++) { if (v-&gt;cell[i]-&gt;type == LVAL_ERR) { return lval_take(v, i); } }
+  
+  if (v-&gt;count == 0) { return v; }  
+  if (v-&gt;count == 1) { return lval_eval(e, lval_take(v, 0)); }
+  
+  lval* f = lval_pop(v, 0);
+  if (f-&gt;type != LVAL_FUN) {
+    lval* err = lval_err(
+      "S-Expression starts with incorrect type. Got %s, Expected %s.",
+      ltype_name(f-&gt;type), ltype_name(LVAL_FUN));
+    lval_del(f); lval_del(v);
+    return err;
+  }
+  
+  lval* result = lval_call(e, f, v);
+  lval_del(f);
+  return result;
+}
+
+lval* lval_eval(lenv* e, lval* v) {
+  if (v-&gt;type == LVAL_SYM)   { return lenv_get(e, v); }
+  if (v-&gt;type == LVAL_SEXPR) { return lval_eval_sexpr(e, v); }
+  return v;
+}
+
+/* Reading */
+
+lval* lval_read_num(mpc_ast_t* t) {
+  long x = strtol(t-&gt;contents, NULL, 10);
+  return errno != ERANGE ? lval_num(x) : lval_err("Invalid Number.");
+}
+
+lval* lval_read_str(mpc_ast_t* t) {
+  /* Cut off the final quote character */
+  t-&gt;contents[strlen(t-&gt;contents)-1] = '\0';
+  /* Copy the string missing out the first quote character */
+  char* unescaped = malloc(strlen(t-&gt;contents+1));
+  strcpy(unescaped, t-&gt;contents+1);
+  /* Pass through the unescape function */
+  unescaped = mpcf_unescape(unescaped);
+  /* Construct a new lval using the string */
+  lval* str = lval_str(unescaped);
+  /* Free the string and return */
+  free(unescaped);
+  return str;
+}
+
+lval* lval_read(mpc_ast_t* t) {
+  
+  if (strstr(t-&gt;tag, "number")) { return lval_read_num(t); }
+  if (strstr(t-&gt;tag, "string")) { return lval_read_str(t); }
+  if (strstr(t-&gt;tag, "symbol")) { return lval_sym(t-&gt;contents); }
+  
+  lval* x = NULL;
+  if (strcmp(t-&gt;tag, "&gt;") == 0) { x = lval_sexpr(); } 
+  if (strstr(t-&gt;tag, "sexpr"))  { x = lval_sexpr(); }
+  if (strstr(t-&gt;tag, "qexpr"))  { x = lval_qexpr(); }
+  
+  for (int i = 0; i &lt; t-&gt;children_num; i++) {
+    if (strcmp(t-&gt;children[i]-&gt;contents, "(") == 0) { continue; }
+    if (strcmp(t-&gt;children[i]-&gt;contents, ")") == 0) { continue; }
+    if (strcmp(t-&gt;children[i]-&gt;contents, "}") == 0) { continue; }
+    if (strcmp(t-&gt;children[i]-&gt;contents, "{") == 0) { continue; }
+    if (strcmp(t-&gt;children[i]-&gt;tag,  "regex") == 0) { continue; }
+    if (strstr(t-&gt;children[i]-&gt;tag, "comment")) { continue; }
+    x = lval_add(x, lval_read(t-&gt;children[i]));
+  }
+  
+  return x;
+}
+
+/* Main */
+
+int main(int argc, char** argv) {
+  
+  Number  = mpc_new("number");
+  Symbol  = mpc_new("symbol");
+  String  = mpc_new("string");
+  Comment = mpc_new("comment");
+  Sexpr   = mpc_new("sexpr");
+  Qexpr   = mpc_new("qexpr");
+  Expr    = mpc_new("expr");
+  Lispy   = mpc_new("lispy");
+  
+  mpca_lang(
+    "                                              \
+      number  : /-?[0-9]+/ ;                       \
+      symbol  : /[a-zA-Z0-9_+\\-*\\/\\\\=&lt;&gt;!&amp;]+/ ; \
+      string  : /\"(\\\\.|[^\"])*\"/ ;             \
+      comment : /;[^\\r\\n]*/ ;                    \
+      sexpr   : '(' &lt;expr&gt;* ')' ;                  \
+      qexpr   : '{' &lt;expr&gt;* '}' ;                  \
+      expr    : &lt;number&gt;  | &lt;symbol&gt; | &lt;string&gt;    \
+              | &lt;comment&gt; | &lt;sexpr&gt;  | &lt;qexpr&gt;;    \
+      lispy   : /^/ &lt;expr&gt;* /$/ ;                  \
+    ",
+    Number, Symbol, String, Comment, Sexpr, Qexpr, Expr, Lispy);
+  
+  lenv* e = lenv_new();
+  lenv_add_builtins(e);
+  
+  /* Interactive Prompt */
+  if (argc == 1) {
+  
+    fputs("Lispy Version 0.0.0.0.4\n", stdout);
+    fputs("Press Ctrl+c to Exit\n\n", stdout);
+  
+    while (1) {
+    
+      char* input = readline("lispy&gt; ");
+      add_history(input);
+      
+      mpc_result_t r;
+      if (mpc_parse("&lt;stdin&gt;", input, Lispy, &r)) {
+        
+        lval* x = lval_eval(e, lval_read(r.output));
+        lval_println(x);
+        lval_del(x);
+        
+        mpc_ast_delete(r.output);
+      } else {    
+        mpc_err_print(r.error);
+        mpc_err_delete(r.error);
+      }
+      
+      free(input);
+      
+    }
+  }
+  
+  /* Supplied with list of files */
+  if (argc &gt;= 2) {
+  
+    /* loop over each supplied filename (starting from 1) */
+    for (int i = 1; i &lt; argc; i++) {
+      
+      /* Create an argument list with a single argument being the filename */
+      lval* args = lval_add(lval_sexpr(), lval_str(argv[i]));
+      
+      /* Pass to builtin load and get the result */
+      lval* x = builtin_load(e, args);
+      
+      /* If the result is an error be sure to print it */
+      if (x-&gt;type == LVAL_ERR) { lval_println(x); }
+      lval_del(x);
+    }
+  }
+  
+  lenv_del(e);
+  
+  mpc_cleanup(8, Number, Symbol, String, Comment, Sexpr, Qexpr, Expr, Lispy);
+  
+  return 0;
+}
+</code></pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h2>Bonus Marks</h2>
+
+<div class="alert alert-warning">
+  <ul class="list-group">
+    <li class="list-group-item">&bull; Adapt the function <code>join</code> work on strings</li>
+    <li class="list-group-item">&bull; Adapt the function <code>head</code> work on strings</li>
+    <li class="list-group-item">&bull; Adapt the function <code>tail</code> work on strings</li>
+    <li class="list-group-item">&bull; Create a function <code>show</code> that can print the contents of strings as it is (unescaped)</li>
+    <li class="list-group-item">&bull; Add functions to wrap all of C's file handling functions such as <code>fopen</code> and <code>fgets</code>.</li>
+  </ul>
+</div>
+
+
+<h2>Navigation</h2>
+
+<p><a href="chapter14_standard_library"><strong>Next Chapter &bull; Standard Library</strong></a></p>
+
+<p><a href="chapter12_conditionals"><strong>Previous Chapter &bull; Conditionals</strong></a></p>

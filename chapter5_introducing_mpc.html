@@ -36,7 +36,7 @@
 
 <p>So what does code that <em>looks like</em> a grammar..<em>look like</em>? Here is a basic example of using <code>mpc</code> in this mode.</p>
 
-<pre><code data-language="C">void parse_flatmate(char* input) {
+<pre><code data-language='c'>void parse_flatmate(char* input) {
 
   /* Build a new parser 'Flatmate' */
   mpc_parser_t* Flatmate = mpc_or(4, 
@@ -57,7 +57,7 @@
   }
   
   mpc_delete(Flatmate);
-</code></pre>
+}</code></pre>
 
 <p>Although you wont recognize many of the functions above, see if you can guess what they do individually. Then try to guess what the code does as a whole. Don't worry if you don't really understand it all.</p>
 
@@ -67,7 +67,7 @@
 
 <p>We can built a more complicated parser by referencing existing ones.</p>
 
-<pre><code class="lang-c">mpc_parser_t* Greet = mpc_and(2, mpcf_strfold,
+<pre><code data-language='c'>mpc_parser_t* Greet = mpc_and(2, mpcf_strfold,
   mpc_sym(&quot;Hello&quot;),
   Flatmate, 
   free); 
@@ -80,7 +80,7 @@ mpc_parser_t* Greetings = mpc_many(mpcf_strfold, Greet);</code></pre>
 
 <p>Now there are an infinite number of different possible strings that could be accepted by our parser <code>Greetings</code>. This means it's language is <em>infinite</em>. Here are some examples of possible strings <code>Greetings</code> could accept.
 
-<pre><code>&quot;Hello Dan&quot;
+<pre><code data-language='c'>&quot;Hello Dan&quot;
 &quot;Hello Dan Hello Chess&quot;
 &quot;Hello Lewis Hello Lewis Hello Lewis&quot;</code></pre>
 
@@ -95,7 +95,7 @@ mpc_parser_t* Greetings = mpc_many(mpcf_strfold, Greet);</code></pre>
 
 <p>Because of this it is a much easier approach, and this is why we are going to use it for our Lisp. Here is how we would recreate the previous examples using this method.</p>
 
-<pre><code data-language="C">mpc_parser_t* Flatmate  = mpc_new(&quot;flatmate&quot;);
+<pre><code data-language='c'>mpc_parser_t* Flatmate  = mpc_new(&quot;flatmate&quot;);
 mpc_parser_t* Greet     = mpc_new(&quot;greet&quot;);
 mpc_parser_t* Greetings = mpc_new(&quot;greetings&quot;);
 
@@ -149,7 +149,7 @@ mpc_cleanup(3, Flatmate, Greet, Greetings);</code></pre>
     </div>
     <div id="collapseOne" class="panel-collapse collapse">
       <div class="panel-body">
-<pre><code data-language='C'>#include "mpc.h"
+<pre><code data-language='c'>#include "mpc.h"
 
 void parse_flatmate(char* input) {
 
@@ -200,7 +200,7 @@ int main(int argc, char** argv) {
     </div>
     <div id="collapseTwo" class="panel-collapse collapse">
       <div class="panel-body">
-<pre><code data-language='C'>#include "mpc.h"
+<pre><code data-language='c'>#include "mpc.h"
 
 int main(int argc, char** argv) {
 
@@ -235,7 +235,7 @@ int main(int argc, char** argv) {
     </div>
     <div id="collapseThree" class="panel-collapse collapse">
       <div class="panel-body">
-<pre><code data-language='C'>#include "mpc.h"
+<pre><code data-language='c'>#include "mpc.h"
 
 int main(int argc, char** argv) {
 

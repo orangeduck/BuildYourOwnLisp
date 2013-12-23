@@ -1,31 +1,77 @@
+<h1>Future Work <small>&bull; Chapter 15</small></h1>
 
-<h2>Future Work</h2>
+
 <p>Although our lisp can do a lot already. There is still an awful lot it can&#39;t do. Unfortunately at this point it is still really a toy. If you tried to use it for any sufficently large project there are a number of issues you would eventually run into, and improvements you&#39;d have to make. These are the sorts of things that bring it more into the scope of a fully fledged programming language.</p>
+
 <p>If you&#39;ve become fond of your language and are confident enough now in C here are some of these issues you would likely encounter - as well as some fun ideas for other improvements too. Some may take a few hundred lines of code, others a few thousand. The choice of what to tackle is up to you.</p>
-<h3>Optimisation (Allocation)</h3>
+
+
+<h2>Optimisation (Allocation)</h2>
+
 <p>Our Lisp should actually be relatively fast in comparison to some scripting languages such as Python and Ruby. This mainly comes from it&#39;s simplicity. The majority of performance overhead in our program comes from the fact that we call <code>malloc</code> so often. When doing calculations there is lots of copying, allocation and deallocation of <code>lval</code> types.</p>
+
 <p>If we wish to alliviate this overhead we need to lower the number of calls to <code>malloc</code>. One method for doing this is to call <code>malloc</code> once at the beginning of the program allocating a large pool of memory. We should then replace all our <code>malloc</code> calls with calls to some function that slices and dices up this memory and uses it in the program. It means that we are emulating some of the behaviour of the operating system - but in a much faster way. This idea is called <em>memory pool allocation</em> and is a common technique used in game development as well as other performance sensitive applications.</p>
+
 <p>This can be tricky to implement correctly but conceptually does not need to be complex. If you want a fast way to get large gains in performance looking into this might interest you.</p>
-<h3>Garbage Collection (Non-Value Symbols)</h3>
+
+
+<h2>Garbage Collection (Non-Value Symbols)</h2>
+
 <p>In almost all other implementations of Lisps when we assign a variable it does so differently to ours. It does not store a copy of that variable, but actually a pointer or reference to it. Like in C, there are many circumstances where using pointers is more efficient. Using pointers can remove the large overhead required when copying and moving large data structure.</p>
+
 <p>When we assign some data to a variable we want to ensure it is not deleted when the structure or expression containing it is. Instead we want it to get cleaned up when the variable goes out of scope. We can say that once data has been assigned to a variable the data is now <em>marked</em> - and any marked variables should not be cleaned up as usual.</p>
+
 <p>We then want to write a separate algorithm that deals with all the <em>marked</em> variables and cleans them up at the correct time. It is important this deals correctly with variables that reference other variables (or even variables that reference themselves).</p>
+
 <p>This is called <em>Garbage Collection</em> and is an integral part to many programming languages. Implementing a <em>Garbage Collector</em> does not need to be complicated, but it can be tricky - in particularly if you wish to make it efficient. Implementing this is essential to making this language practical for working with large amounts of data.</p>
-<h3>Macros (Deferred Evaluation)</h3>
+
+
+<h2>Macros (Deferred Evaluation)</h2>
+
 <p>In may other Lisps you can write things like <code>(def x 100)</code> to define the value <code>100</code> to <code>x</code>. In our lisp this wouldn&#39;t work because it would attempt to evaluate the <code>x</code> to whatever value was stored as <code>x</code>. These functions are called <em>macros</em> and when encountered they stop the evaluation of their arguments and manipulate them un-evaluated.</p>
+
 <p>They let you write things that look like normal function calls, but actually which do complex and interesting things.</p>
+
 <p>These are kind of a fun thing to have in a language as they make it so you can add a little bit of <em>magic</em> to some of the workings. In many cases this can make syntax nicer or stop a user from having to repeat themselves.</p>
+
 <p>Personally I like how our language handles things like <code>def</code> and <code>if</code> in a macro free way, but if you find it akward this might be something you are interested in implementing.</p>
-<h3>List Literal</h3>
+
+
+<h2>List Literal</h2>
+
 <p>Some lisps use square brackets <code>[]</code> to give a literal notation for evaluated lists. Using this rather than writing <code>(list 100 200 300)</code> you can write <code>[100 200 300]</code>.  This is nicer in some situations.</p>
-<h3>Files &amp; IO</h3>
+
+
+<h2>Files &amp; IO</h2>
+
 <p>One essential part of bootstrapping a language is to give it proper abilities for opening files, reading and writing their contents, and whatever else. This means wrapping all the C functions such as <code>fread</code>, <code>fwrite</code>, <code>fgetc</code>, and others. This is a fairly straight forward task but does require writing quite a large number of wrapper functions, which is why we&#39;ve not done it for our toy language.</p>
+
 <p>On a related note it would be good to give our language access to whatever operating systems are appropriate. We should give it the ability to change directory, list files in a directory and that sort of thing. This is an easy task but could require a lot of typing. It is essential for any real practical use of this language as something like a scripting language.</p>
-<h3>Doubles &amp; Other Native Types</h3>
+
+
+<h2>Doubles &amp; Other Native Types</h2>
+
 <p>Currently our language only supports <code>ints</code> and <code>strings</code>. This is pretty limiting if you want to do any kind of useful computation. Our operations on these data types are also pretty limited. A fairly easy addition is to add decimal numbers in the form of <code>double</code> or to add </p>
-<h3>Variable Lookup Hashtable</h3>
-<h3>User Defined Types</h3>
-<h3>Tail Call Optimisation</h3>
-<h3>Lexical Scope</h3>
-<h3>Static Typing</h3>
+
+
+<h2>Variable Lookup Hashtable</h2>
+
+
+<h2>User Defined Types</h2>
+
+
+<h2>Tail Call Optimisation</h2>
+
+
+<h2>Lexical Scope</h2>
+
+
+<h2>Static Typing</h2>
+
+
 <h2>Conclusion</h2>
+
+
+<h2>Navigation</h2>
+
+<p><a href="chapter14_standard_library"><strong>Previous Chapter &bull; Standard Library</strong></a></p>

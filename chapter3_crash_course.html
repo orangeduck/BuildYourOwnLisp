@@ -37,11 +37,11 @@
 
 <p>We declare a new variable by writting the type name then the variable name, and optionally setting it to some value. For example to create a new <code>int</code> called <code>count</code> we could write the following inside a function.</p> 
 
-<pre><code data-language='C'>int count;</code></pre>
+<pre><code data-language='c'>int count;</code></pre>
 
 <p>or to declare it and set the value</p>
 
-<pre><code data-language='C'>int count = 10;</code></pre>
+<pre><code data-language='c'>int count = 10;</code></pre>
 
 
 <h2>Functions</h2>
@@ -52,7 +52,7 @@
 
 <p>For example a function that takes two <code>int</code> variables called <code>x</code> and <code>y</code> and adds them together could look like this.</p>
 
-<pre><code data-language='C'>int add_together(int x, int y) {
+<pre><code data-language='c'>int add_together(int x, int y) {
   int result = x + y;
   return result;
 }</code></pre>
@@ -64,14 +64,14 @@
 
 <p>Structs are like several C variables bundled together in a single package. We could create a struct called <code>point</code> that represents a point in 2D space by packaging together two <code>float</code> (decimal) values called <code>x</code> and <code>y</code>. It would look like this.</p>
 
-<pre><code data-language='C'>typedef struct {
+<pre><code data-language='c'>typedef struct {
   float x;
   float y;
 } point;</code></pre>
 
 <p>We should place this at the top of our source file so it becomes avaliable to use as a type for our functions. As a type it is no different to the native types and so we can use it in all the same ways. We can access each individual field using a dot <code>.</code>, followed by the field name such as <code>x</code>.</p>
 
-<pre><code data-language='C'>point p;
+<pre><code data-language='c'>point p;
 p.x = 0.1;
 p.y = 10.0;
 </code></pre>
@@ -104,7 +104,7 @@ p.y = 10.0;
 
 <p>For example if we wish to check if an <code>int</code> called <code>x</code> is greater than <code>10</code> or not we might write the following.</p> 
 
-<pre><code data-language='C'>if (x > 10) {
+<pre><code data-language='c'>if (x > 10) {
   puts("x is 0!");
 } else {
   puts("x is not 0!");
@@ -119,7 +119,7 @@ p.y = 10.0;
 
 <p>The first is a <code>while</code> loop. This loop repeatedly executes a block of code until some condition becomes false. It is written as <code>while</code> followed by some condition in parenthesis <code>()</code>, followed by the code to execute in curly brackets <code>{}</code>. For example a loop that counts downward from <code>10</code> to <code>1</code> could be written as follows.</p>
 
-<pre><code data-language='C'>int i = 10;
+<pre><code data-language='c'>int i = 10;
 while (i > 0) {
   puts("Loop Iteration");
   i = i - 1;
@@ -129,7 +129,7 @@ while (i > 0) {
 
 <p>For example to write a loop that counts up from <code>0</code> to <code>9</code> we might write the following. In this case the <code>++</code> operator increments the variable <code>i</code>.</p>
 
-<pre><code data-language='C'>for (int i = 0; i < 10; i++) {
+<pre><code data-language='c'>for (int i = 0; i < 10; i++) {
   puts("Loop Iteration");
 }</code></pre>
 
