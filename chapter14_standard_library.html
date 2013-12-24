@@ -1,6 +1,6 @@
 <h1>Standard Library <small>&bull; Chapter 14</small></h1>
 
-<h2>Minimalism</h2>
+<h2>Minimalism</h2> <hr/>
 
 <div class='pull-right alert alert-warning' style="margin: 15px; text-align: center;">
   <img src="/static/img/library.png" alt="library"/>
@@ -9,14 +9,16 @@
 
 <p>The Lisp we&#39;ve built has been purposefully minimal. We've only added the fewest number of core structures and builtins. If we choose these carefully, as we did, then it should allow us to add in everything else required to the language.</p>
 
-<p>The motivation behind minimalism is two-fold. It makes the core language simple to debug and easy to learn. This is a great benefit to developers and users. Like occams razor it is almost always better to trim away any waste if it results in a equally expressive language. Having a small is also aestetically nicer. It is clever, interesting, and fun to see how small we can make the core of a language, and still get something useful out of the other side. And as hackers, which we are now, this is what we enjoy.</p>
+<p>The motivation behind minimalism is two-fold. It makes the core language simple to debug and easy to learn. This is a great benefit to developers and users. Like occams razor it is almost always better to trim away any waste if it results in a equally expressive language. Having a small language is also aestetically nicer. It is clever, interesting, and fun to see how small we can make the core of a language, and still get something useful out of the other side. As hackers, which we are now, this is what makes us happy.</p>
 
 
-<h2>Atoms</h2>
+<h2>Atoms</h2> <hr/>
 
 <p>When dealing with conditionals we added no new boolean type to our language. Because of this we didn't add <code>true</code> or <code>false</code> either. Instead we just used numbers. Readability is still important though, so we can define some constants to represent these values.</p>
 
-<p>On a similar note, many lisps use the word <code>nil</code> to represent the empty list <code>{}</code>. We can add this in too. Of course the user is not forced to use these constants, and can use numbers and empty lists if they like. This is empowering to users, and as hackers, which we are now, this is what we believe in.</p>
+<p>On a similar note, many lisps use the word <code>nil</code> to represent the empty list <code>{}</code>. We can add this in too. These constants are sometimes called <em>atoms</em> because of their importance and unchanging behaviour. Of course the user is not forced to use these named constants, and can use numbers and empty lists instead as they like.</p>
+
+<p>Empowering users, as the hackers we are now, this is what we believe in.</p>
 
 <pre><code data-language='lispy'>&#59; Atoms
 (def {nil} {})
@@ -24,7 +26,7 @@
 (def {false} 0)</code></pre>
 
 
-<h2>Building Blocks</h2>
+<h2>Building Blocks</h2> <hr/>
 
 <p>We've already come up with a number of cool functions I've been using in the examples. One of these is our <code>fun</code> function that allows us to declare functions in a neater way. We shoud include this in our standard library for certain.</p>
 
@@ -77,7 +79,7 @@ Error: Unbound Symbol &#39;x&#39;
 lispy&gt;</code></pre>
 
 
-<h2>Logical Operators</h2>
+<h2>Logical Operators</h2> <hr/>
 
 <p>We didn't define any local operators such as <code>and</code> and <code>or</code> in our language. This might be a good thing to add in later. For now we can use arithmetic operators to emulate them. Think for a second how these functions work when encounting <code>0</code> or <code>1</code> for their various inputs.</p>
 
@@ -87,7 +89,7 @@ lispy&gt;</code></pre>
 (fun {and x y} {* x y})</code></pre>
 
 
-<h2>Misc Functions</h2>
+<h2>Misc Functions</h2> <hr/>
 
 <p>Here are a couple of oddball functions that don&#39;t really fit in anywhere. See if you can guess what each of their intended functionality is.</p>
 
@@ -132,7 +134,7 @@ lispy&gt;
 </code></pre>
 
 
-<h2>List Functions</h2>
+<h2>List Functions</h2> <hr/>
 
 <p>The <code>head</code> function is used to get the first element of a list, but what it returns is still wrapped in the list. If we want to actually get the element out of this list we need to extact it somehow.</p>
 
@@ -246,7 +248,7 @@ lispy&gt;</code></pre>
 (fun {product l} {foldl * 1 l})</code></pre>
 
 
-<h2>Conditional Functions</h2>
+<h2>Conditional Functions</h2> <hr/>
 
 <p>By defining our <code>fun</code> function we've already shown how powerful our language is in its ability to define functions that look like new syntax or do powerful things. Another example of this is found in emulating the C <code>switch</code> and <code>case</code> statements. In C these are built into the language, but for our language we can define them as part of a library.</p>
 
@@ -298,7 +300,7 @@ lispy&gt;</code></pre>
 })</code></pre>
 
 
-<h2>Fibonacci</h2>
+<h2>Fibonacci</h2> <hr/>
 
 <p>No standard library would be complete without an obligatory definition of the Fibonacci function. Using all of the above things we've defined  we can write a cute little <code>fib</code> function that is really quite readable, and clear semantically.</p>
 
@@ -313,7 +315,7 @@ lispy&gt;</code></pre>
 <p>This is the end of the standard library I've managed to think up. Building up a standard library is a fun part of language design, because you get to be creative and opinionated on what goes in and stays out. Try to come up with something you are happy with.</p>
 
 
-<h2>Tutorial Code</h2>
+<h2>Reference</h2> <hr/>
 
 <div class="panel-group alert alert-warning" id="accordion">
   <div class="panel panel-default">
@@ -380,7 +382,7 @@ lispy&gt;</code></pre>
 (fun {min & xs} {
   if (== (tail xs) {}) {fst xs}
     {do 
-      (= {rest} (apply min (tail xs)))
+      (= {rest} (unpack min (tail xs)))
       (= {item} (fst xs))
       (if (< item rest) {item} {rest})
     }
@@ -390,7 +392,7 @@ lispy&gt;</code></pre>
 (fun {max & xs} {
   if (== (tail xs) {}) {fst xs}
     {do 
-      (= {rest} (apply max (tail xs)))
+      (= {rest} (unpack max (tail xs)))
       (= {item} (fst xs))
       (if (> item rest) {item} {rest})
     }  
@@ -401,13 +403,13 @@ lispy&gt;</code></pre>
 (fun {select & cs} {
   if (== cs {})
     {error "No Selection Found"}
-    {if (fst (fst cs)) {eval (snd (fst cs))} {apply select (tail cs)}}
+    {if (fst (fst cs)) {eval (snd (fst cs))} {unpack select (tail cs)}}
 })
 
 (fun {case x & cs} {
   if (== cs {})
     {error "No Case Found"}
-    {if (== x (fst (fst cs))) {snd (fst cs)} {apply case (join (list x) (tail cs))}}
+    {if (== x (fst (fst cs))) {snd (fst cs)} {unpack case (join (list x) (tail cs))}}
 })
 
 (def {otherwise} true)
@@ -447,14 +449,14 @@ lispy&gt;</code></pre>
 (fun {map f l} {
   if (== l {})
     {{}}
-    {join (list (apply f (head l))) (map f (tail l))}
+    {join (list (f (fst l))) (map f (tail l))}
 })
 
 &#59; Apply Filter to List
 (fun {filter f l} {
   if (== l {})
     {{}}
-    {join (if (apply f (head l)) {head l} {{}}) (filter f (tail l))}
+    {join (if (f (fst l)) {head l} {{}}) (filter f (tail l))}
 })
 
 &#59; Return all of list but last element
@@ -507,14 +509,14 @@ lispy&gt;</code></pre>
 
 &#59; Take While
 (fun {take-while f l} {
-  if (not (apply f (head l)))
+  if (not (unpack f (head l)))
     {{}}
     {join (head l) (take-while f (tail l))}
 })
 
 &#59; Drop While
 (fun {drop-while f l} {
-  if (not (apply f (head l)))
+  if (not (unpack f (head l)))
     {l}
     {drop-while f (tail l)}
 })
@@ -538,10 +540,10 @@ lispy&gt;</code></pre>
 })
 
 &#59; Zip two lists together into a list of pairs
-(fun {zip l0 l1} {
-  if (or (== l0 {}) (== l1 {}))
+(fun {zip x y} {
+  if (or (== x {}) (== y {}))
     {{}}
-    {join (list (join (head l0) (head l1))) (zip (tail l0) (tail l1))}
+    {join (list (join (head x) (head y))) (zip (tail x) (tail y))}
 })
 
 &#59; Unzip a list of pairs into two lists
@@ -571,7 +573,7 @@ lispy&gt;</code></pre>
 </div>
 
 
-<h2>Bonus Marks</h2>
+<h2>Bonus Marks</h2> <hr/>
 
 <div class="alert alert-warning">
   <ul class="list-group">
@@ -584,6 +586,10 @@ lispy&gt;</code></pre>
 
 <h2>Navigation</h2>
 
-<p><a href="chapter15_future_work"><strong>Next Chapter &bull; Future Work</strong></a></p>
-
-<p><a href="chapter13_strings"><strong>Previous Chapter &bull; Strings</strong></a></p>
+<table class="table" style='table-layout: fixed;'>
+  <tr>
+    <td class="text-left"><a href="chapter13_strings"><h4>&lsaquo; Strings</h4></a></td>
+    <td class="text-center"><a href="contents"><h4>&bull; Contents &bull;</h4></a></td>
+    <td class="text-right"><a href="chapter15_future_work"><h4>Future Work &rsaquo;</h4></a></td>
+  </tr>
+</table>

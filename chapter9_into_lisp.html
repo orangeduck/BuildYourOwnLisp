@@ -1,7 +1,7 @@
 <h1>Into Lisp <small>&bull; Chapter 9</small></h1>
 
 
-<h2>Lists</h2>
+<h2>Lists</h2> <hr/>
 
 <p>In the first chapter I mentioned that a Lisp is a language based around lists, but so far, other than our <em>abstract syntax tree</em>, we've not seen many of them. In this chapter we rectify that, by finally converting our program into something that could vaguely be called a Lisp. This is a long chapter, so brace yourself. But once we&#39;ve finished we will be over a big hill and on the downward slope toward a Lisp full of cool features.</p>
 
@@ -10,7 +10,7 @@
 <p>Our first step toward a Lisp will be to change our program to convert the <em>abstract syntax tree</em> input into an internal list structure to evaluate. The second step will be to introduce a new kind of list we can use to store values we don't want to be evaluated right away.</p>
 
 
-<h2>Becoming a Lisp</h2>
+<h2>Becoming a Lisp</h2> <hr/>
 
 <div class='pull-right alert alert-warning' style="margin: 15px; text-align: center;">
   <img src="/static/img/lisp.png" alt="lisp"/>
@@ -26,7 +26,7 @@
 <p>Keeping that in mind...</p>
 
 
-<h2>Types of list</h2>
+<h2>Types of list</h2> <hr/>
 
 <p>In our Lisp there are going to be two types of list.</p>
 
@@ -37,7 +37,7 @@
 <p>Just using these two types of list, a handful of operators, and a bit of creativity, we can build a programming language that is incredibly powerful and flexible.</p>
 
 
-<h2>Pointers</h2>
+<h2>Pointers</h2> <hr/>
 
 <p>In C no concept of list can be explored without dealing properly with pointers. Pointers are a famously misunderstood aspect of C. They are difficult to teach because while being conceptually very simple, they come with a lot of new terminology, and often no clear use-case. This makes them appear far more monstrous than they are. Luckily for us, we have a couple ideal use-cases, both of which are extremely typical in C, and will likely end up being how you use pointers 90% of the time.</p>
 
@@ -64,7 +64,7 @@
 <p>Finally we can get the data at an address, called <em>dereferencing</em> using <code>*</code> on the left hand size of a variable. Or we can get the data at the field of a pointer to a struct using an arrow <code>-&gt;</code>, as seen in chapter 7.</p>
 
 
-<h2>The Stack &amp; The Heap</h2>
+<h2>The Stack &amp; The Heap</h2> <hr/>
 
 <p>I said that memory can be visualized of as one long list of bytes. Actually it is better to imagine it split into two sections. These sections are called <em>The Stack</em> and <em>The Heap</em>.</p>
 
@@ -99,7 +99,7 @@
 <p>That was a lot to take in. Have a pause to think about what we've just covered.</p>
 
 
-<h2>Adding Features</h2>
+<h2>Adding Features</h2> <hr/>
 
 <p>You'll notice in the following chapters that adding new features to our language usually consists of a number of steps.</p>
 
@@ -113,7 +113,7 @@
 <p>This is exactly what we're going to do now for our new <em>list</em> data types.</p>
 
 
-<h2>Parsing Expressions</h2>
+<h2>Parsing Expressions</h2> <hr/>
 
 <p>The syntax for S-Expressions and Q-Expressions is really easy. As mentioned before it conists of a number of <code>expr</code> between certain bracket types. We can just add two new basic parse rules and add them as options of the <code>expr</code> rule.</p>
 
@@ -142,7 +142,7 @@
 <pre><code data-language='c'>mpc_cleanup(6, Number, Symbol, Sexpr, Qexpr, Expr, Lispy);</code></pre>
 
 
-<h2>Expression Structure</h2>
+<h2>Expression Structure</h2> <hr/>
 
 <p>We can now parse lists of expressions, but we still need to store them internally as an <code>lval</code>. We're therefore going to add three new types to the <code>type</code> enum we were using to encode <code>lval</code> types. The first new type is <em>symbol</em>, which we're going to use to represent operators such as <code>+</code>, and later on variables and functions. The other two new types are for <em>S-Expressions</em> and <em>Q-Expressions</em>.</p>
 
@@ -173,7 +173,7 @@ typedef struct lval {
 } lval;</code></pre>
 
 
-<h2>Constructors &amp; Destructors</h2>
+<h2>Constructors &amp; Destructors</h2> <hr/>
 
 <p>Now when we build an <code>lval</code> it may contain pointers to other things. This means we need to be careful. Whenever we are done with this <code>lval</code> we will also need to delete the things it points to.</p>
 
@@ -262,7 +262,7 @@ lval* lval_qexpr(void) {
 }</code></pre>
     
     
-<h2>Reading Expressions</h2>
+<h2>Reading Expressions</h2> <hr/>
 
 <p>We are going to use these Expression <code>lval</code> to represet our whole program. First we are going to <em>read</em> in the program and construct an <code>lval*</code> that represents it all. Then we are going to <em>evaluate</em> this Expression to get the result of our program. This first stage should convert the <em>abstract syntax tree</em> into an S-Expression, and the second stage should evaluate this S-Expression using our normal lisp rules.</p>
 
@@ -312,7 +312,7 @@ lval* lval_read(mpc_ast_t* t) {
 }</code></pre>
 
 
-<h2>Printing Expressions</h2>
+<h2>Printing Expressions</h2> <hr/>
 
 <p>Great! We are so close to trying out all of our new changes. To do this we should modify our print function to take <code>lval*</code> and to be able to print our new expression types. Then we can see how the <em>reading</em> phase works by printing out the resulting S-Expression.</p>
 
@@ -364,7 +364,7 @@ lispy&gt; *     55     101  (+ 0 0 0)
 lispy&gt;</code></pre>
 
 
-<h2>Evaluating Expressions</h2>
+<h2>Evaluating Expressions</h2> <hr/>
 
 <p>The main change to our evaluation function is that as input it must take some <code>lval*</code>, and must return some <code>lval*</code>. We can think of our evaluation function as a kind of transformer. It takes in some <code>lval*</code> and transforms it in some way to some new <code>lval*</code>. In some cases it can just return exactly the same thing. In other cases it may modify the input <code>lval*</code> and the return it. In many cases it will delete the input, and return something completely different. If this is the case we must always remember to delete the input <code>lval*</code> when we are going to return something new.</p>
 
@@ -514,7 +514,7 @@ lispy&gt; / 6 {5 6}
 Error: Cannot operator on non number!</code></pre>
 
 
-<h2>Builtin Functions</h2>
+<h2>Builtin Functions</h2> <hr/>
 
 <p>We&#39;ve got all the ground work in place, but our Q-Expression type is still useless. There is no way to manipulate it. It can be parsed in, but just throws an error whenever we operate on it.</p>
 
@@ -545,7 +545,7 @@ Error: Cannot operator on non number!</code></pre>
 <p>Now, like our operators, we can set about writing them as functions...</p>
 
   
-<h2>First Attempt</h2>
+<h2>First Attempt</h2> <hr/>
 
 <p>The actual task of taking the head or tail of an Q-Expression shouldn't be too hard for us using some already existing functions we've defined. But we also need to check for errors. There are a number of conditions that are bad for the <code>head</code> and <code>tail</code> functions. First of all we must ensure they are only passed a single argument, and that that argument is a Q-Expression.</p>
 
@@ -555,9 +555,20 @@ Error: Cannot operator on non number!</code></pre>
 
 <pre><code class="lang-c">lval* builtin_head(lval* a) {
   /* Check Error Conditions */
-  if (a-&gt;count != 1) { lval_del(a); return lval_err(&quot;Function &#39;head&#39; passed too many arguments!&quot;); }
-  if (a-&gt;cell[0]-&gt;type != LVAL_QEXPR) { lval_del(a); return lval_err(&quot;Function &#39;head&#39; passed incorrect types!&quot;); }
-  if (a-&gt;cell[0]-&gt;count == 0) { lval_del(a); return lval_err(&quot;Function &#39;head&#39; passed {}!&quot;); }
+  if (a-&gt;count != 1) {
+    lval_del(a);
+    return lval_err(&quot;Function &#39;head&#39; passed too many arguments!&quot;);
+  }
+  
+  if (a-&gt;cell[0]-&gt;type != LVAL_QEXPR) {
+    lval_del(a);
+    return lval_err(&quot;Function &#39;head&#39; passed incorrect types!&quot;);
+  }
+  
+  if (a-&gt;cell[0]-&gt;count == 0) {
+    lval_del(a);
+    return lval_err(&quot;Function &#39;head&#39; passed {}!&quot;);
+  }
 
   /* Otherwise take first argument */
   lval* v = lval_take(a, 0);
@@ -569,9 +580,20 @@ Error: Cannot operator on non number!</code></pre>
 
 lval* builtin_tail(lval* a) {
   /* Check Error Conditions */
-  if (a-&gt;count != 1) { lval_del(a); return lval_err(&quot;Function &#39;tail&#39; passed too many arguments!&quot;); }
-  if (a-&gt;cell[0]-&gt;type != LVAL_QEXPR) { lval_del(a); return lval_err(&quot;Function &#39;tail&#39; passed incorrect types!&quot;); }  
-  if (a-&gt;cell[0]-&gt;count == 0) { lval_del(a); return lval_err(&quot;Function &#39;tail&#39; passed {}!&quot;); }
+  if (a-&gt;count != 1) {
+    lval_del(a);
+    return lval_err(&quot;Function &#39;tail&#39; passed too many arguments!&quot;);
+  }
+  
+  if (a-&gt;cell[0]-&gt;type != LVAL_QEXPR) {
+    lval_del(a);
+    return lval_err(&quot;Function &#39;tail&#39; passed incorrect types!&quot;);
+  }  
+  
+  if (a-&gt;cell[0]-&gt;count == 0) {
+    lval_del(a);
+    return lval_err(&quot;Function &#39;tail&#39; passed {}!&quot;);
+  }
 
   /* Take first argument */
   lval* v = lval_take(a, 0);
@@ -582,7 +604,7 @@ lval* builtin_tail(lval* a) {
 }</code></pre>
 
 
-<h2>Macros</h2>
+<h2>Macros</h2> <hr/>
 
 <div class='pull-right alert alert-warning' style="margin: 15px; text-align: center;">
   <img src="/static/img/strawberry.png" alt="strawberry"/>
@@ -684,7 +706,7 @@ lval* lval_join(lval* x, lval* y) {
 }</code></pre>
 
 
-<h2>Builtins Lookup</h2>
+<h2>Builtins Lookup</h2> <hr/>
 
 <p>We have all of our builtin functions so now we need to make a function that can call the correct one depending on what symbol it encounters. We can do this using <code>strcmp</code> and <code>strstr</code>.</p>
 
@@ -722,7 +744,7 @@ lispy&gt; eval (head {(+ 1 2) (+ 10 20)})
 3</code></pre>
 
 
-<h2>Tutorial Code</h2>
+<h2>Reference</h2> <hr/>
 
 <div class="panel-group alert alert-warning" id="accordion">
   <div class="panel panel-default">
@@ -1151,7 +1173,7 @@ int main(int argc, char** argv) {
   </div>
 </div>
 
-<h2>Bonus Marks</h2>
+<h2>Bonus Marks</h2> <hr/>
 
 <div class="alert alert-warning">
   <ul class="list-group">
@@ -1163,6 +1185,10 @@ int main(int argc, char** argv) {
 
 <h2>Navigation</h2>
 
-<p><a href="chapter10_variables"><strong>Next Chapter &bull; Variables</strong></a></p>
-
-<p><a href="chapter8_error_handling"><strong>Previous Chapter &bull; Error Handling</strong></a></p>
+<table class="table" style='table-layout: fixed;'>
+  <tr>
+    <td class="text-left"><a href="chapter8_error_handling"><h4>&lsaquo; Error Handling</h4></a></td>
+    <td class="text-center"><a href="contents"><h4>&bull; Contents &bull;</h4></a></td>
+    <td class="text-right"><a href="chapter10_variables"><h4>Variables &rsaquo;</h4></a></td>
+  </tr>
+</table>

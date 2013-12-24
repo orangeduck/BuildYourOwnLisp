@@ -1,18 +1,18 @@
 <h1>Introduction <small>&bull; Chapter 1</small></h1>
 
 
-<h2>About</h2>
+<h2>About</h2> <hr/>
 
 <p>In this book you'll learn the C programming language, and at the same time show you how to build your own programming language, a minimal Lisp, in under 1000 lines of code! I'm cheating a little bit on the line count, because we'll be using a library to do some of the initial work, but the rest of the code will be completely original, and you really will create a powerful little Lisp by the end.</p>
 
 <p>This book is somewhat inspired by the fantastic <a href="http://en.wikibooks.org/wiki/Write_Yourself_a_Scheme_in_48_Hours">Write Yourself a Scheme in 48 Hours</a>. My goal in writing this was to show that this sort of tutorial was possible in other languages. I picked C because it is a interesting and fun language and, like Haskell, many people are keen to learn it but have nowhere to start.</p>
 
-<p>Well here is your excuse. If you follow this book I can promise that, in the very least, you'll get a cool new programming language to play with, and hopefully knowledge of C too!</p>
+<p>Well here is your excuse. If you follow this book I can promise that, in the worst case, you'll get a cool new programming language to play with, and hopefully you'll become an experienced C programmer too!</p>
 
 
-<h2>Who is this for?</h2>
+<h2>Who is this for?</h2> <hr/>
 
-<p>This book is for anyone wanting to learn C, or for anyone who has once wondered how to build their own programming language.</p>
+<p>This book is for anyone wanting to learn C, or who has once wondered how to build their own programming language. Whatever your experience level you should find something interesting inside.</p>
 
 <div class='pull-right alert alert-warning' style="margin: 15px; text-align: center;">
   <img src="/static/img/ada.png" alt="ada"/>
@@ -28,7 +28,7 @@
 <p>For this I can only apologize. Programmers can be hostile, macho, arrogant, insecure, and agressive. There is no excuse for this behaviour. Know that I am on your side. No one <em>gets it</em> at first. Everyone struggles and doubts their abilities. Please don't give up or let the joy be sucked out of the creative experience. Be proud of what you create no matter what it is. People like me don't want you to stop programming. We want to hear your voice, and what you have to say, even if you do not shout as loud as others.<p>
 
 
-<h2>Why to learn C</h2>
+<h2>Why to learn C</h2> <hr/>
 
 <p>C is one of the most popular and influential programming languages in the world. It is the language of choice for development on Linux, and has been used extensively in the creation of OSX and to some extent Microsoft Windows. It is used on micro-computers too. Your fridge and car probably run on it. In modern software development, the use of C may be escapable, but it's legacy is not. Anyone wanting to make a career out of software development would be smart to learn C.</p>
 
@@ -47,14 +47,14 @@
 
 <p>To want to master C, is to care about what is powerful, fun, clever, and free. To become a programmer with all the vast powers of technology at his or her fingertips. And the responsibility to say 'I will do good with this'.</p>
 
-<h2>How to learn C</h2>
+<h2>How to learn C</h2> <hr/>
 
 <p>There is no way around the fact that C is a difficult language. It has many concepts that are unfamiliar, and it makes no attempts to help a new user. In this book I am <em>not</em> going to cover in detail things like the syntax of the language, or how to write loops and conditional statements.</p>
 
 <p>I will, on the other hand, show you how to build a <em>real world</em> program in C. This approach is always more difficult for the user, but hopefully will teach you many implicit things a traditional approach cannot. I can't make any promise that this book will make you a confident user of C. What I can promise, is that those 1000 lines of code are going to be packed with content - and you will learn <em>something</em> worthwhile.</p>
 
 
-<h2>Lisps</h2>
+<h2>Lisps</h2> <hr/>
 
 <div class='pull-right alert alert-warning' style="margin: 15px; text-align: center;">
   <img src="/static/img/mike.png" alt="mike"/>
@@ -69,200 +69,27 @@
 
 <p>It is important to realize I've not made this Lisp different to confuse beginners or to spread untruths. I've made it different because different is good.</p>
 
-<p>If you're the type who is concerned about what is the <em>right</em> way to built a Lisp, perhaps this book isn't for you. This book is about learning new and unique concepts, self expression, creativity, and fun.</p>
+<p>If you're the type who is concerned about what is the <em>right</em> way to built a Lisp, perhaps this book isn't for you. This book is about learning new and unique concepts, self expression, creativity, and fun. Not how to lock yourself in shackles.</p>
 
 <p>Either way heed this disclaimer now. Not everything I will cover is objectively right or true! You will have to decide on that for yourselves.</p>
 
 
-<h2>Building your own language</h2>
+<h2>Your own Lisp</h2> <hr/>
 
 <p>The best way to follow this book is to, as the title says, write <em>your own</em> Lisp. If you are feeling confident enought I want you to add your own features, modifications and changes. Your Lisp should suite you and your own philosophy on what is right or true. Throughout the book I'll be giving description and insight, but with it I'll be providing <em>a lot</em> of code. This will make it easy to follow along by copy and pasting each section into your program without really understanding. <em>Please do not do this!</em>.</p>
 
 <p>Type out each peice of sample code yourself. This is called <em>The Hard Way</em>. Not because it is hard technically, but because it requires dicipline. By doing things <em>The Hard Way</em> you will come to understand the reasoning behind what you are typing. Ideally things will click as you follow it along character by character. When <em>reading</em> you may have an intuition as to why it <em>looks</em> right, or what <em>may</em> be going on, but this will not always translate to a real understanding unless you do the <em>writing</em> yourself!</p>
 
-<p>In a perfect world you would use my code as a reference - an instruction booklet and guide as to building the programming langage you always dreamed of. In reality this isn't practical or viable. But the base philosophy remains. If you want to change something - do it.</p>
+<p>In a perfect world you would use my code as a reference - an instruction booklet and guide as to building the programming langage you always dreamed of. In reality this isn't practical or viable. But the base philosophy remains. If you want to change something, do it.</p>
 
 
 <h2>Navigation</h2>
 
-<p><a href="chapter2_the_basics"><strong>Next Chapter &bull; The Basics</strong></a></p>
+<table class="table" style='table-layout: fixed;'>
+  <tr>
+    <td class="text-left"></td>
+    <td class="text-center"><a href="contents"><h4>&bull; Contents &bull;</h4></a></td>
+    <td class="text-right"><a href="chapter2_installation"><h4>Installation &rsaquo;</h4></a></td>
+  </tr>
+</table>
 
-
-<h2>Contents</h2>
-
-<ul>
-  <li>
-    <a href="chapter1_introduction"><Strong>Chapter 1 &bull; The Introduction</strong></a>
-    <ul>
-      <li><small>About</small></li>
-      <li><small>Who is this for?</small></li>
-      <li><small>Why to learn C</small></li>
-      <li><small>How to learn C</small></li>
-      <li><small>Lisps</small></li>
-      <li><small>Building your own language</small></li>
-    </ul>
-  </li>
-  <li>
-    <a href="chapter2_the_basics"><Strong>Chapter 2 &bull; The Basics</strong></a>
-    <ul>
-      <li><small>Compiler &amp; Text Editor</small></li>
-      <li><small>Hello World</small></li>
-      <li><small>Compilation</small></li>
-      <li><small>Compiler Errors</small></li>
-      <li><small>Runtime Errors</small></li>
-      <li><small>Reference Documentation</small></li>
-    </ul>
-  </li>
-  <li>
-    <a href="chapter3_crash_course"><Strong>Chapter 3 &bull; A Crash Course</strong></a>
-    <ul>
-      <li><small>Overview</small></li>
-      <li><small>Program Structure</small></li>
-      <li><small>Variables &amp; Types</small></li>
-      <li><small>Functions</small></li>
-      <li><small>Structs</small></li>
-      <li><small>Pointers</small></li>
-      <li><small>Strings</small></li>
-      <li><small>Conditionals</small></li>
-      <li><small>Loops</small></li>
-    </ul>
-  </li>
-  <li>
-    <a href="chapter4_interactive_prompt"><Strong>Chapter 4 &bull; An Interactive Prompt</strong></a>
-    <ul>
-      <li><small>Read, Evaluate, Print</small></li>
-      <li><small>An Interactive Prompt</small></li>
-      <li><small>Compilation</small></li>
-      <li><small>Editing input</small></li>
-      <li><small>Using Editline</small></li>
-      <li><small>Compiling with Editline</small></li>
-      <li><small>The C Preprocessor</small></li>
-    </ul>
-  </li>
-  <li>
-    <a href="chapter5_introducing_mpc"><Strong>Chapter 5 &bull; Introducing MPC</strong></a>
-    <ul>
-      <li><small>What is a Programming Language?</small></li>
-      <li><small>Parser Combinators</small></li>
-      <li><small>Code that looks like a grammar</small></li>
-      <li><small>A grammar itself</small></li>
-    </ul>
-  </li>
-  <li>
-    <a href="chapter6_parsing"><Strong>Chapter 6 &bull; Parsing</strong></a>
-    <ul>
-      <li><small>Polish Notation</small></li>
-      <li><small>Regular Expressions</small></li>
-      <li><small>Polish Notation Grammar</small></li>
-      <li><small>Parsing User Input</small></li>
-      <li><small>Result Type</small></li>
-      <li><small>Compilation and Running</small></li>
-    </ul>
-  </li>
-  <li>
-    <a href="chapter7_evaluation"><Strong>Chapter 7 &bull; Evaluation</strong></a>
-    <ul>
-      <li><small>Abstract Syntax Tree</small></li>
-      <li><small>Evaluation</small></li>
-    </ul>
-  </li>
-  <li>
-    <a href="chapter8_error_handling"><Strong>Chapter 8 &bull; Error Handling</strong></a>
-    <ul>
-      <li><small>Crashes</small></li>
-      <li><small>Lisp Value</small></li>
-      <li><small>Enumerations</small></li>
-      <li><small>Using lvals</small></li>
-      <li><small>Evaluating Errors</small></li>
-      <li><small>Plumbing</small></li>
-    </ul>
-  </li>
-  <li>
-    <a href="chapter9_into_lisp"><Strong>Chapter 9 &bull; Into Lisp</strong></a>
-    <ul>
-      <li><small>Lists</small></li>
-      <li><small>Becoming a Lisp</small></li>
-      <li><small>Types of List</small></li>
-      <li><small>Pointers</small></li>
-      <li><small>The Stack &amp; The Heap</small></li>
-      <li><small>Adding Features</small></li>
-      <li><small>Parsing Expressions</small></li>
-      <li><small>Expression Structure</small></li>
-      <li><small>Constructors &amp; Destructors</small></li>
-      <li><small>Reading Expressions</small></li>
-      <li><small>Printing Expressions</small></li>
-      <li><small>Evaluating Expressions</small></li>
-      <li><small>Builtin Functions</small></li>
-      <li><small>First Attempt</small></li>
-      <li><small>Macros</small></li>
-      <li><small>Builtins Lookup</small></li>
-    </ul>
-  </li>
-  <li>
-    <a href="chapter10_variables"><Strong>Chapter 10 &bull; Variables</strong></a>
-    <ul>
-      <li><small>Immutability</small></li>
-      <li><small>Function Pointers</small></li>
-      <li><small>Cyclic Types</small></li>
-      <li><small>Function Type</small></li>
-      <li><small>Environment</small></li>
-      <li><small>Variable Evaluation</small></li>
-      <li><small>Builtins</small></li>
-      <li><small>Define Function</small></li>
-      <li><small>Error Reporting</small></li>
-    </ul>
-  </li>
-  <li>
-    <a href="chapter11_functions"><Strong>Chapter 11 &bull; Functions</strong></a>
-    <ul>
-      <li><small>What is a Function?</small></li>
-      <li><small>Function Type</small></li>
-      <li><small>Lambda Function</small></li>
-      <li><small>Parent Environment</small></li>
-      <li><small>Function Calling</small></li>
-      <li><small>Variable Arguments</small></li>
-      <li><small>Interesting Functions</small></li>
-    </ul>
-  </li>
-  <li>
-    <a href="chapter12_conditionals"><Strong>Chapter 12 &bull; Conditionals</strong></a>
-    <ul>
-      <li><small>Doing it yourself</small></li>
-      <li><small>Ordering</small></li>
-      <li><small>Equality</small></li>
-      <li><small>If Function</small></li>
-      <li><small>Recursive Functions</small></li>
-    </ul>
-  </li>
-  <li>
-    <a href="chapter13_strings"><Strong>Chapter 13 &bull; Strings</strong></a>
-    <ul>
-      <li><small>Libraries</small></li>
-      <li><small>String Type</small></li>
-      <li><small>Reading Strings</small></li>
-      <li><small>Comments</small></li>
-      <li><small>Load Function</small></li>
-      <li><small>Command Line Arguments</small></li>
-      <li><small>Print Function</small></li>
-      <li><small>Error Function</small></li>
-      <li><small>Finishing Up</small></li>
-    </ul>
-  </li>
-  <li>
-    <a href="chapter14_standard_library"><Strong>Chapter 14 &bull; Standard Library</strong></a>
-    <ul>
-      <li><small>Minmalism</small></li>
-      <li><small>Atom</small></li>
-      <li><small>Building Blocks</small></li>
-      <li><small>Logical Operators</small></li>
-      <li><small>Misc Functions</small></li>
-      <li><small>List Functions</small></li>
-      <li><small>Conditional Functions</small></li>
-      <li><small>Fibonacci</small></li>
-    </ul>
-  </li>
-  <li>
-    <a href="chapter15_future_work"><Strong>Chapter 15 &bull; Future Work</strong></a>
-  </li>
-  
-</ul>

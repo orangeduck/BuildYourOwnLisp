@@ -39,11 +39,11 @@ Rainbow.extend('lispy', [
     },
     {
         'name': 'meta.version',
-        'pattern': /Lispy Version [^\r\n]*/g
+        'pattern': /Lispy Version[^\r\n]*/g
     },
     {
         'name': 'meta.exit',
-        'pattern': /Press Ctrl\+c [^\r\n]*/g
+        'pattern': /Press Ctrl\+c[^\r\n]*/g
     },
     {
         'name': 'comment',

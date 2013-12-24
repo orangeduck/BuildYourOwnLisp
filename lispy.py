@@ -11,7 +11,7 @@ header = """
     <!-- Bootstrap -->
     <link href="static/css/bootstrap.css" rel="stylesheet">
     <link href="static/css/code.css" rel="stylesheet">
-    <link rel="icon" type="image/png" href="/static/img/favicon.png" />
+    <link rel="icon" type="image/png" href="/static/img/favicon.png?v=2" />
     
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -45,8 +45,9 @@ footer = """
 """
 
 pages = [
-    'chapter1_introduction.html',       'chapter2_the_basics.html',        'chapter3_crash_course.html',
-    'chapter4_interactive_prompt.html', 'chapter5_introducing_mpc.html',   'chapter6_parsing.html',
+    'splash.html', 'contents.html', 'credits.html',
+    'chapter1_introduction.html',       'chapter2_installation.html',      'chapter3_basics.html',
+    'chapter4_interactive_prompt.html', 'chapter5_languages.html',         'chapter6_parsing.html',
     'chapter7_evaluation.html',         'chapter8_error_handling.html',    'chapter9_into_lisp.html', 
     'chapter10_variables.html',         'chapter11_functions.html',        'chapter12_conditionals.html',
     'chapter13_strings.html',           'chapter14_standard_library.html', 'chapter15_future_work.html'
@@ -65,7 +66,7 @@ def route_page(page):
     
 @app.route('/')
 def route_index():
-    return route_page('chapter1_introduction')
+    return route_page('splash')
     
 if __name__ == '__main__':
     app.run()

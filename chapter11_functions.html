@@ -1,6 +1,6 @@
 <h1>Functions <small>&bull; Chapter 11</small></h1>
 
-<h2>What is a Function?</h2>
+<h2>What is a Function?</h2> <hr/>
 
 <p>Functions are the essence of all programming. Back in the early days of computer science they represented a naive dream. The idea was that we could reduce computation into these smaller and smaller bits of re-usable code. Given enough time, and a proper structure for libraries, eventually we would have written code required for all computational needs. No longer would people have to write their own functions, and programming would consist of an easy job of stiching together components.</p>
 
@@ -51,7 +51,7 @@
 <pre><code data-language='lispy'>add-together 10 20</code></pre>
 
 
-<h2>Function Type</h2>
+<h2>Function Type</h2> <hr/>
 
 <p>To store a function as an <code>lval</code> we need to think exactly what it consists of.</p>
 
@@ -134,7 +134,7 @@ break;</code></pre>
 <p>For evaluation we'll need to look in greater depth to we'll take a look at that later.</p>
 
 
-<h2>Lambda Function</h2>
+<h2>Lambda Function</h2> <hr/>
 
 <p>We can now add a builtin for our lambda function. We want it to take as input some list of symbols, and a list that represents the code. After that it should return a function <code>lval</code>. We&#39;ve built a number of builtins now, and this one will follow the same format. Like in <code>def</code> we do some error checking to ensure the argument types and count are correct. Then we just pop the first two arguments from the list and pass them to our previously constructed <code>lval_lambda</code> function.</p>
 
@@ -165,7 +165,8 @@ break;</code></pre>
   <p><small>Playgroup &bull; Your typical parent environment.</small></p>
 </div>
 
-<h2>Parent Environment</h2>
+
+<h2>Parent Environment</h2> <hr/>
 
 <p>We&#39;ve given functions their own environment. In this environment we will place the values that their formal variables are set to. Then we can evaluate the body in this environment and know that those variables will have values. But ideally we also want these functions to be able to access variables which are in the global environment, such as our builtin functions.</p>
 
@@ -282,7 +283,7 @@ lval* builtin_put(lenv* e, lval* a) { return builtin_var(e, a, &quot;=&quot;); }
 lenv_add_builtin(e, &quot;=&quot;,   builtin_put);</code></pre>
 
 
-<h2>Function Calling</h2>
+<h2>Function Calling</h2> <hr/>
 
 <p>We need to write the code that runs when an expression gets evaluated and an function <code>lval</code> is called.</p>
 
@@ -384,7 +385,7 @@ lval* result = lval_call(e, f, v);
 </code></pre>
 
 
-<h2>Variable Arguments</h2>
+<h2>Variable Arguments</h2> <hr/>
 
 <p>We&#39;ve defined some of our builtin functions so they can take in a variable number of arguments. Functions like <code>+</code> and <code>join</code> can take any number of arguments, and operator on them logically. We should find a way to let user defined functions work on multiple arguments also.</p>
 
@@ -436,8 +437,7 @@ if (f-&gt;formals-&gt;count &gt; 0 &amp;&amp;
 }</code></pre>
 
 
-<h2>Interesting Functions</h2>
-
+<h2>Interesting Functions</h2> <hr/>
 
 <h3>Function Definition</h3>
 
@@ -454,7 +454,6 @@ if (f-&gt;formals-&gt;count &gt; 0 &amp;&amp;
 <p>This means that we can now define functions in a much simpler and nicer way. To define our previously mentioned <code>add-together</code> we can do the following. Functions that can define functions. That is certainly something we could never do in C. How cool is that!</p>
 
 <pre><code data-language='lispy'>fun {add-together x y} {+ x y}</code></pre>
-
 
 <div class='pull-right alert alert-warning' style="margin: 15px; text-align: center;">
   <img src="/static/img/curry.png" alt="curry"/>
@@ -494,7 +493,7 @@ lispy> add-unpacked {5 6 7}
 <p>Have a play around and see what other fundamental functions you can try to come up with. There are going to be some limitations as we need to add a couple more builtins such as conditionals (which we'll cover in the next chapter). But that doesn't mean you wont be able to come up with some other interesting ideas. Our Lisp really is getting richer now.</p>
 
 
-<h2>Tutorial Code</h2>
+<h2>Reference</h2> <hr/>
 
 <div class="panel-group alert alert-warning" id="accordion">
   <div class="panel panel-default">
@@ -1231,7 +1230,7 @@ int main(int argc, char** argv) {
 </div>
 
 
-<h2>Bonus Marks</h2>
+<h2>Bonus Marks</h2> <hr/>
 
 <div class="alert alert-warning">
   <ul class="list-group">
@@ -1246,6 +1245,10 @@ int main(int argc, char** argv) {
 
 <h2>Navigation</h2>
 
-<p><a href="chapter12_conditionals"><strong>Next Chapter &bull; Conditionals</strong></a></p>
-
-<p><a href="chapter10_variables"><strong>Previous Chapter &bull; Variables</strong></a></p>
+<table class="table" style='table-layout: fixed;'>
+  <tr>
+    <td class="text-left"><a href="chapter10_variables"><h4>&lsaquo; Variables</h4></a></td>
+    <td class="text-center"><a href="contents"><h4>&bull; Contents &bull;</h4></a></td>
+    <td class="text-right"><a href="chapter12_conditionals"><h4>Conditionals &rsaquo;</h4></a></td>
+  </tr>
+</table>

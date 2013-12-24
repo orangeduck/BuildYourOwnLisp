@@ -52,7 +52,7 @@
 (fun {min & xs} {
   if (== (tail xs) {}) {fst xs}
     {do 
-      (= {rest} (apply min (tail xs)))
+      (= {rest} (unpack min (tail xs)))
       (= {item} (fst xs))
       (if (< item rest) {item} {rest})
     }
@@ -62,7 +62,7 @@
 (fun {max & xs} {
   if (== (tail xs) {}) {fst xs}
     {do 
-      (= {rest} (apply max (tail xs)))
+      (= {rest} (unpack max (tail xs)))
       (= {item} (fst xs))
       (if (> item rest) {item} {rest})
     }  
@@ -73,13 +73,13 @@
 (fun {select & cs} {
   if (== cs {})
     {error "No Selection Found"}
-    {if (fst (fst cs)) {eval (snd (fst cs))} {apply select (tail cs)}}
+    {if (fst (fst cs)) {eval (snd (fst cs))} {unpack select (tail cs)}}
 })
 
 (fun {case x & cs} {
   if (== cs {})
     {error "No Case Found"}
-    {if (== x (fst (fst cs))) {snd (fst cs)} {apply case (join (list x) (tail cs))}}
+    {if (== x (fst (fst cs))) {snd (fst cs)} {unpack case (join (list x) (tail cs))}}
 })
 
 (def {otherwise} true)
@@ -119,14 +119,14 @@
 (fun {map f l} {
   if (== l {})
     {{}}
-    {join (list (apply f (head l))) (map f (tail l))}
+    {join (list (f (fst l))) (map f (tail l))}
 })
 
 ; Apply Filter to List
 (fun {filter f l} {
   if (== l {})
     {{}}
-    {join (if (apply f (head l)) {head l} {{}}) (filter f (tail l))}
+    {join (if (f (fst l)) {head l} {{}}) (filter f (tail l))}
 })
 
 ; Return all of list but last element
@@ -179,14 +179,14 @@
 
 ; Take While
 (fun {take-while f l} {
-  if (not (apply f (head l)))
+  if (not (unpack f (head l)))
     {{}}
     {join (head l) (take-while f (tail l))}
 })
 
 ; Drop While
 (fun {drop-while f l} {
-  if (not (apply f (head l)))
+  if (not (unpack f (head l)))
     {l}
     {drop-while f (tail l)}
 })
@@ -210,10 +210,10 @@
 })
 
 ; Zip two lists together into a list of pairs
-(fun {zip l0 l1} {
-  if (or (== l0 {}) (== l1 {}))
+(fun {zip x y} {
+  if (or (== x {}) (== y {}))
     {{}}
-    {join (list (join (head l0) (head l1))) (zip (tail l0) (tail l1))}
+    {join (list (join (head x) (head y))) (zip (tail x) (tail y))}
 })
 
 ; Unzip a list of pairs into two lists

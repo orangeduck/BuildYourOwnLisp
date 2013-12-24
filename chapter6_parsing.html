@@ -7,7 +7,7 @@
 </div>
 
 
-<h2>Polish Notation</h2>
+<h2>Polish Notation</h2> <hr/>
 
 <p>To try out <code>mpc</code> we're going to implement a simple grammar that resembles a mathematical subset of our Lisp. It's called <a href="http://en.wikipedia.org/wiki/Polish_notation">Polish Notation</a> and is a notation for arithimatic where the operator (such as the <code>+</code> symbol), comes before the operands (such as the number <code>5</code>).</p>
 
@@ -29,7 +29,7 @@
 </table>
 
 
-<h2>Regular Expressions</h2>
+<h2>Regular Expressions</h2> <hr/>
 
 <p>Most of the above we can write using our grammar rules as usual, but <em>Number</em> might pose some trouble. It contains a couple of constructs we've not learnt how to express yet. First is an optional character, and secondly is a range of characters.</p>
 
@@ -42,7 +42,7 @@
 <p>We can write regular expressions in an <code>mpc</code> grammar by putting them between forward slashes <code>/</code>. Our regex to specify a number then should finally look like this <code>/-?[0-9]+/</code>.</p>
 
 
-<h2>Polish Notation Grammar</h2>
+<h2>Polish Notation Grammar</h2> <hr/>
 
 <p>Formalising the above rules, and using our newly found regular expression knowledge, we can write the grammar for our polish notation language in code as...</p>
 
@@ -73,7 +73,7 @@ mpc_cleanup(4, Number, Operator, Expr, Lispy);</code></pre>
 <p>We've now successfully used <code>mpc</code> to create a parser for our <em>Polish Notation</em> language, but we still need to use it on the user input supplied each time from the prompt.</p>
 
 
-<h2>Parsing User Input</h2>
+<h2>Parsing User Input</h2> <hr/>
 
 <p>Now we have our grammar specified we need to edit our <code>while</code> loop so that rather than just echoing user input back, it actually attempts to parse the input using our <em>Polish Notation</em> parser. We replace <code>fprintf</code> with the following code that uses our main parser <code>Lispy</code>.</p>
 
@@ -96,7 +96,7 @@ if (mpc_parse(&quot;&lt;stdin&gt;&quot;, input, Lispy, &amp;r)) {
 <p>In either case we need to delete the result we get out. For this we can use either <code>mpc_ast_delete</code> or <code>mpc_err_delete</code>.</p>
 
 
-<h2>Result Type</h2>
+<h2>Result Type</h2> <hr/>
 
 <p>The variable <code>r</code> has the type <code>mpc_result_t</code>. This is defined in <code>mpc.h</code> as follows:</p>
 
@@ -112,7 +112,7 @@ if (mpc_parse(&quot;&lt;stdin&gt;&quot;, input, Lispy, &amp;r)) {
 <p>In the next chapter we are going to look at it in more depth, and attempt to make use of the data contained within to calculate the result of the evaluation of the expression.</p>
 
 
-<h2>Compilation and Running</h2>
+<h2>Compilation and Running</h2> <hr/>
 
 <p>Before we compile are run our program we first need to <em>include</em> the <code>mpc</code> headers, and then <em>link</em> to the <code>mpc</code> library, just as we did for <code>editline</code> on Linux and Mac.</p>
 
@@ -130,11 +130,11 @@ if (mpc_parse(&quot;&lt;stdin&gt;&quot;, input, Lispy, &amp;r)) {
 
 <p>On Linux and Max</p>
 
-<p><code>cc -std=c99 -Wall chapter5.c mpc.c -lm -ledit -o chapter5</code></p>
+<pre><code>cc -std=c99 -Wall chapter5.c mpc.c -lm -ledit -o chapter5</code></pre>
 
 <p>Or on Windows</p>
 
-<p><code>cc -std=c99 -Wall chapter5.c mpc.c -lm -o chapter5</code></p>
+<pre><code>cc -std=c99 -Wall chapter5.c mpc.c -lm -o chapter5</code></pre>
 
 <p>If successful the program should print out the <em>abstract syntax tree</em> of a parse when the input is valid, and an error when it is invalid.</p>
 
@@ -171,7 +171,7 @@ lispy&gt;
 <p>This means that you have some error in how you have specified the grammar to <code>mpca_lang</code>. Double check what you have is the same as what is specified in this chapter.</p>
 
 
-<h2>Tutorial Code</h2>
+<h2>Reference</h2> <hr/>
 
 <div class="panel-group alert alert-warning" id="accordion">
   <div class="panel panel-default">
@@ -261,7 +261,7 @@ int main(int argc, char** argv) {
 </div>
 
 
-<h2>Bonus Marks</h2>
+<h2>Bonus Marks</h2> <hr/>
 
 <div class="alert alert-warning">
   <ul class="list-group">
@@ -274,6 +274,10 @@ int main(int argc, char** argv) {
 
 <h2>Navigation</h2>
 
-<p><a href="chapter7_evaluation"><strong>Next Chapter &bull; Evaluation</strong></a></p>
-
-<p><a href="chapter5_introducing_mpc"><strong>Previous Chapter &bull; Introducing MPC</strong></a></p>
+<table class="table" style='table-layout: fixed;'>
+  <tr>
+    <td class="text-left"><a href="chapter5_languages"><h4>&lsaquo; Languages</h4></a></td>
+    <td class="text-center"><a href="contents"><h4>&bull; Contents &bull;</h4></a></td>
+    <td class="text-right"><a href="chapter7_evaluation"><h4>Evaluation &rsaquo;</h4></a></td>
+  </tr>
+</table>

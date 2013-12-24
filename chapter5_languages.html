@@ -1,7 +1,7 @@
-<h1>Introducing MPC <small>&bull; Chapter 5</small></h1>
+<h1>Languages <small>&bull; Chapter 5</small></h1>
 
 
-<h2>What is a Programming Language?</h2>
+<h2>What is a Programming Language?</h2> <hr/>
 
 <p>A programming language is very similar to a real language. There is a structure behind it, and some implicit rules as to what is, and isn't, a valid thing to say. When we read and write natural language, we use the same skills and brain processes as when we read and write code. We are unconciously learning these rules that govern languages, and can use them to understand others, as well as generate our own speech.</p>
 
@@ -25,14 +25,14 @@
 <p>This is where <code>mpc</code> comes in.</p>
 
 
-<h2>Parser Combinators</h2>
+<h2>Parser Combinators</h2> <hr/>
 
 <p><code>mpc</code> is a <em>Parser Combinator</em> library. This is a library that allows you to build <em>parsers</em>. These are programs that understand and process particular languages. There are many different ways of building parsers, but the nice thing about using a <em>Parser Combinator</em> library is that it lets you build <em>parsers</em> easily, by specifying just the <em>grammar</em> ... sort of.</p>
 
 <p>Many <em>Parser Combinator</em> libraries actually work by letting you write code that simply <em>looks like</em> a grammar, not by actually specifying the grammar itself. Often this is the best that can be done, but luckily for us <code>mpc</code> allows for both. It can let us write code that just <em>looks like</em> a grammar, but it can actually let us write a grammar directly too!</p>
 
 
-<h2>Code that looks like a grammar</h2>
+<h2>Code that looks like a grammar</h2> <hr/>
 
 <p>So what does code that <em>looks like</em> a grammar..<em>look like</em>? Here is a basic example of using <code>mpc</code> in this mode.</p>
 
@@ -89,7 +89,7 @@ mpc_parser_t* Greetings = mpc_many(mpcf_strfold, Greet);</code></pre>
 <p>If we use more functions and structures, we can slowly build up a parser that parses more and more complicated languages. The code we use <em>sort of</em> looks like a grammar. This isn&#39;t always an easy task but there are a whole set of helper functions that build on simple constructs to make frequent tasks easy. These are all documented on the <a href="http://github.com/orangeduck/mpc">mpc repository</a>. This is altogether a powerful approach but there is a simpler way too.</p>
 
 
-<h2>A grammar itself</h2>
+<h2>A grammar itself</h2> <hr/>
 
 <p>As I mentioned before, <code>mpc</code> actually lets you write the grammar directly, rather than using C functions to emulate it. When using this method you don&#39;t have to worry about how to join or discard inputs, with functions such as <code>mpcf_strfold</code>, or <code>free</code>.</p>
 
@@ -136,7 +136,7 @@ mpc_cleanup(3, Flatmate, Greet, Greetings);</code></pre>
 <p>In the next chapter we are going to make use of this new knowledge to start specifying a grammar for a subset of our Lisp. Don't be discouraged if you feel this chapter has been too much at once. Grammars can be difficult to understand right away. You will become much more familar with how to create and edit them as we continue.</p>
 
 
-<h2>Tutorial Code</h2>
+<h2>Reference</h2> <hr/>
 
 <div class="panel-group alert alert-warning" id="accordion">
   <div class="panel panel-default">
@@ -265,7 +265,7 @@ int main(int argc, char** argv) {
 </div>
 
 
-<h2>Bonus Marks</h2>
+<h2>Bonus Marks</h2> <hr/>
 
 <div class="alert alert-warning">
   <ul class="list-group">
@@ -280,6 +280,10 @@ int main(int argc, char** argv) {
 
 <h2>Navigation</h2>
 
-<p><a href="chapter6_parsing"><strong>Next Chapter &bull; Parsing</strong></a></p>
-
-<p><a href="chapter4_interactive_prompt"><strong>Previous Chapter &bull; An Interactive Prompt</strong></a></p>
+<table class="table" style='table-layout: fixed;'>
+  <tr>
+    <td class="text-left"><a href="chapter4_interactive_prompt"><h4>&lsaquo; An Interactive Prompt</h4></a></td>
+    <td class="text-center"><a href="contents"><h4>&bull; Contents &bull;</h4></a></td>
+    <td class="text-right"><a href="chapter6_parsing"><h4>Parsing &rsaquo;</h4></a></td>
+  </tr>
+</table>

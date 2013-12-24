@@ -1,7 +1,7 @@
 <h1>Error Handling <small>&bull; Chapter 8</small></h1>
 
 
-<h2>Crashes</h2>
+<h2>Crashes</h2> <hr/>
 
 <p>Some of you may have noticed a problem with the previous chapter&#39;s program. Try entering this into the prompt and see what happens.</p>
 
@@ -15,7 +15,7 @@ lispy&gt; / 10 0</code></pre>
 <p>At the moment our program can produce syntax errors but it still has no functionality for reporting errors in the evaluation of expressions. We need to build in some kind of error handling functionality to do this. It can be awkward in C, but if we start off on the right track, it will pay off later on when our system gets more complicated.</p>
 
 
-<h2>Lisp Value</h2>
+<h2>Lisp Value</h2> <hr/>
 
 <p>There are several ways to deal with errors in C, but in this context my preferred method is to make errors a possible result of evaluating an expression. Then we can say that, in Lispy, an expression will evaluate to <em>either</em> a <em>number</em>, or an <em>error</em>. For example <code>+ 1 2</code> will evaluate to a number, but <code>/ 10 0</code> will evaluate to an error.</p>
 
@@ -31,7 +31,7 @@ typedef struct {
 } lval;</code></pre>
 
 
-<h2>Enumerations</h2>
+<h2>Enumerations</h2> <hr/>
 
 <p>You'll notice the type of the fields <code>type</code>, and <code>err</code>, is <code>int</code>. This means they are represented a single integer number.</p>
 
@@ -52,7 +52,7 @@ enum { LVAL_NUM, LVAL_ERR };</code></pre>
 enum { LERR_DIV_ZERO, LERR_BAD_OP, LERR_BAD_NUM };</code></pre>
 
 
-<h2>Using lvals</h2>
+<h2>Using lvals</h2> <hr/>
 
 <p>Our <code>lval</code> type is ready to go. Unlike the previous <code>long</code> we have no current method for creating new instances of it. To do this we can declare two functions that construct an <code>lval</code> of either an <em>error</em> type or a <em>number</em> type.</p>
 
@@ -98,7 +98,7 @@ lval lval_err(int x) {
 <pre><code data-language='c'>void lval_println(lval v) { lval_print(v); putchar(&#39;\n&#39;); }</code></pre>
 
 
-<h2>Evaluating Errors</h2>
+<h2>Evaluating Errors</h2> <hr/>
 
 <p>Now that we know how to work with the <code>lval</code> type, we need to change our evaluation functions to use <code>lval</code> instead of <code>long</code>.</p>
 
@@ -174,7 +174,7 @@ lispy> / 10 2
 <p>This chapter may have seemed like a lot of fluff to resolve a relatively minor issue, but we&#39;ve actually built a lot of groundwork that we are going to use in the rest of the development for more advanced stuff. Although boring, error handling shouldn&#39;t be avoided! It isn&#39;t just the life of the user that it enhances. It can make your own life much easier when you come to debug your developing program later on.</p>
 
 
-<h2>Plumbing</h2>
+<h2>Plumbing</h2> <hr/>
 
 <div class='pull-right alert alert-warning' style="margin: 15px; text-align: center;">
   <img src="/static/img/plumbing.png" alt="plumbing"/>
@@ -194,7 +194,7 @@ lispy> / 10 2
 <p>Unfortunately these can't be taught directly, so if you've made it this far then <em>congratulations!</em> You've made it over a difficult hump, and in the following chapters I promise we'll finish up with the plumbing, and actually start to programming that feels fresh.</p>
 
 
-<h2>Tutorial Code</h2>
+<h2>Reference</h2> <hr/>
 
 <div class="panel-group alert alert-warning" id="accordion">
   <div class="panel panel-default">
@@ -368,7 +368,7 @@ int main(int argc, char** argv) {
   </div>
 </div>
 
-<h2>Bonus Marks</h2>
+<h2>Bonus Marks</h2> <hr/>
 
 <div class="alert alert-warning">
   <ul class="list-group">
@@ -382,6 +382,10 @@ int main(int argc, char** argv) {
 
 <h2>Navigation</h2>
 
-<p><a href="chapter9_into_lisp"><strong>Next Chapter &bull; Into Lisp</strong></a></p>
-
-<p><a href="chapter7_evaluation"><strong>Previous Chapter &bull; Evaluation</strong></a></p>
+<table class="table" style='table-layout: fixed;'>
+  <tr>
+    <td class="text-left"><a href="chapter7_parsing"><h4>&lsaquo; Evaluation</h4></a></td>
+    <td class="text-center"><a href="contents"><h4>&bull; Contents &bull;</h4></a></td>
+    <td class="text-right"><a href="chapter9_into_lisp"><h4>Into Lisp &rsaquo;</h4></a></td>
+  </tr>
+</table>

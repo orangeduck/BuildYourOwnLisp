@@ -1,6 +1,6 @@
 <h1>Conditionals <small>&bull; Chapter 12</small></h1>
 
-<h2>Doing it yourself</h2>
+<h2>Doing it yourself</h2> <hr/>
 
 <p>We&#39;ve come quite far now. Your C knowledge should be good enough for you to stand on our own feet a little more. If you're feeling confident, this chapter would be a great one to attempt on your own. It is a fairly short chapter and essentially consists of adding a couple new builtin functions to deal with comparison and ordering.</p>
 
@@ -14,7 +14,7 @@
 <p>If you still feel uncertain that is no problem. Follow along and I'll explain my approach.</p>
 
 
-<h2>Ordering</h2>
+<h2>Ordering</h2> <hr/>
 
 <p>For simplicity&#39;s sake I'm going to re-use our number data type to represent the result of comparisons. I'll make a rule similar to C, to say that any number that isn&#39;t <code>0</code> evaluates to true in an <code>if</code> statement, while <code>0</code> always evaluates to false.</p>
 
@@ -45,7 +45,7 @@ lval* builtin_le(lenv* e, lval* a) { return builtin_ord(e, a, "&lt;="); }
 </code></pre>
 
 
-<h2>Equality</h2>
+<h2>Equality</h2> <hr/>
 
 <p>Equality is going to be different to ordering because we want it to work on more than number types. It will be useful to see if an input is equal to an empty list, or to see if two functions passed in are the same. Therefore we need to define a function which can test for equality between two different types of <code>lval</code>.</p>
 
@@ -103,7 +103,7 @@ lval* builtin_eq(lenv* e, lval* a) { return builtin_cmp(e, a, "=="); }
 lval* builtin_ne(lenv* e, lval* a) { return builtin_cmp(e, a, "!="); }</code></pre>
 
 
-<h2>If Function</h2>
+<h2>If Function</h2> <hr/>
 
 <p>To make our comparison operators useful well need an <code>if</code> function. This function should be used just like <code>if</code> in C, to do one thing if a condition is true, and another if it is false.</p>
 
@@ -167,7 +167,7 @@ lispy&gt; if (== x y) {+ x y} {- x y}
 </code></pre>
 
 
-<h2>Recursive Functions</h2>
+<h2>Recursive Functions</h2> <hr/>
 
 <p>By Introducing conditionals we've actually made our language a lot more powerful. This is because they effectively let us implement recursive functions.</p>
 
@@ -196,7 +196,7 @@ lispy&gt; if (== x y) {+ x y} {- x y}
 <p>We're going to use this technique to build lots functions like this, this is because it is going to be the primary way to achieve looping in our language.</p>
 
 
-<h2>Tutorial Code</h2>
+<h2>Reference</h2> <hr/>
 
 <div class="panel-group alert alert-warning" id="accordion">
   <div class="panel panel-default">
@@ -990,7 +990,7 @@ int main(int argc, char** argv) {
   </div>
 </div>
 
-<h2>Bonus Marks</h2>
+<h2>Bonus Marks</h2> <hr/>
 
 <div class="alert alert-warning">
   <ul class="list-group">
@@ -1005,6 +1005,10 @@ int main(int argc, char** argv) {
 
 <h2>Navigation</h2>
 
-<p><a href="chapter13_strings"><strong>Next Chapter &bull; Strings</strong></a></p>
-
-<p><a href="chapter11_functions"><strong>Previous Chapter &bull; Functions</strong></a></p>
+<table class="table" style='table-layout: fixed;'>
+  <tr>
+    <td class="text-left"><a href="chapter11_functions"><h4>&lsaquo; Functions</h4></a></td>
+    <td class="text-center"><a href="contents"><h4>&bull; Contents &bull;</h4></a></td>
+    <td class="text-right"><a href="chapter13_strings"><h4>Strings &rsaquo;</h4></a></td>
+  </tr>
+</table>

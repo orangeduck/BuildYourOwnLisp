@@ -8,6 +8,7 @@
 
 static char input[2048];
 
+/* Fake readline function */
 char* readline(char* prompt) {
   
   fputs("lispy> ", stdout);
@@ -20,6 +21,7 @@ char* readline(char* prompt) {
   return cpy;
 }
 
+/* Fake add_history function */
 void add_history(char* unused) {}
 
 /* Otherwise include the editline headers */

@@ -1,0 +1,174 @@
+<h1>Basics <small>&bull; Chapter 3</small></h1>
+
+
+<h2>Overview</h2> <hr/>
+
+<!--
+<div class='pull-right alert alert-warning' style="margin: 15px; text-align: center;">
+  <img src="/static/img/crash.png" alt="crash"/>
+  <p><small>Crash &bull; of course</small></p>
+</div>
+-->
+
+<!--
+<div class='pull-right alert alert-warning' style="margin: 15px; text-align: center;">
+  <img src="/static/img/breakfast.png" alt="breakfast"/>
+  <p><small>Fried Breakfast &bull; The basics in life.</small></p>
+</div>
+-->
+
+<div class='pull-right alert alert-warning' style="margin: 15px; text-align: center;">
+  <img src="/static/img/programs.png" alt="programs"/>
+  <p><small>Programs &bull; Useful for the theatre.</small></p>
+</div>
+
+<p>In this chapter I've prepared quick overview of the basic features of C. There are very few <em>constructs</em> or <em>features</em> in C. The syntax is simple, and all the depth hides below the surface. Because of this we're going to cover the main components fairly quickly now, and in more consideration later.</p>
+
+<p>This chapter should be thought of as a reference to look back upon as a reminder in later chapters. Feel free to skim it and revise the contents later as required.</p>
+
+
+<h2>Programs</h2> <hr/>
+
+<p>A program in C is structured very simply. At its core it only consists of <em>function definitions</em> and <em>structure definitions</em>. This means a C source file is simply a list of functions and data types. These functions can call each other or themselves. Functions can only use the data types declared or those builtin. To add complexity it is possible to call other libraries of functions, or use their data types.</p>
+
+<p>As we saw in the previous chapter, the execution of a C program always starts in the function called <code>main</code>, and must call other functions to do more complicated things.</p>
+
+
+<h2>Variables</h2> <hr/>
+
+<p>Variables in C are bits of data which we give a name to. Every variable in C has an explicit <em>type</em>. These are either defined by ourselves or built into C. We declare a new variable by writing the name of the type, followed by the name of the variable, and optionally setting it to some value using <code>=</code>.</p>
+
+<p>To create a new <code>int</code> called <code>count</code> we could write the following...</p> 
+
+<pre><code data-language='c'>int count;</code></pre>
+
+<p>or to declare it and set the value...</p>
+
+<pre><code data-language='c'>int count = 10;</code></pre>
+
+<p>Here is a list of some of the native types with basic descriptions.</p>
+
+<table class="table">
+  <tr><td><code>void</code></td>  <td>Empty Type</td></tr>
+  <tr><td><code>char</code></td>  <td>Single Character/Byte</td></tr>
+  <tr><td><code>int</code></td>   <td>Integer</td></tr>
+  <tr><td><code>long</code></td>  <td>Integer that can hold larger values</td></tr>
+  <tr><td><code>float</code></td> <td>Decimal Number</td></tr>
+  <tr><td><code>double</code></td><td>Decimal Number with more precision</td></tr>
+</table>
+
+
+<h2>Functions</h2> <hr/>
+
+<p>To declare a function we write the name of the type it returns, the name of the function, and then in parenthesis a list of input variables to this function separated by commas. The contents of the function is put inside curly brackets <code>{}</code>, and lists all of the statements the function executes, terminated by semicolons <code>;</code>. A <code>return</code> statement is used to let the function finish and output a value.</p>
+
+<p>For example a function that takes two <code>int</code> variables called <code>x</code> and <code>y</code> and adds them together could look like this.</p>
+
+<pre><code data-language='c'>int add_together(int x, int y) {
+  int result = x + y;
+  return result;
+}</code></pre>
+
+<p>We call functions by writting their name and putting the arguments to the function in parenthesis, separated by commas. For example to call the above function and store the result in a variable <code>added</code> we would write the following.<p>
+
+<pre><code data-language='c'>int added = add_together(10, 18);</code></pre>
+
+
+<h2>Structs</h2> <hr/>
+
+<p>To declare our own types we can use the <code>struct</code> keyword in conjunction with the <code>typedef</code> keyword.</p>
+
+<p>Structs are several variables bundled together in a single package. We can use them to represent more complex data types. For example to represent a point in 2D space we could create a struct called <code>point</code> that packs together two <code>float</code> (decimal) values called <code>x</code> and <code>y</code>. It would look like this.</p>
+
+<pre><code data-language='c'>typedef struct {
+  float x;
+  float y;
+} point;</code></pre>
+
+<p>We should place this definition above any functions that wish to use it. This type is no different to the native types, and we can use it in all the same ways. To access an individual field we use a dot <code>.</code>, followed by the name of the field, such as <code>x</code>.</p>
+
+<pre><code data-language='c'>point p;
+p.x = 0.1;
+p.y = 10.0;
+</code></pre>
+
+
+<div class='pull-left alert alert-warning' style="margin: 15px; text-align: center;">
+  <img src="/static/img/pointer.png" alt="pointer"/>
+  <p><small>Pointer &bull; A short haired one</small></p>
+</div>
+
+<h2>Pointers</h2> <hr/>
+
+<p>A pointer is a variation on a normal type where the type name is suffixed with a asterisk <code>*</code>, for example <code>int*</code>. These are a difficult part of C and will be explained in much greater detail in later chapters. For now it is good to simply know they exist, and how to spot them. They can be used in a number of different ways such as for strings and lists. For now just don't get scared off.</p>
+
+
+<h2>Strings</h2> <hr/>
+
+<p>In C strings are represented by the pointer type <code>char*</code>. Under the hood they stored as are a list of bytes terminated by a special byte called the <em>null terminator</em>. Strings are a complicated, and important part of C, which we'll learn to use effectively in later chapters.</p>
+
+<p>Strings can also be declared literally by putting text between quotation marks. We used this in the previous chapter with our string <code>"Hello, World!"</code>. Remember that if you see <code>char*</code>, the type is a <em>string</em>.</p> 
+
+
+<h2>Conditionals</h2> <hr/>
+
+<p>To perform code under some condition we can use the <code>if</code> statement. It is written as <code>if</code> followed by some condition in parenthesis, followed by the code to execute in curly brackets. An <code>if</code> statement can be followed by an optional <code>else</code> followed by more statements in curly brackets. The code in these brackets will be performed in the case the conditional statement is false.</p>
+
+<p>Inside a conditional statement's parenthesis any value that is not <code>0</code> will evaluate to true. This is important to remember as many conditions use this to check things implicitly.</p>
+
+<p>If we wished to check if an <code>int</code> called <code>x</code> was greater than <code>10</code> we would write the following.</p> 
+
+<pre><code data-language='c'>if (x > 10) {
+  puts("x is greater than ten!");
+} else {
+  puts("x is less than or equal to ten!");
+}</code></pre>
+
+
+<h2>Loops</h2> <hr/>
+
+<p>There are two main loops in C.</p>
+
+<p>The first is a <code>while</code> loop. This loop repeatedly executes a block of code until some condition becomes false. It is written as <code>while</code> followed by some condition in parenthesis, followed by the code to execute in curly brackets. For example a loop that counts downward from <code>10</code> to <code>1</code> could be written as follows.</p>
+
+<pre><code data-language='c'>int i = 10;
+while (i > 0) {
+  puts("Loop Iteration");
+  i = i - 1;
+}</code></pre>
+
+<p>The second kind of loop is a <code>for</code> loop. Rather than a condition, this loop requires three statements separated by semicolons <code>;</code>. These are an <em>initialiser</em>, a <em>condition</em> and an <em>incrementer</em>. The <em>initaliser</em> is performed before the loop starts, the <em>condition</em> is checked at the end of each iteration of the loop, and if false the loop is exited. The <em>incrementer</em> is performed before the next iteration of the loop. These loops are often used for counting as they are more compact than the <code>while</code> loop.</p>
+
+<p>For example to write a loop that counts up from <code>0</code> to <code>9</code> we might write the following. In this case the <code>++</code> operator increments the variable <code>i</code>.</p>
+
+<pre><code data-language='c'>for (int i = 0; i < 10; i++) {
+  puts("Loop Iteration");
+}</code></pre>
+
+
+<h2>Bonus Marks</h2> <hr/>
+
+<div class="alert alert-warning">
+  <ul class="list-group">
+    <li class="list-group-item">&rsaquo; Use a <code>for</code> loop to print out <code>Hello World!</code> five times.</li>
+    <li class="list-group-item">&rsaquo; Use a <code>while</code> loop to print out <code>Hello World!</code> five times.</li>
+    <li class="list-group-item">&rsaquo; Declare a function that outputs <code>Hello World!</code> and call this from <code>main</code>.</li>
+    <li class="list-group-item">&rsaquo; What other conditional operators are there other than <em>greater than</em> <code>&gt;</code>, and <em>less than</em> <code>&lt;</code>?</li>
+    <li class="list-group-item">&rsaquo; What other mathematical operators are there other than <em>add</em> <code>+</code>, and <em>subtract</em> <code>-</code>?</li>
+    <li class="list-group-item">&rsaquo; What does the <code>typedef</code> keyword do exactly?</li>
+    <li class="list-group-item">&rsaquo; What other native types are there other than the ones listed?</li>
+    <li class="list-group-item">&rsaquo; What is the <code>do</code> loop, and how does it work?</li>
+    <li class="list-group-item">&rsaquo; What is the <code>switch</code> statement and how does it work?</li>
+  </ul>
+</div>
+
+<h2>Navigation</h2> 
+
+
+<table class="table" style='table-layout: fixed;'>
+  <tr>
+    <td class="text-left"><a href="chapter2_installation"><h4>&lsaquo; Installation</h4></a></td>
+    <td class="text-center"><a href="contents"><h4>&bull; Contents &bull;</h4></a></td>
+    <td class="text-right"><a href="chapter4_interactive_prompt"><h4>An Interactive Prompt &rsaquo;</h4></a></td>
+  </tr>
+</table>

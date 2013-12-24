@@ -1,7 +1,7 @@
 <h1>Variables <small>&bull; Chapter 10</small></h1>
 
 
-<h2>Immutability</h2>
+<h2>Immutability</h2> <hr/>
 
 <div class='pull-right alert alert-warning' style="margin: 15px; text-align: center;">
   <img src="/static/img/turtle.png" alt="turtle"/>
@@ -25,12 +25,12 @@
 </div>
 
 
-<h2>Symbol Syntax</h2>
+<h2>Symbol Syntax</h2> <hr/>
 
 <p>TODO: Update Symbol Syntax</p>
 
 
-<h2>Function Pointers</h2>
+<h2>Function Pointers</h2> <hr/>
 
 <p>Once we introduce variables, symbols will no longer represent functions in our language, but rather they will represent a name for us to lookup into our environment and get some new value back from.</p>
 
@@ -58,7 +58,7 @@
   <p>This idea is extended to function pointers. We can read the above declaration as follows. <em>'To get an <code>int*</code> dereference <code>builtin</code> and call it with a <code>lenv*</code> and a <code>lval*</code>.'</em> Therefore <code>builtin</code> must be a function pointer that takes an <code>lenv*</code> and a <code>lval*</code> and returns a <code>lval*</code>.</p>
 </div>
 
-<h2>Cyclic Types</h2>
+<h2>Cyclic Types</h2> <hr/>
 
 <p>The <code>lbuiltin</code> type references the <code>lval</code> type and the <code>lenv</code> type. This means it depends on them, and that they should be declared first in the source file.</p>
 
@@ -96,7 +96,7 @@ struct lval {
 };</code></pre>
 
 
-<h2>Function Type</h2>
+<h2>Function Type</h2> <hr/>
 
 <p>As we've added a new possible <code>lval</code> type we should update all our relevant functions that work on <code>lvals</code> to deal correctly with this update. In most cases this just means inserting new cases into switch statements.</p>
 
@@ -149,7 +149,7 @@ struct lval {
 }</code></pre>
 
 
-<h2>Environment</h2>
+<h2>Environment</h2> <hr/>
 
 <p>Our environment structure must encode a list of relationships between names and values. There are many ways to build a structure that can do this sort of thing. We are going to go for the simplest possible method that works well. This is to use two lists of equal length. One is a list of <code>lval*</code>, and the other is a list of <code>char*</code>. Each entry in one list has a corrisponding entry in the other list at the same position.</p>
 
@@ -230,7 +230,7 @@ void lenv_put(lenv* e, lval* k, lval* v) {
 }</code></pre>
 
 
-<h2>Variable Evaluation</h2>
+<h2>Variable Evaluation</h2> <hr/>
 
 <p>Our evaluation function now depends on the some environment. We should pass this in as an argument and use it to extract get a value if we encounter a symbol type.</p>
 
@@ -264,7 +264,7 @@ void lenv_put(lenv* e, lval* k, lval* v) {
 }</code></pre>
 
 
-<h2>Builtins</h2>
+<h2>Builtins</h2> <hr/>
 
 <p>Now that our evaluation relies on the new function type we need to make sure we can regisiter all of our builtin functions with the environment before we start the interactive prompt. At the moment our builtin functions might not be the correct type. We need to change their type signature such that they take in some environment, and where appropriate change them to pass this environment into other calls that require it.</p>
 
@@ -334,7 +334,7 @@ Error: unbound symbol!
 lispy&gt;</code></pre>
 
 
-<h2>Define Function</h2>
+<h2>Define Function</h2> <hr/>
 
 <p>We've managed to register our builtins as variables but we still don't have a way for users to define their own variables.</p>
 
@@ -399,7 +399,7 @@ lispy&gt; list a b x y
 lispy&gt;</code></pre>
 
 
-<h2>Error Reporting</h2>
+<h2>Error Reporting</h2> <hr/>
 
 <p>So far our error reporting kind of sucks. We can report when an error occurs, and give a vague notion of what was the problem is, but we don't give the user much information about what exactly has gone wrong. For example if there is an unbound symbol we should be able to report exactly which symbol was unbound. This can help the user track down errors, typos, and other trivial problems.</p>
 
@@ -496,7 +496,8 @@ lispy&gt; head {1 2 3} {4 5 6}
 Error: Function 'head' passed incorrect number of arguments. Got 2, Expected 1.
 lispy&gt;</code></pre>
 
-<h2>Tutorial Code</h2>
+
+<h2>Reference</h2> <hr/>
 
 <div class="panel-group alert alert-warning" id="accordion">
   <div class="panel panel-default">
@@ -1088,7 +1089,7 @@ int main(int argc, char** argv) {
   </div>
 </div>
 
-<h2>Bonus Marks</h2>
+<h2>Bonus Marks</h2> <hr/>
 
 <div class="alert alert-warning">
   <ul class="list-group">
@@ -1101,6 +1102,10 @@ int main(int argc, char** argv) {
 
 <h2>Navigation</h2>
 
-<p><a href="chapter11_functions"><strong>Next Chapter &bull; Functions</strong></a></p>
-
-<p><a href="chapter9_into_lisp"><strong>Previous Chapter &bull; Into Lisp</strong></a></p>
+<table class="table" style='table-layout: fixed;'>
+  <tr>
+    <td class="text-left"><a href="chapter9_into_lisp"><h4>&lsaquo; Into Lisp</h4></a></td>
+    <td class="text-center"><a href="contents"><h4>&bull; Contents &bull;</h4></a></td>
+    <td class="text-right"><a href="chapter11_functions"><h4>Functions &rsaquo;</h4></a></td>
+  </tr>
+</table>

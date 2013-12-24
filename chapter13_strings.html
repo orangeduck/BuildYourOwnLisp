@@ -1,7 +1,7 @@
 <h1>Strings <small>&bull; Chapter 13</small></h1>
 
 
-<h2>Libraries</h2>
+<h2>Libraries</h2> <hr/>
 
 <div class='pull-right alert alert-warning' style="margin: 15px; text-align: center;">
   <img src="/static/img/string.png" alt="string"/>
@@ -13,7 +13,7 @@
 <p>Every time we update our program and run it again it is getting annoying having to type in again all of our functions. In this chapter we&#39;ll add the functionality to load code from a file and run it. This will allow us to start building a standard library up. Along the way we&#39;ll also add support for code comments, strings, and printing.</p>
 
 
-<h2>String Type</h2>
+<h2>String Type</h2> <hr/>
 
 <p>For the user to load a file we'll have to let them supply a string consisting of the file name. Our language supports symbols, but still doesn&#39;t support strings, which can include spaces and other characters. We need to add this possible <code>lval</code> type to specify the file names we need.</p>
 
@@ -79,7 +79,7 @@ char* str;
 }</code></pre>
 
 
-<h2>Reading Strings</h2>
+<h2>Reading Strings</h2> <hr/>
 
 <p>Now we need to add support for parsing strings. As usual this requires first adding a new grammar rule called <code>string</code> and add it to our parser.</p>
 
@@ -127,7 +127,7 @@ lispy&gt; eval (head {&quot;hello&quot; &quot;world&quot;})
 lispy&gt;</code></pre>
 
 
-<h2>Comments</h2>
+<h2>Comments</h2> <hr/>
 
 <p>While we&#39;re building in new syntax to the language we may as well look at comments.</p>
 
@@ -248,7 +248,7 @@ mpc_parser_t* Lispy;
 }</code></pre>
 
 
-<h2>Command Line Arguments</h2>
+<h2>Command Line Arguments</h2> <hr/>
 
 <p>With the ability to load files, we can take the chance to add in some functionality typical of other programming languages. When file names are given as arguments to the command line we can try to run these files. For example to run a python file one might write <code>python filename.py</code>.</p>
 
@@ -280,7 +280,7 @@ mpc_parser_t* Lispy;
 <pre><code>lispy example.lspy</code></pre>
 
 
-<h2>Print Function</h2>
+<h2>Print Function</h2> <hr/>
 
 <p>If we are running programs from the command line we might want them to output some data, rather than just define functions and other values. We can add a <code>print</code> function that just to call our <code>lval_print</code> function.</p>
 
@@ -301,7 +301,7 @@ mpc_parser_t* Lispy;
 }</code></pre>
 
 
-<h2>Error Function</h2>
+<h2>Error Function</h2> <hr/>
 
 <p>We can also make use of strings to add in an error reporting function. This can take a user string and supply it as an error message for <code>lval_err</code>.</p>
 
@@ -336,13 +336,14 @@ lispy&gt;
 </code></pre>
 
 
-<h2>Finishing Up</h2>
+<h2>Finishing Up</h2> <hr/>
 
 <p>This is the last chapter where we are going to explicitly work on our C implementation of Lisp. This means this is the final state of your C program as far as I am involved. The final line count clocks in at just under 1000 lines of code. This is considerable, as it brings a program over the bridge from a toy, to a real project.</p>
 
 <p>If you've got this far then major congratulations. You now have a complex and beautiful program you should be proud of. Go show it off to your friends!</p>
 
-<h2>Tutorial Code</h2>
+
+<h2>Reference</h2> <hr/>
 
 <div class="panel-group alert alert-warning" id="accordion">
   <div class="panel panel-default">
@@ -1279,7 +1280,8 @@ int main(int argc, char** argv) {
   </div>
 </div>
 
-<h2>Bonus Marks</h2>
+
+<h2>Bonus Marks</h2> <hr/>
 
 <div class="alert alert-warning">
   <ul class="list-group">
@@ -1294,6 +1296,10 @@ int main(int argc, char** argv) {
 
 <h2>Navigation</h2>
 
-<p><a href="chapter14_standard_library"><strong>Next Chapter &bull; Standard Library</strong></a></p>
-
-<p><a href="chapter12_conditionals"><strong>Previous Chapter &bull; Conditionals</strong></a></p>
+<table class="table" style='table-layout: fixed;'>
+  <tr>
+    <td class="text-left"><a href="chapter12_conditionals"><h4>&lsaquo; Conditionals</h4></a></td>
+    <td class="text-center"><a href="contents"><h4>&bull; Contents &bull;</h4></a></td>
+    <td class="text-right"><a href="chapter14_standard_library"><h4>Standard Library &rsaquo;</h4></a></td>
+  </tr>
+</table>
