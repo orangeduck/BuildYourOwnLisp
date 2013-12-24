@@ -161,29 +161,24 @@ int main(int argc, char** argv) {
 
 <h3>Compiling with Editline</h3>
 
-<p>If you try to compile this right away with the previous command you'll get an error.
+<p>If you try to compile this right away with the previous command you'll get an error. This is because you first need to install the <code>editline</code> library on your computer.</p>
+
 
 <pre><code>fatal error: editline/readline.h: No such file or directory #include &lt;editline/readline.h&gt;</code></pre>
 
-<p>This is because you first need to install the <code>editline</code> library on your computer. On Ubuntu or similar Linux distributions this can be done using the following command line command.</p>
-
-<pre><code data-language="shell">sudo apt-get install libedit-dev</code></pre>
-
-<p>Or for Fedora and similar linux variants you can use</p>
-
-<pre><code data-language="shell">su -c "yum groupinstall libedit-dev"</code></pre>
+<p>On <strong>Linux</strong> this can be done using the command <code>sudo apt-get install libedit-dev</code>. On Fedora or similar you can use the command <code>su -c "yum groupinstall libedit-dev"</code></pre>
 
 <p>TODO: How to install on mac</p>
 
 <p>Once you have installed this you can try to compile it again. This time you'll get a different error.</p>
 
-<p>TODO: Linker error</p>
-
-<pre><code></code></pre>
+<pre><code>undefined reference to `readline'
+undefined reference to `add_history'
+</code></pre>
 
 <p>This means that you haven't <em>linked</em> your program to <code>editline</code>. This <em>linking</em> process allows the compiler to directly embed calls to <code>editline</code> in your program. You can make it link by adding the flag <code>-ledit</code> to your compile command, just before the output flag.</p>
 
-<pre><code data-language="shell">cc -std=c99 -Wall -g chapter3.c -lm -ledit -o chapter3</code></pre>
+<pre><code>cc -std=c99 -Wall -g chapter3.c -ledit -o chapter3</code></pre>
 
 <p>Hopefully now you should be able to <em>compile</em> and <em>link</em> your program with <code>editline</code>. Run it and check that now you can edit inputs as you type them in.<p>
 
@@ -192,15 +187,15 @@ int main(int argc, char** argv) {
 
 <p>For now it might be okay that we have to program differently depending on what operating system we are using, but what if I want to send my source code to a friend who uses a different operating system. In an ideal world I'd wish for my source code to be able to compile no matter where, or on what computer, it is being compiled. This is a general problem in C, and it is called <em>portability</em>. There is not always an easy or correct solution.<p>
 
-<p>But C does provide a mechanism to help, called the C preprocessor.</p>
+<p>But C does provide a mechanism to help, called <em>the preprocessor</em>.</p>
 
-<p>The C preprocessor is a program that runs before the compiler. It has a number of purposes, and we've actually be using it already, without knowing. Any line the starts with a hash <code>#</code> character is a preprocessor line, and we've been using it to <em>include</em> header files, giving us access to functions from the standard library and others.</p>
+<p>The preprocessor is a program that runs before the compiler. It has a number of purposes, and we've actually be using it already, without knowing. Any line the starts with a hash <code>#</code> character is a preprocessor line, and we've been using it to <em>include</em> header files, giving us access to functions from the standard library and others.</p>
 
 <p>The preprocessor can also be used to detect which operating system the code is being compiled on, and to emit different code depending on it</p>
 
 <p>The way we're going to use it is like this. If we are running Windows we're going to let the preprocessor emit code with some fake <code>readline</code> and <code>add_history</code> functions I've prepared, otherwise we are going to include the headers from <code>editline</code> and use these.</p>
 
-<p>To set what code the compiler emits we can wrap that code in an <code>#ifdef</code> preprocessor statement. This is like an <code>if</code> function that happens before the code is compiled. All the contents of the file up until the next <code>#else</code> are used if the condition is true. Otherwise all the contents from the <code>#else</code> to the final <code>#endif</code> are used instead. By putting these around our fake functions, or our editline headers, our code should be able to be compiled on Windows, Linux or Mac!</p>
+<p>To set what code the compiler emits we can wrap that code in <code>#ifdef</code>, <code>#else</code>, and <code>#endif</code> preprocessor statements. This is like an <code>if</code> function that happens before the code is compiled. All the contents of the file from the first <code>#ifdef</code> until the next <code>#else</code> are used if the condition is true. Otherwise all the contents from the <code>#else</code> to the final <code>#endif</code> are used instead. By putting these around our fake functions, or our editline headers, our code should be able to be compiled on Windows, Linux or Mac!</p>
 
 <pre><code data-language='c'>#include &lt;stdio.h&gt;
 #include &lt;stdlib.h&gt;
