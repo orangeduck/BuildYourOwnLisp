@@ -185,17 +185,17 @@ undefined reference to `add_history'
 
 <h2>The C Preprocessor</h2> <hr/>
 
-<p>For now it might be okay that we have to program differently depending on what operating system we are using, but what if I want to send my source code to a friend who uses a different operating system. In an ideal world I'd wish for my source code to be able to compile no matter where, or on what computer, it is being compiled. This is a general problem in C, and it is called <em>portability</em>. There is not always an easy or correct solution.<p>
+<p>For such a small project it might be okay that we have to program differently depending on what operating system we are using, but if I want to send my source code to a friend on different operating system to give me a hand with the programming, it is going to cause problem. In an ideal world I'd wish for my source code to be able to compile no matter where, or on what computer, it is being compiled. This is a general problem in C, and it is called <em>portability</em>. There is not always an easy or correct solution.<p>
 
 <p>But C does provide a mechanism to help, called <em>the preprocessor</em>.</p>
 
-<p>The preprocessor is a program that runs before the compiler. It has a number of purposes, and we've actually be using it already, without knowing. Any line the starts with a hash <code>#</code> character is a preprocessor line, and we've been using it to <em>include</em> header files, giving us access to functions from the standard library and others.</p>
+<p>The preprocessor is a program that runs before the compiler. It has a number of purposes, and we've actually be using it already without knowing. Any line the starts with a hash <code>#</code> character is a preprocessor command. We've been using it to <em>include</em> header files, giving us access to functions from the standard library and others.</p>
 
-<p>The preprocessor can also be used to detect which operating system the code is being compiled on, and to emit different code depending on it</p>
+<p>Another use of the preprocessor is to detect which operating system the code is being compiled on, and to use this to emit different code.</p>
 
-<p>The way we're going to use it is like this. If we are running Windows we're going to let the preprocessor emit code with some fake <code>readline</code> and <code>add_history</code> functions I've prepared, otherwise we are going to include the headers from <code>editline</code> and use these.</p>
+<p>This is exactly how we are going to use it. If we are running Windows we're going to let the preprocessor emit code with some fake <code>readline</code> and <code>add_history</code> functions I've prepared, otherwise we are going to include the headers from <code>editline</code> and use these.</p>
 
-<p>To set what code the compiler emits we can wrap that code in <code>#ifdef</code>, <code>#else</code>, and <code>#endif</code> preprocessor statements. This is like an <code>if</code> function that happens before the code is compiled. All the contents of the file from the first <code>#ifdef</code> until the next <code>#else</code> are used if the condition is true. Otherwise all the contents from the <code>#else</code> to the final <code>#endif</code> are used instead. By putting these around our fake functions, or our editline headers, our code should be able to be compiled on Windows, Linux or Mac!</p>
+<p>To declare what code the compiler should emit we can wrap it in <code>#ifdef</code>, <code>#else</code>, and <code>#endif</code> preprocessor statements. These are like an <code>if</code> function that happens before the code is compiled. All the contents of the file from the first <code>#ifdef</code> to the next <code>#else</code> are used if the condition is true, otherwise all the contents from the <code>#else</code> to the final <code>#endif</code> are used instead. By putting these around our fake functions, and our editline headers, the code that is emitted should compile on Windows, Linux or Mac!</p>
 
 <pre><code data-language='c'>#include &lt;stdio.h&gt;
 #include &lt;stdlib.h&gt;

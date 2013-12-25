@@ -2,21 +2,22 @@
 
 int main(int argc, char** argv) {
 
-  mpc_parser_t* Flatmate = mpc_or(4, 
-    mpc_sym("Dan"),  mpc_sym("Chess"),
-    mpc_sym("Adam"), mpc_sym("Lewis")
-  );
+  mpc_parser_t* Flatmate  = mpc_new("flatmate");
+  mpc_parser_t* Greet     = mpc_new("greet");
+  mpc_parser_t* Greetings = mpc_new("greetings");
 
-  mpc_parser_t* Greet = mpc_and(2, mpcf_strfold,
-    mpc_sym("Hello"),
-    Flatmate, 
-    free); 
+  mpca_lang(
+    "                                                            \
+      flatmate  : \"Chess\" | \"Dan\" | \"Adam\" | \"Lewis\";    \
+      greet     : \"Hello\" <flatmate>;                          \
+      greetings : <greet>*;                                      \
+    ",
+    Flatmate, Greet, Greetings);
 
-  mpc_parser_t* Greetings = mpc_many(mpcf_strfold, Greet);
+  /* Do some parsing... */
 
-  mpc_delete(Greetings);
+  mpc_cleanup(3, Flatmate, Greet, Greetings);
   
   return 0;
   
 }
-
