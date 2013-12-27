@@ -90,6 +90,8 @@
 <pre><code data-language='c'>point p;
 p.x = 0.1;
 p.y = 10.0;
+
+float length = sqrt(p.x * p.x + p.y * p.y);
 </code></pre>
 
 
@@ -100,7 +102,7 @@ p.y = 10.0;
 
 <h2>Pointers</h2> <hr/>
 
-<p>A pointer is a variation on a normal type where the type name is suffixed with a asterisk <code>*</code>, for example <code>int*</code>. These are a difficult part of C and will be explained in much greater detail in later chapters. For now it is good to simply know they exist, and how to spot them. They can be used in a number of different ways such as for strings and lists. For now just don't get scared off.</p>
+<p>A pointer is a variation on a normal type where the type name is suffixed with a asterisk such as <code>int*</code>. These are a difficult part of C and will be explained in much greater detail in later chapters. For now it is good to simply know they exist, and how to spot them. They can be used in a number of different ways such as for strings and lists. Don't let them scare you!</p>
 
 
 <h2>Strings</h2> <hr/>
@@ -152,11 +154,11 @@ while (i > 0) {
   <ul class="list-group">
     <li class="list-group-item">&rsaquo; Use a <code>for</code> loop to print out <code>Hello World!</code> five times.</li>
     <li class="list-group-item">&rsaquo; Use a <code>while</code> loop to print out <code>Hello World!</code> five times.</li>
-    <li class="list-group-item">&rsaquo; Declare a function that outputs <code>Hello World!</code> and call this from <code>main</code>.</li>
+    <li class="list-group-item">&rsaquo; Declare a function that outputs <code>Hello World!</code> <code>n</code> number of times. Call this from <code>main</code>.</li>
     <li class="list-group-item">&rsaquo; What other conditional operators are there other than <em>greater than</em> <code>&gt;</code>, and <em>less than</em> <code>&lt;</code>?</li>
     <li class="list-group-item">&rsaquo; What other mathematical operators are there other than <em>add</em> <code>+</code>, and <em>subtract</em> <code>-</code>?</li>
     <li class="list-group-item">&rsaquo; What does the <code>typedef</code> keyword do exactly?</li>
-    <li class="list-group-item">&rsaquo; What other native types are there other than the ones listed?</li>
+    <li class="list-group-item">&rsaquo; What native types are there other than the ones listed?</li>
     <li class="list-group-item">&rsaquo; What is the <code>do</code> loop, and how does it work?</li>
     <li class="list-group-item">&rsaquo; What is the <code>switch</code> statement and how does it work?</li>
   </ul>

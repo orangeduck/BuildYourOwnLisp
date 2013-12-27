@@ -5,7 +5,7 @@
 
 <p>Some of you may have noticed a problem with the previous chapter&#39;s program. Try entering this into the prompt and see what happens.</p>
 
-<pre><code data-language='lispy'>Lispy Version 0.0.0.0.2
+<pre><code data-language='lispy'>Lispy Version 0.0.0.0.3
 Press Ctrl+c to Exit
 
 lispy&gt; / 10 0</code></pre>
@@ -33,18 +33,18 @@ typedef struct {
 
 <h2>Enumerations</h2> <hr/>
 
-<p>You'll notice the type of the fields <code>type</code>, and <code>err</code>, is <code>int</code>. This means they are represented a single integer number.</p>
+<p>You'll notice the type of the fields <code>type</code>, and <code>err</code>, is <code>int</code>. This means they are represented by a single integer number.</p>
 
-<p>The reason we pick <code>int</code> is because we will assign meaning to each integer value, to encode some special meaning. For example we can say <em>'If <code>type</code> is <code>0</code> then the structure is a Number.'</em>, or <em>'If <code>type</code> is <code>1</code> then the structure is an Error.'</em> This is a good way of doing things. It is simple and effective.</p>
+<p>The reason we pick <code>int</code> is because we will assign meaning to each integer value, to encode what we require. For example we can make a rule <em>"If <code>type</code> is <code>0</code> then the structure is a Number."</em>, or <em>"If <code>type</code> is <code>1</code> then the structure is an Error."</em> This is a good way of doing things. It is simple and effective.</p>
 
-<p>But if we litter our code with stray <code>0</code> and <code>1</code> then it is going to become increasingly unclear as to what means what. Instead we can use named contants that have been assigned these integer values. This gives the reader an indiciation as to <em>why</em> one might be comparing a number to <code>0</code> or <code>1</code> and <em>what</em> is meant in this context.</p>
+<p>But if we litter our code with stray <code>0</code> and <code>1</code> then it is going to become increasingly unclear as to what is happening. Instead we can use named contants that have been assigned these integer values. This gives the reader an indiciation as to <em>why</em> one might be comparing a number to <code>0</code> or <code>1</code> and <em>what</em> is meant in this context.</p>
 
 <p>In C this is supported using something called an <code>enum</code>.</p>
 
 <pre><code data-language='c'>/* Create Enumeration of Possible lval Types */
 enum { LVAL_NUM, LVAL_ERR };</code></pre>
 
-<p>An <code>enum</code> is a declaration of variables which under the hood are automatically assigned integer constant values. Above are our enumerated values for the <code>type</code> field.</p>
+<p>An <code>enum</code> is a declaration of variables which under the hood are automatically assigned integer constant values. Above is how we would declare some enumerated values for the <code>type</code> field.</p>
 
 <p>We also want to declare an enumeration for the <em>error</em> field. We have three error cases in our particular program. There is division by zero, an unknown operator, or being passed a number that is too large to represented internally using a <code>long</code>. These can be enumerated as follows.</p>
 
@@ -52,7 +52,7 @@ enum { LVAL_NUM, LVAL_ERR };</code></pre>
 enum { LERR_DIV_ZERO, LERR_BAD_OP, LERR_BAD_NUM };</code></pre>
 
 
-<h2>Using lvals</h2> <hr/>
+<h2>Lisp Value Functions</h2> <hr/>
 
 <p>Our <code>lval</code> type is ready to go. Unlike the previous <code>long</code> we have no current method for creating new instances of it. To do this we can declare two functions that construct an <code>lval</code> of either an <em>error</em> type or a <em>number</em> type.</p>
 
@@ -74,9 +74,9 @@ lval lval_err(int x) {
 
 <p>These functions first create an <code>lval</code> called <code>v</code>, and assign the fields before returning it.</p>
 
-<p>We will want to do different behaviour in our functions depending upon the type of the <code>lval</code>. There is a concise way to do this in C using the <code>switch</code> statement. This takes some value and compares it to other known values. When the values are equal it executes the code that follows up until the next <code>break</code> statement.</p>
+<p>We will want to do different behaviour in our functions depending upon the type of the <code>lval</code> they are given. There is a concise way to do this in C using the <code>switch</code> statement. This takes some value and compares it to other known values. When the values are equal it executes the code that follows up until the next <code>break</code> statement.</p>
 
-<p>For example we can build a function that can print an <code>lval</code> no matter what type it is like this.</p>
+<p>For example we can build a function that can print an <code>lval</code> of any type like this.</p>
 
 <pre><code data-language='c'>void lval_print(lval v) {
   switch (v.type) {
@@ -100,7 +100,7 @@ lval lval_err(int x) {
 
 <h2>Evaluating Errors</h2> <hr/>
 
-<p>Now that we know how to work with the <code>lval</code> type, we need to change our evaluation functions to use <code>lval</code> instead of <code>long</code>.</p>
+<p>Now that we know how to work with the <code>lval</code> type, we need to change our evaluation functions to use it instead of <code>long</code>.</p>
 
 <p>As well as changing the type signatures we need to change the functions such that they work correctly upon encountering either an <em>error</em> as input, or a <em>number</em> as input.</p>
 
@@ -131,12 +131,12 @@ lval lval_err(int x) {
 
   <p>It works something like this. <code>&lt;condition&gt; ? &lt;then&gt; : &lt;else&gt;</code>. In other words, if the condition is true it returns what follows the <code>?</code>, otherwise it returns what follows <code>:</code>.</p>
 
-  <p>Some people dislike this operator because they believe it makes code unclear. If you feel unfamiliar with it it can feel awkard, but once you get familiar with it there are rarely problems.</p>
+  <p>Some people dislike this operator because they believe it makes code unclear. If you feel unfamiliar with it it can seem awkard, but once you get to know it there are rarely problems.</p>
 </div>
 
 <p>We need to give a similar treatment to our <code>eval</code> function. In this case because we've defined <code>eval_op</code> to robustly handle errors we just need to add the error conditions to our number conversion function.</p>
 
-<p>In this case we us the <code>strtol</code> function to convert from string to <code>long</code> and can check <code>errno</code> to ensure the conversion goes correctly. This is a more robust way to convert numbers in C.</p>
+<p>In this case we us the <code>strtol</code> function to convert from string to <code>long</code>. This lets use check a special variable <code>errno</code> to ensure the conversion goes correctly. This is a more robust way to convert numbers in C.</p>
 
 <pre><code data-language='c'>lval eval(mpc_ast_t* t) {
   
@@ -171,8 +171,6 @@ Error: Division By Zero!
 lispy> / 10 2
 5</code></pre>
 
-<p>This chapter may have seemed like a lot of fluff to resolve a relatively minor issue, but we&#39;ve actually built a lot of groundwork that we are going to use in the rest of the development for more advanced stuff. Although boring, error handling shouldn&#39;t be avoided! It isn&#39;t just the life of the user that it enhances. It can make your own life much easier when you come to debug your developing program later on.</p>
-
 
 <h2>Plumbing</h2> <hr/>
 
@@ -189,9 +187,9 @@ lispy> / 10 2
 
 <p>In programming we call this <em>plumbing</em>. Roughly speaking this is following instructions to try and tie together a bunch libraries or components, without really understanding how they work internally.</p>
 
-<p>It requires <em>faith</em> and <em>intuition</em>. <em>Faith</em> is required to believe that if the stars align, and every incantation is correctly performed before this magical machine, the right thing really will happen. And <em>intuition</em> is required to work out what has gone wrong, and how to fix things when they don't go as planned.<p>
+<p>It requires <em>faith</em> and <em>intuition</em>. <em>Faith</em> is required to believe that if the stars align, and every incantation is correctly performed for this magical machine, the right thing really will happen. And <em>intuition</em> is required to work out what has gone wrong, and how to fix things when they don't go as planned.<p>
 
-<p>Unfortunately these can't be taught directly, so if you've made it this far then <em>congratulations!</em> You've made it over a difficult hump, and in the following chapters I promise we'll finish up with the plumbing, and actually start to programming that feels fresh.</p>
+<p>Unfortunately these can't be taught directly, so if you've made it this far then <em>congratulations!</em> You've made it over a difficult hump, and in the following chapters I promise we'll finish up with the plumbing, and actually start to programming that feels fresh and wholesome.</p>
 
 
 <h2>Reference</h2> <hr/>
@@ -211,17 +209,14 @@ lispy> / 10 2
 
 #ifdef _WIN32
 
-static char input[2048];
+static char buffer[2048];
 
 char* readline(char* prompt) {
-  
   fputs("lispy&gt; ", stdout);
-  fgets(input, 2047, stdin);
-    
-  char* cpy = malloc(strlen(input)+1);
-  strcpy(cpy, input);
-  cpy[strlen(cpy)] = '\0';
-  
+  fgets(buffer, 2048, stdin);
+  char* cpy = malloc(strlen(buffer)+1);
+  strcpy(cpy, buffer);
+  cpy[strlen(cpy)-1] = '\0';
   return cpy;
 }
 
@@ -334,8 +329,8 @@ int main(int argc, char** argv) {
     ",
     Number, Operator, Expr, Lispy);
   
-  fputs("Lispy Version 0.0.0.0.4\n", stdout);
-  fputs("Press Ctrl+c to Exit\n\n", stdout);
+  puts("Lispy Version 0.0.0.0.4");
+  puts("Press Ctrl+c to Exit\n");
   
   while (1) {
   
@@ -343,7 +338,7 @@ int main(int argc, char** argv) {
     add_history(input);
     
     mpc_result_t r;
-    if (mpc_parse("&lt;stdin&gt;", input, Lispy, &r)) {
+    if (mpc_parse("&lt;stdin&gt;", input, Lispy, &amp;r)) {
       
       lval result = eval(r.output);
       lval_println(result);
@@ -386,6 +381,6 @@ int main(int argc, char** argv) {
   <tr>
     <td class="text-left"><a href="chapter7_parsing"><h4>&lsaquo; Evaluation</h4></a></td>
     <td class="text-center"><a href="contents"><h4>&bull; Contents &bull;</h4></a></td>
-    <td class="text-right"><a href="chapter9_into_lisp"><h4>Into Lisp &rsaquo;</h4></a></td>
+    <td class="text-right"><a href="chapter9_s_expressions"><h4>S-Expressions &rsaquo;</h4></a></td>
   </tr>
 </table>

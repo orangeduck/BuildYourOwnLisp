@@ -12,7 +12,7 @@ Rainbow.extend('c', [
     },
     {
         'name': 'keyword',
-        'pattern': /\b(for|while|do|goto|typedef|return|if|else|switch|case|break|continue)\b/g
+        'pattern': /\b(for|while|do|goto|typedef|return|if|else|switch|case|break|continue|NULL)\b/g
     },
     {
         'name': 'keyword.operator',
@@ -29,10 +29,6 @@ Rainbow.extend('c', [
     {
         'name': 'constant.character',
         'pattern': /\'(\\.|[^\'])\'/g
-    },
-    {
-        'name': 'constant.null',
-        'pattern': /NULL/g
     },
     {
         'name': 'meta.preprocessor',

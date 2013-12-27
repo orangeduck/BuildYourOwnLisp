@@ -2,17 +2,14 @@
 
 #ifdef _WIN32
 
-static char input[2048];
+static char buffer[2048];
 
 char* readline(char* prompt) {
-  
   fputs("lispy> ", stdout);
-  fgets(input, 2047, stdin);
-    
-  char* cpy = malloc(strlen(input)+1);
-  strcpy(cpy, input);
-  cpy[strlen(cpy)] = '\0';
-  
+  fgets(buffer, 2048, stdin);
+  char* cpy = malloc(strlen(buffer)+1);
+  strcpy(cpy, buffer);
+  cpy[strlen(cpy)-1] = '\0';
   return cpy;
 }
 
@@ -125,8 +122,8 @@ int main(int argc, char** argv) {
     ",
     Number, Operator, Expr, Lispy);
   
-  fputs("Lispy Version 0.0.0.0.4\n", stdout);
-  fputs("Press Ctrl+c to Exit\n\n", stdout);
+  puts("Lispy Version 0.0.0.0.4");
+  puts("Press Ctrl+c to Exit\n");
   
   while (1) {
   

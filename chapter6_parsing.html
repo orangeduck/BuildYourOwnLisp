@@ -108,7 +108,7 @@ mpc_cleanup(4, Number, Operator, Expr, Lispy);</code></pre>
 
 <h2>Parsing User Input</h2> <hr/>
 
-<p>Our new code creates a <code>mpc</code> parser for our <em>Polish Notation</em> language, but we still need to use it on the user input supplied each time from the prompt. We need to edit our <code>while</code> loop so that rather than just echoing user input back, it actually attempts to parse the input using our parser. We can do this by replacing the call to <code>fprintf</code> with the following code, that makes use of our main parser <code>Lispy</code>.</p>
+<p>Our new code creates a <code>mpc</code> parser for our <em>Polish Notation</em> language, but we still need to use it on the user input supplied each time from the prompt. We need to edit our <code>while</code> loop so that rather than just echoing user input back, it actually attempts to parse the input using our parser. We can do this by replacing the call to <code>printf</code> with the following code, that makes use of our main parser <code>Lispy</code>.</p>
 
 <pre><code data-language='c'>/* Attempt to Parse the user Input */
 mpc_result_t r;
@@ -181,12 +181,11 @@ lispy&gt;
 static char buffer[2048];
 
 char* readline(char* prompt) {
-  
   fputs("lispy&gt; ", stdout);
-  fgets(buffer, 2047, stdin);
+  fgets(buffer, 2048, stdin);
   char* cpy = malloc(strlen(buffer)+1);
   strcpy(cpy, buffer);
-  cpy[strlen(cpy)] = '\0';
+  cpy[strlen(cpy)-1] = '\0';
   return cpy;
 }
 
@@ -217,8 +216,8 @@ int main(int argc, char** argv) {
     ",
     Number, Operator, Expr, Lispy);
   
-  fputs("Lispy Version 0.0.0.0.2\n", stdout);
-  fputs("Press Ctrl+c to Exit\n\n", stdout);
+  puts("Lispy Version 0.0.0.0.2");
+  puts("Press Ctrl+c to Exit\n");
   
   while (1) {
   
@@ -227,7 +226,7 @@ int main(int argc, char** argv) {
     
     /* Attempt to parse the user input */
     mpc_result_t r;
-    if (mpc_parse("&lt;stdin&gt;", input, Lispy, &r)) {
+    if (mpc_parse("&lt;stdin&gt;", input, Lispy, &amp;r)) {
       /* On success print and delete the AST */
       mpc_ast_print(r.output);
       mpc_ast_delete(r.output);

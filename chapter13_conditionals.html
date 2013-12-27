@@ -213,17 +213,14 @@ lispy&gt; if (== x y) {+ x y} {- x y}
 
 #ifdef _WIN32
 
-static char input[2048];
+static char buffer[2048];
 
 char* readline(char* prompt) {
-  
   fputs("lispy&gt; ", stdout);
-  fgets(input, 2047, stdin);
-    
-  char* cpy = malloc(strlen(input)+1);
-  strcpy(cpy, input);
-  cpy[strlen(cpy)] = '\0';
-  
+  fgets(buffer, 2048, stdin); 
+  char* cpy = malloc(strlen(buffer)+1);
+  strcpy(cpy, buffer);
+  cpy[strlen(cpy)-1] = '\0';
   return cpy;
 }
 
@@ -951,8 +948,8 @@ int main(int argc, char** argv) {
     ",
     Number, Symbol, Sexpr, Qexpr, Expr, Lispy);
   
-  fputs("Lispy Version 0.0.0.0.4\n", stdout);
-  fputs("Press Ctrl+c to Exit\n\n", stdout);
+  puts("Lispy Version 0.0.0.0.9");
+  puts("Press Ctrl+c to Exit\n");
   
   lenv* e = lenv_new();
   lenv_add_builtins(e);
@@ -1007,8 +1004,8 @@ int main(int argc, char** argv) {
 
 <table class="table" style='table-layout: fixed;'>
   <tr>
-    <td class="text-left"><a href="chapter11_functions"><h4>&lsaquo; Functions</h4></a></td>
+    <td class="text-left"><a href="chapter12_functions"><h4>&lsaquo; Functions</h4></a></td>
     <td class="text-center"><a href="contents"><h4>&bull; Contents &bull;</h4></a></td>
-    <td class="text-right"><a href="chapter13_strings"><h4>Strings &rsaquo;</h4></a></td>
+    <td class="text-right"><a href="chapter14_strings"><h4>Strings &rsaquo;</h4></a></td>
   </tr>
 </table>

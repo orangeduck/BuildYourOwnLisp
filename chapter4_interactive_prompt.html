@@ -19,7 +19,7 @@
 
 <p>For the basic setup we want to write a loop which repeatedly writes out a message, and then waits for some input. To get user input we can use a function called <code>fgets</code>, which reads any input up until a newline. We need somewhere to store this user input. For this we can declare a constantly sized input buffer.</p>
 
-<p>Once we have this user input stored we can then print it back to the user using a function called <code>fprintf</code>.</p>
+<p>Once we have this user input stored we can then print it back to the user using a function called <code>printf</code>.</p>
 
 <pre><code data-language='c'>#include &lt;stdio.h&gt;
 
@@ -29,8 +29,8 @@ static char input[2048];
 int main(int argc, char** argv) {
 
   /* Print Version and Exit Information */
-  fputs(&quot;Lispy Version 0.0.0.0.1\n&quot;, stdout);
-  fputs(&quot;Press Ctrl+c to Exit\n\n&quot;, stdout);
+  puts(&quot;Lispy Version 0.0.0.0.1&quot;);
+  puts(&quot;Press Ctrl+c to Exit\n&quot;);
 
   /* In a never ending loop */
   while (1) {
@@ -38,11 +38,11 @@ int main(int argc, char** argv) {
     /* Output our prompt */
     fputs(&quot;lispy&gt; &quot;, stdout);
 
-    /* Read a line of user input of maximum size 2047 */
-    fgets(input, 2047, stdin);
+    /* Read a line of user input of maximum size 2048 */
+    fgets(input, 2048, stdin);
 
     /* Echo input back to user */
-    fprintf(stdout, &quot;No you&#39;re a %s&quot;, input);
+    printf(&quot;No you&#39;re a %s&quot;, input);
   }
 
   return 0;
@@ -60,20 +60,18 @@ int main(int argc, char** argv) {
 
 <p>We write an infinite loop using <code>while (1)</code>. In a conditional block <code>1</code> always evaluates to true. Therefore commands inside this loop will run forever.</p>
 
-<p>The <code>fputs</code> and <code>fgets</code> are functions for putting and getting strings from the command line. <code>fputs</code> is similar to the <code>puts</code> function we saw in the second chapter, but it takes an output location to write to. This is where <code>stdout</code> and <code>stdin</code> come in. These are the names for the command line input and output, and we supply them to these variations of the functions prefixed by <code>f</code>.</p>
+<p>To output our prompt we use the function <code>fputs</code>. This is a slight variation on <code>puts</code> which does not append a newline character. We use the <code>fgets</code> function for getting user input from the command line. Both of these functions require some file to write to, or read from. For this we supply the special variables <code>stdin</code> and <code>stdout</code>. These are declared in <code>&lt;stdio.h&gt;</code> and are are special file variables representing input to, and output from, the command line. When passed this variable the <code>fgets</code> function will wait for a user to input a line of text, and when it has it it will store it into the <code>input</code> buffer, including the newline character. We supply <code>input</code> as a buffer to write to, and <code>2048</code> as the size of that buffer.</p>
 
-<p>The <code>fgets</code> function will wait for a user to input a line of text, and when it has it it will store it into the <code>input</code> buffer, including the newline character.</p>
-
-<p>Finally there is <code>fprintf</code>, which is a way of printing messages consisting of several elements. It matches arguments to patterns in the input string. For example in our case we can see the <code>%s</code> pattern in the input string. This means that it will be replaced by whatever argument is passed in next, interprited as a string.</p>
+<p>To echo the message back to the user we use the function <code>printf</code>. This is a function that provides a way of printing messages consisting of several elements. It matches arguments to patterns in the given string. For example in our case we can see the <code>%s</code> pattern in the given string. This means that it will be replaced by whatever argument is passed in next, interprited as a string.</p>
 
 <p>For more information on these different patterns please see the <a href="http://en.cppreference.com/w/c/io/fprintf">documentation</a> on <code>printf</code>.</p>
 
 <div class="alert alert-warning">
-  <p><strong>How am I meant to know about functions like <code>fgets</code> and <code>fputs</code>?</strong></p>
+  <p><strong>How am I meant to know about functions like <code>fgets</code> and <code>printf</code>?</strong></p>
   
-  <p>It isn't immediately obviouss how I can know about these standard functions, and when to use them. When faced with a problem it takes experience to know when it has been solved for you by library functions.</p>
+  <p>It isn't immediately obvious how to know about these standard functions, and when to use them. When faced with a problem it takes experience to know when it has been solved for you by library functions.</p>
 
-  <p>Luckily C has a very small standard library and almost all of it can be learnt in practice. If you want to do something that seems quite basic, or fundamental, it is worth looking at the <a href="http://en.cppreference.com/w/c/io/fprintf">reference documentation</a> for the standard library and checking if there are any functions included that do what you want.</p>
+  <p>Luckily C has a very small standard library and almost all of it can be learnt in practice. If you want to do something that seems quite basic, or fundamental, it is worth looking at the <a href="http://en.cppreference.com/w/c">reference documentation</a> for the standard library and checking if there are any functions included that do what you want.</p>
 </div>
 
 
@@ -125,25 +123,23 @@ lispy> hel^[[D^[[C
 #include &lt;editline/readline.h&gt;
 #include &lt;editline/history.h&gt;
 
-static char input[2048];
-
 int main(int argc, char** argv) {
    
   /* Print Version and Exit Information */
-  fputs("Lispy Version 0.0.0.0.1\n", stdout);
-  fputs("Press Ctrl+c to Exit\n\n", stdout);
+  puts("Lispy Version 0.0.0.0.1");
+  puts("Press Ctrl+c to Exit\n");
    
   /* In a never ending loop */
   while (1) {
     
-    /* Output our prompt an get input */
+    /* Output our prompt and get input */
     char* input = readline("lispy> ");
     
     /* Add input to history */
     add_history(input);
     
     /* Echo input back to user */    
-    fprintf(stdout, "No you're a %s\n", input);
+    printf("No you're a %s\n", input);
 
     /* Free retrived input */
     free(input);
@@ -153,11 +149,11 @@ int main(int argc, char** argv) {
   return 0;
 }</code></pre>
 
-<p>Notice that we have also <em>included</em> a few new <em>headers</em>. We have added <code>#include &lt;stdlib.h&gt;</code>, which gives us access to the <code>free</code> function user later on in the code. We have also added <code>#include &lt;editline/readline.h&gt;</code> and <code>#include &lt;editline/history.h&gt;</code> which give us access to the <code>editline</code> functions, <code>readline</code> and <code>add_history</code>.</p>
+<p>We have <em>included</em> a few new <em>headers</em>. There is <code>#include &lt;stdlib.h&gt;</code>, which gives us access to the <code>free</code> function used later on in the code. We have also added <code>#include &lt;editline/readline.h&gt;</code> and <code>#include &lt;editline/history.h&gt;</code> which give us access to the <code>editline</code> functions, <code>readline</code> and <code>add_history</code>.</p>
 
-<p>Instead of prompting, and getting input with <code>fgets</code>, we do it in one go using <code>readline</code>. The result of this we pass to <code>add_history</code> to record it. Finally we print it out as before using <code>fprintf</code>.</p>
+<p>Instead of prompting, and getting input with <code>fgets</code>, we do it in one go using <code>readline</code>. The result of this we pass to <code>add_history</code> to record it. Finally we print it out as before using <code>printf</code>.</p>
 
-<p>Unlike <code>fgets</code>, the <code>readline</code> function strips the trailing newline character from the input, so we need to add this to our <code>fprintf</code> function. We also need to delete the input given to us by the <code>readline</code> function using <code>free</code>. This is because unlike <code>fgets</code>, which writes to some existing buffer, the <code>readline</code> function allocates new memory when it is called. When to free memory is something we cover in depth in later chapters.</p>
+<p>Unlike <code>fgets</code>, the <code>readline</code> function strips the trailing newline character from the input, so we need to add this to our <code>printf</code> function. We also need to delete the input given to us by the <code>readline</code> function using <code>free</code>. This is because unlike <code>fgets</code>, which writes to some existing buffer, the <code>readline</code> function allocates new memory when it is called. When to free memory is something we cover in depth in later chapters.</p>
 
 <h3>Compiling with Editline</h3>
 
@@ -182,14 +178,25 @@ undefined reference to `add_history'
 
 <p>Hopefully now you should be able to <em>compile</em> and <em>link</em> your program with <code>editline</code>. Run it and check that now you can edit inputs as you type them in.<p>
 
+<div class="alert alert-warning">
+  <p><strong>It's still not working!</strong></p>
+  
+  <p>Some systems might have slight variations on how to install, include, and link to <code>editline</code>. For example if you are on Arch linux the editline history header is <code>histedit.h</code>. If you are having trouble search online and see if you can find distribution specific instructions on how to use <code>editline</code> or <code>readline</code>.</p>
+</div>
+
 
 <h2>The C Preprocessor</h2> <hr/>
 
 <p>For such a small project it might be okay that we have to program differently depending on what operating system we are using, but if I want to send my source code to a friend on different operating system to give me a hand with the programming, it is going to cause problem. In an ideal world I'd wish for my source code to be able to compile no matter where, or on what computer, it is being compiled. This is a general problem in C, and it is called <em>portability</em>. There is not always an easy or correct solution.<p>
 
+<div class='pull-right alert alert-warning' style="margin: 15px; text-align: center;">
+  <img src="/static/img/octopus.png" alt="octopus"/>
+  <p><small>Octopus &bull; Sort of like Octothorpe</small></p>
+</div>
+
 <p>But C does provide a mechanism to help, called <em>the preprocessor</em>.</p>
 
-<p>The preprocessor is a program that runs before the compiler. It has a number of purposes, and we've actually be using it already without knowing. Any line the starts with a hash <code>#</code> character is a preprocessor command. We've been using it to <em>include</em> header files, giving us access to functions from the standard library and others.</p>
+<p>The preprocessor is a program that runs before the compiler. It has a number of purposes, and we've actually be using it already without knowing. Any line the starts with a octothorpe <code>#</code> character (hash to you and me) is a preprocessor command. We've been using it to <em>include</em> header files, giving us access to functions from the standard library and others.</p>
 
 <p>Another use of the preprocessor is to detect which operating system the code is being compiled on, and to use this to emit different code.</p>
 
@@ -205,18 +212,15 @@ undefined reference to `add_history'
 
 #include &lt;string.h&gt;
 
-static char input[2048];
+static char buffer[2048];
 
 /* Fake readline function */
 char* readline(char* prompt) {
-  
   fputs("lispy> ", stdout);
-  fgets(input, 2047, stdin);
-    
-  char* cpy = malloc(strlen(input)+1);
-  strcpy(cpy, input);
-  cpy[strlen(cpy)] = '\0';
-  
+  fgets(buffer, 2048, stdin);
+  char* cpy = malloc(strlen(buffer)+1);
+  strcpy(cpy, buffer);
+  cpy[strlen(cpy)-1] = '\0';
   return cpy;
 }
 
@@ -233,8 +237,8 @@ void add_history(char* unused) {}
 
 int main(int argc, char** argv) {
    
-  fputs("Lispy Version 0.0.0.0.1\n", stdout);
-  fputs("Press Ctrl+c to Exit\n\n", stdout);
+  puts("Lispy Version 0.0.0.0.1");
+  puts("Press Ctrl+c to Exit\n");
    
   while (1) {
     
@@ -242,7 +246,7 @@ int main(int argc, char** argv) {
     char* input = readline("lispy> ");
     add_history(input);
 
-    fprintf(stdout, "No you're a %s\n", input);
+    printf("No you're a %s\n", input);
     free(input);
     
   }
@@ -272,8 +276,8 @@ static char input[2048];
 int main(int argc, char** argv) {
 
   /* Print Version and Exit Information */
-  fputs("Lispy Version 0.0.0.0.1\n", stdout);
-  fputs("Press Ctrl+c to Exit\n\n", stdout);
+  puts("Lispy Version 0.0.0.0.1");
+  puts("Press Ctrl+c to Exit\n");
 
   /* In a never ending loop */
   while (1) {
@@ -281,11 +285,11 @@ int main(int argc, char** argv) {
     /* Output our prompt */
     fputs("lispy&gt; ", stdout);
 
-    /* Read a line of user input of maximum size 2047 */
-    fgets(input, 2047, stdin);
+    /* Read a line of user input of maximum size 2048 */
+    fgets(input, 2048, stdin);
 
     /* Echo input back to user */
-    fprintf(stdout, "No you're a %s", input);
+    printf("No you're a %s", input);
   }
 
   return 0;
@@ -310,25 +314,23 @@ int main(int argc, char** argv) {
 #include &lt;editline/readline.h&gt;
 #include &lt;editline/history.h&gt;
 
-static char input[2048];
-
 int main(int argc, char** argv) {
    
   /* Print Version and Exit Information */
-  fputs("Lispy Version 0.0.0.0.1\n", stdout);
-  fputs("Press Ctrl+c to Exit\n\n", stdout);
+  puts("Lispy Version 0.0.0.0.1");
+  puts("Press Ctrl+c to Exit\n");
    
   /* In a never ending loop */
   while (1) {
     
-    /* Output our prompt an get input */
+    /* Output our prompt and get input */
     char* input = readline("lispy&gt; ");
     
     /* Add input to history */
     add_history(input);
     
     /* Echo input back to user */    
-    fprintf(stdout, "No you're a %s\n", input);
+    printf("No you're a %s\n", input);
 
     /* Free retrived input */
     free(input);
@@ -359,18 +361,15 @@ int main(int argc, char** argv) {
 
 #include &lt;string.h&gt;
 
-static char input[2048];
+static char buffer[2048];
 
 /* Fake readline function */
 char* readline(char* prompt) {
-  
   fputs("lispy> ", stdout);
-  fgets(input, 2047, stdin);
-    
-  char* cpy = malloc(strlen(input)+1);
-  strcpy(cpy, input);
-  cpy[strlen(cpy)] = '\0';
-  
+  fgets(buffer, 2048, stdin);
+  char* cpy = malloc(strlen(buffer)+1);
+  strcpy(cpy, buffer);
+  cpy[strlen(cpy)-1] = '\0';
   return cpy;
 }
 
@@ -387,8 +386,8 @@ void add_history(char* unused) {}
 
 int main(int argc, char** argv) {
    
-  fputs("Lispy Version 0.0.0.0.1\n", stdout);
-  fputs("Press Ctrl+c to Exit\n\n", stdout);
+  puts("Lispy Version 0.0.0.0.1");
+  puts("Press Ctrl+c to Exit\n");
    
   while (1) {
     
@@ -396,7 +395,7 @@ int main(int argc, char** argv) {
     char* input = readline("lispy&gt; ");
     add_history(input);
 
-    fprintf(stdout, "No you're a %s\n", input);
+    printf("No you're a %s\n", input);
     free(input);
     
   }

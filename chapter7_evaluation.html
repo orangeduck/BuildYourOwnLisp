@@ -9,7 +9,7 @@
 
 <div class='pull-left alert alert-warning' style="margin: 15px; text-align: center;">
   <img src="/static/img/tree.png" alt="tree"/>
-  <p><small>Beech Tree &bull; Another type of tree</small></p>
+  <p><small>Abstract Christmas Tree &bull; A seasonal variation</small></p>
 </div>
 
 <p>Before working out exactly how we are going to do this traversal, lets see how this structure is defined internally. If we peek inside <code>mpc.h</code> we can have a look at the definition of <code>mpc_ast_t</code>, which is the data structure we got from the parse.</p>
@@ -31,13 +31,11 @@
 
 <p>Finally we see two fields that are going to help us traverse the tree. These are <code>children_num</code> and <code>children</code>. The first field tells us how many children a node has, and the second is an array of these children.</p>
 
-<p>The type of the <code>children</code> field is <code>mpc_ast_t**</code>. This is a double pointer type we've not seen before. This will be explained in greater detail in later chapters. For now you can think of it as an array of the child nodes of the tree.</p>
+<p>The type of the <code>children</code> field is <code>mpc_ast_t**</code>. This is a double pointer type we've not seen before. This will be explained in greater detail in later chapters. For now you can think of it as a list of the child nodes of the this tree or branch.</p>
 
-<p>We can access a child node, by accessing this field using array notation. This is done by writing the field name <code>children</code> and suffixing it with square brackets containing the index of the child to access.</p>
+<p>We can access a child node, by accessing this field using array notation. This is done by writing the field name <code>children</code> and suffixing it with square brackets containing the index of the child to access. For example to access the first child of the node we can use <code>children[0]</code>.</p>
 
-<p>For example to access the first child of the node we can use <code>children[0]</code>.</p>
-
-<p>Because the type <code>mpc_ast_t*</code> is a pointer type there is a slightly different syntax to access its fields. We need to use an arrow <code>-></code> instead of a dot <code>.</code>. This is explained in greater depth in later chapters.</p>
+<p>Because the type <code>mpc_ast_t*</code> is a pointer type there is a slightly different syntax to access its fields. We need to use an arrow <code>-></code> instead of a dot <code>.</code>. There is no fundamental reason for this switch in operators, so for now just remember that field access in pointer tyles uses an arrow.</p>
 
 <pre><code data-language='c'>/* Load AST from output */
 mpc_ast_t* a = r.output;
@@ -55,7 +53,7 @@ printf("First Child Number of children: %i\n", c0->children_num);
 
 <h2>Evaluation</h2> <hr/>
 
-<p>Now we can think of how to evaluate a particular tree node. To do this we can rely on a few observations from the previous chapter. Try printing out some parses using your program from the previous chapter and see what you can notice.</p>
+<p>Now we can think of how to evaluate a particular tree. To do this we can rely on a few observations from the previous chapter. Try printing out some parses using your program from the previous chapter and see what you can notice.</p>
 
 <pre><code data-language='lispy'>lispy> + 1 (* 5 4)
 &gt;:
@@ -75,7 +73,9 @@ printf("First Child Number of children: %i\n", c0->children_num);
 
 <p>If a node is tagged with <code>expr</code>, and has children, we need to look at it&#39;s second child (the first child is always <code>'('</code>) and see which operator it is. Then we need to apply this operator to the evaluation of the remaining children (excluding the final child which is always <code>')'</code>). We should also perform this behaviour at the root node, which is untagged.</p>
 
-<p>To represent numbers we&#39;ll use the C type <code>long</code> which means a <em>long</em> <em>integer</em>. To do our tests and conversions of <code>tag</code> and <code>contents</code> we can use a few new string functions.
+<p>These are actually the only two cases we care about in our evaluation. So if a tree is not a number directly we can assume it is an expression with multiple children we need to iterate over.</p>
+
+<p>To represent numbers we&#39;ll use the C type <code>long</code> which means a <em>long</em> <em>integer</em>. To do our tests and conversions of <code>tag</code> and <code>contents</code> we can make use of a few new string functions.
 
 <table class='table'>
   <tr><td><code>atoi</code></td><td>Converts a string to a <code>long</code>.</td></tr>
@@ -83,11 +83,11 @@ printf("First Child Number of children: %i\n", c0->children_num);
   <tr><td><code>strstr</code></td><td>Takes as input two strings and returns a pointer to the location of the second in the first, or <code>0</code> if the second is not a substring of the first.</td></tr>
 </table>
 
-<p>We can use <code>strmp</code> to check if some content is equal to something, and <code>strstr</code> to check if a tag contains a parse rule.</p>
+<p>We can use <code>strcmp</code> to check which operator to use, and <code>strstr</code> to check if a tag contains some parse rule.</p>
 
 <pre><code data-language='c'>long eval(mpc_ast_t* t) {
   
-  /* If tagged as number return it directly. */ 
+  /* If tagged as number return it directly, otherwise expression. */ 
   if (strstr(t->tag, "number")) { return atoi(t->contents); }
   
   /* The operator is always second child. */
@@ -117,14 +117,10 @@ long eval_op(long x, char* op, long y) {
   return 0;
 }</code></pre>
 
-<p>Instead of printing the <em>abstract syntax tree</em> we now want to print the result of the evaluation.</p>
-
-<p>Therefore we need to pass the tree into our <code>eval</code> function and print the result using <code>fprintf</code> and the specifier <code>%li</code> (used for <code>long</code> type).</p>
-
-<p>We still need to remember to delete the output <em>abstract syntax tree</em> after we are done evaluating it.</p>
+<p>Instead of printing the <em>abstract syntax tree</em> we now want to print the result of the evaluation. Therefore we need to pass the tree into our <code>eval</code> function and print the result we get using <code>printf</code> and the specifier <code>%li</code> (used for <code>long</code> type). We still need to remember to delete the output <em>abstract syntax tree</em> after we are done evaluating it.</p>
 
 <pre><code data-language='c'>long result = eval(r.output);
-fprintf(stdout, &quot;%li\n&quot;, result);
+printf(stdout, &quot;%li\n&quot;, result);
 mpc_ast_delete(r.output);</code></pre>
 
 <p>If all of this is successful you should be able to now do some basic maths with your new programming language!</p>
@@ -158,17 +154,14 @@ lispy&gt;</code></pre>
 
 #ifdef _WIN32
 
-static char input[2048];
+static char buffer[2048];
 
 char* readline(char* prompt) {
-  
   fputs("lispy> ", stdout);
-  fgets(input, 2047, stdin);
-    
-  char* cpy = malloc(strlen(input)+1);
-  strcpy(cpy, input);
-  cpy[strlen(cpy)] = '\0';
-  
+  fgets(buffer, 2048, stdin);
+  char* cpy = malloc(strlen(buffer)+1);
+  strcpy(cpy, buffer);
+  cpy[strlen(cpy)-1] = '\0';
   return cpy;
 }
 
@@ -192,7 +185,7 @@ long eval_op(long x, char* op, long y) {
 
 long eval(mpc_ast_t* t) {
   
-  /* If tagged as number return it directly. */ 
+  /* If tagged as number return it directly, otherwise expression. */ 
   if (strstr(t->tag, "number")) { return atoi(t->contents); }
   
   /* The operator is always second child. */
@@ -227,8 +220,8 @@ int main(int argc, char** argv) {
     ",
     Number, Operator, Expr, Lispy);
   
-  fputs("Lispy Version 0.0.0.0.3\n", stdout);
-  fputs("Press Ctrl+c to Exit\n\n", stdout);
+  puts("Lispy Version 0.0.0.0.3");
+  puts("Press Ctrl+c to Exit\n");
   
   while (1) {
   
@@ -236,10 +229,10 @@ int main(int argc, char** argv) {
     add_history(input);
     
     mpc_result_t r;
-    if (mpc_parse("&lt;stdin&gt;", input, Lispy, &r)) {
+    if (mpc_parse("&lt;stdin&gt;", input, Lispy, &amp;r)) {
       
       long result = eval(r.output);
-      fprintf(stdout, "%li\n", result);
+      printf("%li\n", result);
       mpc_ast_delete(r.output);
       
     } else {    

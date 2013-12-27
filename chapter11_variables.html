@@ -10,13 +10,13 @@
 
 <p>Our program now clocks in at around 375 lines of code. We've learnt a lot, and made great progress on the infrastructure of our language.</p>
 
-<p>Already we can do a number of cool things that other languages can't, such as putting code inside of lists. Now it is really time to start adding in <em>features</em> to our language. The first one of these is going to be <em>variables</em>.</p>
+<p>Already we can do a number of cool things that other languages can't, such as putting code inside of lists. Now is the time to start adding in the <em>features</em> which will make our language practical. The first one of these is going to be <em>variables</em>.</p>
 
 <p>They're called variables, but it is a misleading name, because our variables wont vary. Our variables are <em>immutable</em> meaning they cannot change. Everything in our language so far has acted like it is <em>immutable</em>. When we evaluate an expression we have almost always deleted the old thing and return a new thing. In some cases it just so happens that it is easier for us to reuse the data from the old thing to build the new thing, but conceptually it is a good way to think about how our language works internally.</p>
 
-<p>So actually our variables are simply a way of <em>naming things</em>. They let us assign a <em>name</em> to a <em>value</em>, and then let us get a copy of that value later on when we need it.</p>
+<p>So actually our variables are simply a way of <em>naming values</em>. They let us assign a <em>name</em> to a <em>value</em>, and then let us get a copy of that value later on when we need it.</p>
 
-<p>To allow for <em>naming things</em> we need to create a structure which stores the name and value of everything named in our program. We call this the <em>environment</em>. When we start a new interactive prompt we want to create a new environment to go along with it, in which each new bit of input is evaluated. Then we can store and recall variables as we program.</p>
+<p>To allow for <em>naming values</em> we need to create a structure which stores the name and value of everything named in our program. We call this the <em>environment</em>. When we start a new interactive prompt we want to create a new environment to go along with it, in which each new bit of input is evaluated. Then we can store and recall variables as we program.</p>
 
 <div class="alert alert-warning">
   <p><strong>What happens when we re-assign a name to something new? Isn't this like mutability?</strong></p>
@@ -514,17 +514,14 @@ lispy&gt;</code></pre>
 
 #ifdef _WIN32
 
-static char input[2048];
+static char buffer[2048];
 
 char* readline(char* prompt) {
-  
   fputs("lispy&gt; ", stdout);
-  fgets(input, 2047, stdin);
-    
-  char* cpy = malloc(strlen(input)+1);
-  strcpy(cpy, input);
-  cpy[strlen(cpy)] = '\0';
-  
+  fgets(buffer, 2048, stdin);
+  char* cpy = malloc(strlen(buffer)+1);
+  strcpy(cpy, buffer);
+  cpy[strlen(cpy)-1] = '\0';
   return cpy;
 }
 
@@ -1049,8 +1046,8 @@ int main(int argc, char** argv) {
     ",
     Number, Symbol, Sexpr, Qexpr, Expr, Lispy);
   
-  fputs("Lispy Version 0.0.0.0.4\n", stdout);
-  fputs("Press Ctrl+c to Exit\n\n", stdout);
+  puts("Lispy Version 0.0.0.0.7");
+  puts("Press Ctrl+c to Exit\n");
   
   lenv* e = lenv_new();
   lenv_add_builtins(e);
@@ -1104,8 +1101,8 @@ int main(int argc, char** argv) {
 
 <table class="table" style='table-layout: fixed;'>
   <tr>
-    <td class="text-left"><a href="chapter9_into_lisp"><h4>&lsaquo; Into Lisp</h4></a></td>
+    <td class="text-left"><a href="chapter10_q_expressions"><h4>&lsaquo; Q-Expressions</h4></a></td>
     <td class="text-center"><a href="contents"><h4>&bull; Contents &bull;</h4></a></td>
-    <td class="text-right"><a href="chapter11_functions"><h4>Functions &rsaquo;</h4></a></td>
+    <td class="text-right"><a href="chapter12_functions"><h4>Functions &rsaquo;</h4></a></td>
   </tr>
 </table>

@@ -5,12 +5,11 @@
 static char buffer[2048];
 
 char* readline(char* prompt) {
-  
   fputs("lispy> ", stdout);
-  fgets(buffer, 2047, stdin);
+  fgets(buffer, 2048, stdin);
   char* cpy = malloc(strlen(buffer)+1);
   strcpy(cpy, buffer);
-  cpy[strlen(cpy)] = '\0';
+  cpy[strlen(cpy)-1] = '\0';
   return cpy;
 }
 
@@ -41,8 +40,8 @@ int main(int argc, char** argv) {
     ",
     Number, Operator, Expr, Lispy);
   
-  fputs("Lispy Version 0.0.0.0.2\n", stdout);
-  fputs("Press Ctrl+c to Exit\n\n", stdout);
+  puts("Lispy Version 0.0.0.0.2");
+  puts("Press Ctrl+c to Exit\n");
   
   while (1) {
   

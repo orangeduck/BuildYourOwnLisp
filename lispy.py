@@ -12,7 +12,7 @@ header = """
     <!-- Bootstrap -->
     <link href="static/css/bootstrap.css" rel="stylesheet">
     <link href="static/css/code.css" rel="stylesheet">
-    <link rel="icon" type="image/png" href="/static/img/favicon.png?v=2" />
+    <link rel="icon" type="image/png" href="/static/img/favicon.png" />
     
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -46,12 +46,13 @@ footer = """
 """
 
 pages = [
-    'splash.html', 'contents.html', 'credits.html',
-    'chapter1_introduction.html',       'chapter2_installation.html',      'chapter3_basics.html',
-    'chapter4_interactive_prompt.html', 'chapter5_languages.html',         'chapter6_parsing.html',
-    'chapter7_evaluation.html',         'chapter8_error_handling.html',    'chapter9_into_lisp.html', 
-    'chapter10_variables.html',         'chapter11_functions.html',        'chapter12_conditionals.html',
-    'chapter13_strings.html',           'chapter14_standard_library.html', 'chapter15_future_work.html'
+    'splash.html',                      'contents.html',                'credits.html',
+    'chapter1_introduction.html',       'chapter2_installation.html',   'chapter3_basics.html',
+    'chapter4_interactive_prompt.html', 'chapter5_languages.html',      'chapter6_parsing.html',
+    'chapter7_evaluation.html',         'chapter8_error_handling.html', 'chapter9_s_expressions.html', 
+    'chapter10_q_expressions.html',     'chapter11_variables.html',     'chapter12_functions.html',        
+    'chapter13_conditionals.html',      'chapter14_strings.html',       'chapter15_standard_library.html',
+    'chapter16_future_work.html'
 ]
 
 app = Flask(__name__)
@@ -64,7 +65,7 @@ app_auth = BasicAuth(app)
 @app.route('/<page>')
 def route_page(page):
     page = page + '.html'
-    if not page in pages: return '404!'
+    if not page in pages: page = '404.html'
     path = os.path.join(os.path.split(__file__)[0], page)
     contents = open(path, 'r').read()
     contents = header + contents + footer

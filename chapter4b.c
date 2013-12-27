@@ -4,25 +4,23 @@
 #include <editline/readline.h>
 #include <editline/history.h>
 
-static char input[2048];
-
 int main(int argc, char** argv) {
    
   /* Print Version and Exit Information */
-  fputs("Lispy Version 0.0.0.0.1\n", stdout);
-  fputs("Press Ctrl+c to Exit\n\n", stdout);
+  puts("Lispy Version 0.0.0.0.1");
+  puts("Press Ctrl+c to Exit\n");
    
   /* In a never ending loop */
   while (1) {
     
-    /* Output our prompt an get input */
+    /* Output our prompt and get input */
     char* input = readline("lispy> ");
     
     /* Add input to history */
     add_history(input);
     
     /* Echo input back to user */    
-    fprintf(stdout, "No you're a %s\n", input);
+    printf("No you're a %s\n", input);
 
     /* Free retrived input */
     free(input);

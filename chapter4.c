@@ -6,18 +6,15 @@
 
 #include <string.h>
 
-static char input[2048];
+static char buffer[2048];
 
 /* Fake readline function */
 char* readline(char* prompt) {
-  
   fputs("lispy> ", stdout);
-  fgets(input, 2047, stdin);
-    
-  char* cpy = malloc(strlen(input)+1);
-  strcpy(cpy, input);
-  cpy[strlen(cpy)] = '\0';
-  
+  fgets(buffer, 2048, stdin);
+  char* cpy = malloc(strlen(buffer)+1);
+  strcpy(cpy, buffer);
+  cpy[strlen(cpy)-1] = '\0';
   return cpy;
 }
 
@@ -34,8 +31,8 @@ void add_history(char* unused) {}
 
 int main(int argc, char** argv) {
    
-  fputs("Lispy Version 0.0.0.0.1\n", stdout);
-  fputs("Press Ctrl+c to Exit\n\n", stdout);
+  puts("Lispy Version 0.0.0.0.1");
+  puts("Press Ctrl+c to Exit\n");
    
   while (1) {
     
@@ -43,7 +40,7 @@ int main(int argc, char** argv) {
     char* input = readline("lispy> ");
     add_history(input);
 
-    fprintf(stdout, "No you're a %s\n", input);
+    printf("No you're a %s\n", input);
     free(input);
     
   }

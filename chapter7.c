@@ -2,17 +2,14 @@
 
 #ifdef _WIN32
 
-static char input[2048];
+static char buffer[2048];
 
 char* readline(char* prompt) {
-  
   fputs("lispy> ", stdout);
-  fgets(input, 2047, stdin);
-    
-  char* cpy = malloc(strlen(input)+1);
-  strcpy(cpy, input);
-  cpy[strlen(cpy)] = '\0';
-  
+  fgets(buffer, 2048, stdin);
+  char* cpy = malloc(strlen(buffer)+1);
+  strcpy(cpy, buffer);
+  cpy[strlen(cpy)-1] = '\0';
   return cpy;
 }
 
@@ -36,7 +33,7 @@ long eval_op(long x, char* op, long y) {
 
 long eval(mpc_ast_t* t) {
   
-  /* If tagged as number return it directly. */ 
+  /* If tagged as number return it directly, otherwise expression. */ 
   if (strstr(t->tag, "number")) { return atoi(t->contents); }
   
   /* The operator is always second child. */
@@ -71,8 +68,8 @@ int main(int argc, char** argv) {
     ",
     Number, Operator, Expr, Lispy);
   
-  fputs("Lispy Version 0.0.0.0.3\n", stdout);
-  fputs("Press Ctrl+c to Exit\n\n", stdout);
+  puts("Lispy Version 0.0.0.0.3");
+  puts("Press Ctrl+c to Exit\n");
   
   while (1) {
   
@@ -83,7 +80,7 @@ int main(int argc, char** argv) {
     if (mpc_parse("<stdin>", input, Lispy, &r)) {
       
       long result = eval(r.output);
-      fprintf(stdout, "%li\n", result);
+      printf("%li\n", result);
       mpc_ast_delete(r.output);
       
     } else {    
