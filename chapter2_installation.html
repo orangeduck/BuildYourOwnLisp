@@ -31,7 +31,7 @@
 
 <p>On <strong>Mac</strong> you can install a compiler by downloading and installing the latest version of XCode from Apple. If you are unsure of how to do this you can search online for "installing xcode" and follow any advice shown. You may also have to install the XCode command line tools in a separate package. Search online for instructions on this.</p>
 
-<p>On <strong>windows</strong> you can install a compiler by downloading and installing <a href="http://www.mingw.org/">MinGW</a>. This will allow you to run a compiler from the command line <code>cmd.exe</code>. It will also install other programs which make <code>cmd.exe</code> act like a Linux command line. It will create programs ending in the <code>.exe</code> suffix which should be run by using their full name without the leading <code>./</code>.</p>
+<p>On <strong>Windows</strong> you can install a compiler by downloading and installing <a href="http://www.mingw.org/">MinGW</a>. If you use the installer at some point it may present you with a list of possible packages. Make sure you pick at least <code>mingw32-base</code> and <code>msys-base</code>. Once installed you need to add the compiler and other programs to your system <code>PATH</code> variable. To do this follow <a href="http://www.computerhope.com/issues/ch000549.htm">these instructions</a> appending the directory <code>;C:\MinGW\bin</code> to the variable called <code>PATH</code>. You can create this variable if it doesn't exist. You may need to restart <code>cmd.exe</code> for the changes to take effect. These will allow you to run a compiler from the command line <code>cmd.exe</code>. It will also install other programs which make <code>cmd.exe</code> act like a Linux command line.</p>
 
 
 <h3>Testing the Compiler</h3>
@@ -40,9 +40,9 @@
 
 <pre><code>cc --version</code></pre>
 
-<p>If you get something like the following echoed back, then your C compiler is installed correctly and you are ready to go!</p>
+<p>If you get anything like the following echoed back then your C compiler is installed correctly and you are ready to go!</p>
 
-<pre><code>cc (rubenvb-4.7.2-release) 4.7.2
+<pre><code>cc (GCC) 4.7.2
 ...</code></pre>
 
 <h2>Hello World</h2> <hr/>
