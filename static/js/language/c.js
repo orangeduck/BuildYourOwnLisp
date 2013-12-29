@@ -12,7 +12,7 @@ Rainbow.extend('c', [
     },
     {
         'name': 'keyword',
-        'pattern': /\b(for|while|do|goto|typedef|return|if|else|switch|case|break|continue|NULL)\b/g
+        'pattern': /\b(for|while|do|goto|typedef|return|if|else|switch|case|break|continue|NULL|sizeof)\b/g
     },
     {
         'name': 'keyword.operator',

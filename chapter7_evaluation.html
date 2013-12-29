@@ -3,7 +3,7 @@
 
 <h2>Abstract Syntax Tree</h2> <hr/>
 
-<p>Now we can read input, and we have it structured in a nice tree structure, but we are still unable to evaluate it. In this chapter we add the code that evaluates this tree and actually performs computations.</p>
+<p>Now we can read input, and we have it structured internally as a tree structure, but we are still unable to evaluate it. In this chapter we add the code that evaluates this tree and actually performs computations.</p>
 
 <p>This tree is called an <em>Abstract Sytnax Tree</em> and it represents the structure of the program as input by the user. At the leaves of this tree is the actual data to be processed - numbers and operators. At the branches is the information on how to traverse and evaluate it.</p>
 
@@ -33,9 +33,9 @@
 
 <p>The type of the <code>children</code> field is <code>mpc_ast_t**</code>. This is a double pointer type we've not seen before. This will be explained in greater detail in later chapters. For now you can think of it as a list of the child nodes of the this tree or branch.</p>
 
-<p>We can access a child node, by accessing this field using array notation. This is done by writing the field name <code>children</code> and suffixing it with square brackets containing the index of the child to access. For example to access the first child of the node we can use <code>children[0]</code>.</p>
+<p>We can access a child node, by accessing this field using array notation. This is done by writing the field name <code>children</code> and suffixing it with square brackets containing the index of the child to access. For example to access the first child of the node we can use <code>children[0]</code>. Notice that C counts its array indices from <code>0</code>.</p>
 
-<p>Because the type <code>mpc_ast_t*</code> is a pointer type there is a slightly different syntax to access its fields. We need to use an arrow <code>-></code> instead of a dot <code>.</code>. There is no fundamental reason for this switch in operators, so for now just remember that field access in pointer tyles uses an arrow.</p>
+<p>Because the type <code>mpc_ast_t*</code> is a pointer type there is a slightly different syntax to access its fields. We need to use an arrow <code>-></code> instead of a dot <code>.</code>. There is no fundamental reason for this switch in operators, so for now just remember that field access of pointer types uses an arrow.</p>
 
 <pre><code data-language='c'>/* Load AST from output */
 mpc_ast_t* a = r.output;
@@ -71,11 +71,11 @@ printf("First Child Number of children: %i\n", c0->children_num);
 
 <p>One obseravation is that if a node is tagged with <code>number</code> it is always a number, and we just need to convert the contents to an integer and return it.</p>
 
-<p>If a node is tagged with <code>expr</code>, and has children, we need to look at it&#39;s second child (the first child is always <code>'('</code>) and see which operator it is. Then we need to apply this operator to the evaluation of the remaining children (excluding the final child which is always <code>')'</code>). We should also perform this behaviour at the root node, which is untagged.</p>
+<p>If a node is tagged with <code>expr</code>, and has children, we need to look at it&#39;s second child (the first child is always <code>'('</code>) and see which operator it is. Then we need to apply this operator to the evaluation of the remaining children, excluding the final child which is always <code>')'</code>. We should also perform this behaviour at the root node also, which is untagged.</p>
 
 <p>These are actually the only two cases we care about in our evaluation. So if a tree is not a number directly we can assume it is an expression with multiple children we need to iterate over.</p>
 
-<p>To represent numbers we&#39;ll use the C type <code>long</code> which means a <em>long</em> <em>integer</em>. To do our tests and conversions of <code>tag</code> and <code>contents</code> we can make use of a few new string functions.
+<p>To represent numbers we&#39;ll use the C type <code>long</code> which means a <em>long</em> <em>integer</em>. The <code>tag</code> and <code>contents</code> fields are <em>strings</em>, so to make use of them, we are going to have to learn a couple of string function.
 
 <table class='table'>
   <tr><td><code>atoi</code></td><td>Converts a string to a <code>long</code>.</td></tr>
@@ -257,11 +257,13 @@ int main(int argc, char** argv) {
 
 <div class="alert alert-warning">
   <ul class="list-group">
-    <li class="list-group-item">&bull; Add support for the operator <code>%</code>, which returns the remainder of division. For example <code>% 10 6</code> evaluates to <code>4</code>.</li>
-    <li class="list-group-item">&bull; Add support for the operator <code>^</code>, which raises one number to another. For example <code>^ 4 2</code> evaluates to <code>16</code>.</li>
-    <li class="list-group-item">&bull; Add support for the function <code>min</code>, which returns the smallest number. For example <code>min 1 5 3</code> evaluates to <code>1</code>.</li>
-    <li class="list-group-item">&bull; Add support for the function <code>max</code>, which returns the biggest number. For example <code>max 1 5 3</code> evaluates to <code>5</code>.</li>
-    <li class="list-group-item">&bull; Change the minus operator <code>-</code> so that when it recieves one argument it negates it.</li>
+    <li class="list-group-item">&rsaquo; How would I use <code>strstr</code> to see if a node was tagged as an <code>expr</code>.</li>
+    <li class="list-group-item">&rsaquo; How would I use <code>strcmp</code> to see if a node had the contents <code>'('</code> or <code>')'</code>.</li>
+    <li class="list-group-item">&rsaquo; Add support for the operator <code>%</code>, which returns the remainder of division. For example <code>% 10 6</code> evaluates to <code>4</code>.</li>
+    <li class="list-group-item">&rsaquo; Add support for the operator <code>^</code>, which raises one number to another. For example <code>^ 4 2</code> evaluates to <code>16</code>.</li>
+    <li class="list-group-item">&rsaquo; Add support for the function <code>min</code>, which returns the smallest number. For example <code>min 1 5 3</code> evaluates to <code>1</code>.</li>
+    <li class="list-group-item">&rsaquo; Add support for the function <code>max</code>, which returns the biggest number. For example <code>max 1 5 3</code> evaluates to <code>5</code>.</li>
+    <li class="list-group-item">&rsaquo; Change the minus operator <code>-</code> so that when it recieves one argument it negates it.</li>
   </ul>
 </div>
 

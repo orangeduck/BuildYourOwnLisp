@@ -3,6 +3,16 @@ import os
 from flask import Flask
 from flask.ext.basicauth import BasicAuth
 
+pages = [
+    'splash.html',                      'contents.html',                'credits.html',
+    'chapter1_introduction.html',       'chapter2_installation.html',   'chapter3_basics.html',
+    'chapter4_interactive_prompt.html', 'chapter5_languages.html',      'chapter6_parsing.html',
+    'chapter7_evaluation.html',         'chapter8_error_handling.html', 'chapter9_s_expressions.html', 
+    'chapter10_q_expressions.html',     'chapter11_variables.html',     'chapter12_functions.html',        
+    'chapter13_conditionals.html',      'chapter14_strings.html',       'chapter15_standard_library.html',
+    'chapter16_future_work.html'
+]
+
 header = """
 <!DOCTYPE html>
 <html>
@@ -44,16 +54,6 @@ footer = """
   </body>
 </html>
 """
-
-pages = [
-    'splash.html',                      'contents.html',                'credits.html',
-    'chapter1_introduction.html',       'chapter2_installation.html',   'chapter3_basics.html',
-    'chapter4_interactive_prompt.html', 'chapter5_languages.html',      'chapter6_parsing.html',
-    'chapter7_evaluation.html',         'chapter8_error_handling.html', 'chapter9_s_expressions.html', 
-    'chapter10_q_expressions.html',     'chapter11_variables.html',     'chapter12_functions.html',        
-    'chapter13_conditionals.html',      'chapter14_strings.html',       'chapter15_standard_library.html',
-    'chapter16_future_work.html'
-]
 
 app = Flask(__name__)
 app.config['BASIC_AUTH_USERNAME'] = 'byol'

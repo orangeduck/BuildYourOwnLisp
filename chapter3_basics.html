@@ -36,13 +36,13 @@
 
 <h2>Variables</h2> <hr/>
 
-<p>Variables in C are bits of data which we give a name to. Every variable in C has an explicit <em>type</em>. These are either defined by ourselves or built into C. We declare a new variable by writing the name of the type, followed by the name of the variable, and optionally setting it to some value using <code>=</code>.</p>
+<p>Variables in C are bits of data which we give a name to. Every variable in C has an explicit <em>type</em>. These are either defined by ourselves or built into C. We declare a new variable by writing the name of the type, followed by the name of the variable, and optionally setting it to some value using <code>=</code>. We terminate all statements in C with a semicolon <code>;</code>.</p>
 
 <p>To create a new <code>int</code> called <code>count</code> we could write the following...</p> 
 
 <pre><code data-language='c'>int count;</code></pre>
 
-<p>or to declare it and set the value...</p>
+<p>Or to declare it and set the value...</p>
 
 <pre><code data-language='c'>int count = 10;</code></pre>
 
@@ -116,15 +116,20 @@ float length = sqrt(p.x * p.x + p.y * p.y);
 
 <p>To perform code under some condition we can use the <code>if</code> statement. It is written as <code>if</code> followed by some condition in parenthesis, followed by the code to execute in curly brackets. An <code>if</code> statement can be followed by an optional <code>else</code> followed by more statements in curly brackets. The code in these brackets will be performed in the case the conditional statement is false.</p>
 
+<p>We can test for multiple conditions using the logical operators <code>||</code> for <em>or</em>, and <code>&&</code> for <em>and</em>.</p>
+
 <p>Inside a conditional statement's parenthesis any value that is not <code>0</code> will evaluate to true. This is important to remember as many conditions use this to check things implicitly.</p>
 
-<p>If we wished to check if an <code>int</code> called <code>x</code> was greater than <code>10</code> we would write the following.</p> 
+<p>If we wished to check if an <code>int</code> called <code>x</code> was greater than <code>10</code> and less then <code>100</code>, we would write the following.</p> 
 
-<pre><code data-language='c'>if (x > 10) {
-  puts("x is greater than ten!");
+<pre><code data-language='c'>if (x > 10 && x < 100) {
+  puts("x is greater than ten and less than one hundred!");
 } else {
-  puts("x is less than or equal to ten!");
+  puts("x is either less than eleven or greater than ninety-nine!");
 }</code></pre>
+
+
+
 
 
 <h2>Loops</h2> <hr/>
@@ -159,8 +164,12 @@ while (i > 0) {
     <li class="list-group-item">&rsaquo; What other mathematical operators are there other than <em>add</em> <code>+</code>, and <em>subtract</em> <code>-</code>?</li>
     <li class="list-group-item">&rsaquo; What does the <code>typedef</code> keyword do exactly?</li>
     <li class="list-group-item">&rsaquo; What native types are there other than the ones listed?</li>
+    <li class="list-group-item">&rsaquo; What is the <code>++</code> operator, and how does it work?</li>
+    <li class="list-group-item">&rsaquo; What is the <code>+=</code> operator, and how does it work?</li>
     <li class="list-group-item">&rsaquo; What is the <code>do</code> loop, and how does it work?</li>
     <li class="list-group-item">&rsaquo; What is the <code>switch</code> statement and how does it work?</li>
+    <li class="list-group-item">&rsaquo; What is the <code>break</code> keyword and what does it do?</li>
+    <li class="list-group-item">&rsaquo; What is the <code>continue</code> keyword and what does it do?</li>
   </ul>
 </div>
 

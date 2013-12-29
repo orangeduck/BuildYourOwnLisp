@@ -3,25 +3,18 @@
 
 <h2>Lists and Lisps</h2> <hr/>
 
-<p>In the first chapter I mentioned that a Lisp is a language based around lists, but so far we've not seen many of them. In this chapter we rectify that, by finally converting our program into something that could vaguely be called a Lisp. The final result of this chapter wont differ in behaviour from the previous chapter. We are just going to spend time changing how it works internally. This is called <em>refactoring</em> and it will make our life a lot easier later on. Just because we wont have a discernable result at the end doesn't mean we've not done good work. Like preparation for a meal, just because we're not plating up doesn't mean we're not part of the process. Sometimes the anticipation is even better than the food!
-
-<p>In this chapter we'll change our program to convert the <em>abstract syntax tree</em> input into an internal list structure we can store, and then evaluate in a single step.</p>
-
-
-<h2>Types of list</h2> <hr/>
-
-<p>In our Lisp there are going to be two types of list.</p>
-
 <div class='pull-right alert alert-warning' style="margin: 15px; text-align: center;">
   <img src="/static/img/lisp.png" alt="lisp"/>
   <p><small>ALL CAPS &bull; SO RIGHT YET SO WRONG.</small></p>
 </div>
 
-<p>The first we are going to call S-Expressions (standing for <em>symbolic expression</em>). These are what we're going to add in this chapter. They are lists of numbers, symbols, other Expressions that are surrounded in parenthesis <code>()</code>. These are the guys we have used to so far. We will use them to read in and store the actual structure of the program. But most importantly they have the particular evaluation behaviour typical of Lisps. That to evaluate an S-Expression we look at the first item in the list, and take this to be the operator. We then look at all the other items in the list, and take these as operands to get the result.</p>
+<p>In the first chapter I mentioned that a Lisp is a language based around lists, but so far we've not seen many of them. In this chapter we rectify that, by finally converting our program into something that could vaguely be called a Lisp.</p>
 
-<p>The second type of list we are going to call Q-Expressions (standing for <em>quoted expression</em>). These are what we're going to add in the next chapter. Again these are lists of numbers, symbols, and other Expressions, but these are going to be put in curly brackets <code>{}</code>. Q-Expressions are used to store lists of things we don&#39;t want to be evaluated. This could be numbers, functions, S-Expressions or anything else. When encountered by the evaluation function Q-Expressions are <em>not</em> evaluated like S-Expressions - they are left exactly as they are. This unique behaviour makes them ideal for a whole number of purposes we will encounter later.</p>
+<p>The final result of this chapter will only differ slightly in behaviour from the previous chapter. Instead we are going to spend time changing how it works internally. This is called <em>refactoring</em> and it will make our life a lot easier later on. Like preparation for a meal, just because we're not putting food onto plates it doesn't mean we're wasting time. And sometimes the anticipation is even better than the meal!
 
-<p>Just using these two types of list, a handful of operators, and a bit of creativity, we can build a programming language that is incredibly powerful and flexible.</p>
+<p>In this chapter we'll change our program to convert the <em>abstract syntax tree</em> input into an internal list structure we can store, and then evaluate in a single step.</p>
+
+<p>This internal list structure, built up recursively of numbers, symbols, and other expressions inside parenthesis, is called an S-Expression. This stands for <em>symbolic expressions</em>, and we will extend our <code>lval</code> to be able to represent it. The evaluation behaviour of S-Expressions is the behaviour typical of Lisps we are used to so far. To evaluate an S-Expression we look at the first item in the list, and take this to be the operator. We then look at all the other items in the list, and take these as operands to get the result.</p>
 
 
 <h2>Pointers</h2> <hr/>
@@ -34,11 +27,11 @@
 
 <p>A second problem is this. When we define a <code>struct</code>, it is always a fixed size. It has a limited number of fields, and each of these fields must be a type which itself is limited in size. If I want to call a function with just <em>a list of things</em>, where the number of <em>things</em> varies from call to call, clearly I can't use a <code>struct</code> to do this.</p>
 
-<p>To get around these issues the developers of C (or y'know...someone) came up with a clever idea. They imagined computer memory as a single huge list of bytes. In this list each byte can be given a global index, or position in this list. The first byte is numbered 0, the second is 1, etc.</p>
+<p>To get around these issues the developers of C (or y'know...someone) came up with a clever idea. They imagined computer memory as a single huge list of bytes. In this list each byte can be given a global index, or position in this list. The first byte is numbered <code>0</code>, the second is <code>1</code>, etc.</p>
 
-<p>In this case, all the data in the computer, including the structs and variables used in the currently running program, start at some index in this huge list. If, rather than copying the data itself to a function, we instead copy a number representing the <em>index</em> at where this data starts, any amount of data can be accessed, just by copying a single number.</p>
+<p>In this case, all the data in the computer, including the structs and variables used in the currently running program, start at some index in this huge list. If, rather than copying the data itself to a function, we instead copy a number representing the <em>index</em> at where this data starts, the function being called can look up any amount of data it wants.</p>
 
-<p>By using <em>addresses</em> instead of the actual data, we can allow a function to access and modify some location in memory without having to make a copy of it. Functions can also use pointers to do other cool stuff, like output data to some address given as input.</p>
+<p>By using <em>addresses</em> instead of the actual data, we can allow a function to access and modify some location in memory without having to copy any data. Functions can also use pointers to do other cool stuff, like output data to some address given as input.</p>
 
 <p>Because the total size of computer memory is fixed, the number of bytes needed to represent an address always the same. But if we keep track of it, the number of bytes the address points to can grown and shrink. This means we can create a variable sized data-structure and still sort of <em>pass</em> it to a function, which can inspect and modify it.</p>
 
@@ -46,16 +39,16 @@
 
 <p>We can declare pointer types by suffixing existing ones with the the <code>*</code> character. We've seen some examples of this already with <code>mpc_parser_t*</code> or <code>mpc_ast_t*</code>.</p>
 
-<p>To create a pointer to some data we have already, we need to get an index, or <em>address</em>. To get the address of a some data we use the <code>&amp;</code> operator. Again you&#39;ve seen this before when we passed in a pointer to <code>mpc_parse</code> so it would output into our <code>mpc_result_t</code>.</p>
+<p>To create a pointer to some data we have, we need to get its index, or <em>address</em>. To get the address of a some data we use the <em>address of</em> operator <code>&amp;</code>. Again you&#39;ve seen this before when we passed in a pointer to <code>mpc_parse</code> so it would output into our <code>mpc_result_t</code>.</p>
 
-<p>Finally to get the data at an address, called <em>dereferencing</em>, we use the <code>*</code> operator on the left hand size of a variable. To get the data at the field of a pointer to a struct we use the arrow <code>-&gt;</code>, as seen in chapter 7.</p>
+<p>Finally to get the data at an address, called <em>dereferencing</em>, we use the <code>*</code> operator on the left hand size of a variable. To get the data at the field of a pointer to a struct we use the arrow <code>-&gt;</code>. This you saw in chapter 7.</p>
 
 
 <h2>The Stack &amp; The Heap</h2> <hr/>
 
 <p>I said that memory can be visualized of as one long list of bytes. Actually it is better to imagine it split into two sections. These sections are called <em>The Stack</em> and <em>The Heap</em>.</p>
 
-<p>Some of you may have heard tales of these mysterious locations, such as <em>"the stack grows down but the heap grows up"</em>, or <em>"there can be many stacks, but only one heap"</em>. Ignore this gossip spread by Perl and Java programmers. In C there is no such mythology. The stack and the heap are common as mud, and well known.</p>
+<p>Some of you may have heard tales of these mysterious locations, such as <em>"the stack grows down but the heap grows up"</em>, or <em>"there can be many stacks, but only one heap"</em>. Ignore this gossip spread by Perl and Java programmers. In C there is no such mythology. The stack and the heap are common as mud, and we deal with them directly.</p>
 
 <h3>The Stack</h3>
 
@@ -84,23 +77,9 @@
 <p>I Imagine the Heap like a huge U-Store-It. We can call up the reception with <code>malloc</code> and request a number of boxes. With these boxes we can do what we want, and we know they will persist no matter how messy the building site gets. We can take things to and from the U-Store-It and the building site. It is useful to store materials and large objects which we only need to retrieve once in a while. The only problem is we need to remember to call the receptionist again with <code>free</code> when we are done. Otherwise soon we&#39;ll have requested all the boxes, have no space, and run up a huge bill.</p>
 
 
-<h2>Adding Features</h2> <hr/>
-
-<p>You'll notice in the following chapters that adding new features to our language usually consists of a number of steps.</p>
-
-<table class='table'>
-  <tr><td><strong>Step 0</strong></td><td>Add any new syntax for this data type to the <code>mpc</code> language grammar.</td></tr>
-  <tr><td><strong>Step 1</strong></td><td>Add a new type of possible data to the <code>lval</code> struct.</td></tr>
-  <tr><td><strong>Step 2</strong></td><td>Add new functions for reading in this data type from the <em>abstract syntax tree</em>.</td></tr>
-  <tr><td><strong>Step 3</strong></td><td>Add new functions for evaluating and manipulating this data type.</td></tr>
-</table>
-
-<p>This is exactly what we're going to do now for our S-Expression data type.</p>
-
-
 <h2>Parsing Expressions</h2> <hr/>
 
-<p>The syntax for S-Expressions is really easy. It simply conists of a number of other Expressions between parenthesis, where an Expression can be a number, operator, or other S-Expression . We can modify our existing parse rules to reflect this. We also change our <code>operator</code> rule to now be called <code>symbol</code>. This is in anticipation of adding more operators and functions later.</p>
+<p>Because we're now thinking in S-Expressions, and not Polish Notation we need to update our parser. The syntax for S-Expressions is simple. It is just a number of other Expressions between parenthesis, where an Expression can be a Number, Operator, or other S-Expression . We can modify our existing parse rules to reflect this. We also are going to rename our <code>operator</code> rule to <code>symbol</code>. This is in anticipation of adding more operators, variables and functions later.</p>
 
 <pre><code data-language='c'>mpc_parser_t* Number = mpc_new(&quot;number&quot;);
 mpc_parser_t* Symbol = mpc_new(&quot;symbol&quot;);
@@ -125,17 +104,17 @@ mpca_lang(
 
 <h2>Expression Structure</h2> <hr/>
 
-<p>We need a way to store these S-Expressions internally as <code>lval</code>. Therefore we're going to add two new types to the <code>type</code> enum. The first new type is <em>symbol</em>, which we're going to use to represent operators such as <code>+</code>, and later on variables and functions. The second new type is for <em>S-Expressions</em>.</p>
+<p>We need a way to store S-Expressions internally as <code>lval</code>. This means we'll also need to store internally <em>Symbols</em> and <em>Numbers</em>. We're going to add two new <code>lval</code> types to the enumeration. The first new type is <code>LVAL_SYM</code>, which we're going to use to represent operators such as <code>+</code>. The second new type is <code>LVAL_SEXPR</code> which we're going to use to represent S-Expressions.</p>
 
 <pre><code data-language='c'>/* Add SYM and SEXPR as possible lval types. */
 enum { LVAL_ERR, LVAL_NUM, LVAL_SYM, LVAL_SEXPR };
 </code></pre>
 
-<p>We're also going to change how some of these are represented in the data structure. To represent symbols we're going to use a string. S-Expressions are variable length <em>lists</em> of other expressions, which we are themselves <code>lval</code>. As we learnt at the beginning of this chapter we can't create variable length structures, which means we are going to need to use a pointer. At the location pointed to by this pointer we are going to store a list of <code>lval*</code> (pointers to the other <code>lval</code>). Therefore our field should be a double pointer type <code>lval**</code>. This is read as a <em>pointer to pointers</em>.</p>
+<p>S-Expressions are variable length <em>lists</em> of other S-Expressions. As we learnt at the beginning of this chapter we can't create variable length structs, so we are going to need to use a pointer. We are going to create a pointer field <code>cell</code> which points to a location where we store a list of <code>lval*</code>. These are pointers to the other individual <code>lval</code>. Our field should therefore be a double pointer type <code>lval**</code>. A <em>pointer to <code>lval</code> pointers</em>.</p>
 
-<p>We will also need to keep track of how many <code>lval*</code> are in this list, so we add an extra field in the <code>lval</code> struct called <code>count</code> to record this.</p> 
+<p>We will also need to keep track of how many <code>lval*</code> are in this list, so we add an extra field <code>count</code> to record this.</p> 
 
-<p>Finally we will change the representation of an <em>error</em> from an <code>int</code> to a string. This means we can store a unique error message rather than just an error code. This will make our error reporting better and more flexible, and we can get rid of the original error <code>enum</code>. Our updated <code>lval</code> struct looks like this.</p>
+<p>To represent symbols we're going to use a string. We're also going to change the representation of errors to a string. This means we can store a unique error message rather than just an error code. This will make our error reporting better and more flexible, and we can get rid of the original error <code>enum</code>. Our updated <code>lval</code> struct looks like this.</p>
 
 <pre><code data-language='c'>typedef struct lval {
   int type;
@@ -146,18 +125,23 @@ enum { LVAL_ERR, LVAL_NUM, LVAL_SYM, LVAL_SEXPR };
   char* err;
   char* sym;
 
-  /* Record Number of other &quot;lvals&quot; and a pointer to a list of &quot;lval&quot; pointers */
+  /* Count and Pointer to a list of &quot;lval*&quot; */
   int count;
   struct lval** cell;
 
 } lval;</code></pre>
 
+<div class="alert alert-warning">
+  <p><strong>What is that <code>struct</code> keyword doing there?</strong></p>
+
+  <p>Our new definition of <code>lval</code> needs to contain a reference to itself. This means we have to slightly change how it is defined. Before we open the curly brackets we can put the name of the struct, and then refer to this inside using <code>struct lval</code>. Even though a struct can refer to its own type, it must only contain pointers to its own type, not its own type directly. Otherwise the size of the struct would refer to itself, and grow infinite in size when you tried to calculate it!</p>
+</div>
 
 <h2>Constructors &amp; Destructors</h2> <hr/>
 
-<p>Now when we build an <code>lval</code> it may contain pointers to other things that have been allocated on the heap. This means we need to be careful. Whenever we are done with this <code>lval</code> we will also need to delete the things it points to on he heap. We will have to make a rule to ourselves. Whenever we free the memory allocated for an <code>lval</code>, we also free all the things it points to.</p>
+<p>We can change our <code>lval</code> construction functions to return pointers to an <code>lval</code>, rather than one directly. This will make keeping track of <code>lval</code> variables easier. For this we need to use <code>malloc</code> with the <code>sizeof</code> function to allocate enough space for the <code>lval</code> struct, and then to fill in the fields with the relevant information using the arrow operator <code>-&gt;</code>.</p>
 
-<p>We can change our <code>lval</code> construction functions to return pointers to an <code>lval</code>, rather than one directly. This will make keeping track of <code>lval</code> easier. For this we need to use <code>malloc</code> to allocate enough space for the <code>lval</code> struct, and then to fill in the fields with the relevant information using this arrow operator <code>-&gt;</code>.</p>
+<p>When we construct an <code>lval</code> its fields may contain pointers to other things that have been allocated on the heap. This means we need to be careful. Whenever we are done with an <code>lval</code> we also need to delete the things it points to on the heap. We will have to make a rule to ourselves. Whenever we free the memory allocated for an <code>lval</code>, we also free all the things it points to.</p>
 
 <pre><code data-language='c'>/* Construct a pointer to a new Number lval */ 
 lval* lval_num(long x) {
@@ -233,15 +217,13 @@ lval* lval_sexpr(void) {
     
 <h2>Reading Expressions</h2> <hr/>
 
-<p>We are going to use S-Expressions to represent our inputs before we evaluate them. First we are going to <em>read</em> in the program and construct an <code>lval*</code> that represents it all. Then we are going to <em>evaluate</em> this Expression to get the result of our program. This first stage should convert the <em>abstract syntax tree</em> into an S-Expression, and the second stage should evaluate this S-Expression using our normal lisp rules.</p>
+<p>First we are going to <em>read</em> in the program and construct an <code>lval*</code> that represents it all. Then we are going to <em>evaluate</em> this <code>lval*</code> to get the result of our program. This first stage should convert the <em>abstract syntax tree</em> into an S-Expression, and the second stage should evaluate this S-Expression using our normal Lisp rules.</p>
 
-<p>To complete the first stage we can recursively parse each node of the tree, and construct different <code>lval</code> types depending on the <code>tag</code> and <code>contents</code> fields of the node.</p>
+<p>To complete the first stage we can recursively look at each node of the tree, and construct different <code>lval*</code> types depending on the <code>tag</code> and <code>contents</code> fields of the node.</p>
 
-<p>If the given node is a <code>number</code> or <code>symbol</code>, then it returns an <code>lval*</code> for those types. If it is the <code>root</code> or an <code>sexpr</code>, then it creates an empty S-Expression and slowly adds each valid sub-expression contained in the tree.</p>
+<p>If the given node is tagged as a <code>number</code> or <code>symbol</code>, then we use our constructors to return an <code>lval*</code> directly for those types. If the given node is the <code>root</code>, or an <code>sexpr</code>, then we create an empty S-Expression <code>lval</code> and slowly add each valid sub-expression contained in the tree.</p>
 
-<p>We look at each child of the tree and append it to the <code>lval*</code> using a new function <code>lval_add</code>.
-
-<p>The <code>lval_add</code> function increases the count of the Expression list by one, and then uses <code>realloc</code> to reallocate the amount of space required by <code>v-&gt;cell</code>. This new space can be used to store the extra <code>lval*</code> required so it sets the final value of the list with <code>v-&gt;cell[v-&gt;count-1]</code> to the value <code>lval* x</code> passed in. It returns the newly modified <code>lval*</code>.</p>
+<p>To add an element to an S-Expression we can create a function <code>lval_add</code>. This function increases the count of the Expression list by one, and then uses <code>realloc</code> to reallocate the amount of space required by <code>v-&gt;cell</code>. This new space can be used to store the extra <code>lval*</code> required. Using this new space it sets the final value of the list with <code>v-&gt;cell[v-&gt;count-1]</code> to the value <code>lval* x</code> passed in.</p>
 
 <pre><code class="lang-c">lval* lval_add(lval* v, lval* x) {
   v-&gt;count++;
@@ -282,7 +264,9 @@ lval* lval_read(mpc_ast_t* t) {
 
 <h2>Printing Expressions</h2> <hr/>
 
-<p>We are so close to trying out all of our new changes! The final step is to modify our print function to take <code>lval*</code> and to be able to print out S-Expressions. With this we can see how the <em>reading</em> phase works by printing out the resulting S-Expression. To print out S-Expressions we can create another function that loops over all the sub-expressions of an expression and prints these individually separated by spaces.</p>
+<p>We are so close to trying out all of our new changes! We need to modify our print function to print out S-Expressions types. Using this we can double check that the <em>reading</em> phase is working correctly by printing out the S-Expressions we read in and verifying they match those we input.</p>
+
+<p>To print out S-Expressions we can create another function that loops over all the sub-expressions of an expression and prints these individually separated by spaces, just like how they are input.</p>
 
 <pre><code class="lang-c">void lval_expr_print(lval* v, char open, char close) {
   putchar(open);
@@ -311,11 +295,11 @@ void lval_print(lval* v) {
 void lval_println(lval* v) { lval_print(v); putchar(&#39;\n&#39;); }</code></pre>
 
 <div class="alert alert-warning">
-  <p><strong>I can't declare those functions because they depend on each other.</strong></p>
+  <p><strong>I can't declare these functions because they call each other.</strong></p>
 
-  <p>The <code>lval_expr_print</code> function relies on the <code>lval_print</code> function being delcared before it and vice-versa. There is no way we can order them in the source file to resolve this. Instead we need to <em>forward declare</em> one of them. This is declaring a function without giving it a body. It lets other functions call it, while allowing you to define it again later on. To do this simply write the function definition but intead of the body put a semicolon <code>;</code>. In this example we should put <code>void lval_print(lval* v);</code> somewhere in the source file before <code>lval_expr_print</code>.</p>
+  <p>The <code>lval_expr_print</code> function calls the <code>lval_print</code> function and vice-versa. There is no way we can order them in the source file to resolve this dependancy. Instead we need to <em>forward declare</em> one of them. This is declaring a function without giving it a body. It lets other functions call it, while allowing you to define it properly later on. To write a forward declaration write the function definition but intead of the body put a semicolon <code>;</code>. In this example we should put <code>void lval_print(lval* v);</code> somewhere in the source file before <code>lval_expr_print</code>.</p>
   
-  <p>You'll definitely run into this later, so try to remember it!</p>
+  <p>You'll definitely run into this later, and I wont always alert you about it, so try to remember how to fix it!</p>
 </div>
 
 
@@ -338,15 +322,15 @@ lispy&gt;</code></pre>
 
 <h2>Evaluating Expressions</h2> <hr/>
 
-<p>The behaviour of our evaluation function is the same as before. We need to adapt it to dealing with <code>lval*</code> and our more relaxed definition of what constitutes an expression. We can think of our evaluation function as a kind of transformer. It takes in some <code>lval*</code> and transforms it in some way to some new <code>lval*</code>. In some cases it can just return exactly the same thing. In other cases it may modify the input <code>lval*</code> and the return it. In many cases it will delete the input, and return something completely different. If this is the case we must always remember to delete the input <code>lval*</code> if we are going to return something new.</p>
+<p>The behaviour of our evaluation function is largely the same as before. We need to adapt it to deal with <code>lval*</code> and our more relaxed definition of what constitutes an expression. We can think of our evaluation function as a kind of transformer. It takes in some <code>lval*</code> and transforms it in some way to some new <code>lval*</code>. In some cases it can just return exactly the same thing. In other cases it may modify the input <code>lval*</code> and the return it. In many cases it will delete the input, and return something completely different. If we are going to return something new we must always remember to delete the <code>lval*</code> we get as input.</p>
 
 <p>For S-Expressions we first evaluate all the children of the S-Expression. If any of these children are errors we return the first error we encounter using a function we'll define later called <code>lval_take</code>.</p>
 
-<p>We then check for the empty expression. If the S-Expression has no children we just return it directly. This corrisponds to the construct <code>()</code>. We also check for a single expression. This is an expression with only one child such as <code>(5)</code>. In this case we return the single expression contained within the parenthesis. If neither of these are the case we know we have a valid expression with more than one child.</p>
+<p>If the S-Expression has no children we just return it directly. This corrisponds to the empty expression, denoted by <code>()</code>. We also check for single expressions. These are expressions with only one child such as <code>(5)</code>. In this case we return the single expression contained within the parenthesis.</p>
 
-<p>We extract the first element of the expression using a function we'll define later called <code>lval_pop</code>. We then need to check this is a <em>symbol</em> and not a <em>number</em>. If it is a symbol we check what symbol it is and find a result using <code>builtin_op</code>, otherwise we delete the first element and the values passed into the evaluation function, returning an error.</p>
+<p>If neither of these are the case we know we have a valid expression with more than one child. In this case we separate the first element of the expression using a function we'll define later called <code>lval_pop</code>. We then check this is a <em>symbol</em> and not anything else. If it is a symbol we check what symbol it is, and pass it, and the arguments, to a function <code>builtin_op</code> which does our calculations. If the first element is not a symbol we delete it, and the values passed into the evaluation function, returning an error.</p>
 
-<p>To evaluation all other types we just return them directly back.</p>
+<p>To evaluate all other types we just return them directly back.</p>
 
 <pre><code class="lang-c">lval* lval_eval_sexpr(lval* v) {
 
@@ -366,7 +350,7 @@ lispy&gt;</code></pre>
   /* Single Expression */
   if (v-&gt;count == 1) { return lval_take(v, 0); }
 
-  /* Ensure First Element is Symbol Start */
+  /* Ensure First Element is Symbol */
   lval* f = lval_pop(v, 0);
   if (f-&gt;type != LVAL_SYM) {
     lval_del(f); lval_del(v);
@@ -386,11 +370,11 @@ lval* lval_eval(lval* v) {
   return v;
 }</code></pre>
 
-<p>There are two functions we've used and not defined in the above code. These are <code>lval_pop</code> and <code>lval_take</code>.</p>
+<p>There are two functions we've used and not defined in the above code. These are <code>lval_pop</code> and <code>lval_take</code>. These are general purpose functions for manipulating S-Expression <code>lval</code> types which we'll make use of here and in the future.</p>
 
-<p>The <code>lval_pop</code> function extracts a single element from an Expression at index <code>i</code> and shifts the rest of the list backward so that it no longer contains that <code>lval*</code>. It then returns the extracted value. Notice that it doesn't delete the input list. It is like taking an element from a list and popping it out. This means both the element popped and the old list need to be deleted at some point with <code>lval_del</code>.</p>
+<p>The <code>lval_pop</code> function extracts a single element from an S-Expression at index <code>i</code> and shifts the rest of the list backward so that it no longer contains that <code>lval*</code>. It then returns the extracted value. Notice that it doesn't delete the input list. It is like taking an element from a list and popping it out, leaving what remains. This means both the element popped and the old list need to be deleted at some point with <code>lval_del</code>.</p>
 
-<p>The <code>lval_take</code> function is similar to <code>lval_pop</code> but it deletes the list it has extracted the item from. This is like taking an item from the list and deleting the rest. It is a slight variation on <code>lval_pop</code> but it makes our code easier to read in some places.</p>
+<p>The <code>lval_take</code> function is similar to <code>lval_pop</code> but it deletes the list it has extracted the element from. This is like taking an element from the list and deleting the rest. It is a slight variation on <code>lval_pop</code> but it makes our code easier to read in some places. Unlike <code>lval_pop</code>, only the expression you take from the list needs to be deleted by <code>lval_del</code>.</p>
 
 <pre><code class="lang-c">lval* lval_pop(lval* v, int i) {
   /* Find the item at &quot;i&quot; */
@@ -413,11 +397,11 @@ lval* lval_take(lval* v, int i) {
   return x;
 }</code></pre>
 
-<p>We also need to define an evaluation function for operators called <code>builtin_op</code>. This is like the <code>eval_op</code> function used in our previous chapter but modified to take a single <code>lval*</code> representing a list of all the arguments to operate on. It needs to do some more rigirous error checking. If any of the inputs are a non-number <code>lval*</code> we need to return an error.</p>
+<p>We also need to define the evaluation function <code>builtin_op</code>. This is like the <code>eval_op</code> function used in our previous chapter but modified to take a single <code>lval*</code> representing a list of all the arguments to operate on. It needs to do some more rigirous error checking. If any of the inputs are a non-number <code>lval*</code> we need to return an error.</p>
 
-<p>So first it checks that all the sub-expression in the input are numbers. It then pops the first sub-expression to start. If there are no more sub-expressions and the operator is subtraction it performs unary negation on this first number. This makes expressions such as <code>(- 5)</code> evaluate correctly.</p>
+<p>First it checks that all the arguments input are numbers. It then pops the first argument to start. If there are no more sub-expressions and the operator is subtraction it performs unary negation on this first number. This makes expressions such as <code>(- 5)</code> evaluate correctly.</p>
 
-<p>If there are more sub-expressions it constantly pops the next one from the list and performs arithmetic depending on which operator we're meant to be using. If a zero is encountered on division it deletes the temporary <code>lval*</code> <code>x</code>, <code>y</code>, and the argument list <code>a</code>, and returns an error.</p>
+<p>If there are more arguments it constantly pops the next one from the list and performs arithmetic depending on which operator we're meant to be using. If a zero is encountered on division it deletes the temporary <code>x</code>, <code>y</code>, and the argument list <code>a</code>, and returns an error.</p>
 
 <p>If there have been no errors the input arguments are deleted and the new expression returned.</p>
 
@@ -536,7 +520,7 @@ typedef struct lval {
   char* err;
   char* sym;
   
-  /* Record Number of other "lvals" and a pointer to a list of "lval" pointers */
+  /* Count and Pointer to a list of &quot;lval*&quot; */
   int count;
   struct lval** cell;
   
@@ -722,7 +706,7 @@ lval* lval_eval_sexpr(lval* v) {
   /* Single Expression */
   if (v-&gt;count == 1) { return lval_take(v, 0); }
   
-  /* Ensure First Element is Symbol Start */
+  /* Ensure First Element is Symbol */
   lval* f = lval_pop(v, 0);
   if (f-&gt;type != LVAL_SYM) {
     lval_del(f); lval_del(v);
@@ -828,8 +812,14 @@ int main(int argc, char** argv) {
 
 <div class="alert alert-warning">
   <ul class="list-group">
-    <li class="list-group-item">&bull; TODO</li>
-    <li class="list-group-item">&bull; TODO</li>
+    <li class="list-group-item">&rsaquo; Give an example of a variable in our program that lives on <em>The Stack</em>.</li>
+    <li class="list-group-item">&rsaquo; Give an example of a variable in our program that points to <em>The Heap</em>.</li>
+    <li class="list-group-item">&rsaquo; What does the <code>strcpy</code> function do?</li>
+    <li class="list-group-item">&rsaquo; What does the <code>realloc</code> function do?</li>
+    <li class="list-group-item">&rsaquo; What does the <code>memmove</code> function do?</li>
+    <li class="list-group-item">&rsaquo; How does <code>memmove</code> differ from <code>memcpy</code>?</li>
+    <li class="list-group-item">&rsaquo; Extend parsing and evauation to support the remainder operator <code>%</code>.</li>
+    <li class="list-group-item">&rsaquo; Extend parsing and evauation to support decimal types using a <code>double</code> field.</li>
   </ul>
 </div>
 

@@ -1,11 +1,23 @@
 <h1>Q-Expressions <small>&bull; Chapter 10</small></h1>
 
+<h2>Adding Features</h2> <hr/>
+
+<p>You'll notice in the following chapters that adding new features to our language usually consists of a number of steps. These are exactly what we're going to do in this chapter, for a new data type called a Q-Expression.</p>
+
+<table class='table'>
+  <tr><td><strong>Step 0</strong></td><td>Add any new syntax for this data type to the <code>mpc</code> language grammar.</td></tr>
+  <tr><td><strong>Step 1</strong></td><td>Add a new type of possible data to the <code>lval</code> struct.</td></tr>
+  <tr><td><strong>Step 2</strong></td><td>Add new functions for reading in this data type from the <em>abstract syntax tree</em>.</td></tr>
+  <tr><td><strong>Step 3</strong></td><td>Add new functions for evaluating and manipulating this data type.</td></tr>
+</table>
 
 <h2>Quoted Expressions</h2> <hr/>
 
-<p>In this chapter we will implement a new type of Lisp Value called a Q-Expression. This stands for <em>quoted expression</em> and is a type of Lisp expression that is not evaluated by the standard Lisp mechanics. When encountered by the evaluation function this expression is is left exactly as it is. This makes it ideal for a number of purposes. With it we can store and manipulate other Lisp values such as numbers, symbols, or other S-Expressions themselves! After we have added Q-Expressions we are going to implement a concise set of operators to manipulate them. Like the arithmetic operators these prove fundamental in how we think about, and play with, expressions.</p>
+<p>In this chapter we'll implement a new type of Lisp Value called a Q-Expression.</p>
 
-<p>Instead of parenthesis Q-Expressions are surrounded by curly brackets <code>{}</code>. The first step to implementing Q-Expressions to our language will be to update the grammar. We can do this as follows.</p>
+<pThis stands for <em>quoted expression</em>, and is a type of Lisp Expression that is not evaluated by the standard Lisp mechanics. When encountered by the evaluation function this expression is is left exactly as it is. This makes it ideal for a number of purposes. We can use it to store and manipulate other Lisp values such as numbers, symbols, or other S-Expressions themselves! After we have added Q-Expressions we are going to implement a concise set of operators to manipulate them. Like the arithmetic operators these will prove fundamental in how we think about and play with expressions.</p>
+
+<p>The syntax for Q-Expressions is very similar to that of S-Expressions. The only difference is that instead of parenthesis <code>()</code> Q-Expressions are surrounded by curly brackets <code>{}</code>. We can add this to our grammar as follows.</p>
 
 <pre><code data-language='c'>mpc_parser_t* Number = mpc_new(&quot;number&quot;);
 mpc_parser_t* Symbol = mpc_new(&quot;symbol&quot;);
@@ -25,18 +37,18 @@ mpca_lang(
   &quot;,
   Number, Symbol, Sexpr, Qexpr, Expr, Lispy);</code></pre>
 
-<p>And we can also update our cleanup function to deal with the new rule we've added.</p>
+<p>We also must remember to update our cleanup function to deal with the new rule we've added.</p>
 
 <pre><code data-language='c'>mpc_cleanup(6, Number, Symbol, Sexpr, Qexpr, Expr, Lispy);</code></pre>
 
 
 <h2>Reading Q-Expressions</h2> <hr/>
 
-<p>We need to update our <code>lval</code> type to support Q-Expressions. We're going to reuse our S-Expression data fields for Q-Expressions, but need to add a separate type to the enumeration.</p>
+<p>Because Q-Expressions are so similar S-Expressions much of their internal behaviour is going to be the same. We're going to reuse our S-Expression data fields to represent Q-Expressions, but we still need to add a separate type to the enumeration.</p>
 
 <pre><code data-language='C'>enum { LVAL_ERR, LVAL_NUM, LVAL_SYM, LVAL_SEXPR, LVAL_QEXPR };</code></pre>
 
-<p>We can also add a constructor for this variation. This follows the same pattern as S-Expression construction.</p>
+<p>We can also add a constructor for this variation.</p>
 
 <pre><code data-language='C'>/* A pointer to a new empty Qexpr lval */
 lval* lval_qexpr(void) {
@@ -48,7 +60,7 @@ lval* lval_qexpr(void) {
 }
 </code></pre>
 
-<p>To print and delete Q-Expressions we also do essentially the same thing as with S-Expressions. We can add the relevant lines to our functions for printing and deletion as follows.</p>
+<p>To print and delete Q-Expressions we do essentially the same thing as with S-Expressions. We can add the relevant lines to our functions for printing and deletion as follows.</p>
 
 <pre><code data-language='C'>void lval_del(lval* v) {
 
@@ -82,11 +94,11 @@ lval* lval_qexpr(void) {
 }
 </code></pre>
 
-<p>Using these we can update our reading function <code>lval_read</code> to be able to parse in Q-Expressions. As we can use all the normal S-Expression functions on Q-Expressions we just need to add a special case for constructing an empty Q-Expression just below where we detect and create empty S-Expressions.</p>
+<p>Using these simple changes we can update our reading function <code>lval_read</code> to be able to read in in Q-Expressions. Because we reused all the S-Expression data fields we can also reuse all of the functions for S-Expressions such as <code>lval_add</code> on our Q-Expression type. We just need to add a special case for constructing an empty Q-Expression just below where we detect and create empty S-Expressions.</p>
 
 <pre><code data-language='C'>if (strstr(t->tag, "qexpr"))  { x = lval_qexpr(); }</code></pre>
 
-<p>With this our Q-Expressions should be ready to try. Compile and run the program and ensure they work.</p>
+<p>Because there is no special method of evaluating Q-Expressions, we don't need to edit any of the evaluation functions. Our Q-Expressions should be ready to try. Compile and run the program. See if you can type them into the prompt.</p>
 
 <pre><code data-language='lispy'>lispy&gt; {1 2 3 4}
 {1 2 3 4}
@@ -99,15 +111,15 @@ lispy&gt;
 
 <h2>Builtin Functions</h2> <hr/>
 
-<p>We can read in Q-Expressions but they are still somewhat useless. We need some way to manipulate them from the prompt.</p>
+<p>We can read in Q-Expressions but they are still somewhat useless. We need some way to manipulate them.</p>
 
-<p>For this we can make some built-in operators, just like <code>+</code>, <code>-</code>, <code>*</code> and <code>/</code>, but to work on our list type. Choosing a concise set of these is important. If we implement a few fundamental operations then we can use these to define new operations without adding extra C code. There are a few ways to pick these fundamental operators but I've chosen ive that will allow us to do everything we need. They are defined as follows.</p>
+<p>For this we can make some built-in operators, just like <code>+</code>, <code>-</code>, <code>*</code> and <code>/</code>, but to work on our list type. Choosing a concise set of these is important. If we implement a few fundamental operations then we can use these to define new operations without adding extra C code. There are a few ways to pick these fundamental operators but I've chosen a set that will allow us to do everything we need. They are defined as follows.</p>
 
 <table class='table'>
   <tr><td><code>list</code></td><td>Takes one or more Expressions and returns a new Q-Expression containing the arguments</td></tr>
   <tr><td><code>head</code></td><td>Takes a Q-Expression and returns a Q-Expression consisting only of the first element</td></tr>
   <tr><td><code>tail</code></td><td>Takes a Q-Expression and returns a Q-Expression without the first element of the original</td></tr>
-  <tr><td><code>join</code></td><td>Takes one or more Q-Expressions and return a Q-Expression of them conjoined together</td></tr>
+  <tr><td><code>join</code></td><td>Takes one or more Q-Expressions and returns a Q-Expression of them conjoined together</td></tr>
   <tr><td><code>eval</code></td><td>Takes a Q-Expression and evaluates it as if it were a S-Expression</td></tr>
 </table>
 
@@ -128,13 +140,15 @@ lispy&gt;
   
 <h2>First Attempt</h2> <hr/>
 
-<p>Our builtin functions should have the same interface as <code>builtin_op</code>. That means the arguments should be bundled into an S-Expression which the function must evaluate and delete, while returning a new value.</p>
+<p>Our builtin functions should have the same interface as <code>builtin_op</code>. That means the arguments should be bundled into an S-Expression which the function must use and then delete. They should return a new <code>lval*</code> as a result of the evalation.</p>
 
-<p>The actual functionality of taking the head or tail of an Q-Expression shouldn't be too hard for us. We can make use of soem of the existing functions we've defined such as <code>lval_take</code>. But like <code>builtin_op</code> we also need to check that the inputs we get are valid. There are a number of conditions that are invalid for the <code>head</code> and <code>tail</code> functions. First of all we must ensure they are only passed a single argument, and that that argument is a Q-Expression. Then we need to ensure that this Q-Expression isn't empty and actually has some sub-expressions.</p>
+<p>The actual functionality of taking the head or tail of an Q-Expression shouldn't be too hard for us. We can make use of the existing functions we've defined for S-Expressions such as <code>lval_take</code> and <code>lval_pop</code>. But like <code>builtin_op</code> we also need to check that the inputs we get are valid.</p>
 
-<p>The <code>head</code> function can then take the first argument and repeatedly pop and delete the item at index <code>1</code> until there is only one item left in the list.</p>
+<p>Lets take a look at <code>head</code> and <code>tail</code> first. These functions have a number of conditions under which they can't act. First of all we must ensure they are only passed a single argument, and that that argument is a Q-Expression. Then we need to ensure that this Q-Expression isn't empty and actually has some elements.</p>
 
-<p>The <code>tail</code> function is even more simple. It can take the first argument and pop and delete the item at index <code>0</code>, leaving the tail remaining. An initial attempt at these functions might look like this.</p>
+<p>The <code>head</code> function can then take the first argument, and repeatedly pop and delete the item at index <code>1</code> until there is nothing else left in the list.</p>
+
+<p>The <code>tail</code> function is even more simple. It can take the first argument, and pop and delete the item at index <code>0</code>, leaving the tail remaining. An initial attempt at these functions might look like this.</p>
 
 <pre><code class="lang-c">lval* builtin_head(lval* a) {
   /* Check Error Conditions */
@@ -194,23 +208,23 @@ lval* builtin_tail(lval* a) {
   <p><small>Strawberry &bull; A delicious macro.</small></p>
 </div>
 
-<p>These <code>head</code> and <code>tail</code> functions do the correct thing, but the code is a bit of a mess. One method we can use to clean it up is to use a <em>Macro</em>.</p>
+<p>These <code>head</code> and <code>tail</code> functions do the correct thing, but the code is a bit of a mess. There is so much error checking that the functionality is hard to see. One method we can use to clean it up is to use a <em>Macro</em>.</p>
 
-<p>A Macro is a <em>preprocessor</em> statement for creating function-like-things that are evaluated before the program is compiled. It can be used for many different things including what we need to do here, clean up code.</p>
+<p>A Macro is a <em>preprocessor</em> statement for creating function-like-things that are evaluated before the program is compiled. It can be used for many different things, one of which is what we need to do here, clean up code.</p>
 
-<p>Macros work by taking some arguments (which can be almost anything), and copying and pasting them into some given pattern. By changing the pattern or the arguments we can change what different code is generated by the Macro. To define macros we use the <code>#define</code> preprocessor directive. After this directive is given the name of the macro, followed by the argument names in parenthesis. After this the pattern is specified, to declare what code should be generated for the given arguments.</p>
+<p>Macros work by taking some arguments (which can be almost anything), and copying and pasting them into some given pattern. By changing the pattern or the arguments we can change what different code is generated by the Macro. To define macros we use the <code>#define</code> preprocessor directive. After this we write the name of the macro, followed by the argument names in parenthesis. After this the pattern is specified, to declare what code should be generated for the given arguments.</p>
 
-<p>We can design a macro to help with our error conditions called <code>LASSERT</code>. Macros are typeically given names in all caps to help distinguish them from normal C functions. This macro take in three arguments <code>args</code>, <code>cond</code> and <code>err</code>. It then generates code as shown on the right hand side, but with these variables pasted in at the locations where they are named.</p>
+<p>We can design a macro to help with our error conditions called <code>LASSERT</code>. Macros are typeically given names in all caps to help distinguish them from normal C functions. This macro take in three arguments <code>args</code>, <code>cond</code> and <code>err</code>. It then generates code as shown on the right hand side, but with these variables pasted in at the locations where they are named. This pattern is a good fit for all of our error conditions.</p>
 
 <pre><code class="lang-c">#define LASSERT(args, cond, err) if (!(cond)) { lval_del(args); return lval_err(err); }</code></pre>
 
 
 <h3>Head &amp; Tail</h3>
 
-<p>We can use this to change how our above function is written, without actually changing what code is generated by the compiler. This makes it much easier to read for the programmer, and saves a bit of typing. This makes defining the error conditions for the rest of our functions a peice of cake too!</p>
+<p>We can use this to change how our above functions are written, without actually changing what code is generated by the compiler. This makes it much easier to read for the programmer, and saves a bit of typing. The rest of the error conditions for our functions should become a peice of cake to write too!</p>
 
 
-<p>Using this our <code>head</code> and <code>tail</code> functions are defined as follows.</p>
+<p>Using this our <code>head</code> and <code>tail</code> functions are defined as follows. Notice how much more clear their real functionaliy is.</p>
 
 <pre><code class="lang-c">lval* builtin_head(lval* a) {
   LASSERT(a, (a-&gt;count == 1                 ), &quot;Function &#39;head&#39; passed too many arguments!&quot;);
@@ -254,9 +268,9 @@ lval* builtin_eval(lval* a) {
 
 <h3>Join</h3>
 
-<p>The <code>join</code> function is our final one to define.</p>
+<p>The <code>join</code> function is our final function to define.</p>
 
-<p>It can take multiple arguments, so its structure looks somewhat more like that of <code>builtin_op</code>. First we check that all of the arguments are Q-Expressions and then we join them together one-by-one. To do this we use the function <code>lval_join</code>. This works by repeatedly popping each item from <code>y</code> and adding it to <code>x</code> until <code>y</code> is empty. It then deletes <code>y</code> and returns <code>x</code>.</p>
+<p>Unlike the others it can take multiple arguments, so its structure looks somewhat more like that of <code>builtin_op</code>. First we check that all of the arguments are Q-Expressions and then we join them together one-by-one. To do this we use the function <code>lval_join</code>. This works by repeatedly popping each item from <code>y</code> and adding it to <code>x</code> until <code>y</code> is empty. It then deletes <code>y</code> and returns <code>x</code>.</p>
 
 <pre><code class="lang-c">lval* builtin_join(lval* a) {
 
@@ -714,8 +728,11 @@ int main(int argc, char** argv) {
 
 <div class="alert alert-warning">
   <ul class="list-group">
-    <li class="list-group-item">&bull; Add a builtin function <code>len</code> that returns the length of a list.</li>
-    <li class="list-group-item">&bull; Add a builtin function <code>init</code> that returns all of a list except the final element.</li>
+    <li class="list-group-item">&rsaquo; Create a Macro specifically for testing for the incorrect number of arguments.</li>
+    <li class="list-group-item">&rsaquo; Create a Macro specifically for testing for being called with the empty list.</li>
+    <li class="list-group-item">&rsaquo; Add a builtin function <code>cons</code> that takes a value and a Q-Expression and appends it to the front.</li>
+    <li class="list-group-item">&rsaquo; Add a builtin function <code>len</code> that returns the number of elements in a Q-Expression.</li>
+    <li class="list-group-item">&rsaquo; Add a builtin function <code>init</code> that returns all of a Q-Expression except the final element.</li>
   </ul>
 </div>
 

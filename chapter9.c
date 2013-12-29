@@ -34,7 +34,7 @@ typedef struct lval {
   char* err;
   char* sym;
   
-  /* Record Number of other "lvals" and a pointer to a list of "lval" pointers */
+  /* Count and Pointer to a list of "lval*"; */
   int count;
   struct lval** cell;
   
@@ -220,7 +220,7 @@ lval* lval_eval_sexpr(lval* v) {
   /* Single Expression */
   if (v->count == 1) { return lval_take(v, 0); }
   
-  /* Ensure First Element is Symbol Start */
+  /* Ensure First Element is Symbol */
   lval* f = lval_pop(v, 0);
   if (f->type != LVAL_SYM) {
     lval_del(f); lval_del(v);

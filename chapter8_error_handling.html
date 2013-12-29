@@ -54,7 +54,7 @@ enum { LERR_DIV_ZERO, LERR_BAD_OP, LERR_BAD_NUM };</code></pre>
 
 <h2>Lisp Value Functions</h2> <hr/>
 
-<p>Our <code>lval</code> type is ready to go. Unlike the previous <code>long</code> we have no current method for creating new instances of it. To do this we can declare two functions that construct an <code>lval</code> of either an <em>error</em> type or a <em>number</em> type.</p>
+<p>Our <code>lval</code> type is almost ready to go. Unlike the previous <code>long</code> type we have no current method for creating new instances of it. To do this we can declare two functions that construct an <code>lval</code> of either an <em>error</em> type or a <em>number</em> type.</p>
 
 <pre><code data-language='c'>/* Create a new number type lval */
 lval lval_num(long x) {
@@ -74,11 +74,12 @@ lval lval_err(int x) {
 
 <p>These functions first create an <code>lval</code> called <code>v</code>, and assign the fields before returning it.</p>
 
-<p>We will want to do different behaviour in our functions depending upon the type of the <code>lval</code> they are given. There is a concise way to do this in C using the <code>switch</code> statement. This takes some value and compares it to other known values. When the values are equal it executes the code that follows up until the next <code>break</code> statement.</p>
+<p>Because our <code>lval</code> function can now be one of two things we can no longer just use <code>printf</code> to output it. We will want to do different behaviour depending upon the type of the <code>lval</code> that is given. There is a concise way to do this in C using the <code>switch</code> statement. This takes some value as input and compares it to other known values, known as <em>cases</em>. When the values are equal it executes the code that follows up until the next <code>break</code> statement.</p>
 
-<p>For example we can build a function that can print an <code>lval</code> of any type like this.</p>
+<p>Using this we can build a function that can print an <code>lval</code> of any type like this.</p>
 
-<pre><code data-language='c'>void lval_print(lval v) {
+<pre><code data-language='c'>/* Print an "lval" */
+void lval_print(lval v) {
   switch (v.type) {
     /* In the case the type is a number print it, then &#39;break&#39; out of the switch. */
     case LVAL_NUM: printf(&quot;%li&quot;, v.num); break;
@@ -91,11 +92,10 @@ lval lval_err(int x) {
       if (v.err == LERR_BAD_NUM)  { printf(&quot;Error: Invalid Number!&quot;); }
     break;
   }
-}</code></pre>
+}
 
-<p>We'll also make use of a cheeky function that does the above but appends a newline.</p>
-
-<pre><code data-language='c'>void lval_println(lval v) { lval_print(v); putchar(&#39;\n&#39;); }</code></pre>
+/* Print an "lval" followed by a newline */
+void lval_println(lval v) { lval_print(v); putchar(&#39;\n&#39;); }</code></pre>
 
 
 <h2>Evaluating Errors</h2> <hr/>
@@ -127,7 +127,7 @@ lval lval_err(int x) {
 <div class="alert alert-warning">
   <p><strong>What is that <code>?</code> doing there?</strong></p>
 
-  <p>You'll notice to check if the second argument is zero we use a question mark symbol <code>?</code>, followed by a colon <code>:</code>. This is called the ternary operator, and it allows you to write conditional statements on one line.</p>
+  <p>You'll notice that for division to check if the second argument is zero we use a question mark symbol <code>?</code>, followed by a colon <code>:</code>. This is called the <em>ternary operator</em>, and it allows you to write conditional statements on one line.</p>
 
   <p>It works something like this. <code>&lt;condition&gt; ? &lt;then&gt; : &lt;else&gt;</code>. In other words, if the condition is true it returns what follows the <code>?</code>, otherwise it returns what follows <code>:</code>.</p>
 
@@ -136,7 +136,7 @@ lval lval_err(int x) {
 
 <p>We need to give a similar treatment to our <code>eval</code> function. In this case because we've defined <code>eval_op</code> to robustly handle errors we just need to add the error conditions to our number conversion function.</p>
 
-<p>In this case we us the <code>strtol</code> function to convert from string to <code>long</code>. This lets use check a special variable <code>errno</code> to ensure the conversion goes correctly. This is a more robust way to convert numbers in C.</p>
+<p>In this case we us the <code>strtol</code> function to convert from string to <code>long</code>. This lets use check a special variable <code>errno</code> to ensure the conversion goes correctly. This is a more robust way to convert numbers than our previous method using <code>atoi</code>.</p>
 
 <pre><code data-language='c'>lval eval(mpc_ast_t* t) {
   
@@ -158,13 +158,13 @@ lval lval_err(int x) {
   return x;  
 }</code></pre>
 
-<p>The final small step is to change how we print the result found by our evaluation it to use our newly defined printing function which can print any type of <code>lval</code>.</p>
+<p>The final small step is to change how we print the result found by our evaluation to use our newly defined printing function which can print any type of <code>lval</code>.</p>
 
 <pre><code data-language='c'>lval result = eval(r.output);
 lval_println(result);
 mpc_ast_delete(r.output);</code></pre>
 
-<p>And we are done! Try running this new problem and make sure there are no crashes when dividing by zero!</p>
+<p>And we are done! Try running this new program and make sure there are no crashes when dividing by zero!</p>
 
 <pre><code data-language='lispy'>lispy> / 10 0
 Error: Division By Zero!
@@ -183,9 +183,9 @@ lispy> / 10 2
 
 <p>If this is the case I want to reassure you that you are doing well. If you don't understand the internals it's because I have not explained everything in sufficient depth. This is okay.</p>
 
-<p>To be able to progress and get code to work under these conditions is a key skill in programming, and if you've made it this far it shows you have it.</p>
+<p>To be able to progress and get code to work under these conditions is a really great skill in programming, and if you've made it this far it shows you have it.</p>
 
-<p>In programming we call this <em>plumbing</em>. Roughly speaking this is following instructions to try and tie together a bunch libraries or components, without really understanding how they work internally.</p>
+<p>In programming we call this <em>plumbing</em>. Roughly speaking this is following instructions to try and tie together a bunch libraries or components, without fully understanding how they work internally.</p>
 
 <p>It requires <em>faith</em> and <em>intuition</em>. <em>Faith</em> is required to believe that if the stars align, and every incantation is correctly performed for this magical machine, the right thing really will happen. And <em>intuition</em> is required to work out what has gone wrong, and how to fix things when they don't go as planned.<p>
 
@@ -258,6 +258,7 @@ lval lval_err(int x) {
   return v;
 }
 
+/* Print an "lval" */
 void lval_print(lval v) {
   switch (v.type) {
     /* In the case the type is a number print it, then 'break' out of the switch. */
@@ -273,6 +274,7 @@ void lval_print(lval v) {
   }
 }
 
+/* Print an "lval" followed by a newline */
 void lval_println(lval v) { lval_print(v); putchar('\n'); }
 
 lval eval_op(lval x, char* op, lval y) {
@@ -367,10 +369,13 @@ int main(int argc, char** argv) {
 
 <div class="alert alert-warning">
   <ul class="list-group">
-    <li class="list-group-item">&bull; Can you find out how to give an <code>enum</code> a name?</li>
-    <li class="list-group-item">&bull; Can you find out what the <code>union</code> keyword does?</li>
-    <li class="list-group-item">&bull; Change how <code>lval</code> is defined to use <code>union</code> instead of <code>struct</code>.</li>
-    <li class="list-group-item">&bull; Why would one use a <code>union</code> instead of <code>struct</code>?</li>
+    <li class="list-group-item">&rsaquo; How do you give an <code>enum</code> a name?</li>
+    <li class="list-group-item">&rsaquo; What are <code>union</code> data types and how to they work?</li>
+    <li class="list-group-item">&rsaquo; Can you change how <code>lval</code> is defined to use <code>union</code> instead of <code>struct</code>?</li>
+    <li class="list-group-item">&rsaquo; What are the advantages over using a <code>union</code> instead of <code>struct</code>?</li>
+    <li class="list-group-item">&rsaquo; What are the advantages over using a <code>union</code> instead of <code>struct</code>?</li>
+    <li class="list-group-item">&rsaquo; Extend parsing and evauation to support the remainder operator <code>%</code>.</li>
+    <li class="list-group-item">&rsaquo; Extend parsing and evauation to support decimal types using a <code>double</code> field.</li>
   </ul>
 </div>
 
@@ -379,7 +384,7 @@ int main(int argc, char** argv) {
 
 <table class="table" style='table-layout: fixed;'>
   <tr>
-    <td class="text-left"><a href="chapter7_parsing"><h4>&lsaquo; Evaluation</h4></a></td>
+    <td class="text-left"><a href="chapter7_evaluation"><h4>&lsaquo; Evaluation</h4></a></td>
     <td class="text-center"><a href="contents"><h4>&bull; Contents &bull;</h4></a></td>
     <td class="text-right"><a href="chapter9_s_expressions"><h4>S-Expressions &rsaquo;</h4></a></td>
   </tr>

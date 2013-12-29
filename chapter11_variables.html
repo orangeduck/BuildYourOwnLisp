@@ -8,13 +8,13 @@
   <p><small>Teenage Ninja Turtle &bull; Not Immutable.</small></p>
 </div>
 
-<p>Our program now clocks in at around 375 lines of code. We've learnt a lot, and made great progress on the infrastructure of our language.</p>
+<p>In the previous chapters we've learnt a lot, and made great progress on the infrastructure of our language.</p>
 
 <p>Already we can do a number of cool things that other languages can't, such as putting code inside of lists. Now is the time to start adding in the <em>features</em> which will make our language practical. The first one of these is going to be <em>variables</em>.</p>
 
 <p>They're called variables, but it is a misleading name, because our variables wont vary. Our variables are <em>immutable</em> meaning they cannot change. Everything in our language so far has acted like it is <em>immutable</em>. When we evaluate an expression we have almost always deleted the old thing and return a new thing. In some cases it just so happens that it is easier for us to reuse the data from the old thing to build the new thing, but conceptually it is a good way to think about how our language works internally.</p>
 
-<p>So actually our variables are simply a way of <em>naming values</em>. They let us assign a <em>name</em> to a <em>value</em>, and then let us get a copy of that value later on when we need it.</p>
+<p>So actually our variables are simply a way of <em>naming values</em>. They let us assign a <em>name</em> to a <em>value</em>, and then let us get a copy of that <em>value</em> later on when we need it.</p>
 
 <p>To allow for <em>naming values</em> we need to create a structure which stores the name and value of everything named in our program. We call this the <em>environment</em>. When we start a new interactive prompt we want to create a new environment to go along with it, in which each new bit of input is evaluated. Then we can store and recall variables as we program.</p>
 
@@ -27,7 +27,25 @@
 
 <h2>Symbol Syntax</h2> <hr/>
 
-<p>TODO: Update Symbol Syntax</p>
+<p>Now that we're going to allow for user defined variables we need to update the grammar for symbols to be more flexible. Rather than just our builtin functions it should match any possible valid symbol. Unlike in C, where the name a variable can be given is fairly restrictive, we're going to allow for all sorts of characters in the name of a variable.</p>
+
+<p>We can create a regular expression that expresses the range of characters avaliable as follows <code>/[a-zA-Z0-9_+\\-*\\/\\\\=&lt;&gt;!&amp;]+/</code>. On first glace this looks like we've just bashed our hands in the keyboard. Actually it is a regular expression using a big range specifier <code>[]</code>. Inside these range specifiers special characters lose their meaning, but some of these characters still need to be escaped with backslashes. As these are part of a C string we need to put two back slashes to represent a single backslash character in the input.</p>
+
+<p>This expressions allows for symbols that are constructed of one or more of, the standard C identifier characters <code>a-zA-Z0-9_</code>, the arithmetic operator characters <code>+\\-*\\/</code>, the backslash character <code>\\\\</code>, the comparison operator characters <code>=&lt;&gt;!</code>, or ampersands <code>&amp;</code>.</p>
+
+<p>This will give us all the flexability we need for defining symbols.</p>
+
+<pre><code data-language='C'>mpca_lang(
+  "                                                     \
+    number : /-?[0-9]+/ ;                               \
+    symbol : /[a-zA-Z0-9_+\\-*\\/\\\\=&lt;&gt;!&amp;]+/ ;         \
+    sexpr  : '(' &lt;expr&gt;* ')' ;                          \
+    qexpr  : '{' &lt;expr&gt;* '}' ;                          \
+    expr   : &lt;number&gt; | &lt;symbol&gt; | &lt;sexpr&gt; | &lt;qexpr&gt; ;  \
+    lispy  : /^/ &lt;expr&gt;* /$/ ;                          \
+  ",
+  Number, Symbol, Sexpr, Qexpr, Expr, Lispy);
+</code></pre>
 
 
 <h2>Function Pointers</h2> <hr/>
@@ -36,11 +54,13 @@
 
 <p>Therefore we need a new value to represent functions in our language, which we can return once one of the builtin symbols is encountered. To create this new type of <code>lval</code> we are going to use something called a <em>function pointer</em>.</p>
 
-<p>Function pointers are a great feature of C that lets you store and pass around pointers to functions. It doesn't make sense to edit the data pointed to by these pointers. Instead we use them to call the function they point to, as if it were a normal function, passing in arguments and getting some result back.</p>
+<p>Function pointers are a great feature of C that lets you store and pass around pointers to functions. It doesn't make sense to edit the data pointed to by these pointers. Instead we use them to call the function they point to, as if it were a normal function.</p>
 
-<p>Like normal pointers, function pointers have some type associated with them. This type does not specify the type of the data pointed to. Instead it specifies the type of the function pointed to. This lets the comipiler work out if it has been called with correct arguments.</p>
+<p>Like normal pointers, function pointers have some type associated with them. This type does not specify the type of the data pointed to. Instead it specifies the type of the function pointed to. This lets the comipiler work out if it has been called correctly.</p>
 
-<p>In the previous chapter our builtin functions took a <code>lval*</code> as input and returned a <code>lval*</code> as output. In this chapter the builtin functions will also take a pointer to the environment <code>lenv*</code>. So we can declare a new function pointer type called <code>lbuiltin</code>, for this type of function, like this.</p>
+<p>In the previous chapter our builtin functions took a <code>lval*</code> as input and returned a <code>lval*</code> as output. In this chapter the builtin functions will also take a pointer to the environment <code>lenv*</code> as input.</p>
+
+<p>We can declare a new function pointer type called <code>lbuiltin</code>, for this type of function, like this.</p>
 
 <pre><code data-language='c'>typedef lval*(*lbuiltin)(lenv*, lval*);</code></pre>
 
@@ -53,22 +73,20 @@
   
   <p>Pointer types in C are meant to be written with the star <code>*</code> on the left hand side of the variable name, not the right hand side of the type. For example <code>int *x;</code>. This is because C type syntax works by a kind of weird inferance.</p>
 
-  <p>Instead of reading <em>'Create a new <code>int</code> pointer <code>x</code>'</em>. It is meant to read <em>'Create a new variable where to dereference <code>x</code> results in an <code>int</code>.'</em> Therefore <code>x</code> is infered to be a pointer to an <code>int</code>.</p>
+  <p>Instead of reading <em>"Create a new <code>int</code> pointer <code>x</code>"</em>. It is meant to read <em>"Create a new variable <code>c</code> where to dereference <code>x</code> results in an <code>int</code>."</em> Therefore <code>x</code> is infered to be a pointer to an <code>int</code>.</p>
   
-  <p>This idea is extended to function pointers. We can read the above declaration as follows. <em>'To get an <code>int*</code> dereference <code>builtin</code> and call it with a <code>lenv*</code> and a <code>lval*</code>.'</em> Therefore <code>builtin</code> must be a function pointer that takes an <code>lenv*</code> and a <code>lval*</code> and returns a <code>lval*</code>.</p>
+  <p>This idea is extended to function pointers. We can read the above declaration as follows. <em>"To get an <code>int*</code> dereference <code>builtin</code> and call it with a <code>lenv*</code> and a <code>lval*</code>."</em> Therefore <code>builtin</code> must be a function pointer that takes an <code>lenv*</code> and a <code>lval*</code> and returns a <code>lval*</code>.</p>
 </div>
 
 <h2>Cyclic Types</h2> <hr/>
 
-<p>The <code>lbuiltin</code> type references the <code>lval</code> type and the <code>lenv</code> type. This means it depends on them, and that they should be declared first in the source file.</p>
+<p>The <code>lbuiltin</code> type references the <code>lval</code> type and the <code>lenv</code> type. This means that they should be declared first in the source file.</p>
 
 <p>But we want to make <code>lbuiltin</code> a field in our <code>lval</code> struct so we can create function values. So therefore our <code>lbuiltin</code> declaration must go before our <code>lval</code> declaration. This leads to what is called a cyclic type dependancy, where two types rely on each other.</p>
 
 <p>We've come across this problem before with functions which depend on each other. The solution was to create a <em>forward declaration</em> which declared a function but left the body of it empty.</p>
 
-<p>In C we can do exactly the same with types. First we declare two <code>struct</code> types without a body. Secondly we typedef these to the names <code>lval</code> and <code>lenv</code> so we don't have to wite <code>struct</code> every time we use them.</p>
-
-<p>Then we can define our <code>lbuiltin</code> function pointer type. And finally we can define the body of our <code>lval</code> struct. Now all our type issues are resolved and the compiler wont complain any more.</p>
+<p>In C we can do exactly the same with types. First we declare two <code>struct</code> types without a body. Secondly we typedef these to the names <code>lval</code> and <code>lenv</code>. Then we can define our <code>lbuiltin</code> function pointer type. And finally we can define the body of our <code>lval</code> struct. Now all our type issues are resolved and the compiler wont complain any more.</p>
 
 <pre><code data-language='c'>/* Forward Declarations */
 
@@ -109,15 +127,15 @@ struct lval {
   return v;
 }</code></pre>
 
-<p>In the delete function we don't need to do anything special for function pointers.</p>
+<p>On <strong>deletion</strong> we don't need to do anything special for function pointers.</p>
 
 <pre><code data-language='c'>case LVAL_FUN: break;</code></pre>
 
-<p>In the print function we ca just print out some nominal string.</p>
+<p>On <strong>printing</strong> we can just print out some nominal string.</p>
 
 <pre><code data-language='c'>case LVAL_FUN:   printf("&lt;function&gt;"); break;</code></pre>
 
-<p>We're also going to add a new function for copying an <code>lval</code>. This is going to come in useful when we put things into, and take things out of, the environment. For numbers and functions we can just copy the relevant fields directly. For strings we need to copy using <code>malloc</code> and <code>strcpy</code>. To copy lists we need to allocate the correct amount of space and then copy each sub expression.</p>
+<p>We're also going to add a new function for <strong>copying</strong> an <code>lval</code>. This is going to come in useful when we put things into, and take things out of, the environment. For numbers and functions we can just copy the relevant fields directly. For strings we need to copy using <code>malloc</code> and <code>strcpy</code>. To copy lists we need to allocate the correct amount of space and then copy each element individually.</p>
 
 <pre><code data-language='c'>lval* lval_copy(lval* v) {
   
@@ -151,9 +169,9 @@ struct lval {
 
 <h2>Environment</h2> <hr/>
 
-<p>Our environment structure must encode a list of relationships between names and values. There are many ways to build a structure that can do this sort of thing. We are going to go for the simplest possible method that works well. This is to use two lists of equal length. One is a list of <code>lval*</code>, and the other is a list of <code>char*</code>. Each entry in one list has a corrisponding entry in the other list at the same position.</p>
+<p>Our environment structure must encode a list of relationships between <em>names</em> and <em>values</em>. There are many ways to build a structure that can do this sort of thing. We are going to go for the simplest possible method that works well. This is to use two lists of equal length. One is a list of <code>lval*</code>, and the other is a list of <code>char*</code>. Each entry in one list has a corrisponding entry in the other list at the same position.</p>
 
-<p>We can create a structure in C that does this as follows.</p>
+<p>We've already forward declared our <code>lenv</code> struct, so we can define it as follows.</p>
 
 <pre><code data-language='c'>struct lenv {
   int count;
@@ -161,7 +179,7 @@ struct lval {
   lval** vals;
 };</code></pre>
 
-<p>To start we need some functions to create and delete this structure. These are pretty simple. Creation initialises the struct fields, while deletion iterates over the items in both lists and deletes or frees them.</p>
+<p>We need some functions to create and delete this structure. These are pretty simple. Creation initialises the struct fields, while deletion iterates over the items in both lists and deletes or frees them.</p>
 
 <pre><code data-language='c'>lenv* lenv_new(void) {
   lenv* e = malloc(sizeof(lenv));
@@ -181,13 +199,13 @@ void lenv_del(lenv* e) {
   free(e);
 }</code></pre>
 
-<p>Next we can create two function that gets values from the environment or puts values into it.</p>
+<p>Next we can create two functions that either get values from the environment or put values into it.</p>
 
 <p>To get a value from the environment we loop over all the items in the environment and check if the given symbol matches any of the stored strings. If we find a match we can return a copy of the stored value. If no match is found we should return an error.</p>
 
 <p>The function for putting new variables into the environment is a little bit more complex. First we want to check if a variable with the same name already exists. If this is the case we should replace its value with the new one. To do this we loop over all the existing variables in the environment and check their name. If a match is found we delete the value stored at that location, and store there a copy of the input value.</p>
 
-<p>If existing value is found with that name we need to allocate some more space to put it in. For this we can use <code>realloc</code>, and store a copy of the <code>lval</code> and its name at the newly allocated locations.</p>
+<p>If no existing value is found with that name, we need to allocate some more space to put it in. For this we can use <code>realloc</code>, and store a copy of the <code>lval</code> and its name at the newly allocated locations.</p>
 
 <pre><code data-language='c'>lval* lenv_get(lenv* e, lval* k) {
 
@@ -240,7 +258,7 @@ void lenv_put(lenv* e, lval* k, lval* v) {
   return v;
 }</code></pre>
 
-<p>Because we've added a function type our evaluation of S-Expressions also needs to change. Instead of checking for a symbol type we want to ensure it is a function type. If this condition holds we can call the <code>fun</code> field of the <code>lval</code> using the same notation as standard function calls.</p>
+<p>Because we've added a function type, our evaluation of S-Expressions also needs to change. Instead of checking for a symbol type we want to ensure it is a function type. If this condition holds we can call the <code>fun</code> field of the <code>lval</code> using the same notation as standard function calls.</p>
 
 <pre><code data-language='c'>lval* lval_eval_sexpr(lenv* e, lval* v) {
 
@@ -299,25 +317,28 @@ lenv_add_builtins(e);
 
 while (1) {
 
-  fputs(&quot;lispy&gt; &quot;, stdout);
-  fgets(input, 2047, stdin);
-
+  char* input = readline("lispy&gt; ");
+  add_history(input);
+  
   mpc_result_t r;
-  if (mpc_parse(&quot;&lt;stdin&gt;&quot;, input, Lispy, &amp;r)) {
-
+  if (mpc_parse("&lt;stdin&gt;", input, Lispy, &r)) {
+    
     lval* x = lval_eval(e, lval_read(r.output));
     lval_println(x);
     lval_del(x);
-
+    
     mpc_ast_delete(r.output);
-  } else {
+  } else {    
     mpc_err_print(r.error);
     mpc_err_delete(r.error);
   }
-
+  
+  free(input);
+  
 }
-
-lenv_del(e);</code></pre>
+  
+lenv_del(e);
+</code></pre>
 
 <p>If everything is working correctly we should have a play around in the prompt. Now it should be clear functions are actually a new type of value, not symbols.</p>
 
@@ -342,7 +363,7 @@ lispy&gt;</code></pre>
 
 <p>The only way we can pass around symbols without them being evaluated is to put them between <code>{}</code> in a quoted expression. So we&#39;re going to use this technique for our define function. It will take as input a list of symbols, and a number of other values. It will then assign each of the values to each of the symbols.</p>
 
-<p>This function we create to act like any other builtin. It first checks that the input arguments are the correct types. It then iterates over each symbol and value and puts them into the environment. Unless there is an error, there is no sensible value for this function to return, so for now, on success, we will simply return the empty expression <code>()</code>.</p>
+<p>This function should act like any other builtin. It first checks for error conditions and then performs some command and returns. In this case it first checks that the input arguments are the correct types. It then iterates over each symbol and value and puts them into the environment. If these is an error we can return this, but on success we will return the empty expression <code>()</code>.</p>
 
 <pre><code data-language='c'>lval* builtin_def(lenv* e, lval* a) {
   LASSERT(a, (a-&gt;cell[0]-&gt;type == LVAL_QEXPR), &quot;Function &#39;def&#39; passed incorrect type!&quot;);
@@ -367,7 +388,7 @@ lispy&gt;</code></pre>
   return lval_sexpr();
 }</code></pre>
 
-<p>We need to register this new builtin using our builtin registration function <code>lenv_add_builtins</code>.</p>
+<p>We need to register this new builtin using our builtin function <code>lenv_add_builtins</code>.</p>
 
 <pre><code data-language='c'>/* Variable Functions */
 lenv_add_builtin(e, &quot;def&quot;,  builtin_def);</code></pre>
@@ -1090,9 +1111,9 @@ int main(int argc, char** argv) {
 
 <div class="alert alert-warning">
   <ul class="list-group">
-    <li class="list-group-item">&bull; Create a macro specifically for reporting type erors.</li>
-    <li class="list-group-item">&bull; Create a macro specifically for reporting argument count errors.</li>
-    <li class="list-group-item">&bull; Create an <code>exit</code> function for stopping the prompt and exiting.</li>
+    <li class="list-group-item">&rsaquo; Create a macro specifically for reporting type erors.</li>
+    <li class="list-group-item">&rsaquo; Create a macro specifically for reporting argument count errors.</li>
+    <li class="list-group-item">&rsaquo; Create an <code>exit</code> function for stopping the prompt and exiting.</li>
   </ul>
 </div>
 

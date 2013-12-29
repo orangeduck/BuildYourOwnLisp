@@ -33,7 +33,7 @@
 
 <p><code>mpc</code> is a <em>Parser Combinator</em> library written by yours truely. It is a library that allows you to build <em>parsers</em>, programs that understand and process particular languages. There are many different ways of building parsers, but the nice thing about using a <em>Parser Combinator</em> library is that it lets you build <em>parsers</em> easily, by specifying just the <em>grammar</em> ... sort of.</p>
 
-<p>Many <em>Parser Combinator</em> libraries actually work by letting you write normal code that simply <em>looks like</em> a grammar, not by actually specifying the grammar itself. Often this is the best that can be done, but luckily for us <code>mpc</code> allows for both. It can let us write normal code that just <em>looks like</em> a grammar, or we can use special notation to write a grammar naturally.</p>
+<p>Many <em>Parser Combinator</em> libraries actually work by letting you write normal code that simply <em>looks like</em> a grammar, not by actually specifying a grammar directly. In many situations this is fine, but sometimes it can get clunky and complicated. Luckily for us <code>mpc</code> allows for both methods. It can let us write normal code that just <em>looks like</em> a grammar, or we can use special notation to write a grammar directly.</p>
 
 
 <h2>Coding Grammars</h2> <hr/>
@@ -51,11 +51,11 @@ mpc_parser_t* Flatmate = mpc_or(4,
 mpc_delete(Flatmate);
 </code></pre>
 
-<p>What this code does is create a new parser, which could be used to parse some input. The parser would parse <em>either</em> <code>"Dan"</code>, <code>"Chess"</code>, <code>"Adam"</code> <em>or</em> <code>"Lewis"</code>. These are all the strings that can be successfully recognized by this parser, and so they are considered its <em>language</em>.If you squint your eyes you could attempt to read the first section of the code like it is a weird grammar. It goes like this: "a <em>Flatmate</em> is <code>"Dan"</code> or <code>"Chess"</code> or <code>"Adam"</code> or <code>"Lewis"</code>".</p>
+<p>This code creates a new parser that could be used to read some language. This parser would parse the strings <code>"Dan"</code>, <code>"Chess"</code>, <code>"Adam"</code> <em>or</em> <code>"Lewis"</code>. These are all the strings that can be successfully recognized by this parser, and so they are considered its <em>language</em>. If you squint your eyes you could attempt to read the code like it is a weird grammar. It goes like this. "A <em>Flatmate</em> is <code>"Dan"</code> or <code>"Chess"</code> or <code>"Adam"</code> or <code>"Lewis"</code>".</p>
 
 <p>We can built a more complicated parser by referencing existing ones. In the next example the parser <code>Greet</code> parses <code>&quot;Hello&quot;</code> followed by a <code>Flatmate</code> (<em>either</em> <code>"Dan"</code>, <code>"Chess"</code>, <code>"Adam"</code> <em>or</em> <code>"Lewis"</code>), and concatinates these two results together using the function <code>mpcf_strfold</code>.</p>
 
-<p>The parser <code>Greetings</code> then expands on this by recognizing many (zero or more) occurrences of <code>Greet</code> parser and concatinating them with the function <code>mpcf_strfold</code>.</p>
+<p>The parser <code>Greetings</code> then expands on this by recognizing many (zero or more) occurrences of <code>Greet</code> parser and concatinates them together with the function <code>mpcf_strfold</code>.</p>
 
 <pre><code data-language='c'>mpc_parser_t* Greet = mpc_and(2, mpcf_strfold,
   mpc_sym(&quot;Hello&quot;),
@@ -64,22 +64,22 @@ mpc_delete(Flatmate);
 
 mpc_parser_t* Greetings = mpc_many(mpcf_strfold, Greet);</code></pre>
 
-<p>There are an infinite number of different possible strings that could be accepted by our <code>Greetings</code> parser. This means it's language is <em>infinite</em>. Here are some examples of possible strings <code>Greetings</code> could accept.
+<p>Because we are looking for <em>zero or more</em> occurances of a string, our <code>Greetings</code> parser can now accept an infinite number of different possible strings. This means it's language is <em>infinite</em>. Here are some examples of possible strings <code>Greetings</code> could accept.
 
 <pre><code data-language='c'>&quot;Hello Dan&quot;
 &quot;Hello Dan Hello Chess&quot;
 &quot;Hello Lewis Hello Lewis Hello Lewis&quot;</code></pre>
 
-</p> Again we can squint our eyes and try to read the above code as if it were a grammar. "A <em>Greet</em>, is <code>"Hello"</code>, <em>and</em> a <em>Flatmate</em>, joined using <code>mpcf_strfold</code>", "a <em>Greetings</em> is many <em>Greet</em>s joined using <code>mpcf_strfold</code>".</p>
+</p> Again we can squint our eyes and try to read the above code as if it were a grammar. "A <em>Greet</em>, is <code>"Hello"</code>, <em>and</em> a <em>Flatmate</em>", "a <em>Greetings</em> is zero or more <em>Greet</em>s".</p>
 
 <p>If we use more functions and structures, we can slowly build up a parsers that parse more and more complicated languages. The code we use <em>sort of</em> looks like a grammar. This isn&#39;t always an easy task but there are a whole set of helper functions that build on simple constructs to make frequent tasks easy. These are all documented on the <a href="http://github.com/orangeduck/mpc">mpc repository</a>. This is a good approach for complicated languages, as it allows for fine-grained control.</p>
 
 
 <h2>Natural Grammars</h2> <hr/>
 
-<p><code>mpc</code> lets us write grammars in a more natural form too. Rather than using C functions that look a little like a grammar, we can specify the whole thing in one long string. When using this method you don&#39;t have to worry about how to join or discard inputs, with functions such as <code>mpcf_strfold</code>, or <code>free</code>. All of that is done automatically for us</p>
+<p><code>mpc</code> lets us write grammars in a more natural form too. Rather than using C functions that look a little like a grammar, we can specify the whole thing in one long string. When using this method we don&#39;t have to worry about how to join or discard inputs, with functions such as <code>mpcf_strfold</code>, or <code>free</code>. All of that is done automatically for us.</p>
 
-<p>This makes it a much easier approach. Here is how we would recreate the previous examples using this method.</p>
+<p>Here is how we would recreate the previous examples using this method.</p>
 
 <pre><code data-language='c'>mpc_parser_t* Flatmate  = mpc_new(&quot;flatmate&quot;);
 mpc_parser_t* Greet     = mpc_new(&quot;greet&quot;);
@@ -101,7 +101,7 @@ mpc_cleanup(3, Flatmate, Greet, Greetings);</code></pre>
 
 <p>Another thing to notice is that the process is now in two steps. First we create and name several rules using <code>mpc_new</code> and then we define them using <code>mpca_lang</code>.</p>
 
-<p>The first argument to <code>mpca_lang</code> is a long multi-line string in C. This is the formal <em>grammar</em> specification we&#39;ve heard so much about. It consists of a number of <em>rules</em>. Each rule has the name of a parser on the left, a colon <code>:</code>, and on the right it&#39;s definition terminated with a semicolon <code>;</code>. The special symbols used to define the parsers work as follows.</p>
+<p>The first argument to <code>mpca_lang</code> is a long multi-line string in C. This is the formal <em>grammar</em> specification. It consists of a number of <em>rules</em>. Each rule has the name of a parser on the left, a colon <code>:</code>, and on the right it&#39;s definition terminated with a semicolon <code>;</code>. The special symbols used to define the parsers work as follows.</p>
 
 <table class='table'>
   <tr><td><code>"ab"</code></td><td>A string <code>ab</code> is required.</td></tr>
@@ -113,13 +113,13 @@ mpc_cleanup(3, Flatmate, Greet, Greetings);</code></pre>
   <tr><td><code>&lt;abba&gt;</code></td><td>The rule called <code>abba</code> is required.</td></tr>
 </table>
 
+<p>Using these rules verify that what I've written above is equal to what we specified in code. This method of specifying a grammar is what we are going to use in the following chapters. It might seem overwhelming at first. Grammars can be difficult to understand right away. But as we continue you will become much more familar with how to create and edit them.</p>
+
 <div class="alert alert-warning">
   <p><strong>Sounds familiar...</strong></p>
 
   <p>Did you notice that the description of what the input string to <code>mpca_lang</code> should look like sort of sounded like I was specifying a grammar? That&#39;s because it was! <code>mpc</code> actually uses itself internally to parse the input you give it to <code>mpca_lang</code>. It does it by specifying a <em>grammar</em> in code using the previous method. How neat is that..</p>
 </div>
-
-<p>This method of specifying a grammar is what we are going to use in the following chapters. It might seem overwhelming at first. Grammars can be difficult to understand right away. But as we continue you will become much more familar with how to create and edit them.</p>
 
 
 <h2>Reference</h2> <hr/>
@@ -129,12 +129,12 @@ mpc_cleanup(3, Flatmate, Greet, Greetings);</code></pre>
   <div class="panel panel-default">
     <div class="panel-heading">
       <h4 class="panel-title">
-        <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">
+        <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
           greeting_code.c
         </a>
       </h4>
     </div>
-    <div id="collapseTwo" class="panel-collapse collapse">
+    <div id="collapseOne" class="panel-collapse collapse">
       <div class="panel-body">
 <pre><code data-language='c'>#include "mpc.h"
 
@@ -166,12 +166,12 @@ int main(int argc, char** argv) {
   <div class="panel panel-default">
     <div class="panel-heading">
       <h4 class="panel-title">
-        <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree">
+        <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">
           greeting_grammar.c
         </a>
       </h4>
     </div>
-    <div id="collapseThree" class="panel-collapse collapse">
+    <div id="collapseTwo" class="panel-collapse collapse">
       <div class="panel-body">
 <pre><code data-language='c'>#include "mpc.h"
 
@@ -207,11 +207,13 @@ int main(int argc, char** argv) {
 
 <div class="alert alert-warning">
   <ul class="list-group">
-    <li class="list-group-item">&bull; Why are there back slashes <code>\</code> in front of the quote marks <code>"</code> in the grammar?</li>
-    <li class="list-group-item">&bull; Description textually a grammar for a decimal number such as <code>0.01</code> or <code>52.221</code>.</li>
-    <li class="list-group-item">&bull; Description textually a grammar for a simple english sentance such as <code>the cat sat on the mat</code>.</li>
-    <li class="list-group-item">&bull; Description formally the above grammars. Use symbols such as <code>|</code> for <em>or</em>, and <code>*</code> for <em>zero or more of</em>.</li>
-    <li class="list-group-item">&bull; If you are familiar with JSON or XML, consider what their grammars might look like. Sketch out a description.</li>
+    <li class="list-group-item">&rsaquo; Why are there back slashes <code>\</code> in front of the quote marks <code>"</code> in the grammar?</li>
+    <li class="list-group-item">&rsaquo; Why are there back slashes <code>\</code> at the end of the line in the grammar?</li>
+    <li class="list-group-item">&rsaquo; Description textually a grammar for decimal numbers such as <code>0.01</code> or <code>52.221</code>.</li>
+    <li class="list-group-item">&rsaquo; Description textually a grammar for web URLs such as <code>http://www.buildyourownlisp.com</code>.</li>
+    <li class="list-group-item">&rsaquo; Description textually a grammar for simple english sentances such as <code>the cat sat on the mat</code>.</li>
+    <li class="list-group-item">&rsaquo; Description formally the above grammars. Use symbols such as <code>|</code> for <em>or</em>, and <code>*</code> for <em>zero or more of</em>.</li>
+    <li class="list-group-item">&rsaquo; If you are familiar with JSON or XML, consider what their grammars might look like. Sketch out a description.</li>
   </ul>
 </div>
 

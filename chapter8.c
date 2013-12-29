@@ -51,6 +51,7 @@ lval lval_err(int x) {
   return v;
 }
 
+/* Print an "lval" */
 void lval_print(lval v) {
   switch (v.type) {
     /* In the case the type is a number print it, then 'break' out of the switch. */
@@ -66,6 +67,7 @@ void lval_print(lval v) {
   }
 }
 
+/* Print an "lval" followed by a newline */
 void lval_println(lval v) { lval_print(v); putchar('\n'); }
 
 lval eval_op(lval x, char* op, lval y) {
