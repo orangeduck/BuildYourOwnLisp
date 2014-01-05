@@ -13,11 +13,21 @@ pages = [
     'chapter16_future_work.html'
 ]
 
+titles = [
+    '',                                    'Contents',                        'Credits',
+    'Introduction &bull; Chapter 1',       'Installation &bull; Chapter 2',   'Basics &bull; Chapter 3',
+    'Interactive Prompt &bull; Chapter 4', 'languages &bull; Chapter 5',      'Parsing &bull; Chapter 6',
+    'Evaluation &bull; Chapter 7',         'Error Handling &bull; Chapter 8', 'S-Expressions &bull; Chapter 9',
+    'Q-Expressions &bull; Chapter 10',     'Variables &bull; Chapter 11',     'Functions &bull; Chapter 12',
+    'Conditionals &bull; Chapter 13',      'Strings &bull; Chapter 14',       'Standard Library &bull; Chapter 15',
+    'Future Work &bull; Chapter 16'
+]
+
 header = """
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Build your own Lisp</title>
+    <title>%s &bull; Build Your Own Lisp</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Bootstrap -->
     <link href="static/css/bootstrap.css" rel="stylesheet">
@@ -67,8 +77,11 @@ def route_page(page):
     page = page + '.html'
     if not page in pages: page = '404.html'
     path = os.path.join(os.path.split(__file__)[0], page)
+    
+    title = titles[pages.index(page)]
+    
     contents = open(path, 'r').read()
-    contents = header + contents + footer
+    contents = (header % title) + contents + footer
     return contents
     
 @app.route('/')

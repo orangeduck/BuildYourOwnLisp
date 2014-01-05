@@ -11,7 +11,7 @@
   <p><small>Bananaphone &bull; Another naive dream.</small></p>
 </div>
 
-<p>In reality what each paradigm delivers is simply <em>different</em> abstractions. There has always been a trade-off. For each higher level of thinking about programming, some piece is thrown away. And this means, no matter how well you decide what to keep and what to leave, occasionally someone will need that piece that has been lost. One way or the other functions have always persisted through the history of programming. They have continualy proven to be effective.</p>
+<p>In reality what each paradigm delivers is simply <em>different</em> abstractions. There has always been a trade-off. For each higher level of thinking about programming, some piece is thrown away. And this means, no matter how well you decide what to keep and what to leave, occasionally someone will need that piece that has been lost. But through all of this, one way or the other, functions have always persisted, and continualy proven to be effective.</p>
 
 <p>We've used functions in C, we know what they <em>look like</em>, but we don't know exactly what they <em>are</em>. Here are a few ways to think about them.</p>
 
@@ -24,17 +24,17 @@
   <p><small>Black Box &bull; Your typical function.</small></p>
 </div>
 
-<p>A third method is to think of functions as <em>partial computations</em>. Like the Mathematical model they can take some inputs. These values are required before it can complete the computation. This is why it is called <em>partial</em>. But like the computational model, the body of the function consists of a computation specified in some language of commands. These inputs are called <em>unbound variables</em>, and to finish the computation one simply supplies them. Like fitting a cog into a machine which was before spinning aimlessly, this completes all that is needed for the computation to run, and the machine runs. The output of these <em>partial computations</em> is itself a variable with an unknown value. This output can be putting as input to a new function, and so one function relies on another.</p>
+<p>A third method is to think of functions as <em>partial computations</em>. Like the Mathematical model they can take some inputs. These values are required before it can complete the computation. This is why it is called <em>partial</em>. But like the computational model, the body of the function consists of a computation specified in some language of commands. These inputs are called <em>unbound variables</em>, and to finish the computation one simply supplies them. Like fitting a cog into a machine which was before spinning aimlessly, this completes all that is needed for the computation to run, and the machine runs. The output of these <em>partial computations</em> is itself a variable with an unknown value. This output can be placed as input to a new function, and so one function relies on another.</p>
 
-<p>An advantage of this idea over the Mathematical Model is that we recognize that these computations <em>contain computation</em>. We see that when the computation runs, some physical process is going on in the machine. This means we recognize the fact that certain things take time to elapse, or that a function might change the program state, or do anything else we&#39;re not sure about!</p>
+<p>An advantage of this idea over the Mathematical Model is that we recognize that functions <em>contain computation</em>. We see that when the computation runs, some physical process is going on in the machine. This means we recognize the fact that certain things take time to elapse, or that a function might change the program state, or do anything else we&#39;re not sure about!</p>
 
 <p>All these ideas are explored in the study of functions, <em>Lambda calculus</em>. This is a field that combines logic, maths, and computer science. The name comes from the Greek letter Lambda, which is used in the representation of <em>binding variables</em>. Using Lambda calculus gives a way of defining, composing and building <em>functions</em> using a simple mathematical notation.</p>
 
 <p>We are going to use all of the previous ideas to add user defined functions to our language. Lisp is already well suited to this sort of playing around, and using these concepts it wont take much work for us to implement functions.</p>
 
-<p>The first step will be to write a builtin function that can be used to create a user defined function. We can specify this builtin function as follows. The first argument should be a list of symbols, just like our <code>def</code> function. These symbols we call the <em>formal arguments</em>, also known as the <em>unbound variables</em>. They act as the inputs to our <em>partial computation</em>. The second argument should be another list. When running the function this will be evaluated with our builtin <code>eval</code> function.</p>
+<p>The first step will be to write a builtin function that can create a user defined functions. Here is one idea as to how it can be specified. The first argument should be a list of symbols, just like our <code>def</code> function. These symbols we call the <em>formal arguments</em>, also known as the <em>unbound variables</em>. They act as the inputs to our <em>partial computation</em>. The second argument should be another list. When running the function this is going to be evaluated with our builtin <code>eval</code> function.</p>
 
-<p>This function we'll call <code>\</code>, a homage to The Lambda Calculus. (As the <code>\</code> character looks a little bit like a Lambda). To create a function which takes two inputs and adds them together, we would like to write something like this.</p>
+<p>This function we'll call just <code>\</code>, a homage to The Lambda Calculus (as the <code>\</code> character looks a little bit like a Lambda). To create a function which takes two inputs and adds them together, we would like to write something like this.</p>
 
 <pre><code data-language='lispy'>\ {x y} {+ x y}</code></pre>
 
@@ -55,7 +55,7 @@
 
 <p>To store a function as an <code>lval</code> we need to think exactly what it consists of.</p>
 
-<p>Using the previous definition, a function should consists of three parts. First is the list of <em>formal arguments</em>, which we must bind before we can evaluate the function. The second part is a Q-Expression that represents the body of the function. Finally we require a location to store the values assigned to the <em>formal arguments</em>. Luckily we already have an <em>environment</em> structure like this which we can use.</p>
+<p>Using the previous definition, a function should consists of three parts. First is the list of <em>formal arguments</em>, which we must bind before we can evaluate the function. The second part is a Q-Expression that represents the body of the function. Finally we require a location to store the values assigned to the <em>formal arguments</em>. Luckily we already have an <em>environment</em> structure we can use.</p>
 
 <p>We will store our builtin functions and user defined functions under the same type <code>LVAL_FUN</code>. This means we need a way internally to differentiate between them. To do this we can check if the <code>lbuiltin</code> function pointer is <code>NULL</code> or not. If it is not <code>NULL</code> we know the <code>lval</code> is some builtin function, otherwise we know it is a user function.</p>
 
@@ -98,9 +98,9 @@
   return v;  
 }</code></pre>
 
-<p>As with whenever we change our <code>lval</code> type we need to update the functions for <em>deletion</em>, <em>copying</em>, and <em>printing</em> to deal with the changes.</p>
+<p>As with whenever we change our <code>lval</code> type we need to update the functions for <em>deletion</em>, <em>copying</em>, and <em>printing</em> to deal with the changes. For evaluation we'll need to look in greater depth.</p>
 
-<p>For Deletion...</p>
+<p>For <strong>deletion</strong>...</p>
 
 <pre><code data-language='c'>case LVAL_FUN: 
   if (v-&gt;builtin != NULL) {
@@ -110,7 +110,7 @@
   }
 break;</code></pre>
 
-<p>For Copying...</p>
+<p>For <strong>copying</strong>...</p>
 
 <pre><code data-language='c'>case LVAL_FUN:
   x-&gt;builtin = v-&gt;builtin;
@@ -121,7 +121,7 @@ break;</code></pre>
   }
 break;</code></pre>
 
-<p>For Printing...</p>
+<p>For <strong>printing</strong>...</p>
 
 <pre><code data-language='c'>case LVAL_FUN:
   if (v-&gt;builtin) {
@@ -131,12 +131,10 @@ break;</code></pre>
   }
 break;</code></pre>
 
-<p>For evaluation we'll need to look in greater depth to we'll take a look at that later.</p>
-
 
 <h2>Lambda Function</h2> <hr/>
 
-<p>We can now add a builtin for our lambda function. We want it to take as input some list of symbols, and a list that represents the code. After that it should return a function <code>lval</code>. We&#39;ve built a number of builtins now, and this one will follow the same format. Like in <code>def</code> we do some error checking to ensure the argument types and count are correct. Then we just pop the first two arguments from the list and pass them to our previously constructed <code>lval_lambda</code> function.</p>
+<p>We can now add a builtin for our lambda function. We want it to take as input some list of symbols, and a list that represents the code. After that it should return a function <code>lval</code>. We&#39;ve defined a few of builtins now, and this one will follow the same format. Like in <code>def</code> we do some error checking to ensure the argument types and count are correct (using some newly defined Macros). Then we just pop the first two arguments from the list and pass them to our previously defined function <code>lval_lambda</code>.</p>
 
 <pre><code data-language='c'>lval* builtin_lambda(lenv* e, lval* a) {
   /* Check Two arguments, each of which are Q-Expressions */
@@ -168,15 +166,17 @@ break;</code></pre>
 
 <h2>Parent Environment</h2> <hr/>
 
-<p>We&#39;ve given functions their own environment. In this environment we will place the values that their formal variables are set to. Then we can evaluate the body in this environment and know that those variables will have values. But ideally we also want these functions to be able to access variables which are in the global environment, such as our builtin functions.</p>
+<p>We&#39;ve given functions their own environment. In this environment we will place the values that their formal arguments are set to. When we come to evaluate the body of the function we can do it in this  environment and know that those variables will have the correct values.</p>
+
+<p>But ideally we also want these functions to be able to access variables which are in the global environment, such as our builtin functions.</p>
 
 <p>We can solve this problem by changing the definition of our environment to contain a reference to some <em>parent</em> environment. Then, when we want to evaluate a function, we can set this <em>parent</em> environment to our global environment, which has all of our builtins defined within.</p>
 
-<p>When we add this to our <code>lenv</code> struct, conceptually it will be a <em>reference</em> to a parent environment, not some sub-environment or anything like this. Because of this we shouldn&#39;t <em>delete</em> it when our <code>lenv</code> gets deleted, or copy it when our <code>lenv</code> gets copied.</p>
+<p>When we add this to our <code>lenv</code> struct, conceptually it will be a <em>reference</em> to a parent environment, not some sub-environment or anything like that. Because of this we shouldn&#39;t <em>delete</em> it when our <code>lenv</code> gets deleted, or copy it when our <code>lenv</code> gets copied.</p>
 
-<p>The way it works is simple. If someone calls <code>lenv_get</code> on an environment, and the symbol cannot be found. It will look then in any parent environment to see if the named value exists there. To signify that an environment as no parent we set the reference to <code>NULL</code>.</p>
+<p>The way the <em>parent environment</em> works is simple. If someone calls <code>lenv_get</code> on the environment, and the symbol cannot be found. It will look then in any parent environment to see if the named value exists there, and repeat the process till either the variable is found or there are no more parents. To signify that an environment has no parent we set the reference to <code>NULL</code>.</p>
 
-<p>The constructor and destructor functions only require basic changes to allow for this.</p>
+<p>The constructor function only require basic changes to allow for this.</p>
 
 <pre><code data-language='c'>struct lenv {
   lenv* par;
@@ -193,19 +193,9 @@ lenv* lenv_new(void) {
   e-&gt;vals = NULL;
   return e;
 }
-
-void lenv_del(lenv* e) {
-  for (int i = 0; i &lt; e-&gt;count; i++) {
-    free(e-&gt;syms[i]);
-    lval_del(e-&gt;vals[i]);
-  }
-  free(e-&gt;syms);
-  free(e-&gt;vals);
-  free(e);
-}
 </code></pre>
 
-<p>To get a value from an environment we need to add in the search of the parent environment in the case that a symbol is not found intially.</p>
+<p>To get a value from an environment we need to add in the search of the parent environment in the case that a symbol is not found.</p>
 
 <pre><code data-language='c'>lval* lenv_get(lenv* e, lval* k) {
 
@@ -221,7 +211,7 @@ void lenv_del(lenv* e) {
   }
 }</code></pre>
 
-<p>Because the <code>lval</code> struct now contains an environment internally we need a function for copying environments to use for when we copy <code>lval</code> structs.</p>
+<p>Because we have a new <code>lval</code> type that has its own environment we need a function for copying environments, to use for when we copy <code>lval</code> structs.</p>
 
 <pre><code data-language='c'>lenv* lenv_copy(lenv* e) {
   lenv* n = malloc(sizeof(lenv));
@@ -239,7 +229,7 @@ void lenv_del(lenv* e) {
 
 <p>Having parent environments also changes our concept of <em>defining</em> a variable.</p>
 
-<p>There are two ways we could define a variable now. Either we could define it in the local, innermost environment, or we could define it in the global, outermost environment. We will allow functionality for both. We&#39;ll leave the <code>lenv_put</code> method the same. It can be used for definition in the local environment. But we&#39;ll add a new fuction <code>lenv_def</code> for definition in the global environment. This works by simply following the parent chain up before using <code>lval_put</code> to define locally.</p>
+<p>There are two ways we could define a variable now. Either we could define it in the local, innermost environment, or we could define it in the global, outermost environment. We will add functions to do both. We&#39;ll leave the <code>lenv_put</code> method the same. It can be used for definition in the local environment. But we&#39;ll add a new fuction <code>lenv_def</code> for definition in the global environment. This works by simply following the parent chain up before using <code>lval_put</code> to define locally.</p>
 
 <pre><code data-language='c'>void lenv_def(lenv* e, lval* k, lval* v) {
   /* Iterate till e has no parent */
@@ -248,7 +238,7 @@ void lenv_del(lenv* e) {
   lenv_put(e, k, v);
 }</code></pre>
 
-<p>At the moment this distinction may seem useless, but later on we will use it to write partial results of calculations to local variables inside a function. We should add another builtin for <em>local</em> assignment. We&#39;ll call this <code>put</code> in C, but give it the <code>=</code> symbol when in Lisp. We can adapt our <code>builtin_def</code> function and re-use the common code, just like we do with our mathematical operators.</p>
+<p>At the moment this distinction may seem useless, but later on we will use it to write partial results of calculations to local variables inside a function. We should add another builtin for <em>local</em> assignment. We&#39;ll call this <code>put</code> in C, but give it the <code>=</code> symbol in Lisp. We can adapt our <code>builtin_def</code> function and re-use the common code, just like we do with our mathematical operators.</p>
 
 <pre><code data-language='c'>lval* builtin_var(lenv* e, lval* a, char* func) {
   LASSERT_TYPE(func, a, 0, LVAL_QEXPR);
@@ -277,7 +267,7 @@ void lenv_del(lenv* e) {
 lval* builtin_def(lenv* e, lval* a) { return builtin_var(e, a, &quot;def&quot;); }
 lval* builtin_put(lenv* e, lval* a) { return builtin_var(e, a, &quot;=&quot;); }</code></pre>
 
-<p>Then we need to register this as a builtin.</p>
+<p>Then we need to register these as a builtins.</p>
 
 <pre><code data-language='c'>lenv_add_builtin(e, &quot;def&quot;, builtin_def);
 lenv_add_builtin(e, &quot;=&quot;,   builtin_put);</code></pre>
@@ -287,7 +277,7 @@ lenv_add_builtin(e, &quot;=&quot;,   builtin_put);</code></pre>
 
 <p>We need to write the code that runs when an expression gets evaluated and an function <code>lval</code> is called.</p>
 
-<p>When this function type is a builtin we can call it as before, but we need to do something separate for our user defined functions. We need to bind each of the arguments passed in, to each of the symbols in the <code>formals</code> field. Once this is done we need to evaluate the <code>body</code> field, using the <code>env</code> field as an environment, and the calling environment as a parent.</p>
+<p>When this function type is a builtin we can call it as before, using the function pointer, but we need to do something separate for our user defined functions. We need to bind each of the arguments passed in, to each of the symbols in the <code>formals</code> field. Once this is done we need to evaluate the <code>body</code> field, using the <code>env</code> field as an environment, and the calling environment as a parent.</p>
 
 <p>A first attempt, without error checking, might look like this:</p>
 
@@ -316,9 +306,9 @@ lenv_add_builtin(e, &quot;=&quot;,   builtin_put);</code></pre>
 
 <p>This creates a function that has been <em>partially evaluated</em> and reflects our previous idea of a function being some kind of <em>partial computation</em>. If we start with a function that takes two arguments, and pass in a single argument, we can bind this first argument and return a new function with its first formal argument bound, and its second remaining empty.</p>
 
-<p>We can use this metaphor to imagine a cute image of how functions work. We can imagine each expession consisting of a function at the front which repeatedly consumes the input directly to its right. Once it has consumed the input to its right, if it is full (requires no more inputs) it evaluates and replaces itself with some value. If it needs more it replaced itself with another new, fuller function, with one of its variables bound and repeats the process.</p>
+<p>We can use this metaphor to create a cute image of how functions work. We can imagine each expession consisting of a function at the front which repeatedly consumes the input directly to its right. Once it has consumed the input to its right, if it is full (requires no more inputs) it evaluates and replaces itself with some value. If it needs more it replaced itself with another new, fuller function, with one of its variables bound and repeats the process.</p>
 
-<p>So you can imagine functions like a little pacman, not consuming all inputs at once, but iteratively eating inputs to the right and getting bigger and bigger until it is full. This isn't actually how we&#39;re going to implement it in code, but in the words of Feinman, it is <em>fun to imagine</em>.</p>
+<p>So you can imagine functions like a little pacman, not consuming all inputs at once, but iteratively eating inputs to the right and getting bigger and bigger until it is full. This isn't actually how we&#39;re going to implement it in code, but either way it is <em>fun to imagine</em>.</p>
 
 <pre><code data-language='c'>lval* lval_call(lenv* e, lval* f, lval* a) {
 
@@ -384,6 +374,24 @@ if (f->type != LVAL_FUN) {
 lval* result = lval_call(e, f, v);
 </code></pre>
 
+<p>Try defining some functions and test out how partial evaluation works.</p>
+
+<pre><code data-language='lispy'>lispy&gt; \ {x y} {+ x y}
+(\ {x y} {+ x y})
+lispy&gt; (\ {x y} {+ x y}) 10 20
+30
+lispy&gt; def {add-mul} (\ {x y} {+ x (* x y)})
+()
+lispy&gt; add-mul 10 20
+210
+lispy&gt; add-mul 10
+(\ {y} {+ x (* x y)})
+lispy&gt; def {add-mul-10} (add-mul 10)
+()
+lispy&gt; add-mul-10 50
+510
+lispy&gt;
+</code></pre>
 
 <h2>Variable Arguments</h2> <hr/>
 
@@ -391,7 +399,7 @@ lval* result = lval_call(e, f, v);
 
 <p>Unfortunately there isn&#39;t an elegant way for us to allow for this, without adding in some special syntax. So we're going to hard-code some system into our language using a special symbol <code>&amp;</code>.</p>
 
-<p>We are going to let users define formal arguments that look like <code>{x &amp; xs}</code>, which means that a function will take in a single argument <code>x</code>, followed by zero or more other arguments, joined together into a list called <code>xs</code>.</p>
+<p>We are going to let users define formal arguments that look like <code>{x &amp; xs}</code>, which means that a function will take in a single argument <code>x</code>, followed by zero or more other arguments, joined together into a list called <code>xs</code>. This is a bit like the ellipsis we used to declare variable arguments in C.</p>
 
 <p>When assigning our formal arguments we&#39;re going look for a <code>&amp;</code> symbol and if it exists take the next formal argument and assign it any remainging supplied arguments we&#39;ve been passed. It&#39;s important we convert this argument list to a Q-Expression. We need to also remember to check that <code>&amp;</code> is followed by a real symbol, and if it isn&#39;t we should throw an error.</p>
 
@@ -490,7 +498,7 @@ lispy> add-unpacked {5 6 7}
 18
 </code></pre>
 
-<p>Have a play around and see what other fundamental functions you can try to come up with. There are going to be some limitations as we need to add a couple more builtins such as conditionals (which we'll cover in the next chapter). But that doesn't mean you wont be able to come up with some other interesting ideas. Our Lisp really is getting richer now.</p>
+<p>Have a play around and see what other interesting and powerful functions you can try to come up with. You might be a bit limited for now. In the next chapter well add conditionals which will really start to make our language more complete. But that doesn't mean you wont be able to come up with some other interesting ideas now. Our Lisp really is getting richer!</p>
 
 
 <h2>Reference</h2> <hr/>
@@ -1231,11 +1239,11 @@ int main(int argc, char** argv) {
 
 <div class="alert alert-warning">
   <ul class="list-group">
-    <li class="list-group-item">&rsaquo; Define a function that returns the first element from a list</li>
-    <li class="list-group-item">&rsaquo; Define a function that returns the second element from a list</li>
-    <li class="list-group-item">&rsaquo; Define a function that reverses the order that another function takes the first two arguments</li>
-    <li class="list-group-item">&rsaquo; Define a function that combines two functions together into one</li>
-    <li class="list-group-item">&rsaquo; Change the behaviour of variable arguments so at least one argument must be supplied before it is evaluated</li>
+    <li class="list-group-item">&rsaquo; Write a Lisp function that returns the first element from a list.</li>
+    <li class="list-group-item">&rsaquo; Write a Lisp function that returns the second element from a list.</li>
+    <li class="list-group-item">&rsaquo; Write a Lisp function that calls a function with two arguments in reverse order.</li>
+    <li class="list-group-item">&rsaquo; Write a Lisp function that calls one function with arguments, then passes the result to the second function.</li>
+    <li class="list-group-item">&rsaquo; Change the behaviour of variable arguments so at least one extra argument must be supplied before it is evaluated.</li>
   </ul>
 </div>
 

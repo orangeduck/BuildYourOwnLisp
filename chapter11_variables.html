@@ -12,7 +12,7 @@
 
 <p>Already we can do a number of cool things that other languages can't, such as putting code inside of lists. Now is the time to start adding in the <em>features</em> which will make our language practical. The first one of these is going to be <em>variables</em>.</p>
 
-<p>They're called variables, but it is a misleading name, because our variables wont vary. Our variables are <em>immutable</em> meaning they cannot change. Everything in our language so far has acted like it is <em>immutable</em>. When we evaluate an expression we have almost always deleted the old thing and return a new thing. In some cases it just so happens that it is easier for us to reuse the data from the old thing to build the new thing, but conceptually it is a good way to think about how our language works internally.</p>
+<p>They're called variables, but it's a misleading name, because our variables wont vary. Our variables are <em>immutable</em> meaning they cannot change. Everything in our language so far has acted like it is <em>immutable</em>. When we evaluate an expression we have imagined that the old thing has been deleted and a new thing returned. In implementation often it is easier for us to reuse the data from the old thing to build the new thing, but conceptually it is a good way to think about how our language works.</p>
 
 <p>So actually our variables are simply a way of <em>naming values</em>. They let us assign a <em>name</em> to a <em>value</em>, and then let us get a copy of that <em>value</em> later on when we need it.</p>
 
@@ -29,11 +29,13 @@
 
 <p>Now that we're going to allow for user defined variables we need to update the grammar for symbols to be more flexible. Rather than just our builtin functions it should match any possible valid symbol. Unlike in C, where the name a variable can be given is fairly restrictive, we're going to allow for all sorts of characters in the name of a variable.</p>
 
-<p>We can create a regular expression that expresses the range of characters avaliable as follows <code>/[a-zA-Z0-9_+\\-*\\/\\\\=&lt;&gt;!&amp;]+/</code>. On first glace this looks like we've just bashed our hands in the keyboard. Actually it is a regular expression using a big range specifier <code>[]</code>. Inside these range specifiers special characters lose their meaning, but some of these characters still need to be escaped with backslashes. As these are part of a C string we need to put two back slashes to represent a single backslash character in the input.</p>
+<p>We can create a regular expression that expresses the range of characters avaliable as follows.</p>
 
-<p>This expressions allows for symbols that are constructed of one or more of, the standard C identifier characters <code>a-zA-Z0-9_</code>, the arithmetic operator characters <code>+\\-*\\/</code>, the backslash character <code>\\\\</code>, the comparison operator characters <code>=&lt;&gt;!</code>, or ampersands <code>&amp;</code>.</p>
+<pre><code>/[a-zA-Z0-9_+\\-*\\/\\\\=&lt;&gt;!&amp;]+/</code></pre>
 
-<p>This will give us all the flexability we need for defining symbols.</p>
+<p>On first glace this looks like we've just bashed our hands in the keyboard. Actually it is a regular expression using a big range specifier <code>[]</code>. Inside range specifiers special characters lose their meaning, but some of these characters still need to be escaped with backslashes. Because this is part of a C string we need to put two back slashes to represent a single backslash character in the input.</p>
+
+<p>This rule lets symbols be any of, the standard C identifier characters <code>a-zA-Z0-9_</code>, the arithmetic operator characters <code>+\\-*\\/</code>, the backslash character <code>\\\\</code>, the comparison operator characters <code>=&lt;&gt;!</code>, or an ampersands <code>&amp;</code>. This will give us all the flexability we need for defining new and existing symbols.</p>
 
 <pre><code data-language='C'>mpca_lang(
   "                                                     \
@@ -56,11 +58,9 @@
 
 <p>Function pointers are a great feature of C that lets you store and pass around pointers to functions. It doesn't make sense to edit the data pointed to by these pointers. Instead we use them to call the function they point to, as if it were a normal function.</p>
 
-<p>Like normal pointers, function pointers have some type associated with them. This type does not specify the type of the data pointed to. Instead it specifies the type of the function pointed to. This lets the comipiler work out if it has been called correctly.</p>
+<p>Like normal pointers, function pointers have some type associated with them. This type specifies the type of the function pointed to, not the type of the data pointed to. This lets the comipiler work out if it has been called correctly.</p>
 
-<p>In the previous chapter our builtin functions took a <code>lval*</code> as input and returned a <code>lval*</code> as output. In this chapter the builtin functions will also take a pointer to the environment <code>lenv*</code> as input.</p>
-
-<p>We can declare a new function pointer type called <code>lbuiltin</code>, for this type of function, like this.</p>
+<p>In the previous chapter our builtin functions took a <code>lval*</code> as input and returned a <code>lval*</code> as output. In this chapter our builtin functions will take an extra pointer to the environment <code>lenv*</code> as input. We can declare a new function pointer type called <code>lbuiltin</code>, for this type of function, like this.</p>
 
 <pre><code data-language='c'>typedef lval*(*lbuiltin)(lenv*, lval*);</code></pre>
 
@@ -71,18 +71,16 @@
   
   <p>First the <code>typedef</code>. This can be put before any standard variable declaration. It results in the name of the variable, being declared a new type, matching what would be the infered type of that variable. This is why in the above declaration what looks like the function name becomes the new type name.</p>
   
-  <p>Pointer types in C are meant to be written with the star <code>*</code> on the left hand side of the variable name, not the right hand side of the type. For example <code>int *x;</code>. This is because C type syntax works by a kind of weird inferance.</p>
-
-  <p>Instead of reading <em>"Create a new <code>int</code> pointer <code>x</code>"</em>. It is meant to read <em>"Create a new variable <code>c</code> where to dereference <code>x</code> results in an <code>int</code>."</em> Therefore <code>x</code> is infered to be a pointer to an <code>int</code>.</p>
+  <p>Next all those <code>*</code>. Pointer types in C are actually meant to be written with the star <code>*</code> on the left hand side of the variable name, not the right hand side of the type <code>int *x;</code>. This is because C type syntax works by a kind of weird inference. Instead of reading <em>"Create a new <code>int</code> pointer <code>x</code>"</em>. It is meant to read <em>"Create a new variable <code>x</code> where to dereference <code>x</code> results in an <code>int</code>."</em> Therefore <code>x</code> is infered to be a pointer to an <code>int</code>.</p>
   
-  <p>This idea is extended to function pointers. We can read the above declaration as follows. <em>"To get an <code>int*</code> dereference <code>builtin</code> and call it with a <code>lenv*</code> and a <code>lval*</code>."</em> Therefore <code>builtin</code> must be a function pointer that takes an <code>lenv*</code> and a <code>lval*</code> and returns a <code>lval*</code>.</p>
+  <p>This idea is extended to function pointers. We can read the above declaration as follows. <em>"To get an <code>lval*</code> we dereference <code>builtin</code> and call it with a <code>lenv*</code> and a <code>lval*</code>."</em> Therefore <code>builtin</code> must be a function pointer that takes an <code>lenv*</code> and a <code>lval*</code> and returns a <code>lval*</code>.</p>
 </div>
 
 <h2>Cyclic Types</h2> <hr/>
 
 <p>The <code>lbuiltin</code> type references the <code>lval</code> type and the <code>lenv</code> type. This means that they should be declared first in the source file.</p>
 
-<p>But we want to make <code>lbuiltin</code> a field in our <code>lval</code> struct so we can create function values. So therefore our <code>lbuiltin</code> declaration must go before our <code>lval</code> declaration. This leads to what is called a cyclic type dependancy, where two types rely on each other.</p>
+<p>But we want to make <code>lbuiltin</code> a field in our <code>lval</code> struct so we can create function values. So therefore our <code>lbuiltin</code> declaration must go before our <code>lval</code> declaration. This leads to what is called a cyclic type dependancy, where two types depend on each other.</p>
 
 <p>We've come across this problem before with functions which depend on each other. The solution was to create a <em>forward declaration</em> which declared a function but left the body of it empty.</p>
 
@@ -116,7 +114,7 @@ struct lval {
 
 <h2>Function Type</h2> <hr/>
 
-<p>As we've added a new possible <code>lval</code> type we should update all our relevant functions that work on <code>lvals</code> to deal correctly with this update. In most cases this just means inserting new cases into switch statements.</p>
+<p>As we've added a new possible <code>lval</code> type with the enumeration <code>LVAL_FUN</code>. We should update all our relevant functions that work on <code>lvals</code> to deal correctly with this update. In most cases this just means inserting new cases into switch statements.</p>
 
 <p>We can start by making a new constructor function for this type.</p>
 
@@ -340,7 +338,7 @@ while (1) {
 lenv_del(e);
 </code></pre>
 
-<p>If everything is working correctly we should have a play around in the prompt. Now it should be clear functions are actually a new type of value, not symbols.</p>
+<p>If everything is working correctly we should have a play around in the promp and verify that functions are actually a new type of value now, not symbols.</p>
 
 <pre><code data-language='lispy'>lispy&gt; +
 &lt;function&gt;
@@ -363,7 +361,7 @@ lispy&gt;</code></pre>
 
 <p>The only way we can pass around symbols without them being evaluated is to put them between <code>{}</code> in a quoted expression. So we&#39;re going to use this technique for our define function. It will take as input a list of symbols, and a number of other values. It will then assign each of the values to each of the symbols.</p>
 
-<p>This function should act like any other builtin. It first checks for error conditions and then performs some command and returns. In this case it first checks that the input arguments are the correct types. It then iterates over each symbol and value and puts them into the environment. If these is an error we can return this, but on success we will return the empty expression <code>()</code>.</p>
+<p>This function should act like any other builtin. It first checks for error conditions and then performs some command and return a value. In this case it first checks that the input arguments are the correct types. It then iterates over each symbol and value and puts them into the environment. If these is an error we can return this, but on success we will return the empty expression <code>()</code>.</p>
 
 <pre><code data-language='c'>lval* builtin_def(lenv* e, lval* a) {
   LASSERT(a, (a-&gt;cell[0]-&gt;type == LVAL_QEXPR), &quot;Function &#39;def&#39; passed incorrect type!&quot;);
@@ -393,7 +391,7 @@ lispy&gt;</code></pre>
 <pre><code data-language='c'>/* Variable Functions */
 lenv_add_builtin(e, &quot;def&quot;,  builtin_def);</code></pre>
 
-<p>And now we should be able to have user defined variables! As our <code>def</code> function takes in a list of symbols we can do some cool things storing and manipulating symbols in lists before passing them to be defined. Have a play around in the prompt and ensure everything is working correctly. You should get behaviour like this. See what other complex methods are possible for the definition and evaluation of variables. Once we get to defining functions we'll really see some of the neat things that can be done with this approach.</p>
+<p>Now we should be able to support user defined variables! Because our <code>def</code> function takes in a list of symbols we can do some cool things storing and manipulating symbols in lists before passing them to be defined. Have a play around in the prompt and ensure everything is working correctly. You should get behaviour as follows. See what other complex methods are possible for the definition and evaluation of variables. Once we get to defining functions we'll really see some of the neat things that can be done with this approach.</p>
 
 <pre><code data-language='lispy'>lispy&gt; def {x} 100
 ()
@@ -422,7 +420,7 @@ lispy&gt;</code></pre>
 
 <h2>Error Reporting</h2> <hr/>
 
-<p>So far our error reporting kind of sucks. We can report when an error occurs, and give a vague notion of what was the problem is, but we don't give the user much information about what exactly has gone wrong. For example if there is an unbound symbol we should be able to report exactly which symbol was unbound. This can help the user track down errors, typos, and other trivial problems.</p>
+<p>So far our error reporting kind of sucks. We can report when an error occurs, and give a vague notion of what was the problem was, but we don't give the user much information about what exactly has gone wrong. For example if there is an unbound symbol we should be able to report exactly which symbol was unbound. This can help the user track down errors, typos, and other trivial problems.</p>
 
 <div class='pull-left alert alert-warning' style="margin: 15px; text-align: center;">
   <img src="/static/img/eclipses.png" alt="eclipses"/>
@@ -433,19 +431,19 @@ lispy&gt;</code></pre>
 
 <p>The <code>printf</code> function is a special function in C because it takes a variable number of arguments. We can create our own <em>variable argument</em> functions, which is what we're going to do to make our error reporting better.</p>
 
-<p>We'll modify <code>lval_err</code> to act in the same way as <code>printf</code>, taking in a format string, and after that a variable number of arguments.</p>
+<p>We'll modify <code>lval_err</code> to act in the same way as <code>printf</code>, taking in a format string, and after that a variable number of arguments to match into this string.</p>
 
-<p>To declare that a function takes variables arguments in the type signature you use ellipsis <code>...</code> to represent the rest of the arguments.</p>
+<p>To declare that a function takes variables arguments in the type signature you use the special syntax of ellipsis <code>...</code>, which represent the rest of the arguments.</p>
 
 <p><code data-language='c'>lval* lval_err(char* fmt, ...);</code></p>
 
-<p>Inside the function there are some standard library functions we can use to examine what the caller has passed in.</p>
+<p>Then, inside the function there are some standard library functions we can use to examine what the caller has passed in.</p>
 
-<p>The first step is to create a <code>va_list</code> struct and initialise it with <code>va_start</code>, passing in the last named argument. For other purposes it is possible to examine each argument passed in using <code>va_arg</code>, but we are going to pass our variable argument list directly to the <code>vsnprintf</code> function, which takes one as it&#39;s last argument. Once we are done with our variable arguments we must use <code>va_end</code> to cleanup any resources used.</p>
+<p>The first step is to create a <code>va_list</code> struct and initialise it with <code>va_start</code>, passing in the last named argument. For other purposes it is possible to examine each argument passed in using <code>va_arg</code>, but we are going to pass our whole variable argument list directly to the <code>vsnprintf</code> function. This function acts like <code>printf</code> but instead writes to a string and takes in a <code>va_list</code>. Once we are done with our variable arguments, we shoulder call <code>va_end</code> to cleanup any resources used.</p>
 
-<p>We can use the <code>vsnprintf</code> function to emulate <code>printf</code> but with output going into a string. Because we don't know the size of this string until we've run the function we first allocate a buffer <code>512</code> characters big and then reallocate to a smaller buffer once we've output to it.</p>
+<p>The <code>vsnprintf</code> function outputs to a string, which we need to allocate some first. Because we don't know the size of this string until we've run the function we first allocate a buffer <code>512</code> characters big and then reallocate to a smaller buffer once we've output to it. If an error message is going to be longer than 512 character it will just get cut off, but hopefully this wont happen.</p>
 
-<p>Putting it altogether our new error function looks like this.</p>
+<p>Putting it all together our new error function looks like this.</p>
 
 <pre><code data-language='c'>lval* lval_err(char* fmt, ...) {
   lval* v = malloc(sizeof(lval));
@@ -470,25 +468,24 @@ lispy&gt;</code></pre>
   return v;
 }</code></pre>
 
-<p>Using this we can then start adding in some better error messages to our functions.</p>
-
-<p>To start we can look at <code>lenv_get</code> when a symbol can&#39;t be found, rather than reporting a generic error, we can actually return it&#39;s name.</p>
+<p>Using this we can then start adding in some better error messages to our functions. As an example we can look at <code>lenv_get</code>. When a symbol can&#39;t be found, rather than reporting a generic error, we can actually report the name that was not found.</p>
 
 <pre><code data-language='c'>return lval_err(&quot;Unbound Symbol &#39;%s&#39;&quot;, k-&gt;sym);</code></pre>
 
-<p>We can also adapt our <code>LASSERT</code> macro such that it can take variable arguments too. Because this is a macro and not a standard function the syntax is slightly different. On the left hand side of the definition we use the ellipses notation again, but on the right hand side we use a special variable <code>__VA_ARGS__</code> to paste in the contents.</p>
+<p>We can also adapt our <code>LASSERT</code> macro such that it can take variable arguments too. Because this is a macro and not a standard function the syntax is slightly different. On the left hand side of the definition we use the ellipses notation again, but on the right hand side we use a special variable <code>__VA_ARGS__</code> to paste in the contents of all the other arguments.</p>
 
 <p>We need to prefix this special variable with two hash signs <code>##</code>. This ensure that it is pasted correctly when the macro is passed no extra arguments. In essence what this does is make sure to remove the leading comma <code>,</code> to appear as if no extra arguments were passed in.</p>
 
 <p>Because we might use <code>args</code> in the construction of the error message we need to make sure we don't delete it until we've created the error value.</p>
 
-<pre><code data-language='c'>#define LASSERT(args, cond, fmt, ...) if (!(cond)) { lval* err = lval_err(fmt, ##__VA_ARGS__); lval_del(args); return err; }</code></pre>
+<pre><code data-language='c'>#define LASSERT(args, cond, fmt, ...) \
+  if (!(cond)) { lval* err = lval_err(fmt, ##__VA_ARGS__); lval_del(args); return err; }</code></pre>
 
 <p>Now we can update some of our error messages to make them more informative. For example if the incorrect number of arguments were passed we can specify how many were required and how many were given.</p>
 
 <pre><code data-language='c'>LASSERT(a, (a-&gt;count == 1), &quot;Function &#39;head&#39; passed too many arguments. Got %i, Expected %i.&quot;, a-&gt;count, 1);</code></pre>
 
-<p>We can also improve our error reporting for type errors. We should attempt to report what type was expected by a function and what type it actually got. Before we can do this it would be useful to have a function that took as input some type and returned a string representation of that type.</p>
+<p>We can also improve our error reporting for type errors. We should attempt to report what type was expected by a function and what type it actually got. Before we can do this it would be useful to have a function that took as input some type enumeration and returned a string representation of that type.</p>
 
 <pre><code data-language='c'>char* ltype_name(int t) {
   switch(t) {
@@ -1111,8 +1108,13 @@ int main(int argc, char** argv) {
 
 <div class="alert alert-warning">
   <ul class="list-group">
-    <li class="list-group-item">&rsaquo; Create a macro specifically for reporting type erors.</li>
-    <li class="list-group-item">&rsaquo; Create a macro specifically for reporting argument count errors.</li>
+    <li class="list-group-item">&rsaquo; Create a Macro to aid specifically with reporting type erors.</li>
+    <li class="list-group-item">&rsaquo; Create a Macro to aid specifically with reporting argument count errors.</li>
+    <li class="list-group-item">&rsaquo; Create a Macro to aid specifically with reporting empty list errors.</li>
+    <li class="list-group-item">&rsaquo; Make printing a builtin function print its name.</li>
+    <li class="list-group-item">&rsaquo; Write a function for printing out all the named values in an environment.</li>
+    <li class="list-group-item">&rsaquo; Redefine one of the builtin variables to something different.</li>
+    <li class="list-group-item">&rsaquo; Make redefinition one of the builtin variables to something different an error.</li>
     <li class="list-group-item">&rsaquo; Create an <code>exit</code> function for stopping the prompt and exiting.</li>
   </ul>
 </div>

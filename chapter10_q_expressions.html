@@ -2,20 +2,22 @@
 
 <h2>Adding Features</h2> <hr/>
 
-<p>You'll notice in the following chapters that adding new features to our language usually consists of a number of steps. These are exactly what we're going to do in this chapter, for a new data type called a Q-Expression.</p>
+<p>You'll notice that the following chapters will all follow a simiar pattern. This pattern is the typical approach used to add new features to a language. It consists of a number of steps that bring a feature from start to finish. These are listed below, and are exactly what we're going to do in this chapter, to introduce a new feature called a Q-Expression.</p>
 
 <table class='table'>
-  <tr><td><strong>Step 0</strong></td><td>Add any new syntax for this data type to the <code>mpc</code> language grammar.</td></tr>
-  <tr><td><strong>Step 1</strong></td><td>Add a new type of possible data to the <code>lval</code> struct.</td></tr>
-  <tr><td><strong>Step 2</strong></td><td>Add new functions for reading in this data type from the <em>abstract syntax tree</em>.</td></tr>
-  <tr><td><strong>Step 3</strong></td><td>Add new functions for evaluating and manipulating this data type.</td></tr>
+  <tr><td><strong>Step 0 &bull; Syntax</strong></td><td>Add new rule to the language grammar for this feature.</td></tr>
+  <tr><td><strong>Step 1 &bull; Representation</strong></td><td>Add new data type variation to represent this feature.</td></tr>
+  <tr><td><strong>Step 2 &bull; Parsing</strong></td><td>Add new functions for reading this feature from the <em>abstract syntax tree</em>.</td></tr>
+  <tr><td><strong>Step 3 &bull; Semantics</strong></td><td>Add new functions for evaluating and manipulating this feature.</td></tr>
 </table>
 
 <h2>Quoted Expressions</h2> <hr/>
 
 <p>In this chapter we'll implement a new type of Lisp Value called a Q-Expression.</p>
 
-<pThis stands for <em>quoted expression</em>, and is a type of Lisp Expression that is not evaluated by the standard Lisp mechanics. When encountered by the evaluation function this expression is is left exactly as it is. This makes it ideal for a number of purposes. We can use it to store and manipulate other Lisp values such as numbers, symbols, or other S-Expressions themselves! After we have added Q-Expressions we are going to implement a concise set of operators to manipulate them. Like the arithmetic operators these will prove fundamental in how we think about and play with expressions.</p>
+<p>This stands for <em>quoted expression</em>, and is a type of Lisp Expression that is not evaluated by the standard Lisp mechanics. When encountered by the evaluation function Q-expressions are left exactly as they are. This makes them ideal for a number of purposes. We can use them to store and manipulate other Lisp values such as numbers, symbols, or other S-Expressions themselves!</p>
+
+<p>After we've added Q-Expressions we are going to implement a concise set of operators to manipulate them. Like the arithmetic operators these will prove fundamental in how we think about and play with expressions.</p>
 
 <p>The syntax for Q-Expressions is very similar to that of S-Expressions. The only difference is that instead of parenthesis <code>()</code> Q-Expressions are surrounded by curly brackets <code>{}</code>. We can add this to our grammar as follows.</p>
 
@@ -94,11 +96,11 @@ lval* lval_qexpr(void) {
 }
 </code></pre>
 
-<p>Using these simple changes we can update our reading function <code>lval_read</code> to be able to read in in Q-Expressions. Because we reused all the S-Expression data fields we can also reuse all of the functions for S-Expressions such as <code>lval_add</code> on our Q-Expression type. We just need to add a special case for constructing an empty Q-Expression just below where we detect and create empty S-Expressions.</p>
+<p>Using these simple changes we can update our reading function <code>lval_read</code> to be able to read in in Q-Expressions. Because we reused all the S-Expression data fields for our Q-Expression type, we can also reuse all of the functions for S-Expressions such as <code>lval_add</code>. Therefore to read in Q-Expressions we just need to add a special case for constructing an empty Q-Expression to <code>lval_read</code> just below where we detect and create empty S-Expressions from the <em>abstract syntax tree</em>.</p>
 
 <pre><code data-language='C'>if (strstr(t->tag, "qexpr"))  { x = lval_qexpr(); }</code></pre>
 
-<p>Because there is no special method of evaluating Q-Expressions, we don't need to edit any of the evaluation functions. Our Q-Expressions should be ready to try. Compile and run the program. See if you can type them into the prompt.</p>
+<p>Because there is no special method of evaluating Q-Expressions, we don't need to edit any of the evaluation functions. Our Q-Expressions should be ready to try. Compile and run the program. See if you can use them as a new data type. Ensure they are not evaluated.</p>
 
 <pre><code data-language='lispy'>lispy&gt; {1 2 3 4}
 {1 2 3 4}
@@ -113,12 +115,12 @@ lispy&gt;
 
 <p>We can read in Q-Expressions but they are still somewhat useless. We need some way to manipulate them.</p>
 
-<p>For this we can make some built-in operators, just like <code>+</code>, <code>-</code>, <code>*</code> and <code>/</code>, but to work on our list type. Choosing a concise set of these is important. If we implement a few fundamental operations then we can use these to define new operations without adding extra C code. There are a few ways to pick these fundamental operators but I've chosen a set that will allow us to do everything we need. They are defined as follows.</p>
+<p>For this we can define some built-in operators to work on our list type. Choosing a concise set of these is important. If we implement a few fundamental operations then we can use these to define new operations without adding extra C code. There are a few ways to pick these fundamental operators but I've chosen a set that will allow us to do everything we need. They are defined as follows.</p>
 
 <table class='table'>
-  <tr><td><code>list</code></td><td>Takes one or more Expressions and returns a new Q-Expression containing the arguments</td></tr>
-  <tr><td><code>head</code></td><td>Takes a Q-Expression and returns a Q-Expression consisting only of the first element</td></tr>
-  <tr><td><code>tail</code></td><td>Takes a Q-Expression and returns a Q-Expression without the first element of the original</td></tr>
+  <tr><td><code>list</code></td><td>Takes one or more arguments and returns a new Q-Expression containing the arguments</td></tr>
+  <tr><td><code>head</code></td><td>Takes a Q-Expression and returns a Q-Expression with only of the first element</td></tr>
+  <tr><td><code>tail</code></td><td>Takes a Q-Expression and returns a Q-Expression with the first element removed</td></tr>
   <tr><td><code>join</code></td><td>Takes one or more Q-Expressions and returns a Q-Expression of them conjoined together</td></tr>
   <tr><td><code>eval</code></td><td>Takes a Q-Expression and evaluates it as if it were a S-Expression</td></tr>
 </table>
@@ -146,9 +148,9 @@ lispy&gt;
 
 <p>Lets take a look at <code>head</code> and <code>tail</code> first. These functions have a number of conditions under which they can't act. First of all we must ensure they are only passed a single argument, and that that argument is a Q-Expression. Then we need to ensure that this Q-Expression isn't empty and actually has some elements.</p>
 
-<p>The <code>head</code> function can then take the first argument, and repeatedly pop and delete the item at index <code>1</code> until there is nothing else left in the list.</p>
+<p>The <code>head</code> function can repeatedly pop and delete the item at index <code>1</code> until there is nothing else left in the list.</p>
 
-<p>The <code>tail</code> function is even more simple. It can take the first argument, and pop and delete the item at index <code>0</code>, leaving the tail remaining. An initial attempt at these functions might look like this.</p>
+<p>The <code>tail</code> function is even more simple. It can pop and delete the item at index <code>0</code>, leaving the tail remaining. An initial attempt at these functions might look like this.</p>
 
 <pre><code class="lang-c">lval* builtin_head(lval* a) {
   /* Check Error Conditions */
@@ -208,7 +210,7 @@ lval* builtin_tail(lval* a) {
   <p><small>Strawberry &bull; A delicious macro.</small></p>
 </div>
 
-<p>These <code>head</code> and <code>tail</code> functions do the correct thing, but the code is a bit of a mess. There is so much error checking that the functionality is hard to see. One method we can use to clean it up is to use a <em>Macro</em>.</p>
+<p>These <code>head</code> and <code>tail</code> functions do the correct thing, but the code pretty unclear, and long. There is so much error checking that the functionality is hard to see. One method we can use to clean it up is to use a <em>Macro</em>.</p>
 
 <p>A Macro is a <em>preprocessor</em> statement for creating function-like-things that are evaluated before the program is compiled. It can be used for many different things, one of which is what we need to do here, clean up code.</p>
 
@@ -218,13 +220,11 @@ lval* builtin_tail(lval* a) {
 
 <pre><code class="lang-c">#define LASSERT(args, cond, err) if (!(cond)) { lval_del(args); return lval_err(err); }</code></pre>
 
+<p>We can use this to change how our above functions are written, without actually changing what code is generated by the compiler. This makes it much easier to read for the programmer, and saves a bit of typing. The rest of the error conditions for our functions should become a peice of cake to write too!</p>
 
 <h3>Head &amp; Tail</h3>
 
-<p>We can use this to change how our above functions are written, without actually changing what code is generated by the compiler. This makes it much easier to read for the programmer, and saves a bit of typing. The rest of the error conditions for our functions should become a peice of cake to write too!</p>
-
-
-<p>Using this our <code>head</code> and <code>tail</code> functions are defined as follows. Notice how much more clear their real functionaliy is.</p>
+<p>Using this our <code>head</code> and <code>tail</code> functions are defined as follows. Notice how much clearer their real functionaliy is.</p>
 
 <pre><code class="lang-c">lval* builtin_head(lval* a) {
   LASSERT(a, (a-&gt;count == 1                 ), &quot;Function &#39;head&#39; passed too many arguments!&quot;);
@@ -323,7 +323,7 @@ lval* result = builtin(v, func-&gt;sym);
 lval_del(func);
 return result;</code></pre>
 
-<p>Finally Q-Expressions should be fully supported in our language! Compile and run the latest version and see what you can do with the new list operators. Try putting code and symbols into our lists and evaluating them in different ways. The ability to put S-Expressions inside a list using Q-Expressions is pretty awesome. It means we can treat code like data itself. This is something that can't even be done in C!</p>
+<p>Finally Q-Expressions should be fully supported in our language! Compile and run the latest version and see what you can do with the new list operators. Try putting code and symbols into our lists and evaluating them in different ways. The ability to put S-Expressions inside a list using Q-Expressions is pretty awesome. It means we can treat code like data itself. This is a flagship feature of Lisps, and something that really cannot be done in languages such as C!</p>
 
 <pre><code data-language='lispy'>lispy&gt; list 1 2 3 4
 {1 2 3 4}
