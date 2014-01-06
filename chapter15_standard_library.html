@@ -7,18 +7,19 @@
   <p><small>Library &bull; Built with just leather, paper, wood, and ink.</small></p>
 </div>
 
-<p>The Lisp we&#39;ve built has been purposefully minimal. We've only added the fewest number of core structures and builtins. If we choose these carefully, as we did, then it should allow us to add in everything else required to the language.</p>
+<p>The Lisp we&#39;ve built has been purposefully minimal. We've only added the fewest number of core structures and builtins. If we chose these carefully, as we did, then it should allow us to add in everything else required to the language.</p>
 
-<p>The motivation behind minimalism is two-fold. It makes the core language simple to debug and easy to learn. This is a great benefit to developers and users. Like occams razor it is almost always better to trim away any waste if it results in a equally expressive language. Having a small language is also aestetically nicer. It is clever, interesting, and fun to see how small we can make the core of a language, and still get something useful out of the other side. As hackers, which we are now, this is what makes us happy.</p>
+<p>The motivation behind minimalism is two-fold. The first advantage is that it makes the core language simple to debug and easy to learn. This is a great benefit to developers and users. Like Occams Razor it is almost always better to trim away any waste if it results in a equally expressive language. The second reaon is that having a small language is also aestetically nicer. It is clever, interesting, and fun to see how small we can make the core of a language, and still get something useful out of the other side. As hackers, which we should be by now, this is something we enjoy.</p>
 
 
 <h2>Atoms</h2> <hr/>
 
 <p>When dealing with conditionals we added no new boolean type to our language. Because of this we didn't add <code>true</code> or <code>false</code> either. Instead we just used numbers. Readability is still important though, so we can define some constants to represent these values.</p>
 
-<p>On a similar note, many lisps use the word <code>nil</code> to represent the empty list <code>{}</code>. We can add this in too. These constants are sometimes called <em>atoms</em> because of their importance and unchanging behaviour. Of course the user is not forced to use these named constants, and can use numbers and empty lists instead as they like.</p>
+<p>On a similar note, many lisps use the word <code>nil</code> to represent the empty list <code>{}</code>. We can add this in too. These constants are sometimes called <em>atoms</em> because of their fundamental and constant behaviour.</p>
 
-<p>Empowering users, as the hackers we are now, this is what we believe in.</p>
+<p>The user is not forced to use these named constants, and can use numbers and empty lists instead as they like. This choice empowers users, something we believe in.</p>
+
 
 <pre><code data-language='lispy'>&#59; Atoms
 (def {nil} {})
@@ -28,7 +29,7 @@
 
 <h2>Building Blocks</h2> <hr/>
 
-<p>We've already come up with a number of cool functions I've been using in the examples. One of these is our <code>fun</code> function that allows us to declare functions in a neater way. We shoud include this in our standard library for certain.</p>
+<p>We've already come up with a number of cool functions I've been using in the examples. One of these is our <code>fun</code> function that allows us to declare functions in a neater way. We shoud definitely include this in our standard library.</p>
 
 <pre><code data-language='lispy'>&#59; Function Definitions
 (def {fun} (\ {f b} {
@@ -50,11 +51,9 @@
 (def {curry} {unpack})
 (def {uncurry} {pack})</code></pre>
 
-<p>We can also define a function <code>let</code> that allows us to open a new scope. It simply create an empty function with some given body and evaluates it.</p>
+<p>Say we want to do several things in order. One way we can do this is to put each thing to do as an argument to some function. We known that arguments are evaluated in order from left to right, which is essentially sequencing events. For functions such as <code>print</code> and <code>load</code> we don't care much about what it evaluates to, but do care about the order in which it happens.</p>
 
-<p>Say we want to do several things in order. One way we can do this is to put each thing as arguments to some function. We known that arguments are evaluated in order from left to right, essentially sequencing events. For functions such as <code>print</code> and <code>load</code> we don't care much about what it evaluates to, but do care when it happens.</p>
-
-<p>Therefore we can create a <code>do</code> function which evaluates a number of statements in order and returns the last one. This replies on the <code>last</code> function which returns the final element of a list. We'll define this later.</p>
+<p>Therefore we can create a <code>do</code> function which evaluates a number of statements in order and returns the last one. This relies on the <code>last</code> function, which returns the final element of a list. We'll define this later.</p>
 
 <pre><code data-language='lispy'>&#59; Perform Several things in Sequence
 (fun {do &amp; l} {
@@ -89,15 +88,15 @@ lispy&gt;</code></pre>
 (fun {and x y} {* x y})</code></pre>
 
 
-<h2>Misc Functions</h2> <hr/>
+<h2>Miscellaneous Functions</h2> <hr/>
 
-<p>Here are a couple of oddball functions that don&#39;t really fit in anywhere. See if you can guess what each of their intended functionality is.</p>
+<p>Here are a couple of miscellaneous functions that don&#39;t really fit in anywhere. See if you can guess what each of their intended functionality is.</p>
 
 <pre><code data-language='lispy'>(fun {flip f a b} {f b a})
 (fun {ghost &amp; xs} {eval xs})
 (fun {comp f g x} {f (g x)})</code></pre>
 
-<p>The <code>flip</code> function takes a function <code>f</code> and two arguments <code>a</code> and <code>b</code>. It then applies <code>f</code> to <code>a</code> and <code>b</code> in the reversed order. This might be useful when we want an argument to be <em>partially evaluated</em>. If we want to partially evaluate a function by only passing it in it&#39;s second argument we can use <code>flip</code> to give us a new function that takes its arguments in reversed order.</p>
+<p>The <code>flip</code> function takes a function <code>f</code> and two arguments <code>a</code> and <code>b</code>. It then applies <code>f</code> to <code>a</code> and <code>b</code> in the reversed order. This might be useful when we want a function to be <em>partially evaluated</em>. If we want to partially evaluate a function by only passing it in it&#39;s second argument we can use <code>flip</code> to give us a new function that takes the first two arguments in reversed order.</p>
 
 <p>This means if you want to apply the second argument of a function you can just apply the first argument to the <code>flip</code> of this function.</p>
 
@@ -115,6 +114,10 @@ lispy>
 </code></pre>
 
 <p>I couldn't think of a use for the <code>ghost</code> function, but it seemed interesting. It simply takes in any number of arguments and evaluates them as if they were the expression itself. So it just sits at the front of an expression like a ghost, not interacting of changing the behaviour of the program at all. If you can think of a use for it I'd love to hear.</p>
+
+<pre><code data-language='lispy'>lispy&gt; ghost + 2 2
+4
+</code></pre>
 
 <p>The <code>comp</code> function is used to compose two functions. It takes as input <code>f</code>, <code>g</code>, and an argument to <code>g</code>. It then applies this argument to <code>g</code> and applies the result again to <code>f</code>. This can be used to compose two function together into a new function that applies both of them in series. Like before we can use this in combination with partial evaluation to build up complex functions from simpler ones.</p>
 
@@ -138,7 +141,7 @@ lispy&gt;
 
 <p>The <code>head</code> function is used to get the first element of a list, but what it returns is still wrapped in the list. If we want to actually get the element out of this list we need to extact it somehow.</p>
 
-<p>Single element lists evaluate to just that element, so we can use the <code>eval</code> function to do this extraction. We can also define a couple of helper functions for aid extracting the first, second and third elements of a list. We'll make a lot of use of this.</p>
+<p>Single element lists evaluate to just that element, so we can use the <code>eval</code> function to do this extraction. We can also define a couple of helper functions for aid extracting the first, second and third elements of a list. We'll use these function a lot later.</p>
 
 <pre><code data-language='lispy'>&#59; First, Second, or Third Item in List
 (fun {fst l} { eval (head l) })
@@ -166,7 +169,7 @@ lispy&gt;
 &#59; Last item in List
 (fun {last l} {nth (- (len l) 1) l})</code></pre>
 
-<p>There are lots of other useful functions that follow this same pattern. We can define functions for taking and dropping the first N elements of a list, or functions for checking if a value is an element of a list.</p>
+<p>There are lots of other useful functions that follow this same pattern. We can define functions for taking and dropping the first so many elements of a list, or functions for checking if a value is an element of a list.</p>
 
 <pre><code data-language='lispy'>&#59; Take N items
 (fun {take n l} {
@@ -250,40 +253,36 @@ lispy&gt;</code></pre>
 
 <h2>Conditional Functions</h2> <hr/>
 
-<p>By defining our <code>fun</code> function we've already shown how powerful our language is in its ability to define functions that look like new syntax or do powerful things. Another example of this is found in emulating the C <code>switch</code> and <code>case</code> statements. In C these are built into the language, but for our language we can define them as part of a library.</p>
+<p>By defining our <code>fun</code> function we've already shown how powerful our language is in its ability to define functions that look like new syntax. Another example of this is found in emulating the C <code>switch</code> and <code>case</code> statements. In C these are built into the language, but for our language we can define them as part of a library.</p>
 
 <p>We can define a function <code>select</code> that takes in zero or more two-element lists as input. For each two element list in the arguments it first evaluates the first element of the pair. If this is true then it evaluates and returns the second item, otherwise it performs the same thing again on the rest of the list. </p>
 
 <pre><code data-language='lispy'>(fun {select &amp; cs} {
-  if (== cs {}) {
-    error &quot;No Selection Found&quot;
-  } {
-    if (fst (fst cs)) {snd (fst cs)} {unpack select (tail cs)}
-  }
+  if (== cs {})
+    {error &quot;No Selection Found&quot;}
+    {if (fst (fst cs)) {snd (fst cs)} {unpack select (tail cs)}}
 })</code></pre>
 
-<p>We can also define a function <code>otherwise</code> to always evaluate to <code>true</code> to work a little bit like the <code>default</code> keyword in C.</p>
+<p>We can also define a function <code>otherwise</code> to always evaluate to <code>true</code>. This works a little bit like the <code>default</code> keyword in C.</p>
 
 <pre><code data-language='lispy'>&#59; Default Case
 (def {otherwise} true)
 
 &#59; Print Day of Month suffix
-(fun {print-month-day-suffix i} {
+(fun {month-day-suffix i} {
   select
-    {(== i 0)  (print &quot;st&quot;)}
-    {(== i 1)  (print &quot;nd&quot;)}
-    {(== i 3)  (print &quot;rd&quot;)}
-    {otherwise (print &quot;th&quot;)}
+    {(== i 0)  &quot;st&quot;}
+    {(== i 1)  &quot;nd&quot;}
+    {(== i 3)  &quot;rd&quot;}
+    {otherwise &quot;th&quot;}
 })</code></pre>
 
-<p>This is actually somewhat more powerful than the C <code>switch</code> statement. In C rather than passing in conditions the input value is compared only for equality with a number of constant candidates. We can also define this function, where we compare a value to a number of candiates. In this function we take some candidate value <code>x</code> followed by zero or more two-element lists again. If the first element in the two-element list is equal to a candidate the second element is evaluated, otherwise the process continues down the list.</p>
+<p>This is actually somewhat more powerful than the C <code>switch</code> statement. In C rather than passing in conditions the input value is compared only for equality with a number of constant candidates. We can also define this function in our Lisp, where we compare a value to a number of candiates. In this function we take some value <code>x</code> followed by zero or more two-element lists again. If the first element in the two-element list is equal to <code>x</code>, the second element is evaluated, otherwise the process continues down the list.</p>
 
 <pre><code data-language='lispy'>(fun {case x &amp; cs} {
-  if (== cs {}) {
-    error &quot;No Case Found&quot;
-  } {
-    if (== x (fst (fst cs))) {snd (fst cs)} {unpack case (join (list x) (tail cs))}
-  }
+  if (== cs {})
+    {error &quot;No Case Found&quot;}
+    {if (== x (fst (fst cs))) {snd (fst cs)} {unpack case (join (list x) (tail cs))}}
 })</code></pre>
 
 <p>The syntax for this function becomes really nice and simple. See if you can think up any other control structures or useful functions that you'd like to implement using these sorts of methods.</p>
@@ -312,7 +311,7 @@ lispy&gt;</code></pre>
     { otherwise {+ (fib (- n 1)) (fib (- n 2))} }
 })</code></pre>
 
-<p>This is the end of the standard library I've managed to think up. Building up a standard library is a fun part of language design, because you get to be creative and opinionated on what goes in and stays out. Try to come up with something you are happy with.</p>
+<p>This is the end of the standard library I've written. Building up a standard library is a fun part of language design, because you get to be creative and opinionated on what goes in and stays out. Try to come up with something you are happy with. Exploring what is possible to define and do can be very interesting.</p>
 
 
 <h2>Reference</h2> <hr/>
@@ -403,7 +402,7 @@ lispy&gt;</code></pre>
 (fun {select & cs} {
   if (== cs {})
     {error "No Selection Found"}
-    {if (fst (fst cs)) {eval (snd (fst cs))} {unpack select (tail cs)}}
+    {if (fst (fst cs)) {snd (fst cs)} {unpack select (tail cs)}}
 })
 
 (fun {case x & cs} {
@@ -577,9 +576,12 @@ lispy&gt;</code></pre>
 
 <div class="alert alert-warning">
   <ul class="list-group">
-    <li class="list-group-item">&rsaquo; Incorporate the standard library directly into the C program. Make it load at startup.</li>
-    <li class="list-group-item">&rsaquo; Write some documentation for the standard library and what the functions do.</li>
-    <li class="list-group-item">&rsaquo; Write some example programs for users to learn from.</li>
+    <li class="list-group-item">&rsaquo; Rewrite the <code>len</code> function using <code>foldl</code>.</li>
+    <li class="list-group-item">&rsaquo; Rewrite the <code>elem</code> function using <code>foldl</code>.</li>
+    <li class="list-group-item">&rsaquo; Incorporate your standard library directly into the language. Make it load at startup.</li>
+    <li class="list-group-item">&rsaquo; Write some documentation for your standard library, explaining what each of the functions do.</li>
+    <li class="list-group-item">&rsaquo; Write some example programs using your standard library, for users to learn from.</li>
+    <li class="list-group-item">&rsaquo; Write some test cases for each of the functions in your standard library.</li>
   </ul>
 </div>
 
@@ -590,6 +592,6 @@ lispy&gt;</code></pre>
   <tr>
     <td class="text-left"><a href="chapter14_strings"><h4>&lsaquo; Strings</h4></a></td>
     <td class="text-center"><a href="contents"><h4>&bull; Contents &bull;</h4></a></td>
-    <td class="text-right"><a href="chapter16_future_work"><h4>Future Work &rsaquo;</h4></a></td>
+    <td class="text-right"><a href="chapter16_bonus_projects"><h4>Bonus Projects &rsaquo;</h4></a></td>
   </tr>
 </table>

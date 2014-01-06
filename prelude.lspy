@@ -73,7 +73,7 @@
 (fun {select & cs} {
   if (== cs {})
     {error "No Selection Found"}
-    {if (fst (fst cs)) {eval (snd (fst cs))} {unpack select (tail cs)}}
+    {if (fst (fst cs)) {snd (fst cs)} {unpack select (tail cs)}}
 })
 
 (fun {case x & cs} {

@@ -10,7 +10,7 @@ pages = [
     'chapter7_evaluation.html',         'chapter8_error_handling.html', 'chapter9_s_expressions.html', 
     'chapter10_q_expressions.html',     'chapter11_variables.html',     'chapter12_functions.html',        
     'chapter13_conditionals.html',      'chapter14_strings.html',       'chapter15_standard_library.html',
-    'chapter16_future_work.html'
+    'chapter16_bonus_projects.html'
 ]
 
 titles = [
@@ -20,7 +20,7 @@ titles = [
     'Evaluation &bull; Chapter 7',         'Error Handling &bull; Chapter 8', 'S-Expressions &bull; Chapter 9',
     'Q-Expressions &bull; Chapter 10',     'Variables &bull; Chapter 11',     'Functions &bull; Chapter 12',
     'Conditionals &bull; Chapter 13',      'Strings &bull; Chapter 14',       'Standard Library &bull; Chapter 15',
-    'Future Work &bull; Chapter 16'
+    'Bonus Projects &bull; Chapter 16'
 ]
 
 header = """

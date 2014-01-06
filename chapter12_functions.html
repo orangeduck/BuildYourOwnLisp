@@ -32,13 +32,13 @@
 
 <p>We are going to use all of the previous ideas to add user defined functions to our language. Lisp is already well suited to this sort of playing around, and using these concepts it wont take much work for us to implement functions.</p>
 
-<p>The first step will be to write a builtin function that can create a user defined functions. Here is one idea as to how it can be specified. The first argument should be a list of symbols, just like our <code>def</code> function. These symbols we call the <em>formal arguments</em>, also known as the <em>unbound variables</em>. They act as the inputs to our <em>partial computation</em>. The second argument should be another list. When running the function this is going to be evaluated with our builtin <code>eval</code> function.</p>
+<p>The first step will be to write a builtin function that can create user defined functions. Here is one idea as to how it can be specified. The first argument could be a list of symbols, just like our <code>def</code> function. These symbols we call the <em>formal arguments</em>, also known as the <em>unbound variables</em>. They act as the inputs to our <em>partial computation</em>. The second argument could be another list. When running the function this is going to be evaluated with our builtin <code>eval</code> function.</p>
 
-<p>This function we'll call just <code>\</code>, a homage to The Lambda Calculus (as the <code>\</code> character looks a little bit like a Lambda). To create a function which takes two inputs and adds them together, we would like to write something like this.</p>
+<p>This function we'll call just <code>\</code>, (a homage to The Lambda Calculus as the <code>\</code> character looks a little bit like a lambda). To create a function which takes two inputs and adds them together, we would then write something like this.</p>
 
 <pre><code data-language='lispy'>\ {x y} {+ x y}</code></pre>
 
-<p>We can call the function by including it as the first argument in a normal S-Expression</p>
+<p>We can call the function by putting it as the first argument in a normal S-Expression</p>
 
 <pre><code data-language='lispy'>(\ {x y} {+ x y}) 10 20</code></pre>
 
@@ -55,7 +55,7 @@
 
 <p>To store a function as an <code>lval</code> we need to think exactly what it consists of.</p>
 
-<p>Using the previous definition, a function should consists of three parts. First is the list of <em>formal arguments</em>, which we must bind before we can evaluate the function. The second part is a Q-Expression that represents the body of the function. Finally we require a location to store the values assigned to the <em>formal arguments</em>. Luckily we already have an <em>environment</em> structure we can use.</p>
+<p>Using the previous definition, a function should consists of three parts. First is the list of <em>formal arguments</em>, which we must bind before we can evaluate the function. The second part is a Q-Expression that represents the body of the function. Finally we require a location to store the values assigned to the <em>formal arguments</em>. Luckily we already have a structure for storing variables, an <em>environment</em>.</p>
 
 <p>We will store our builtin functions and user defined functions under the same type <code>LVAL_FUN</code>. This means we need a way internally to differentiate between them. To do this we can check if the <code>lbuiltin</code> function pointer is <code>NULL</code> or not. If it is not <code>NULL</code> we know the <code>lval</code> is some builtin function, otherwise we know it is a user function.</p>
 
@@ -100,7 +100,7 @@
 
 <p>As with whenever we change our <code>lval</code> type we need to update the functions for <em>deletion</em>, <em>copying</em>, and <em>printing</em> to deal with the changes. For evaluation we'll need to look in greater depth.</p>
 
-<p>For <strong>deletion</strong>...</p>
+<p>For <strong>Deletion</strong>...</p>
 
 <pre><code data-language='c'>case LVAL_FUN: 
   if (v-&gt;builtin != NULL) {
@@ -110,7 +110,7 @@
   }
 break;</code></pre>
 
-<p>For <strong>copying</strong>...</p>
+<p>For <strong>Copying</strong>...</p>
 
 <pre><code data-language='c'>case LVAL_FUN:
   x-&gt;builtin = v-&gt;builtin;
@@ -121,7 +121,7 @@ break;</code></pre>
   }
 break;</code></pre>
 
-<p>For <strong>printing</strong>...</p>
+<p>For <strong>Printing</strong>...</p>
 
 <pre><code data-language='c'>case LVAL_FUN:
   if (v-&gt;builtin) {
@@ -1239,11 +1239,11 @@ int main(int argc, char** argv) {
 
 <div class="alert alert-warning">
   <ul class="list-group">
-    <li class="list-group-item">&rsaquo; Write a Lisp function that returns the first element from a list.</li>
-    <li class="list-group-item">&rsaquo; Write a Lisp function that returns the second element from a list.</li>
-    <li class="list-group-item">&rsaquo; Write a Lisp function that calls a function with two arguments in reverse order.</li>
-    <li class="list-group-item">&rsaquo; Write a Lisp function that calls one function with arguments, then passes the result to the second function.</li>
-    <li class="list-group-item">&rsaquo; Change the behaviour of variable arguments so at least one extra argument must be supplied before it is evaluated.</li>
+    <li class="list-group-item">&rsaquo; Define a Lisp function that returns the first element from a list.</li>
+    <li class="list-group-item">&rsaquo; Define a Lisp function that returns the second element from a list.</li>
+    <li class="list-group-item">&rsaquo; Define a Lisp function that calls a function with two arguments in reverse order.</li>
+    <li class="list-group-item">&rsaquo; Define a Lisp function that calls one function with arguments, then passes the result to the second function.</li>
+    <li class="list-group-item">&rsaquo; Change variable arguments so at least one extra argument must be supplied before it is evaluated.</li>
   </ul>
 </div>
 

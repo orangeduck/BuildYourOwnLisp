@@ -1,7 +1,7 @@
 CC = cc
 CFLAGS = -std=c99 -Wall -Werror -Wno-unused -g
 LFLAGS = 
-FILES = chapter2 chapter4 chapter4a chapter5 chapter6 chapter7 chapter8 chapter9 chapter10 chapter11 chapter12 chapter13
+FILES = chapter2 chapter4 chapter4a chapter5 chapter6 chapter7 chapter8 chapter9 chapter10 chapter11 chapter12 chapter13 chapter14
 PLATFORM = $(shell uname)
 
 ifeq ($(findstring Linux,$(PLATFORM)),Linux)

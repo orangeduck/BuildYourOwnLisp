@@ -47,6 +47,6 @@ Rainbow.extend('lispy', [
     },
     {
         'name': 'comment',
-        'pattern': /\;[^\r\n]*/g
-    },
+        'pattern': /;[^\r\n]*/g
+    }
 ], true);

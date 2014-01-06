@@ -179,6 +179,11 @@ lval* lval_sexpr(void) {
 }
 </code></pre>
 
+<div class="alert alert-warning">
+  <p><strong>What is <code>NULL</code>?</strong></p>
+
+  <p><code>NULL</code> is a special constant that points to memory location <code>0</code>. In many places it is used as a convention to signify some non-value or empty data. Above we use it to specify that we have a data pointer, but that it doesn't point to any number of data items. You will see <code>NULL</code> crop up a lot more later on so always remember to look out for it.</p>
+</div>
 
 <div class="alert alert-warning">
   <p><strong>Why are you using <code>strlen(s) + 1</code>?</strong></p>
