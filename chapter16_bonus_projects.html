@@ -3,9 +3,9 @@
 
 <h2>Only the Beginning</h2> <hr/>
 
-<p>Although we've done a lot with our Lisp, it is still some way off from a fully complete, production strength programming language. If you tried to use it for any sufficently large project there are a number of issues you would eventually run into, and improvements you&#39;d have to make. Solving these problems would be what would bring it more into the scope of a fully fledged programming language.</p>
+<p>Although we've done a lot with our Lisp, it is still some way off from a fully complete, production strength programming language. If you tried to use it for any sufficiently large project there are a number of issues you would eventually run into, and improvements you&#39;d have to make. Solving these problems would be what would bring it more into the scope of a fully fledged programming language.</p>
 
-<p>Here are some of these issues you would likely encounter, potential solutions to these problems, and some other fun ideas for other improvements too. Some may take a few hundred lines of code, others a few thousand. The choice of what to tackle is up to you. If you&#39;ve become fond of your language you may enjoy doing some of these projects.</p>
+<p>Here are some of these issues you would likely encounter, potential solutions to these problems, and some other fun ideas for other improvements too. Some may take a few hundred lines of code, others a few thousand. The choice of what to tackle is up to you. If you've become fond of your language you may enjoy doing some of these projects.</p>
 
 
 <h2>Native Types</h2> <hr/>
@@ -34,18 +34,18 @@
 <p>This should be a simple addition for people looking to try out adding extra syntax.</p>
 
 
-<h2>Operating System Iteraction</h2> <hr/>
+<h2>Operating System Interaction</h2> <hr/>
 
-<p>One essential part of bootstrapping a language is to give it proper abilities for opening, reading, and writing files. This means wrapping all the C functions such as <code>fread</code>, <code>fwrite</code>, <code>fgetc</code>, etc in Lisp equivalents. This is a fairly straight forward task, but does require writing quite a large number of wrapper functions. This is why we&#39;ve not done it for our language so far.</p>
+<p>One essential part of bootstrapping a language is to give it proper abilities for opening, reading, and writing files. This means wrapping all the C functions such as <code>fread</code>, <code>fwrite</code>, <code>fgetc</code>, etc in Lisp equivalents. This is a fairly straight forward task, but does require writing quite a large number of wrapper functions. This is why we've not done it for our language so far.</p>
 
-<p>On a similar note it wold be great to give our language access to whatever operating systems calls are appropriate. We should give it the ability to change directory, list files in a directory and that sort of thing. This is an easy task but again requires a lot of wrapping of C functions. It is essential for any real practical use of this language as something like a scripting language.</p>
+<p>On a similar note it would be great to give our language access to whatever operating systems calls are appropriate. We should give it the ability to change directory, list files in a directory and that sort of thing. This is an easy task but again requires a lot of wrapping of C functions. It is essential for any real practical use of this language as something like a scripting language.</p>
 
 <p>People who wish to make use of their language for doing simple scripting tasks and string manipulation may be interested in implementing this project.</p>
 
 
 <h2>Macros</h2> <hr/>
 
-<p>Many other Lisps allow you to write things like <code>(def x 100)</code> to define the value <code>100</code> to <code>x</code>. In our lisp this wouldn&#39;t work because it would attempt to evaluate the <code>x</code> to whatever value was stored as <code>x</code>. In other Lisps these functions are called <em>macros</em>, and when encountered they stop the evaluation of their arguments, and manipulate them un-evaluated. They let you write things that look like normal function calls, but actually which do complex and interesting things.</p>
+<p>Many other Lisps allow you to write things like <code>(def x 100)</code> to define the value <code>100</code> to <code>x</code>. In our lisp this wouldn't work because it would attempt to evaluate the <code>x</code> to whatever value was stored as <code>x</code>. In other Lisps these functions are called <em>macros</em>, and when encountered they stop the evaluation of their arguments, and manipulate them un-evaluated. They let you write things that look like normal function calls, but actually which do complex and interesting things.</p>
 
 <p>These are kind of a fun thing to have in a language, as they make it so you can add a little bit of <em>magic</em> to some of the workings. In many cases this can make syntax nicer or stop a user from having to repeat themselves.</p>
 
@@ -58,7 +58,7 @@
 
 <p>A more efficient way to do this is to implement a <em>Hash Table</em>. This technique converts the variable name to some integer and uses this to index into an array of a known size to find the value associated with this symbol. This is a really important data structure in programming and will crop up everywhere because of its fantastic performance under heavy loads.</p>
 
-<p>Anyone who is interested in learning more about data structure and algorthms would be smart to take a shot at implementing this data structure or one of its variations.</p> 
+<p>Anyone who is interested in learning more about data structure and algorithms would be smart to take a shot at implementing this data structure or one of its variations.</p> 
 
 
 <h2>Pool Allocation</h2> <hr/>
@@ -90,11 +90,11 @@
 
 <h2>Tail Call Optimisation</h2> <hr/>
 
-<p>Our programming language uses <em>recursion</em> to do its looping. This is conceptually a really neat way to do it, but practically it is quite poor. Recursive functions call themselves to collect all of the partial results of a computation, and only then combine all the results together. This is a wasteful way of doing computation when partial results can be accumlated as some total as the loop continues. This is particularly problematic for loops that are intended to run for many iterations.</p>
+<p>Our programming language uses <em>recursion</em> to do its looping. This is conceptually a really neat way to do it, but practically it is quite poor. Recursive functions call themselves to collect all of the partial results of a computation, and only then combine all the results together. This is a wasteful way of doing computation when partial results can be accumulated as some total as the loop continues. This is particularly problematic for loops that are intended to run for many iterations.</p>
 
-<p>Some recursive functions can be automatically converted to corrisponding <code>while</code> loops, which accumulate totals step by step, rather than altogether. This automatic conversion is called <em>tail call optimisation</em> and is an essential optimisation for programs that do a lot of looping using recursion.</p>
+<p>Some recursive functions can be automatically converted to corresponding <code>while</code> loops, which accumulate totals step by step, rather than altogether. This automatic conversion is called <em>tail call optimisation</em> and is an essential optimisation for programs that do a lot of looping using recursion.</p>
 
-<p>People who are interested in compiler optimisations and the corrispondences between different forms of computation might find this project interesting.</p>
+<p>People who are interested in compiler optimisations and the correspondences between different forms of computation might find this project interesting.</p>
 
 
 <h2>Lexical Scoping</h2> <hr/>

@@ -9,7 +9,7 @@
 
 <h2>Polish Notation</h2> <hr/>
 
-<p>To try out <code>mpc</code> we're going to implement a simple grammar that resembles a mathematical subset of our Lisp. It's called <a href="http://en.wikipedia.org/wiki/Polish_notation">Polish Notation</a> and is a notation for arithimatic where the operator comes before the operands.</p>
+<p>To try out <code>mpc</code> we're going to implement a simple grammar that resembles a mathematical subset of our Lisp. It's called <a href="http://en.wikipedia.org/wiki/Polish_notation">Polish Notation</a> and is a notation for arithmetic where the operator comes before the operands.</p>
 
 <p>For example...</p>
 
@@ -38,7 +38,7 @@
 
 <p>We should be able to encode most of the above rules using things we know already, but <em>Number</em> and <em>Program</em> might pose some trouble. They contains a couple of constructs we've not learnt how to express yet. We don't know how to express the start or end of input, optional characters, or ranges of characters.</p>
 
-<p>These can be expressed, but they require something called a <em>Regular Expression</em>. Regular expressions are a way of writing grammars for small sections of text such as words or numbers. Grammars written using regular expressions can't consist of multiple rules, but they do give precise, and consise, control over what is matched and what isn't. Here are some basic rules for writing regular expressions.</p>
+<p>These can be expressed, but they require something called a <em>Regular Expression</em>. Regular expressions are a way of writing grammars for small sections of text such as words or numbers. Grammars written using regular expressions can't consist of multiple rules, but they do give precise, and concise, control over what is matched and what isn't. Here are some basic rules for writing regular expressions.</p>
 
 <table class='table'>
   <tr><td><code>a</code></td><td>The character <code>a</code> is required.</td></tr>
@@ -100,7 +100,7 @@ mpca_lang(
   Number, Operator, Expr, Lispy);
 </code></pre>
 
-<p>We need to add this to the interactive prompt we started on in chapter 4. Put this code right at the beginning of the <code>main</code> function before we print the <em>Version</em> and <em>Exit</em> information. At the end of our program we also need to delete the parsers when we are done with them. Right before <code>main</code> returns we should place the following cleanup code.</p>
+<p>We need to add this to the interactive prompt we started on in chapter 4. Put this code right at the beginning of the <code>main</code> function before we print the <em>Version</em> and <em>Exit</em> information. At the end of our program we also need to delete the parsers when we are done with them. Right before <code>main</code> returns we should place the following clean-up code.</p>
 
 <pre><code data-language='c'>/* Undefine and Delete our Parsers */
 mpc_cleanup(4, Number, Operator, Expr, Lispy);</code></pre>
@@ -252,7 +252,7 @@ int main(int argc, char** argv) {
 <div class="alert alert-warning">
   <ul class="list-group">
     <li class="list-group-item">&rsaquo; Write a regular expression matching strings of all <code>a</code> or <code>b</code> such as <code>aababa</code> or <code>bbaa</code>.</li>
-    <li class="list-group-item">&rsaquo; Write a regular expression matching strings of concecutive <code>a</code> and <code>b</code> such as <code>ababab</code> or <code>aba</code>.</li>
+    <li class="list-group-item">&rsaquo; Write a regular expression matching strings of consecutive <code>a</code> and <code>b</code> such as <code>ababab</code> or <code>aba</code>.</li>
     <li class="list-group-item">&rsaquo; Write a regular expression matching <code>pit</code>, <code>pot</code> and <code>respite</code> but <em>not</em> <code>peat</code>, <code>spit</code>, or <code>part</code>.</li>
     <li class="list-group-item">&rsaquo; Change the grammar to add a new operator such as <code>%</code>.</li>
     <li class="list-group-item">&rsaquo; Change the grammar to recognize operators written in textual format <code>add</code>, <code>sub</code>, <code>mul</code>, <code>div</code>.</li>

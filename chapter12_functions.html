@@ -2,7 +2,7 @@
 
 <h2>What is a Function?</h2> <hr/>
 
-<p>Functions are the essence of all programming. Back in the early days of computer science they represented a naive dream. The idea was that we could reduce computation into these smaller and smaller bits of re-usable code. Given enough time, and a proper structure for libraries, eventually we would have written code required for all computational needs. No longer would people have to write their own functions, and programming would consist of an easy job of stiching together components.</p>
+<p>Functions are the essence of all programming. Back in the early days of computer science they represented a naive dream. The idea was that we could reduce computation into these smaller and smaller bits of re-usable code. Given enough time, and a proper structure for libraries, eventually we would have written code required for all computational needs. No longer would people have to write their own functions, and programming would consist of an easy job of stitching together components.</p>
 
 <p>This dream hasn't come true yet, but it persists, no matter how flawed. Each new programming technique, or paradigm, that comes along shakes up this idea a little. They promise better re-use of code. Better abstractions, and an easier life for all.</p>
 
@@ -11,13 +11,13 @@
   <p><small>Bananaphone &bull; Another naive dream.</small></p>
 </div>
 
-<p>In reality what each paradigm delivers is simply <em>different</em> abstractions. There has always been a trade-off. For each higher level of thinking about programming, some piece is thrown away. And this means, no matter how well you decide what to keep and what to leave, occasionally someone will need that piece that has been lost. But through all of this, one way or the other, functions have always persisted, and continualy proven to be effective.</p>
+<p>In reality what each paradigm delivers is simply <em>different</em> abstractions. There has always been a trade-off. For each higher level of thinking about programming, some piece is thrown away. And this means, no matter how well you decide what to keep and what to leave, occasionally someone will need that piece that has been lost. But through all of this, one way or the other, functions have always persisted, and continually proven to be effective.</p>
 
 <p>We've used functions in C, we know what they <em>look like</em>, but we don't know exactly what they <em>are</em>. Here are a few ways to think about them.</p>
 
 <p>One way to think about functions is as description of some computation you want to be performed later. When you define a function it is like saying &quot;when I use <em>this</em> name I want <em>that</em> sort of thing to happen&quot;. This is a very practical idea of a function. It is very intuitive, and metaphorical to language. This is the way you would command a human, or animal. Another thing I like about this is that it captures the delayed nature of functions. Functions are defined once, but can be called on repeatedly after.</p>
 
-<p>Another way to think about functions is as a black box that takes some input and produces some output. This idea is subtly different from the former. It is more algebraic, and doesn&#39;t talk about <em>computation</em> or <em>commands</em>. This idea is a mathematical concept, and is not tied to some particular machine, or language. In some situations this idea is exceptionally useful. It allows us to think about functions without worrying about their internals, or how they are computed exactly. We can then combine and compose them together without worry of something subtle going wrong. This is the core idea behind an abstraction, and is what allows layers of complexity to work together with each other rather than conflict. This idea's strength can also be its downfall. Because it does not mention anything about computation it does not deal with a number of real world concerns. <em>&quot;How long will this function take to run?&quot;</em>, <em>&quot;Is this function efficient?&quot;</em>, <em>&quot;Will it modify the state of my program? If so how?&quot;</em>.</p>
+<p>Another way to think about functions is as a black box that takes some input and produces some output. This idea is subtly different from the former. It is more algebraic, and doesn't talk about <em>computation</em> or <em>commands</em>. This idea is a mathematical concept, and is not tied to some particular machine, or language. In some situations this idea is exceptionally useful. It allows us to think about functions without worrying about their internals, or how they are computed exactly. We can then combine and compose them together without worry of something subtle going wrong. This is the core idea behind an abstraction, and is what allows layers of complexity to work together with each other rather than conflict. This idea's strength can also be its downfall. Because it does not mention anything about computation it does not deal with a number of real world concerns. <em>&quot;How long will this function take to run?&quot;</em>, <em>&quot;Is this function efficient?&quot;</em>, <em>&quot;Will it modify the state of my program? If so how?&quot;</em>.</p>
 
 <div class='pull-left alert alert-warning' style="margin: 15px; text-align: center;">
   <img src="/static/img/black_box.png" alt="black_box"/>
@@ -172,7 +172,7 @@ break;</code></pre>
 
 <p>We can solve this problem by changing the definition of our environment to contain a reference to some <em>parent</em> environment. Then, when we want to evaluate a function, we can set this <em>parent</em> environment to our global environment, which has all of our builtins defined within.</p>
 
-<p>When we add this to our <code>lenv</code> struct, conceptually it will be a <em>reference</em> to a parent environment, not some sub-environment or anything like that. Because of this we shouldn&#39;t <em>delete</em> it when our <code>lenv</code> gets deleted, or copy it when our <code>lenv</code> gets copied.</p>
+<p>When we add this to our <code>lenv</code> struct, conceptually it will be a <em>reference</em> to a parent environment, not some sub-environment or anything like that. Because of this we shouldn't <em>delete</em> it when our <code>lenv</code> gets deleted, or copy it when our <code>lenv</code> gets copied.</p>
 
 <p>The way the <em>parent environment</em> works is simple. If someone calls <code>lenv_get</code> on the environment, and the symbol cannot be found. It will look then in any parent environment to see if the named value exists there, and repeat the process till either the variable is found or there are no more parents. To signify that an environment has no parent we set the reference to <code>NULL</code>.</p>
 
@@ -229,7 +229,7 @@ lenv* lenv_new(void) {
 
 <p>Having parent environments also changes our concept of <em>defining</em> a variable.</p>
 
-<p>There are two ways we could define a variable now. Either we could define it in the local, innermost environment, or we could define it in the global, outermost environment. We will add functions to do both. We&#39;ll leave the <code>lenv_put</code> method the same. It can be used for definition in the local environment. But we&#39;ll add a new fuction <code>lenv_def</code> for definition in the global environment. This works by simply following the parent chain up before using <code>lval_put</code> to define locally.</p>
+<p>There are two ways we could define a variable now. Either we could define it in the local, innermost environment, or we could define it in the global, outermost environment. We will add functions to do both. We&#39;ll leave the <code>lenv_put</code> method the same. It can be used for definition in the local environment. But we&#39;ll add a new function <code>lenv_def</code> for definition in the global environment. This works by simply following the parent chain up before using <code>lval_put</code> to define locally.</p>
 
 <pre><code data-language='c'>void lenv_def(lenv* e, lval* k, lval* v) {
   /* Iterate till e has no parent */
@@ -306,9 +306,9 @@ lenv_add_builtin(e, &quot;=&quot;,   builtin_put);</code></pre>
 
 <p>This creates a function that has been <em>partially evaluated</em> and reflects our previous idea of a function being some kind of <em>partial computation</em>. If we start with a function that takes two arguments, and pass in a single argument, we can bind this first argument and return a new function with its first formal argument bound, and its second remaining empty.</p>
 
-<p>We can use this metaphor to create a cute image of how functions work. We can imagine each expession consisting of a function at the front which repeatedly consumes the input directly to its right. Once it has consumed the input to its right, if it is full (requires no more inputs) it evaluates and replaces itself with some value. If it needs more it replaced itself with another new, fuller function, with one of its variables bound and repeats the process.</p>
+<p>We can use this metaphor to create a cute image of how functions work. We can imagine each expression consisting of a function at the front which repeatedly consumes the input directly to its right. Once it has consumed the input to its right, if it is full (requires no more inputs) it evaluates and replaces itself with some value. If it needs more it replaced itself with another new, fuller function, with one of its variables bound and repeats the process.</p>
 
-<p>So you can imagine functions like a little pacman, not consuming all inputs at once, but iteratively eating inputs to the right and getting bigger and bigger until it is full. This isn't actually how we&#39;re going to implement it in code, but either way it is <em>fun to imagine</em>.</p>
+<p>So you can imagine functions like a little Pac-Man, not consuming all inputs at once, but iteratively eating inputs to the right and getting bigger and bigger until it is full. This isn't actually how we&#39;re going to implement it in code, but either way it is <em>fun to imagine</em>.</p>
 
 <pre><code data-language='c'>lval* lval_call(lenv* e, lval* f, lval* a) {
 
@@ -358,7 +358,7 @@ lenv_add_builtin(e, &quot;=&quot;,   builtin_put);</code></pre>
 
 }</code></pre>
 
-<p>The above function does exactly as we explained above, with correct error handling added in too. First it iterates over the passed in arguments attemping to place each one in the environment. Then it checks if the environment is full, and if so evaluates, otherwise returns a copy of itself with some arguments filled.</p>
+<p>The above function does exactly as we explained above, with correct error handling added in too. First it iterates over the passed in arguments attempting to place each one in the environment. Then it checks if the environment is full, and if so evaluates, otherwise returns a copy of itself with some arguments filled.</p>
 
 <p>If we update our evaluation function <code>lval_eval_sexpr</code> to call <code>lval_call</code>, we can give our new system a spin.</p>
 
@@ -395,13 +395,13 @@ lispy&gt;
 
 <h2>Variable Arguments</h2> <hr/>
 
-<p>We&#39;ve defined some of our builtin functions so they can take in a variable number of arguments. Functions like <code>+</code> and <code>join</code> can take any number of arguments, and operator on them logically. We should find a way to let user defined functions work on multiple arguments also.</p>
+<p>We've defined some of our builtin functions so they can take in a variable number of arguments. Functions like <code>+</code> and <code>join</code> can take any number of arguments, and operator on them logically. We should find a way to let user defined functions work on multiple arguments also.</p>
 
-<p>Unfortunately there isn&#39;t an elegant way for us to allow for this, without adding in some special syntax. So we're going to hard-code some system into our language using a special symbol <code>&amp;</code>.</p>
+<p>Unfortunately there isn't an elegant way for us to allow for this, without adding in some special syntax. So we're going to hard-code some system into our language using a special symbol <code>&amp;</code>.</p>
 
 <p>We are going to let users define formal arguments that look like <code>{x &amp; xs}</code>, which means that a function will take in a single argument <code>x</code>, followed by zero or more other arguments, joined together into a list called <code>xs</code>. This is a bit like the ellipsis we used to declare variable arguments in C.</p>
 
-<p>When assigning our formal arguments we&#39;re going look for a <code>&amp;</code> symbol and if it exists take the next formal argument and assign it any remainging supplied arguments we&#39;ve been passed. It&#39;s important we convert this argument list to a Q-Expression. We need to also remember to check that <code>&amp;</code> is followed by a real symbol, and if it isn&#39;t we should throw an error.</p>
+<p>When assigning our formal arguments we&#39;re going look for a <code>&amp;</code> symbol and if it exists take the next formal argument and assign it any remaining supplied arguments we&#39;ve been passed. It&#39;s important we convert this argument list to a Q-Expression. We need to also remember to check that <code>&amp;</code> is followed by a real symbol, and if it isn&#39;t we should throw an error.</p>
 
 <p>Just after the first symbol is popped from the formals in the <code>while</code> loop of <code>lval_call</code> we can add this special case.</p>
 
@@ -421,7 +421,7 @@ if (strcmp(sym-&gt;sym, &quot;&amp;&quot;) == 0) {
   break;
 }</code></pre>
 
-<p>Suppose when calling the function the user doesn&#39;t supply any variable arguments, but only the first named ones. In this case we need to set the symbol following <code>&amp;</code> to the empty list. Just after we delete the argument list, and before we check to see if all the formals have been evaluated add in this special case.</p>
+<p>Suppose when calling the function the user doesn't supply any variable arguments, but only the first named ones. In this case we need to set the symbol following <code>&amp;</code> to the empty list. Just after we delete the argument list, and before we check to see if all the formals have been evaluated add in this special case.</p>
 
 <pre><code data-language='c'>/* If &#39;&amp;&#39; remains in formal list it should be bound to empty list */
 if (f-&gt;formals-&gt;count &gt; 0 &amp;&amp;
@@ -449,7 +449,7 @@ if (f-&gt;formals-&gt;count &gt; 0 &amp;&amp;
 
 <h3>Function Definition</h3>
 
-<p>Lambdas are clearly a simple and powerful way of defining functions. But the syntax is a little clumbsy. There are a lot of brackets and symbols involved. Here is an interesting idea. We can try to write a function that defines a function itself, using in some way nicer syntax.</p>
+<p>Lambdas are clearly a simple and powerful way of defining functions. But the syntax is a little clumsy. There are a lot of brackets and symbols involved. Here is an interesting idea. We can try to write a function that defines a function itself, using in some way nicer syntax.</p>
 
 <p>Essentially what we want is a function that can perform two steps at once. First creating a new function and then defining it some name. We could let the user supply the name and the formal arguments altogether and then separate these out for them and use them in the definition. Here is a function that does that. It takes as input some arguments and some body. It takes the head of the arguments to be the function name and the rest to be the formals to the function body.</p>
 
@@ -470,15 +470,15 @@ if (f-&gt;formals-&gt;count &gt; 0 &amp;&amp;
 
 <h3>Currying</h3>
 
-<p>At the moment functions like <code>+</code> take a variable number of arguments. In some situations thats great, but what if we instead had a list of arguments we wished to pass it. In this situation it is rendered somewhat useless.</p>
+<p>At the moment functions like <code>+</code> take a variable number of arguments. In some situations that's great, but what if we instead had a list of arguments we wished to pass it. In this situation it is rendered somewhat useless.</p>
 
-<p>Again we can try to create a function to solve this problem. If we can create a list in the format we wish to use for our expression we can use <code>eval</code> to treat it as such. In the situation of <code>+</code> we could append this function to the front of the list and then perform the evalation.</p>
+<p>Again we can try to create a function to solve this problem. If we can create a list in the format we wish to use for our expression we can use <code>eval</code> to treat it as such. In the situation of <code>+</code> we could append this function to the front of the list and then perform the evaluation.</p>
 
 <p>We can define a function <code>unpack</code> that does this. It takes as input some function and some list and appends the function to the front of the list, before evaluating it.</p>
 
 <pre><code data-language='lispy'>fun {unpack f xs} {eval (join (list f) xs)}</code></pre>
 
-<p>In some situations we might be faced with the opposite dilema. We may have a function that takes as input some list, but we wish to call it using variable arguments. In this case the solution is even simpler. We use the fact that our <code>&amp;</code> syntax for variable arguments packs up variable arguments into a list for us.</p>
+<p>In some situations we might be faced with the opposite dilemma. We may have a function that takes as input some list, but we wish to call it using variable arguments. In this case the solution is even simpler. We use the fact that our <code>&amp;</code> syntax for variable arguments packs up variable arguments into a list for us.</p>
 
 <pre><code data-language='lispy'>fun {pack f &amp; xs} {f xs}</code></pre>
 

@@ -37,7 +37,7 @@ typedef struct {
 
 <p>The reason we pick <code>int</code> is because we will assign meaning to each integer value, to encode what we require. For example we can make a rule <em>"If <code>type</code> is <code>0</code> then the structure is a Number."</em>, or <em>"If <code>type</code> is <code>1</code> then the structure is an Error."</em> This is a good way of doing things. It is simple and effective.</p>
 
-<p>But if we litter our code with stray <code>0</code> and <code>1</code> then it is going to become increasingly unclear as to what is happening. Instead we can use named contants that have been assigned these integer values. This gives the reader an indiciation as to <em>why</em> one might be comparing a number to <code>0</code> or <code>1</code> and <em>what</em> is meant in this context.</p>
+<p>But if we litter our code with stray <code>0</code> and <code>1</code> then it is going to become increasingly unclear as to what is happening. Instead we can use named constants that have been assigned these integer values. This gives the reader an indication as to <em>why</em> one might be comparing a number to <code>0</code> or <code>1</code> and <em>what</em> is meant in this context.</p>
 
 <p>In C this is supported using something called an <code>enum</code>.</p>
 
@@ -131,7 +131,7 @@ void lval_println(lval v) { lval_print(v); putchar(&#39;\n&#39;); }</code></pre>
 
   <p>It works something like this. <code>&lt;condition&gt; ? &lt;then&gt; : &lt;else&gt;</code>. In other words, if the condition is true it returns what follows the <code>?</code>, otherwise it returns what follows <code>:</code>.</p>
 
-  <p>Some people dislike this operator because they believe it makes code unclear. If you feel unfamiliar with it it can seem awkard, but once you get to know it there are rarely problems.</p>
+  <p>Some people dislike this operator because they believe it makes code unclear. If you feel unfamiliar with it it can seem awkward, but once you get to know it there are rarely problems.</p>
 </div>
 
 <p>We need to give a similar treatment to our <code>eval</code> function. In this case because we've defined <code>eval_op</code> to robustly handle errors we just need to add the error conditions to our number conversion function.</p>
@@ -373,8 +373,8 @@ int main(int argc, char** argv) {
     <li class="list-group-item">&rsaquo; What are <code>union</code> data types and how to they work?</li>
     <li class="list-group-item">&rsaquo; Can you change how <code>lval</code> is defined to use <code>union</code> instead of <code>struct</code>?</li>
     <li class="list-group-item">&rsaquo; What are the advantages over using a <code>union</code> instead of <code>struct</code>?</li>
-    <li class="list-group-item">&rsaquo; Extend parsing and evauation to support the remainder operator <code>%</code>.</li>
-    <li class="list-group-item">&rsaquo; Extend parsing and evauation to support decimal types using a <code>double</code> field.</li>
+    <li class="list-group-item">&rsaquo; Extend parsing and evaluation to support the remainder operator <code>%</code>.</li>
+    <li class="list-group-item">&rsaquo; Extend parsing and evaluation to support decimal types using a <code>double</code> field.</li>
   </ul>
 </div>
 

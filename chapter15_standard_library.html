@@ -7,9 +7,9 @@
   <p><small>Library &bull; Built with just leather, paper, wood, and ink.</small></p>
 </div>
 
-<p>The Lisp we&#39;ve built has been purposefully minimal. We've only added the fewest number of core structures and builtins. If we chose these carefully, as we did, then it should allow us to add in everything else required to the language.</p>
+<p>The Lisp we've built has been purposefully minimal. We've only added the fewest number of core structures and builtins. If we chose these carefully, as we did, then it should allow us to add in everything else required to the language.</p>
 
-<p>The motivation behind minimalism is two-fold. The first advantage is that it makes the core language simple to debug and easy to learn. This is a great benefit to developers and users. Like Occams Razor it is almost always better to trim away any waste if it results in a equally expressive language. The second reaon is that having a small language is also aestetically nicer. It is clever, interesting, and fun to see how small we can make the core of a language, and still get something useful out of the other side. As hackers, which we should be by now, this is something we enjoy.</p>
+<p>The motivation behind minimalism is two-fold. The first advantage is that it makes the core language simple to debug and easy to learn. This is a great benefit to developers and users. Like Occam's Razor it is almost always better to trim away any waste if it results in a equally expressive language. The second reason is that having a small language is also aesthetically nicer. It is clever, interesting, and fun to see how small we can make the core of a language, and still get something useful out of the other side. As hackers, which we should be by now, this is something we enjoy.</p>
 
 
 <h2>Atoms</h2> <hr/>
@@ -29,7 +29,7 @@
 
 <h2>Building Blocks</h2> <hr/>
 
-<p>We've already come up with a number of cool functions I've been using in the examples. One of these is our <code>fun</code> function that allows us to declare functions in a neater way. We shoud definitely include this in our standard library.</p>
+<p>We've already come up with a number of cool functions I've been using in the examples. One of these is our <code>fun</code> function that allows us to declare functions in a neater way. We should definitely include this in our standard library.</p>
 
 <pre><code data-language='lispy'>&#59; Function Definitions
 (def {fun} (\ {f b} {
@@ -80,7 +80,7 @@ lispy&gt;</code></pre>
 
 <h2>Logical Operators</h2> <hr/>
 
-<p>We didn't define any local operators such as <code>and</code> and <code>or</code> in our language. This might be a good thing to add in later. For now we can use arithmetic operators to emulate them. Think for a second how these functions work when encounting <code>0</code> or <code>1</code> for their various inputs.</p>
+<p>We didn't define any local operators such as <code>and</code> and <code>or</code> in our language. This might be a good thing to add in later. For now we can use arithmetic operators to emulate them. Think for a second how these functions work when encountering <code>0</code> or <code>1</code> for their various inputs.</p>
 
 <pre><code data-language='lispy'>&#59; Logical Functions
 (fun {not x}   {- 1 x})
@@ -121,7 +121,7 @@ lispy>
 
 <p>The <code>comp</code> function is used to compose two functions. It takes as input <code>f</code>, <code>g</code>, and an argument to <code>g</code>. It then applies this argument to <code>g</code> and applies the result again to <code>f</code>. This can be used to compose two function together into a new function that applies both of them in series. Like before we can use this in combination with partial evaluation to build up complex functions from simpler ones.</p>
 
-<p>For example we can compose two functions. One that negates a number and another that unpacks a list of numbers for mulitplying together using <code>*</code>.</p>
+<p>For example we can compose two functions. One that negates a number and another that unpacks a list of numbers for multiplying together using <code>*</code>.</p>
 
 <pre><code data-language='lispy'>lispy&gt; (unpack *) {2 2}
 4
@@ -139,7 +139,7 @@ lispy&gt;
 
 <h2>List Functions</h2> <hr/>
 
-<p>The <code>head</code> function is used to get the first element of a list, but what it returns is still wrapped in the list. If we want to actually get the element out of this list we need to extact it somehow.</p>
+<p>The <code>head</code> function is used to get the first element of a list, but what it returns is still wrapped in the list. If we want to actually get the element out of this list we need to extract it somehow.</p>
 
 <p>Single element lists evaluate to just that element, so we can use the <code>eval</code> function to do this extraction. We can also define a couple of helper functions for aid extracting the first, second and third elements of a list. We'll use these function a lot later.</p>
 
@@ -220,7 +220,7 @@ lispy&gt; map print {&quot;hello&quot; &quot;world&quot;}
 {() ()}
 lispy&gt;</code></pre>
 
-<p>An adaption of this idea is a <code>filter</code> function which, takes in some functional condition, and only includes items of a list which match that condition.</p>
+<p>An adaptation of this idea is a <code>filter</code> function which, takes in some functional condition, and only includes items of a list which match that condition.</p>
 
 <pre><code data-language='lispy'>&#59; Apply Filter to List
 (fun {filter f l} {
@@ -277,7 +277,7 @@ lispy&gt;</code></pre>
     {otherwise &quot;th&quot;}
 })</code></pre>
 
-<p>This is actually somewhat more powerful than the C <code>switch</code> statement. In C rather than passing in conditions the input value is compared only for equality with a number of constant candidates. We can also define this function in our Lisp, where we compare a value to a number of candiates. In this function we take some value <code>x</code> followed by zero or more two-element lists again. If the first element in the two-element list is equal to <code>x</code>, the second element is evaluated, otherwise the process continues down the list.</p>
+<p>This is actually somewhat more powerful than the C <code>switch</code> statement. In C rather than passing in conditions the input value is compared only for equality with a number of constant candidates. We can also define this function in our Lisp, where we compare a value to a number of candidates. In this function we take some value <code>x</code> followed by zero or more two-element lists again. If the first element in the two-element list is equal to <code>x</code>, the second element is evaluated, otherwise the process continues down the list.</p>
 
 <pre><code data-language='lispy'>(fun {case x &amp; cs} {
   if (== cs {})
@@ -578,7 +578,7 @@ lispy&gt;</code></pre>
   <ul class="list-group">
     <li class="list-group-item">&rsaquo; Rewrite the <code>len</code> function using <code>foldl</code>.</li>
     <li class="list-group-item">&rsaquo; Rewrite the <code>elem</code> function using <code>foldl</code>.</li>
-    <li class="list-group-item">&rsaquo; Incorporate your standard library directly into the language. Make it load at startup.</li>
+    <li class="list-group-item">&rsaquo; Incorporate your standard library directly into the language. Make it load at start-up.</li>
     <li class="list-group-item">&rsaquo; Write some documentation for your standard library, explaining what each of the functions do.</li>
     <li class="list-group-item">&rsaquo; Write some example programs using your standard library, for users to learn from.</li>
     <li class="list-group-item">&rsaquo; Write some test cases for each of the functions in your standard library.</li>

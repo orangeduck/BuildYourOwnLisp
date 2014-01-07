@@ -29,13 +29,13 @@
 
 <p>Now that we're going to allow for user defined variables we need to update the grammar for symbols to be more flexible. Rather than just our builtin functions it should match any possible valid symbol. Unlike in C, where the name a variable can be given is fairly restrictive, we're going to allow for all sorts of characters in the name of a variable.</p>
 
-<p>We can create a regular expression that expresses the range of characters avaliable as follows.</p>
+<p>We can create a regular expression that expresses the range of characters available as follows.</p>
 
 <pre><code>/[a-zA-Z0-9_+\\-*\\/\\\\=&lt;&gt;!&amp;]+/</code></pre>
 
 <p>On first glace this looks like we've just bashed our hands in the keyboard. Actually it is a regular expression using a big range specifier <code>[]</code>. Inside range specifiers special characters lose their meaning, but some of these characters still need to be escaped with backslashes. Because this is part of a C string we need to put two back slashes to represent a single backslash character in the input.</p>
 
-<p>This rule lets symbols be any of, the standard C identifier characters <code>a-zA-Z0-9_</code>, the arithmetic operator characters <code>+\\-*\\/</code>, the backslash character <code>\\\\</code>, the comparison operator characters <code>=&lt;&gt;!</code>, or an ampersands <code>&amp;</code>. This will give us all the flexability we need for defining new and existing symbols.</p>
+<p>This rule lets symbols be any of, the standard C identifier characters <code>a-zA-Z0-9_</code>, the arithmetic operator characters <code>+\\-*\\/</code>, the backslash character <code>\\\\</code>, the comparison operator characters <code>=&lt;&gt;!</code>, or an ampersands <code>&amp;</code>. This will give us all the flexibility we need for defining new and existing symbols.</p>
 
 <pre><code data-language='C'>mpca_lang(
   "                                                     \
@@ -58,7 +58,7 @@
 
 <p>Function pointers are a great feature of C that lets you store and pass around pointers to functions. It doesn't make sense to edit the data pointed to by these pointers. Instead we use them to call the function they point to, as if it were a normal function.</p>
 
-<p>Like normal pointers, function pointers have some type associated with them. This type specifies the type of the function pointed to, not the type of the data pointed to. This lets the comipiler work out if it has been called correctly.</p>
+<p>Like normal pointers, function pointers have some type associated with them. This type specifies the type of the function pointed to, not the type of the data pointed to. This lets the compiler work out if it has been called correctly.</p>
 
 <p>In the previous chapter our builtin functions took a <code>lval*</code> as input and returned a <code>lval*</code> as output. In this chapter our builtin functions will take an extra pointer to the environment <code>lenv*</code> as input. We can declare a new function pointer type called <code>lbuiltin</code>, for this type of function, like this.</p>
 
@@ -67,11 +67,11 @@
 <div class="alert alert-warning">
   <p><strong>Why is that syntax so odd?</strong></p>
 
-  <p>In some places the syntax of C can look particularly weird. It can help if we understand exactly why the syntax is like this. Let us deconstruct the above syntax part by part.</p>
+  <p>In some places the syntax of C can look particularly weird. It can help if we understand exactly why the syntax is like this. Let us de-construct the above syntax part by part.</p>
   
-  <p>First the <code>typedef</code>. This can be put before any standard variable declaration. It results in the name of the variable, being declared a new type, matching what would be the infered type of that variable. This is why in the above declaration what looks like the function name becomes the new type name.</p>
+  <p>First the <code>typedef</code>. This can be put before any standard variable declaration. It results in the name of the variable, being declared a new type, matching what would be the inferred type of that variable. This is why in the above declaration what looks like the function name becomes the new type name.</p>
   
-  <p>Next all those <code>*</code>. Pointer types in C are actually meant to be written with the star <code>*</code> on the left hand side of the variable name, not the right hand side of the type <code>int *x;</code>. This is because C type syntax works by a kind of weird inference. Instead of reading <em>"Create a new <code>int</code> pointer <code>x</code>"</em>. It is meant to read <em>"Create a new variable <code>x</code> where to dereference <code>x</code> results in an <code>int</code>."</em> Therefore <code>x</code> is infered to be a pointer to an <code>int</code>.</p>
+  <p>Next all those <code>*</code>. Pointer types in C are actually meant to be written with the star <code>*</code> on the left hand side of the variable name, not the right hand side of the type <code>int *x;</code>. This is because C type syntax works by a kind of weird inference. Instead of reading <em>"Create a new <code>int</code> pointer <code>x</code>"</em>. It is meant to read <em>"Create a new variable <code>x</code> where to dereference <code>x</code> results in an <code>int</code>."</em> Therefore <code>x</code> is inferred to be a pointer to an <code>int</code>.</p>
   
   <p>This idea is extended to function pointers. We can read the above declaration as follows. <em>"To get an <code>lval*</code> we dereference <code>builtin</code> and call it with a <code>lenv*</code> and a <code>lval*</code>."</em> Therefore <code>builtin</code> must be a function pointer that takes an <code>lenv*</code> and a <code>lval*</code> and returns a <code>lval*</code>.</p>
 </div>
@@ -80,7 +80,7 @@
 
 <p>The <code>lbuiltin</code> type references the <code>lval</code> type and the <code>lenv</code> type. This means that they should be declared first in the source file.</p>
 
-<p>But we want to make <code>lbuiltin</code> a field in our <code>lval</code> struct so we can create function values. So therefore our <code>lbuiltin</code> declaration must go before our <code>lval</code> declaration. This leads to what is called a cyclic type dependancy, where two types depend on each other.</p>
+<p>But we want to make <code>lbuiltin</code> a field in our <code>lval</code> struct so we can create function values. So therefore our <code>lbuiltin</code> declaration must go before our <code>lval</code> declaration. This leads to what is called a cyclic type dependency, where two types depend on each other.</p>
 
 <p>We've come across this problem before with functions which depend on each other. The solution was to create a <em>forward declaration</em> which declared a function but left the body of it empty.</p>
 
@@ -167,7 +167,7 @@ struct lval {
 
 <h2>Environment</h2> <hr/>
 
-<p>Our environment structure must encode a list of relationships between <em>names</em> and <em>values</em>. There are many ways to build a structure that can do this sort of thing. We are going to go for the simplest possible method that works well. This is to use two lists of equal length. One is a list of <code>lval*</code>, and the other is a list of <code>char*</code>. Each entry in one list has a corrisponding entry in the other list at the same position.</p>
+<p>Our environment structure must encode a list of relationships between <em>names</em> and <em>values</em>. There are many ways to build a structure that can do this sort of thing. We are going to go for the simplest possible method that works well. This is to use two lists of equal length. One is a list of <code>lval*</code>, and the other is a list of <code>char*</code>. Each entry in one list has a corresponding entry in the other list at the same position.</p>
 
 <p>We've already forward declared our <code>lenv</code> struct, so we can define it as follows.</p>
 
@@ -282,7 +282,7 @@ void lenv_put(lenv* e, lval* k, lval* v) {
 
 <h2>Builtins</h2> <hr/>
 
-<p>Now that our evaluation relies on the new function type we need to make sure we can regisiter all of our builtin functions with the environment before we start the interactive prompt. At the moment our builtin functions might not be the correct type. We need to change their type signature such that they take in some environment, and where appropriate change them to pass this environment into other calls that require it.</p>
+<p>Now that our evaluation relies on the new function type we need to make sure we can register all of our builtin functions with the environment before we start the interactive prompt. At the moment our builtin functions might not be the correct type. We need to change their type signature such that they take in some environment, and where appropriate change them to pass this environment into other calls that require it.</p>
 
 <p>Once we've changed them to the correct type we can create a function that registers all of our builtins into an environment.</p>
 
@@ -338,7 +338,7 @@ while (1) {
 lenv_del(e);
 </code></pre>
 
-<p>If everything is working correctly we should have a play around in the promp and verify that functions are actually a new type of value now, not symbols.</p>
+<p>If everything is working correctly we should have a play around in the prompt and verify that functions are actually a new type of value now, not symbols.</p>
 
 <pre><code data-language='lispy'>lispy&gt; +
 &lt;function&gt;

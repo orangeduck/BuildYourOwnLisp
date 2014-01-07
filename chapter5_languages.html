@@ -22,7 +22,7 @@
 
 <p>The consequence of this observation is important. It means that although there is an infinite number of different things that can be said, or written down, in a particular language; it is still possible to process and understand it with a finite number of rules.</p>
 
-<p>The name for these rules is a <em>grammar</em>. We can describe grammars in a number of ways. One way is textual. For example we could say, "a <em>sentance</em> must contain a <em>verb phrase</em>", or "a <em>verb phrase</em> can be either a <em>verb</em> or an <em>adverb</em> followed by a <em>verb phrase</em>". This method is good for humans but it is too vague for computers to understand. When programming we need to write down a more formal description of a grammar.</p>
+<p>The name for these rules is a <em>grammar</em>. We can describe grammars in a number of ways. One way is textual. For example we could say, "a <em>sentence</em> must contain a <em>verb phrase</em>", or "a <em>verb phrase</em> can be either a <em>verb</em> or an <em>adverb</em> followed by a <em>verb phrase</em>". This method is good for humans but it is too vague for computers to understand. When programming we need to write down a more formal description of a grammar.</p>
 
 <p>We are going to do this for our Lisp. To be able to read in the user input we need to write a <em>grammar</em> which describes it. If we write this grammar we can use it along with our user input and decide if the input is valid. If it is valid we can build a structured internal representation, which we can then <em>evaluate</em>, and perform the commands encoded within.</p>
 
@@ -31,7 +31,7 @@
 
 <h2>Parser Combinators</h2> <hr/>
 
-<p><code>mpc</code> is a <em>Parser Combinator</em> library written by yours truely. It is a library that allows you to build <em>parsers</em>, programs that understand and process particular languages. There are many different ways of building parsers, but the nice thing about using a <em>Parser Combinator</em> library is that it lets you build <em>parsers</em> easily, by specifying just the <em>grammar</em> ... sort of.</p>
+<p><code>mpc</code> is a <em>Parser Combinator</em> library written by yours truly. It is a library that allows you to build <em>parsers</em>, programs that understand and process particular languages. There are many different ways of building parsers, but the nice thing about using a <em>Parser Combinator</em> library is that it lets you build <em>parsers</em> easily, by specifying just the <em>grammar</em> ... sort of.</p>
 
 <p>Many <em>Parser Combinator</em> libraries actually work by letting you write normal code that simply <em>looks like</em> a grammar, not by actually specifying a grammar directly. In many situations this is fine, but sometimes it can get clunky and complicated. Luckily for us <code>mpc</code> allows for both methods. It can let us write normal code that just <em>looks like</em> a grammar, or we can use special notation to write a grammar directly.</p>
 
@@ -59,9 +59,9 @@ mpc_delete(Flatmate);
 
 <p>This code creates a new parser that could be used to read some language. This parser would parse the strings <code>"Dan"</code>, <code>"Chess"</code>, <code>"Adam"</code> <em>or</em> <code>"Lewis"</code>. These are all the strings that can be successfully recognized by this parser, and so they are considered its <em>language</em>. If you squint your eyes you could attempt to read the code like it is a weird grammar. It goes like this. "A <em>Flatmate</em> is <code>"Dan"</code> or <code>"Chess"</code> or <code>"Adam"</code> or <code>"Lewis"</code>".</p>
 
-<p>We can built a more complicated parser by referencing existing ones. In the next example the parser <code>Greet</code> parses <code>&quot;Hello&quot;</code> followed by a <code>Flatmate</code> (<em>either</em> <code>"Dan"</code>, <code>"Chess"</code>, <code>"Adam"</code> <em>or</em> <code>"Lewis"</code>), and concatinates these two results together using the function <code>mpcf_strfold</code>.</p>
+<p>We can built a more complicated parser by referencing existing ones. In the next example the parser <code>Greet</code> parses <code>&quot;Hello&quot;</code> followed by a <code>Flatmate</code> (<em>either</em> <code>"Dan"</code>, <code>"Chess"</code>, <code>"Adam"</code> <em>or</em> <code>"Lewis"</code>), and concatenates these two results together using the function <code>mpcf_strfold</code>.</p>
 
-<p>The parser <code>Greetings</code> then expands on this by recognizing many (zero or more) occurrences of <code>Greet</code> parser and concatinates them together with the function <code>mpcf_strfold</code>.</p>
+<p>The parser <code>Greetings</code> then expands on this by recognizing many (zero or more) occurrences of <code>Greet</code> parser and concatenates them together with the function <code>mpcf_strfold</code>.</p>
 
 <pre><code data-language='c'>mpc_parser_t* Greet = mpc_and(2, mpcf_strfold,
   mpc_sym(&quot;Hello&quot;),
@@ -70,7 +70,7 @@ mpc_delete(Flatmate);
 
 mpc_parser_t* Greetings = mpc_many(mpcf_strfold, Greet);</code></pre>
 
-<p>Because we are looking for <em>zero or more</em> occurances of a string, our <code>Greetings</code> parser can now accept an infinite number of different possible strings. This means it's language is <em>infinite</em>. Here are some examples of possible strings <code>Greetings</code> could accept.
+<p>Because we are looking for <em>zero or more</em> occurrences of a string, our <code>Greetings</code> parser can now accept an infinite number of different possible strings. This means it's language is <em>infinite</em>. Here are some examples of possible strings <code>Greetings</code> could accept.
 
 <pre><code data-language='c'>&quot;Hello Dan&quot;
 &quot;Hello Dan Hello Chess&quot;
@@ -119,7 +119,7 @@ mpc_cleanup(3, Flatmate, Greet, Greetings);</code></pre>
   <tr><td><code>&lt;abba&gt;</code></td><td>The rule called <code>abba</code> is required.</td></tr>
 </table>
 
-<p>Using these rules verify that what I've written above is equal to what we specified in code. This method of specifying a grammar is what we are going to use in the following chapters. It might seem overwhelming at first. Grammars can be difficult to understand right away. But as we continue you will become much more familar with how to create and edit them.</p>
+<p>Using these rules verify that what I've written above is equal to what we specified in code. This method of specifying a grammar is what we are going to use in the following chapters. It might seem overwhelming at first. Grammars can be difficult to understand right away. But as we continue you will become much more familiar with how to create and edit them.</p>
 
 <div class="alert alert-warning">
   <p><strong>Sounds familiar...</strong></p>
@@ -217,7 +217,7 @@ int main(int argc, char** argv) {
     <li class="list-group-item">&rsaquo; Why are there back slashes <code>\</code> at the end of the line in the grammar?</li>
     <li class="list-group-item">&rsaquo; Description textually a grammar for decimal numbers such as <code>0.01</code> or <code>52.221</code>.</li>
     <li class="list-group-item">&rsaquo; Description textually a grammar for web URLs such as <code>http://www.buildyourownlisp.com</code>.</li>
-    <li class="list-group-item">&rsaquo; Description textually a grammar for simple english sentances such as <code>the cat sat on the mat</code>.</li>
+    <li class="list-group-item">&rsaquo; Description textually a grammar for simple English sentences such as <code>the cat sat on the mat</code>.</li>
     <li class="list-group-item">&rsaquo; Description formally the above grammars. Use symbols such as <code>|</code> for <em>or</em>, and <code>*</code> for <em>zero or more of</em>.</li>
     <li class="list-group-item">&rsaquo; If you are familiar with JSON or XML, consider what their grammars might look like. Sketch out a description.</li>
   </ul>

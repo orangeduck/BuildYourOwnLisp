@@ -10,7 +10,7 @@
 
 <p>In the first chapter I mentioned that a Lisp is a language based around lists, but so far we've not seen many of them. In this chapter we rectify that, by finally converting our program into something that could vaguely be called a Lisp.</p>
 
-<p>The final result of this chapter will only differ slightly in behaviour from the previous chapter. Instead we are going to spend time changing how it works internally. This is called <em>refactoring</em> and it will make our life a lot easier later on. Like preparation for a meal, just because we're not putting food onto plates it doesn't mean we're wasting time. And sometimes the anticipation is even better than the meal!
+<p>The final result of this chapter will only differ slightly in behaviour from the previous chapter. Instead we are going to spend time changing how it works internally. This is called <em>re-factoring</em> and it will make our life a lot easier later on. Like preparation for a meal, just because we're not putting food onto plates it doesn't mean we're wasting time. And sometimes the anticipation is even better than the meal!
 
 <p>In this chapter we'll change our program to convert the <em>abstract syntax tree</em> input into an internal list structure we can store, and then evaluate in a single step.</p>
 
@@ -59,7 +59,7 @@
 
 <p>The Stack is the memory where your program lives. It is where all of your temporary variables and data structures exist as you manipulate and edit them. Each time you call a function a new area of the stack is put aside for it to use. Into this area are put copies of any arguments passed to the function, as well as some bookkeeping data such as who the caller was, and what to do when finished. When the function is done the area it used is unallocated, ready for use again by someone else.</p>
 
-<p>I like to think of the stack as a building site. Each time we need to do something new we corner off a section of space, enough for our tools and materials, and set to work. We can still go to other parts of the site, or go off-site, if we need certain things, but all our work is done in this section. Once we are done with some task, we take what we&#39;ve constructed to a new place and clean up that section of the space we've been using to make it.</p>
+<p>I like to think of the stack as a building site. Each time we need to do something new we corner off a section of space, enough for our tools and materials, and set to work. We can still go to other parts of the site, or go off-site, if we need certain things, but all our work is done in this section. Once we are done with some task, we take what we've constructed to a new place and clean up that section of the space we've been using to make it.</p>
 
 <h3>The Heap</h3>
 
@@ -70,9 +70,9 @@
 
 <p>The Heap is a section of memory put aside for storage of objects with a longer lifespan. Memory in this area has to be manually allocated and deallocated. To allocate new memory the <code>malloc</code> function is used. This function takes as input the number of bytes required, and returns back a pointer to a new block of memory with that many bytes set aside.</p>
 
-<p>When done with the memory at that location it must be released again. To do this the pointer recieved from <code>malloc</code> should be passed to the <code>free</code> function.</p>
+<p>When done with the memory at that location it must be released again. To do this the pointer received from <code>malloc</code> should be passed to the <code>free</code> function.</p>
 
-<p>Using the Heap is trickier than the Stack because it requires the programmer to remember to call <code>free</code> and to call it correctly. If he or she doesn't, the program may continuously allocate more and more memory. This is called a <em>memory leak</em>. A easy rule to avoid this is to ensure for each <code>malloc</code> there is a corrisponding (and only one corrisponding) <code>free</code>. If this can always be ensured the program should be handling The Heap correctly.</p>
+<p>Using the Heap is trickier than the Stack because it requires the programmer to remember to call <code>free</code> and to call it correctly. If he or she doesn't, the program may continuously allocate more and more memory. This is called a <em>memory leak</em>. A easy rule to avoid this is to ensure for each <code>malloc</code> there is a corresponding (and only one corresponding) <code>free</code>. If this can always be ensured the program should be handling The Heap correctly.</p>
 
 <p>I Imagine the Heap like a huge U-Store-It. We can call up the reception with <code>malloc</code> and request a number of boxes. With these boxes we can do what we want, and we know they will persist no matter how messy the building site gets. We can take things to and from the U-Store-It and the building site. It is useful to store materials and large objects which we only need to retrieve once in a while. The only problem is we need to remember to call the receptionist again with <code>free</code> when we are done. Otherwise soon we&#39;ll have requested all the boxes, have no space, and run up a huge bill.</p>
 
@@ -204,7 +204,7 @@ lval* lval_sexpr(void) {
   <p>The <code>strlen</code> function only returns the number of bytes in a string <em>excluding</em> the null terminator. This is why we need to add one, to ensure there is enough allocated space for it all!</p>
 </div>
 
-<p>We now need a special function to delete <code>lval*</code>. This should call <code>free</code> on the pointer itself to release the memory aquired from <code>malloc</code>, but more importantly it should inspect the type of the <code>lval</code>, and release any memory pointed to by its fields. If we match every call to one of the above construction functions with <code>lval_del</code> we can ensure we will get no memory leaks.</p>
+<p>We now need a special function to delete <code>lval*</code>. This should call <code>free</code> on the pointer itself to release the memory acquired from <code>malloc</code>, but more importantly it should inspect the type of the <code>lval</code>, and release any memory pointed to by its fields. If we match every call to one of the above construction functions with <code>lval_del</code> we can ensure we will get no memory leaks.</p>
 
 <pre><code class="lang-c">void lval_del(lval* v) {
 
@@ -313,7 +313,7 @@ void lval_println(lval* v) { lval_print(v); putchar(&#39;\n&#39;); }</code></pre
 <div class="alert alert-warning">
   <p><strong>I can't declare these functions because they call each other.</strong></p>
 
-  <p>The <code>lval_expr_print</code> function calls the <code>lval_print</code> function and vice-versa. There is no way we can order them in the source file to resolve this dependancy. Instead we need to <em>forward declare</em> one of them. This is declaring a function without giving it a body. It lets other functions call it, while allowing you to define it properly later on. To write a forward declaration write the function definition but intead of the body put a semicolon <code>;</code>. In this example we should put <code>void lval_print(lval* v);</code> somewhere in the source file before <code>lval_expr_print</code>.</p>
+  <p>The <code>lval_expr_print</code> function calls the <code>lval_print</code> function and vice-versa. There is no way we can order them in the source file to resolve this dependency. Instead we need to <em>forward declare</em> one of them. This is declaring a function without giving it a body. It lets other functions call it, while allowing you to define it properly later on. To write a forward declaration write the function definition but instead of the body put a semicolon <code>;</code>. In this example we should put <code>void lval_print(lval* v);</code> somewhere in the source file before <code>lval_expr_print</code>.</p>
   
   <p>You'll definitely run into this later, and I wont always alert you about it, so try to remember how to fix it!</p>
 </div>
@@ -342,7 +342,7 @@ lispy&gt;</code></pre>
 
 <p>For S-Expressions we first evaluate all the children of the S-Expression. If any of these children are errors we return the first error we encounter using a function we'll define later called <code>lval_take</code>.</p>
 
-<p>If the S-Expression has no children we just return it directly. This corrisponds to the empty expression, denoted by <code>()</code>. We also check for single expressions. These are expressions with only one child such as <code>(5)</code>. In this case we return the single expression contained within the parenthesis.</p>
+<p>If the S-Expression has no children we just return it directly. This corresponds to the empty expression, denoted by <code>()</code>. We also check for single expressions. These are expressions with only one child such as <code>(5)</code>. In this case we return the single expression contained within the parenthesis.</p>
 
 <p>If neither of these are the case we know we have a valid expression with more than one child. In this case we separate the first element of the expression using a function we'll define later called <code>lval_pop</code>. We then check this is a <em>symbol</em> and not anything else. If it is a symbol we check what symbol it is, and pass it, and the arguments, to a function <code>builtin_op</code> which does our calculations. If the first element is not a symbol we delete it, and the values passed into the evaluation function, returning an error.</p>
 
@@ -413,7 +413,7 @@ lval* lval_take(lval* v, int i) {
   return x;
 }</code></pre>
 
-<p>We also need to define the evaluation function <code>builtin_op</code>. This is like the <code>eval_op</code> function used in our previous chapter but modified to take a single <code>lval*</code> representing a list of all the arguments to operate on. It needs to do some more rigirous error checking. If any of the inputs are a non-number <code>lval*</code> we need to return an error.</p>
+<p>We also need to define the evaluation function <code>builtin_op</code>. This is like the <code>eval_op</code> function used in our previous chapter but modified to take a single <code>lval*</code> representing a list of all the arguments to operate on. It needs to do some more rigorous error checking. If any of the inputs are a non-number <code>lval*</code> we need to return an error.</p>
 
 <p>First it checks that all the arguments input are numbers. It then pops the first argument to start. If there are no more sub-expressions and the operator is subtraction it performs unary negation on this first number. This makes expressions such as <code>(- 5)</code> evaluate correctly.</p>
 
@@ -465,7 +465,7 @@ lval* lval_take(lval* v, int i) {
   return x;
 }</code></pre>
 
-<p>This completes our evalation functions. We just need to change <code>main</code> again so it passes the input through this evaluation before printing it.</p>
+<p>This completes our evaluation functions. We just need to change <code>main</code> again so it passes the input through this evaluation before printing it.</p>
 
 <pre><code data-language='c'>lval* x = lval_eval(lval_read(r.output));
 lval_println(x);
@@ -834,8 +834,8 @@ int main(int argc, char** argv) {
     <li class="list-group-item">&rsaquo; What does the <code>realloc</code> function do?</li>
     <li class="list-group-item">&rsaquo; What does the <code>memmove</code> function do?</li>
     <li class="list-group-item">&rsaquo; How does <code>memmove</code> differ from <code>memcpy</code>?</li>
-    <li class="list-group-item">&rsaquo; Extend parsing and evauation to support the remainder operator <code>%</code>.</li>
-    <li class="list-group-item">&rsaquo; Extend parsing and evauation to support decimal types using a <code>double</code> field.</li>
+    <li class="list-group-item">&rsaquo; Extend parsing and evaluation to support the remainder operator <code>%</code>.</li>
+    <li class="list-group-item">&rsaquo; Extend parsing and evaluation to support decimal types using a <code>double</code> field.</li>
   </ul>
 </div>
 

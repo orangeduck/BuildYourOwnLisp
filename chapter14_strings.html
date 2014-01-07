@@ -15,7 +15,7 @@
 
 <h2>String Type</h2> <hr/>
 
-<p>For the user to load a file we'll have to let them supply a string consisting of the file name. Our language supports symbols, but still doesn&#39;t support strings, which can include spaces and other characters. We need to add this possible <code>lval</code> type to specify the file names we need.</p>
+<p>For the user to load a file we'll have to let them supply a string consisting of the file name. Our language supports symbols, but still doesn't support strings, which can include spaces and other characters. We need to add this possible <code>lval</code> type to specify the file names we need.</p>
 
 <p>We start, as in other chapters, by adding an entry to our enum and adding an entry to our <code>lval</code> to represent the type's data.</p>
 
@@ -93,7 +93,7 @@ char* str;
 
 <pre><code data-language='c'>if (strstr(t-&gt;tag, &quot;string&quot;)) { return lval_read_str(t); }</code></pre>
 
-<p>Because the input string is input in an escaped form we need to create a function <code>lval_read_str</code> which deals with this. This function is a little tricky because it has to do a few tasks. First it must strip the input string of the <code>&quot;</code> characters on either side. Then it must unescape the string, converting series of characters such as <code>\n</code> to their actual encoded characters. Finally it has to create a new <code>lval</code> and clean up anything that has happened inbetween.</p>
+<p>Because the input string is input in an escaped form we need to create a function <code>lval_read_str</code> which deals with this. This function is a little tricky because it has to do a few tasks. First it must strip the input string of the <code>&quot;</code> characters on either side. Then it must unescape the string, converting series of characters such as <code>\n</code> to their actual encoded characters. Finally it has to create a new <code>lval</code> and clean up anything that has happened in-between.</p>
 
 <pre><code data-language='c'>lval* lval_read_str(mpc_ast_t* t) {
   /* Cut off the final quote character */
@@ -160,7 +160,7 @@ lispy&gt;</code></pre>
 
 <pre><code data-language='c'>mpc_cleanup(8, Number, Symbol, String, Comment, Sexpr, Qexpr, Expr, Lispy);</code></pre>
 
-<p>Because comments are only for programmings reading the code, our internal function for reading them in just consts of ignoring them. We can add a clause to deal with them in a similar way to brackets and parenthesis in <code>lval_read</code>.</p>
+<p>Because comments are only for programmings reading the code, our internal function for reading them in just consists of ignoring them. We can add a clause to deal with them in a similar way to brackets and parenthesis in <code>lval_read</code>.</p>
 
 <pre><code data-language='c'>if (strstr(t-&gt;children[i]-&gt;tag, &quot;comment&quot;)) { continue; }</code></pre>
 
@@ -185,7 +185,7 @@ mpc_parser_t* Lispy;
 
 <p>Our <code>load</code> function will be just like any other builtin. We need to start by checking that the input argument is a single string. Then we can use the <code>mpc_fparse_contents</code> function to read in the contents of a file using a grammar. Just like <code>mpc_parse</code> this parses the contents of a file into some <code>mpc_result</code> object, which is our case is an <em>abstract syntax tree</em> again or an <em>error</em>.</p>
 
-<p>Slightly differently to our command prompt, on successfully parsing a file we shouldn&#39;t treat it like one expression. When typing into a file we let users list multiple expressions and evaluate all of them individually. To achieve this behaviour we need to loop over each expression in the contents of the file and evaluate it one by one. If there are any errors we should print them and continue.</p>
+<p>Slightly differently to our command prompt, on successfully parsing a file we shouldn't treat it like one expression. When typing into a file we let users list multiple expressions and evaluate all of them individually. To achieve this behaviour we need to loop over each expression in the contents of the file and evaluate it one by one. If there are any errors we should print them and continue.</p>
 
 <p>If there is a parse error instead of chucking it away we're going to extract the message and put it into a error <code>lval</code> which we return. If there are no errors the return value for this builtin can just be the empty expression. The full code for this looks like this.</p>
 
@@ -239,7 +239,7 @@ mpc_parser_t* Lispy;
 
 <p>These command line arguments are accessible using the <code>argc</code> and <code>argv</code> variables that are given to <code>main</code>. The <code>argc</code> variable gives the number of arguments, and <code>argv</code> specifies each string. The <code>argc</code> is always set to at least one, where the first argument is always the complete command invoked.</p>
 
-<p>That means if <code>argc</code> is set to <code>1</code> we can invoke the interpeter, otherwise we can run each of the arguments through the <code>builtin_load</code> function.</p>
+<p>That means if <code>argc</code> is set to <code>1</code> we can invoke the interpreter, otherwise we can run each of the arguments through the <code>builtin_load</code> function.</p>
 
 <pre><code data-language='c'>/* Supplied with list of files */
 if (argc &gt;= 2) {
