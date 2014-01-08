@@ -58,13 +58,13 @@
 
 <h2>Installing mpc</h2> <hr/>
 
-<p>Before we work on writing this grammar we first need to <em>include</em> the <code>mpc</code> headers, and then <em>link</em> to the <code>mpc</code> library, just as we did for <code>editline</code> on Linux and Mac.To do this download <code>mpc.h</code> and <code>mpc.c</code> from the <a href="http://github.com/orangeduck/mpc">mpc repo</a>. Put these in the same directory as your source file.</p>
+<p>Before we work on writing this grammar we first need to <em>include</em> the <code>mpc</code> headers, and then <em>link</em> to the <code>mpc</code> library, just as we did for <code>editline</code> on Linux and Mac. Starting with your code from chapter 4, you can rename the file to <code>parsing.c</code> and download <code>mpc.h</code> and <code>mpc.c</code> from the <a href="http://github.com/orangeduck/mpc">mpc repo</a>. Put these in the same directory as your source file.</p>
 
-<p>To <em>include</em> <code>mpc</code> put <code>#include "mpc.h"</code> at the top of the file. To <em>link</em> to <code>mpc</code> put <code>mpc.c</code> directly into the compile command.</p>
+<p>To <em>include</em> <code>mpc</code> put <code>#include "mpc.h"</code> at the top of the file. To <em>link</em> to <code>mpc</code> put <code>mpc.c</code> directly into the compile command. On linux you will also have to link to the maths library by adding the flag <code>-lm</code>.</p>
 
 <p>On <strong>Linux</strong> and <strong>Mac</strong></p>
 
-<pre><code>cc -std=c99 -Wall parsing.c mpc.c -ledit -o parsing</code></pre>
+<pre><code>cc -std=c99 -Wall parsing.c mpc.c -ledit -lm -o parsing</code></pre>
 
 <p>On <strong>Windows</strong></p>
 

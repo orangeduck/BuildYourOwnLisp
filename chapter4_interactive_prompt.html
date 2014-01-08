@@ -56,7 +56,7 @@ int main(int argc, char** argv) {
 
 <p>Lets go over this program in a little more depth.<p>
 
-<p>The line <code>static char input[2048];</code> declares a global array of 2048 characters. This is a reserved block of data we can access anywhere from our program. In it we are going to store the user input which is typed into the command line. The <code>static</code> keyword is what makes it global and the <code>[2048]</code> section is what declares the size.</p>
+<p>The line <code>static char input[2048];</code> declares a global array of 2048 characters. This is a reserved block of data we can access anywhere from our program. In it we are going to store the user input which is typed into the command line. The <code>static</code> keyword make this variable local to this file, and the <code>[2048]</code> section is what declares the size.</p>
 
 <p>We write an infinite loop using <code>while (1)</code>. In a conditional block <code>1</code> always evaluates to true. Therefore commands inside this loop will run forever.</p>
 

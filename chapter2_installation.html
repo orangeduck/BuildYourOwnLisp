@@ -1,5 +1,6 @@
 <h1>Installation <small>&bull; Chapter 2</small></h1>
 
+
 <h2>Setup</h2> <hr/>
 
 <div class='pull-right alert alert-warning' style="margin: 15px; text-align: center;">
@@ -8,6 +9,7 @@
 </div>
 
 <p>Before we can start programming in C we'll need to install a couple of things and set up our environment so that we have everything we need. Because C is such a universal language this should hopefully be fairly simple. Essentially we need to install two main things. A <em>text editor</em> and a <em>compiler</em>.</p>
+
 
 <h2>Text Editor</h2> <hr/>
 
@@ -78,7 +80,7 @@ int main(int argc, char** argv) {
 
 <pre><code>cc -std=c99 -Wall hello_world.c -o hello_world</code></pre>
 
-<p>This compiles the code in <code>hello_world.c</code>, reporting any warnings, and outputs the program to a new file called <code>hello_world</code>.</p>
+<p>This compiles the code in <code>hello_world.c</code>, reporting any warnings, and outputs the program to a new file called <code>hello_world</code>. We use the <code>-std=c99</code> flag to tell the compiler which <em>version</em> or <em>standard</em> of C we are programming with. This lets the compiler ensure our code is standardized, so that people with different operating systems or compilers will be able to use our code.</p>
 
 <p>If successful you should see the output file in the current directory. This can be run by typing <code>./hello_world</code> (or just <code>hello_world</code> on windows). If everything is correct you should see a friendly <code>Hello, world!</code> message appear.</p>
 
@@ -100,7 +102,7 @@ int main(int argc, char** argv) {
 
 <p>Sometimes the compiler will compile a program, but when you run it it will crash. Debugging C programs in this situation is hard. It can be an art far beyond the scope of this book.<p>
 
-<p>My first port of call for debugging a crashing C program is to print out lots of information as the program is running. Using this method I can try to isolate exactly what part of the code is incorrect and what, if anything, is going wrong up until the crash. For beginners I would recommend this technique. It is <em>active</em> debugging - which is the important thing. As long as you are doing <em>something</em>, the process is less painful and the temptation to give up is lessened.<p>
+<p>My first port of call for debugging a crashing C program is to print out lots of information as the program is running. Using this method I can try to isolate exactly what part of the code is incorrect and what, if anything, is going wrong up until the crash. For beginners I would recommend this technique. It is a debugging technique which is <em>active</em>. This is the important thing. As long as you are doing <em>something</em>, and not just staring at the code, the process is less painful and the temptation to give up is lessened.<p>
 
 <p>For people feeling more confident a program called <code>gdb</code> can be used to debug your C programs. This can be difficult and complicated to use, but it is also very powerful and can give you extremely valuable information and what went wrong and where. Information on how to use <code>gdb</code> can be found online.</p>
 

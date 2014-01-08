@@ -35,7 +35,7 @@
 
 <p>Because the total size of computer memory is fixed, the number of bytes needed to represent an address always the same. But if we keep track of it, the number of bytes the address points to can grown and shrink. This means we can create a variable sized data-structure and still sort of <em>pass</em> it to a function, which can inspect and modify it.</p>
 
-<p>So a pointer is just a number. A number representing the starting index of some data in memory. The type of the pointer hints to us, and the compiler, how much data might be accessible at this location.</p>
+<p>So a pointer is just a number. A number representing the starting index of some data in memory. The type of the pointer hints to us, and the compiler, what type of data might be accessible at this location.</p>
 
 <p>We can declare pointer types by suffixing existing ones with the the <code>*</code> character. We've seen some examples of this already with <code>mpc_parser_t*</code> or <code>mpc_ast_t*</code>.</p>
 
@@ -48,7 +48,7 @@
 
 <p>I said that memory can be visualized of as one long list of bytes. Actually it is better to imagine it split into two sections. These sections are called <em>The Stack</em> and <em>The Heap</em>.</p>
 
-<p>Some of you may have heard tales of these mysterious locations, such as <em>"the stack grows down but the heap grows up"</em>, or <em>"there can be many stacks, but only one heap"</em>. Ignore this gossip spread by Perl and Java programmers. In C there is no such mythology. The stack and the heap are common as mud, and we deal with them directly.</p>
+<p>Some of you may have heard tales of these mysterious locations, such as <em>"the stack grows down but the heap grows up"</em>, or <em>"there can be many stacks, but only one heap"</em>. These sorts of things don't matter much. Dealing with the stack and the heap in C can be complex, but it doesn't have to be a mystery. In essence they are just two sections of memory used for two different tasks.</p>
 
 <h3>The Stack</h3>
 
