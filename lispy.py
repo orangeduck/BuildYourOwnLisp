@@ -4,7 +4,7 @@ from flask import Flask
 from flask.ext.basicauth import BasicAuth
 
 pages = [
-    'splash.html',                      'contents.html',                'credits.html',
+    'splash.html',                      'contents.html',                'credits.html', 'faq.html',
     'chapter1_introduction.html',       'chapter2_installation.html',   'chapter3_basics.html',
     'chapter4_interactive_prompt.html', 'chapter5_languages.html',      'chapter6_parsing.html',
     'chapter7_evaluation.html',         'chapter8_error_handling.html', 'chapter9_s_expressions.html', 
@@ -14,7 +14,7 @@ pages = [
 ]
 
 titles = [
-    '',                                    'Contents',                        'Credits',
+    '',                                    'Contents',                        'Credits', 'Frequently Asked Questions',
     'Introduction &bull; Chapter 1',       'Installation &bull; Chapter 2',   'Basics &bull; Chapter 3',
     'Interactive Prompt &bull; Chapter 4', 'languages &bull; Chapter 5',      'Parsing &bull; Chapter 6',
     'Evaluation &bull; Chapter 7',         'Error Handling &bull; Chapter 8', 'S-Expressions &bull; Chapter 9',
