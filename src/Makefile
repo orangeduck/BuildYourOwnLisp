@@ -1,21 +1,21 @@
 CC = cc
 CFLAGS = -std=c99 -Wall -Werror -Wno-unused -g
 LFLAGS = 
-FILES = chapter2 chapter4 chapter4a chapter5 chapter6 chapter7 chapter8 chapter9 chapter10 chapter11 chapter12 chapter13 chapter14
+FILES = hello_world prompt_windows prompt greeting_code greeting_grammar parsing evaluation error_handling s_expressions q_expressions variables functions conditionals strings
 PLATFORM = $(shell uname)
 
 ifeq ($(findstring Linux,$(PLATFORM)),Linux)
 	LFLAGS += -ledit
-	FILES += chapter4b
+	FILES += prompt_unix
 endif
 
 ifeq ($(findstring Darwin,$(PLATFORM)),Darwin)
 	LFLAGS += -ledit
-	FILES += chapter4b
+	FILES += prompt_windows
 endif
 
 all: $(FILES)
 
-%: %.c ../mpc/mpc.c
+%: %.c mpc.c
 	$(CC) $(CFLAGS) $^ $(LFLAGS) -o $@
   
