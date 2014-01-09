@@ -120,7 +120,7 @@ long eval_op(long x, char* op, long y) {
 <p>Instead of printing the <em>abstract syntax tree</em> we now want to print the result of the evaluation. Therefore we need to pass the tree into our <code>eval</code> function and print the result we get using <code>printf</code> and the specifier <code>%li</code> (used for <code>long</code> type). We still need to remember to delete the output <em>abstract syntax tree</em> after we are done evaluating it.</p>
 
 <pre><code data-language='c'>long result = eval(r.output);
-printf(stdout, &quot;%li\n&quot;, result);
+printf(&quot;%li\n&quot;, result);
 mpc_ast_delete(r.output);</code></pre>
 
 <p>If all of this is successful you should be able to now do some basic maths with your new programming language!</p>

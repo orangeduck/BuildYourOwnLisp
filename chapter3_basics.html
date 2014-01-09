@@ -22,21 +22,27 @@
   <p><small>Programs &bull; Useful for the theatre.</small></p>
 </div>
 
-<p>In this chapter I've prepared a quick overview of the basic features of C. There are very few <em>features</em> in C and the syntax is simple. But this doesn't mean it is easy. All the depth hides below the surface. Because of this we're going to cover the main components fairly quickly now, and in more consideration later.</p>
+<p>In this chapter I've prepared a quick overview of the basic features of C. There are very few <em>features</em> in C, and the syntax is relatively simple. But this doesn't mean it is easy. All the depth hides below the surface. Because of this we're going to cover the <em>features</em> and <em>syntax</em> fairly quickly now, and see them in greater depth as we continue.</p>
 
-<p>This chapter should be thought of as a reference to look back upon as a reminder in later chapters. Feel free to skim it and revise the contents later as required.</p>
+<p>The goal of this chapter is get everyone on the same page. People totally new to C should therefore read it in some consideration, and take some time over it, while those with some existing experience may find it easier to skim and return to later as required.</p>
 
 
 <h2>Programs</h2> <hr/>
 
-<p>A program in C is structured very simply. At its core it only consists of <em>function definitions</em> and <em>structure definitions</em>. This means a C source file is simply a list of functions and data types. These functions can call each other or themselves. Functions can only use the data types declared or those built in. To add complexity it is possible to call other libraries of functions, or use their data types.</p>
+<p>A program in C consists of only <em>function definitions</em> and <em>structure definitions</em>.</p>
 
-<p>As we saw in the previous chapter, the execution of a C program always starts in the function called <code>main</code>, and must call other functions to do more complicated things.</p>
+<p>Therefore a source file is simply a list of <em>functions</em> and <em>types</em>. These functions can call each other or themselves, and can use any data types that have been declared or are built into the language.</p>
+
+<p>It is possible to call functions in other libraries, or to use their data types. This is how layers of complexity are accumulated in C programming.</p>
+
+<p>As we saw in the previous chapter, the execution of a C program always starts in the function called <code>main</code>. From here it calls more and more functions, to perform all the actions it requires.</p>
 
 
 <h2>Variables</h2> <hr/>
 
-<p>Variables in C are bits of data which we give a name to. Every variable in C has an explicit <em>type</em>. These are either defined by ourselves or built into C. We declare a new variable by writing the name of the type, followed by the name of the variable, and optionally setting it to some value using <code>=</code>. We terminate all statements in C with a semicolon <code>;</code>.</p>
+<p>Functions in C consists of manipulating <em>Variables</em>. These are items of data which we give a name to.</p>
+
+<p>Every variable in C has an explicit <em>type</em>. These types declared by ourselves or built into the language. We can declare a new variable by writing the name of its type, followed by its name, and optionally setting it to some value using <code>=</code>. This declaration is called a <em>statement</em>, and we terminate all <em>statements</em> in C with a semicolon <code>;</code>.</p>
 
 <p>To create a new <code>int</code> called <code>count</code> we could write the following...</p> 
 
@@ -46,21 +52,23 @@
 
 <pre><code data-language='c'>int count = 10;</code></pre>
 
-<p>Here is a list of some of the native types with basic descriptions.</p>
+<p>Here are some descriptions and examples of some of the built in types.</p>
 
 <table class="table">
-  <tr><td><code>void</code></td>  <td>Empty Type</td></tr>
-  <tr><td><code>char</code></td>  <td>Single Character/Byte</td></tr>
-  <tr><td><code>int</code></td>   <td>Integer</td></tr>
-  <tr><td><code>long</code></td>  <td>Integer that can hold larger values</td></tr>
-  <tr><td><code>float</code></td> <td>Decimal Number</td></tr>
-  <tr><td><code>double</code></td><td>Decimal Number with more precision</td></tr>
+  <tr><td><code>void</code></td>  <td>Empty Type</td>                         <td></td></tr>
+  <tr><td><code>char</code></td>  <td>Single Character/Byte</td>              <td><code>char last_initial = 'H';</code></td></tr>
+  <tr><td><code>int</code></td>   <td>Integer</td>                            <td><code>int age = 23;</code></td></tr>
+  <tr><td><code>long</code></td>  <td>Integer that can hold larger values</td><td><code>long age_of_universe = 13798000000;</code></td></tr>
+  <tr><td><code>float</code></td> <td>Decimal Number</td>                     <td><code>float liters_per_pint = 0.568f;</code></td></tr>
+  <tr><td><code>double</code></td><td>Decimal Number with more precision</td> <td><code>double speed_of_swallow = 0.01072896;</code></td></tr>
 </table>
 
 
-<h2>Functions</h2> <hr/>
+<h2>Function Declarations</h2> <hr/>
 
-<p>To declare a function we write the name of the type it returns, the name of the function, and then in parenthesis a list of input variables to this function separated by commas. The contents of the function is put inside curly brackets <code>{}</code>, and lists all of the statements the function executes, terminated by semicolons <code>;</code>. A <code>return</code> statement is used to let the function finish and output a value.</p>
+<p>A Function is a computation that manipulates variables, and optionally changes the state of the program. It takes as input some variables and returns some single variable as output.</p>
+
+<p>To declare a function we write the type of the variable it returns, the name of the function, and then in parenthesis a list of the variables it takes as input , separated by commas. The contents of the function is put inside curly brackets <code>{}</code>, and lists all of the statements the function executes, terminated by semicolons <code>;</code>. A <code>return</code> statement is used to let the function finish and output a variable.</p>
 
 <p>For example a function that takes two <code>int</code> variables called <code>x</code> and <code>y</code> and adds them together could look like this.</p>
 
@@ -74,18 +82,18 @@
 <pre><code data-language='c'>int added = add_together(10, 18);</code></pre>
 
 
-<h2>Structs</h2> <hr/>
+<h2>Structure Declarations</h2> <hr/>
 
-<p>To declare our own types we can use the <code>struct</code> keyword in conjunction with the <code>typedef</code> keyword.</p>
+<p>Structures are used to declare new <em>types</em>. Structures are several variables bundled together into a single package.</p>
 
-<p>Structs are several variables bundled together in a single package. We can use them to represent more complex data types. For example to represent a point in 2D space we could create a struct called <code>point</code> that packs together two <code>float</code> (decimal) values called <code>x</code> and <code>y</code>. It would look like this.</p>
+<p>We can use structure to represent more complex data types. For example to represent a point in 2D space we could create a structure called <code>point</code> that packs together two <code>float</code> (decimal) values called <code>x</code> and <code>y</code>. To declare structures we can use the <code>struct</code> keyword in conjunction with the <code>typedef</code> keyword. Our declaration would look like this.</p>
 
 <pre><code data-language='c'>typedef struct {
   float x;
   float y;
 } point;</code></pre>
 
-<p>We should place this definition above any functions that wish to use it. This type is no different to the native types, and we can use it in all the same ways. To access an individual field we use a dot <code>.</code>, followed by the name of the field, such as <code>x</code>.</p>
+<p>We should place this definition above any functions that wish to use it. This type is no different to the built in types, and we can use it in all the same ways. To access an individual field we use a dot <code>.</code>, followed by the name of the field, such as <code>x</code>.</p>
 
 <pre><code data-language='c'>point p;
 p.x = 0.1;
@@ -95,26 +103,32 @@ float length = sqrt(p.x * p.x + p.y * p.y);
 </code></pre>
 
 
-<div class='pull-left alert alert-warning' style="margin: 15px; text-align: center;">
+
+
+<h2>Pointers</h2> <hr/>
+
+<div class='pull-right alert alert-warning' style="margin: 15px; text-align: center;">
   <img src="/static/img/pointer.png" alt="pointer"/>
   <p><small>Pointer &bull; A short haired one</small></p>
 </div>
 
-<h2>Pointers</h2> <hr/>
+<p>A pointer is a variation on a normal type where the type name is suffixed with a asterisk. For example we could declare an <em>pointer to an integer</em> by writing <code>int*</code>. We already saw a pointer type <code>char** argv</code>. This is a <em>pointer to pointers to a characters</em>, and is used as input to <code>main</code> function.</p>
 
-<p>A pointer is a variation on a normal type where the type name is suffixed with a asterisk such as <code>int*</code>. These are a difficult part of C and will be explained in much greater detail in later chapters. For now it is good to simply know they exist, and how to spot them. They can be used in a number of different ways such as for strings and lists. Don't let them scare you!</p>
+<p>Pointers are used for a whole number of different things such as for strings or lists. These are a difficult part of C and will be explained in much greater detail in later chapters. We wont make use of them for a while, so for now it is good to simply know they exist, and how to spot them. Don't let them scare you off!</p>
 
 
 <h2>Strings</h2> <hr/>
 
-<p>In C strings are represented by the pointer type <code>char*</code>. Under the hood they stored as are a list of bytes terminated by a special byte called the <em>null terminator</em>. Strings are a complicated, and important part of C, which we'll learn to use effectively in later chapters.</p>
+<p>In C strings are represented by the pointer type <code>char*</code>. Under the hood they stored as are a list of characters, where the final character is a special character called the <em>null terminator</em>. Strings are a complicated, and important part of C, which we'll learn to use effectively in the next few chapters.</p>
 
-<p>Strings can also be declared literally by putting text between quotation marks. We used this in the previous chapter with our string <code>"Hello, World!"</code>. Remember that if you see <code>char*</code>, for now you can read it as a <em>string</em>.</p> 
+<p>Strings can also be declared literally by putting text between quotation marks. We used this in the previous chapter with our string <code>"Hello, World!"</code>. For now, remember that if you see <code>char*</code>, you can read it as a <em>string</em>.</p> 
 
 
 <h2>Conditionals</h2> <hr/>
 
-<p>To perform code under some condition we can use the <code>if</code> statement. It is written as <code>if</code> followed by some condition in parenthesis, followed by the code to execute in curly brackets. An <code>if</code> statement can be followed by an optional <code>else</code> followed by more statements in curly brackets. The code in these brackets will be performed in the case the conditional statement is false.</p>
+<p>Conditional statements let the program perform some code only if certain conditions are met.</p>
+
+<p>To perform code under some condition we use the <code>if</code> statement. This is written as <code>if</code> followed by some condition in parenthesis, followed by the code to execute in curly brackets. An <code>if</code> statement can be followed by an optional <code>else</code> statement, followed by other statements in curly brackets. The code in these brackets will be performed in the case the conditional statement is false.</p>
 
 <p>We can test for multiple conditions using the logical operators <code>||</code> for <em>or</em>, and <code>&&</code> for <em>and</em>.</p>
 
@@ -134,9 +148,9 @@ float length = sqrt(p.x * p.x + p.y * p.y);
 
 <h2>Loops</h2> <hr/>
 
-<p>There are two main loops in C.</p>
+<p>Loops allow for some code to be repeated until some condition becomes false, or some counter elapses.</p>
 
-<p>The first is a <code>while</code> loop. This loop repeatedly executes a block of code until some condition becomes false. It is written as <code>while</code> followed by some condition in parenthesis, followed by the code to execute in curly brackets. For example a loop that counts downward from <code>10</code> to <code>1</code> could be written as follows.</p>
+<p>There are two main loops in C. The first is a <code>while</code> loop. This loop repeatedly executes a block of code until some condition becomes false. It is written as <code>while</code> followed by some condition in parenthesis, followed by the code to execute in curly brackets. For example a loop that counts downward from <code>10</code> to <code>1</code> could be written as follows.</p>
 
 <pre><code data-language='c'>int i = 10;
 while (i > 0) {
@@ -160,10 +174,10 @@ while (i > 0) {
     <li class="list-group-item">&rsaquo; Use a <code>for</code> loop to print out <code>Hello World!</code> five times.</li>
     <li class="list-group-item">&rsaquo; Use a <code>while</code> loop to print out <code>Hello World!</code> five times.</li>
     <li class="list-group-item">&rsaquo; Declare a function that outputs <code>Hello World!</code> <code>n</code> number of times. Call this from <code>main</code>.</li>
+    <li class="list-group-item">&rsaquo; What built in types are there other than the ones listed?</li>
     <li class="list-group-item">&rsaquo; What other conditional operators are there other than <em>greater than</em> <code>&gt;</code>, and <em>less than</em> <code>&lt;</code>?</li>
     <li class="list-group-item">&rsaquo; What other mathematical operators are there other than <em>add</em> <code>+</code>, and <em>subtract</em> <code>-</code>?</li>
     <li class="list-group-item">&rsaquo; What does the <code>typedef</code> keyword do exactly?</li>
-    <li class="list-group-item">&rsaquo; What native types are there other than the ones listed?</li>
     <li class="list-group-item">&rsaquo; What is the <code>+=</code> operator, and how does it work?</li>
     <li class="list-group-item">&rsaquo; What is the <code>do</code> loop, and how does it work?</li>
     <li class="list-group-item">&rsaquo; What is the <code>switch</code> statement and how does it work?</li>
