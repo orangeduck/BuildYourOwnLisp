@@ -56,7 +56,7 @@ header = """
   </head>
   <body style="background: url(static/img/tiletop.png) repeat-x;">
   
-    <div style='margin:100px;width:800px;margin-left:auto;margin-right:auto;'>
+    <div class='container' style='width:800px; margin-top:50px;'>
     
 """
 
