@@ -1,5 +1,7 @@
 import os
 
+from werkzeug.contrib.cache import MemcachedCache
+
 from flask import Flask
 from flask.ext.basicauth import BasicAuth
 
@@ -76,6 +78,16 @@ footer = """
 </html>
 """
 
+try:
+    cache = MemcachedCache(['127.0.0.1:11211'])
+except RuntimeError:
+    
+    class FakeCache:
+        def get(self, k): return None
+        def set(self, k, v, **kwargs): return None
+        
+    cache = FakeCache()
+
 app = Flask(__name__)
 app.config['BASIC_AUTH_USERNAME'] = 'byol'
 app.config['BASIC_AUTH_PASSWORD'] = 'lovelace'
@@ -91,8 +103,12 @@ def route_page(page):
     
     title = titles[pages.index(page)]
     
-    contents = open(path, 'r').read()
-    contents = (header % title) + contents + footer
+    contents = cache.get("lispy-" + path)
+    if contents is None:
+        contents = open(path, 'r').read()
+        contents = (header % title) + contents + footer
+        cache.set("lispy-" + path, contents, timeout=5*60)
+        
     return contents
     
 @app.route('/')
