@@ -42,7 +42,7 @@
 
 <p>Functions in C consists of manipulating <em>Variables</em>. These are items of data which we give a name to.</p>
 
-<p>Every variable in C has an explicit <em>type</em>. These types declared by ourselves or built into the language. We can declare a new variable by writing the name of its type, followed by its name, and optionally setting it to some value using <code>=</code>. This declaration is called a <em>statement</em>, and we terminate all <em>statements</em> in C with a semicolon <code>;</code>.</p>
+<p>Every variable in C has an explicit <em>type</em>. These types are declared by ourselves or built into the language. We can declare a new variable by writing the name of its type, followed by its name, and optionally setting it to some value using <code>=</code>. This declaration is called a <em>statement</em>, and we terminate all <em>statements</em> in C with a semicolon <code>;</code>.</p>
 
 <p>To create a new <code>int</code> called <code>count</code> we could write the following...</p> 
 
@@ -112,14 +112,14 @@ float length = sqrt(p.x * p.x + p.y * p.y);
   <p><small>Pointer &bull; A short haired one</small></p>
 </div>
 
-<p>A pointer is a variation on a normal type where the type name is suffixed with a asterisk. For example we could declare an <em>pointer to an integer</em> by writing <code>int*</code>. We already saw a pointer type <code>char** argv</code>. This is a <em>pointer to pointers to a characters</em>, and is used as input to <code>main</code> function.</p>
+<p>A pointer is a variation on a normal type where the type name is suffixed with an asterisk. For example we could declare a <em>pointer to an integer</em> by writing <code>int*</code>. We already saw a pointer type <code>char** argv</code>. This is a <em>pointer to pointers to a characters</em>, and is used as input to <code>main</code> function.</p>
 
 <p>Pointers are used for a whole number of different things such as for strings or lists. These are a difficult part of C and will be explained in much greater detail in later chapters. We wont make use of them for a while, so for now it is good to simply know they exist, and how to spot them. Don't let them scare you off!</p>
 
 
 <h2>Strings</h2> <hr/>
 
-<p>In C strings are represented by the pointer type <code>char*</code>. Under the hood they stored as are a list of characters, where the final character is a special character called the <em>null terminator</em>. Strings are a complicated, and important part of C, which we'll learn to use effectively in the next few chapters.</p>
+<p>In C strings are represented by the pointer type <code>char*</code>. Under the hood they are stored as a list of characters, where the final character is a special character called the <em>null terminator</em>. Strings are a complicated, and important part of C, which we'll learn to use effectively in the next few chapters.</p>
 
 <p>Strings can also be declared literally by putting text between quotation marks. We used this in the previous chapter with our string <code>"Hello, World!"</code>. For now, remember that if you see <code>char*</code>, you can read it as a <em>string</em>.</p> 
 
