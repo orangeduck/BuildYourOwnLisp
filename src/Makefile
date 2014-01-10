@@ -1,5 +1,5 @@
 CC = cc
-CFLAGS = -std=c99 -Wall -Werror -Wno-unused -g
+CFLAGS = -std=c99 -Wall -g
 LFLAGS = 
 FILES = hello_world prompt greeting_code greeting_grammar parsing evaluation error_handling s_expressions q_expressions variables functions conditionals strings
 PLATFORM = $(shell uname)

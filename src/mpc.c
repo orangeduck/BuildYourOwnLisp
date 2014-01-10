@@ -134,15 +134,15 @@ static char* mpc_err_char_unescape(char c) {
   
   switch (c) {
     
-    case '\a': "bell";
-    case '\b': "backspace";
-    case '\f': "formfeed";
-    case '\r': "carriage return";
-    case '\v': "vertical tab";
-    case '\0': "end of input";
-    case '\n': "newline";
-    case '\t': "tab";
-    case ' ' : "space";
+    case '\a': return "bell";
+    case '\b': return "backspace";
+    case '\f': return "formfeed";
+    case '\r': return "carriage return";
+    case '\v': return "vertical tab";
+    case '\0': return "end of input";
+    case '\n': return "newline";
+    case '\t': return "tab";
+    case ' ' : return "space";
     default:
       char_unescape_buffer[1] = c;
       return char_unescape_buffer;
@@ -392,7 +392,6 @@ static mpc_input_t* mpc_input_new_file(const char* filename, FILE* file) {
 
 static void mpc_input_delete(mpc_input_t* i) {
   
-  int j;
   free(i->filename);
   
   if (i->type == MPC_INPUT_STRING) { free(i->string); }
@@ -847,10 +846,6 @@ static void mpc_stack_popr_n(mpc_stack_t* s, int n) {
     mpc_stack_popr(s, &x);
     n--;
   }
-}
-
-static mpc_result_t* mpc_stack_results(mpc_stack_t* s, int n) {
-  return &s->results[s->results_num-n];
 }
 
 static mpc_val_t* mpc_stack_merger_out(mpc_stack_t* s, int n, mpc_fold_t f) {
@@ -1900,10 +1895,6 @@ static mpc_val_t* mpcf_re_range(mpc_val_t* x) {
   return comp ? mpc_noneof(range) : mpc_oneof(range);
 }
 
-static mpc_val_t* mpcf_re_invalid(void) {
-  return mpc_fail("Invalid Regex");
-}
-
 mpc_parser_t* mpc_re(const char* re) {
   
   char* err_msg;
@@ -2108,11 +2099,42 @@ mpc_val_t* mpcf_unescape(mpc_val_t* x) {
   return y;
 }
 
+mpc_val_t* mpcf_escape_regex(mpc_val_t* x) {
+  mpc_val_t* y = mpcf_escape_new(x, mpc_escape_input_raw_re, mpc_escape_output_raw_re);
+  free(x);
+  return y;
+}
+
 mpc_val_t* mpcf_unescape_regex(mpc_val_t* x) {
   mpc_val_t* y = mpcf_unescape_new(x, mpc_escape_input_raw_re, mpc_escape_output_raw_re);
   free(x);
   return y;  
 }
+
+mpc_val_t* mpcf_escape_string_raw(mpc_val_t* x) {
+  mpc_val_t* y = mpcf_escape_new(x, mpc_escape_input_raw_cstr, mpc_escape_output_raw_cstr);
+  free(x);
+  return y;
+}
+
+mpc_val_t* mpcf_unescape_string_raw(mpc_val_t* x) {
+  mpc_val_t* y = mpcf_unescape_new(x, mpc_escape_input_raw_cstr, mpc_escape_output_raw_cstr);
+  free(x);
+  return y;
+}
+
+mpc_val_t* mpcf_escape_char_raw(mpc_val_t* x) {
+  mpc_val_t* y = mpcf_escape_new(x, mpc_escape_input_raw_cchar, mpc_escape_output_raw_cchar);
+  free(x);
+  return y;
+}
+
+mpc_val_t* mpcf_unescape_char_raw(mpc_val_t* x) {
+  mpc_val_t* y = mpcf_unescape_new(x, mpc_escape_input_raw_cchar, mpc_escape_output_raw_cchar);
+  free(x);
+  return y;
+}
+
 
 mpc_val_t* mpcf_fst(int n, mpc_val_t** xs) { return xs[0]; }
 mpc_val_t* mpcf_snd(int n, mpc_val_t** xs) { return xs[1]; }

@@ -252,7 +252,6 @@ void lval_print_str(lval* v) {
 }
 
 void lval_print(lval* v) {
-  char* escaped;
   switch (v->type) {
     case LVAL_FUN:
       if (v->builtin) {
