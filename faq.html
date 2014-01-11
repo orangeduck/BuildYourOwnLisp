@@ -1,10 +1,39 @@
 
 <h1>Frequently Asked Questions <small>&bull; Build Your Own Lisp</small></h1>
 
+<div class='pull-right alert alert-warning' style="margin: 15px; text-align: center;">
+  <img src="/static/img/me.png" alt="me"/>
+  <p><small>Me &bull; Drinking a beer.</small></p>
+</div>
 
-<h2>Why don't you teach arrays in this book?</h2>
 
-<p></p>
+<h2>Who are you?</h2> <hr/>
+
+<p>Hello, my name is Daniel Holden. I'm a resident of the UK, and currently studying for a PhD at Edinburgh University. My work is in data driven tools for character animation.</p>
+
+<p>I go by <code>orangeduck</code> online, and you may know me from one of my other projects such as <a href="http://libcello.org">libCello</a> or <a href="">Corange</a>. As well as hacking on C, I enjoy graphics, game development, and theory of computation.</p>
+
+<p>You can find my personal website <a href="http://theorangeduck.com/">here</a>. Or you can follow me on twitter <a href="https://twitter.com/anorangeduck">here</a>.</p>
+
+
+<h2>Why don't you teach arrays in this book?</h2> <hr/>
+
+<p>With an already steep learning curve arrays seemed like a convenient omission to make. Teaching arrays in C is a very easy way to confuse a beginner about pointers, which are a far more important concept to learn. In C, the ways in which arrays and pointers are the same, and yet different, are subtle and numerous. Excluding fixed sized arrays, which have different behaviour anyway, pointers represent a superset of the behaviour of arrays, and so in this book teaching arrays would have been no more than teaching syntactic sugar.</p>
+
+<p>Those interested in arrays are encouraged to find out more. The book <a href="">Learn C the Hard Way</a> takes the opposite approach to this one, and teaches arrays first, with pointers being a variation. For those interested in arrays this might prove useful.</p>
+
+
+<h2>Why do you use left-handed pointer syntax?</h2> <hr/>
+
+<p>In this book I write the syntax for pointers in a left-handed way <code>int* x;</code>, rather than the standard right-handed convention <code>int *x;</code>.</p>
+
+<p>Ultimately this distinction is religious, and one of personal preference. But the vast majority of C code, as well as the C standards, are written using the right-handed style. This is clearly the default, and most correct way to write pointers.</p>
+
+<p>I picked the left-handed version because I believe it is easier to teach to beginners. Having the asterisk on the left hand side emphasises <em>the type</em>. It is clearer to read, and makes it clear that the asterisk is not a weird operator or modification to the variable. With the omission of arrays, and multi-variable declarations, this notation is also almost entirely consistent within this book, and when not, it is noted. K&R themselves have <a href="http://blog.golang.org/gos-declaration-syntax">admitted</a> the <a href="http://cm.bell-labs.com/cm/cs/who/dmr/chist.html">confusion</a> of the right-handed syntax, made worse by historical baggage and rogue compiler implementations of the early years. For a learning resource I believe picking the left-handed version was the best approach.</p> 
+
+<p>Once comfortable with the method behind C's declaration syntax, I encourage programmers to migrate toward the right-handed version.</p> 
+
+
 
 
 <table class="table">
