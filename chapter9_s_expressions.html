@@ -116,6 +116,14 @@ enum { LVAL_ERR, LVAL_NUM, LVAL_SYM, LVAL_SEXPR };
 <p>We will also need to keep track of how many <code>lval*</code> are in this list, so we add an extra field <code>count</code> to record this.</p> 
 
 <div class="alert alert-warning">
+  <p><strong>Don't Lisps use <a href="http://en.wikipedia.org/wiki/Cons">Cons cells</a>?</strong></p>
+
+  <p>Other Lisps have a slightly different definition of what S-Expressions are. In most other Lisps S-Expressions are defined inductively as either an <em>atom</em> such as a symbol of number, or two other S-Expressions joined, or <em>cons</em>, together.</p>
+  
+  <p>This naturally leads to an implementation using <em>linked lists</em>, a different data structure to the one we are using. I choose to represent S-Expressions as a variable sized array in this book for the purposes of simplicity, but it is important to be aware that the official definition, and typical implementation are both subtily different.</p>
+</div>
+
+<div class="alert alert-warning">
   <p><strong>Are there ever pointers to pointers to pointers?</strong></p>
 
   <p>There is an old programming joke (and by <em>programming joke</em> I mean <em>silly anecdote</em>), which says you can rate C programmers by how many stars are on their pointers.</p>
@@ -123,7 +131,6 @@ enum { LVAL_ERR, LVAL_NUM, LVAL_SYM, LVAL_SEXPR };
   <p>Beginners program might only use <code>char*</code> or the odd <code>int*</code>, so they were called <em>one star programmer</em>. Most intermediate programs contain double pointer types such as <code>lval**</code>. These programmers are therefore called <em>two star programmers</em>. To spot a triple pointer is something special. You would be viewing the work of someone grand and terrible, writing code not meant to be read with mortal eyes. As such being called a <em>three star programmer</em> is rarely a compliment.</p>
   
   <p>As far as I know, a quadruple pointer has never been seen in the wild.</p>
-  
 </div>
 
 <p>To represent symbols we're going to use a string. We're also going to change the representation of errors to a string. This means we can store a unique error message rather than just an error code. This will make our error reporting better and more flexible, and we can get rid of the original error <code>enum</code>. Our updated <code>lval</code> struct looks like this.</p>
