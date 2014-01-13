@@ -16,6 +16,15 @@
 
 <p>This internal list structure, built up recursively of numbers, symbols, and other expressions inside parenthesis, is called an S-Expression. This stands for <em>symbolic expressions</em>, and we will extend our <code>lval</code> to be able to represent it. The evaluation behaviour of S-Expressions is the behaviour typical of Lisps we are used to so far. To evaluate an S-Expression we look at the first item in the list, and take this to be the operator. We then look at all the other items in the list, and take these as operands to get the result.</p>
 
+<!--
+<div class="alert alert-warning">
+  <p><strong>Don't Lisps use <a href="http://en.wikipedia.org/wiki/Cons">Cons cells</a>?</strong></p>
+
+  <p>Other Lisps have a slightly different definition of what an S-Expression is. In most other Lisps S-Expressions are defined inductively as either an <em>atom</em> such as a symbol of number, or two other S-Expressions joined, or <em>cons</em>, together.</p>
+  
+  <p>This naturally leads to an implementation using <em>linked lists</em>, a different data structure to the one we are using. I choose to represent S-Expressions as a variable sized array in this book for the purposes of simplicity, but it is important to be aware that the official definition, and typical implementation are both subtly different.</p>
+</div>
+-->
 
 <h2>Pointers</h2> <hr/>
 
@@ -114,14 +123,6 @@ enum { LVAL_ERR, LVAL_NUM, LVAL_SYM, LVAL_SEXPR };
 <p>S-Expressions are variable length <em>lists</em> of other S-Expressions. As we learnt at the beginning of this chapter we can't create variable length structs, so we are going to need to use a pointer. We are going to create a pointer field <code>cell</code> which points to a location where we store a list of <code>lval*</code>. These are pointers to the other individual <code>lval</code>. Our field should therefore be a double pointer type <code>lval**</code>. A <em>pointer to <code>lval</code> pointers</em>.</p>
 
 <p>We will also need to keep track of how many <code>lval*</code> are in this list, so we add an extra field <code>count</code> to record this.</p> 
-
-<div class="alert alert-warning">
-  <p><strong>Don't Lisps use <a href="http://en.wikipedia.org/wiki/Cons">Cons cells</a>?</strong></p>
-
-  <p>Other Lisps have a slightly different definition of what S-Expressions are. In most other Lisps S-Expressions are defined inductively as either an <em>atom</em> such as a symbol of number, or two other S-Expressions joined, or <em>cons</em>, together.</p>
-  
-  <p>This naturally leads to an implementation using <em>linked lists</em>, a different data structure to the one we are using. I choose to represent S-Expressions as a variable sized array in this book for the purposes of simplicity, but it is important to be aware that the official definition, and typical implementation are both subtily different.</p>
-</div>
 
 <div class="alert alert-warning">
   <p><strong>Are there ever pointers to pointers to pointers?</strong></p>
@@ -284,7 +285,6 @@ lval* lval_read(mpc_ast_t* t) {
 
   return x;
 }</code></pre>
-
 
 <h2>Printing Expressions</h2> <hr/>
 

@@ -27,10 +27,10 @@
 <p>More formally...</p>
 
 <table class='table'>
-  <tr><td>A <code>Program</code> is</td><td><em>the start of input</em>, and an <code>Operator</code>, and one or more of <code>Expression</code>, and <em>the end of input</em>.</td></tr>
-  <tr><td>An <code>Expression</code> is</td><td>either a <code>Number</code> or <code>'('</code>, an <code>Operator</code>, and one or more <code>Expression</code>, and an <code>')'</code>.</td></tr>
-  <tr><td>An <code>Operator</code> is</td><td><code>'+'</code>, or <code>'-'</code>, or <code>'*'</code>, or <code>'/'</code>.</td></tr>
-  <tr><td>A <code>Number</code> is</td><td>an optional <code>-</code>, and one or more characters between <code>0</code> and <code>9</code></td></tr>
+  <tr><td><code>Program</code></td><td><em>the start of input</em>, an <code>Operator</code>, one or more <code>Expression</code>, and <em>the end of input</em>.</td></tr>
+  <tr><td><code>Expression</code></td><td>either a <code>Number</code> <em>or</em> <code>'('</code>, an <code>Operator</code>, one or more <code>Expression</code>, and an <code>')'</code>.</td></tr>
+  <tr><td><code>Operator</code></td><td><code>'+'</code>, <code>'-'</code>, <code>'*'</code>, or <code>'/'</code>.</td></tr>
+  <tr><td><code>Number</code></td><td>an optional <code>-</code>, and one or more characters between <code>0</code> and <code>9</code></td></tr>
 </table>
 
 
@@ -99,6 +99,12 @@ mpca_lang(
   ",
   Number, Operator, Expr, Lispy);
 </code></pre>
+
+<div class="alert alert-warning">
+  <p><strong>I'm getting an error <code>undefined reference to `mpc_lang'</code></strong></p>
+
+  <p>That should be <code>mpca_lang</code>, with an <code>a</code> at the end!</p>
+</div>
 
 <p>We need to add this to the interactive prompt we started on in chapter 4. Put this code right at the beginning of the <code>main</code> function before we print the <em>Version</em> and <em>Exit</em> information. At the end of our program we also need to delete the parsers when we are done with them. Right before <code>main</code> returns we should place the following clean-up code.</p>
 
@@ -258,6 +264,7 @@ int main(int argc, char** argv) {
     <li class="list-group-item">&rsaquo; Change the grammar to recognize operators written in textual format <code>add</code>, <code>sub</code>, <code>mul</code>, <code>div</code>.</li>
     <li class="list-group-item">&rsaquo; Change the grammar to recognize decimal numbers such as <code>0.01</code>, <code>5.21</code>, or <code>10.2</code>.</li>
     <li class="list-group-item">&rsaquo; Change the grammar to make the operators written conventionally, between two expressions.</li>
+    <li class="list-group-item">&rsaquo; Use the grammar from the previous chapter to parse <code>Doge</code>. You must add <em>start</em> and <em>end</em> of input to it!</li>
   </ul>
 </div>
 

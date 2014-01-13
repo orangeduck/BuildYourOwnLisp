@@ -53,7 +53,7 @@
 
 <p>Say we want to do several things in order. One way we can do this is to put each thing to do as an argument to some function. We known that arguments are evaluated in order from left to right, which is essentially sequencing events. For functions such as <code>print</code> and <code>load</code> we don't care much about what it evaluates to, but do care about the order in which it happens.</p>
 
-<p>Therefore we can create a <code>do</code> function which evaluates a number of statements in order and returns the last one. This relies on the <code>last</code> function, which returns the final element of a list. We'll define this later.</p>
+<p>Therefore we can create a <code>do</code> function which evaluates a number of expressions in order and returns the last one. This relies on the <code>last</code> function, which returns the final element of a list. We'll define this later.</p>
 
 <pre><code data-language='lispy'>&#59; Perform Several things in Sequence
 (fun {do &amp; l} {

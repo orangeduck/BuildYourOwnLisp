@@ -3,7 +3,7 @@
 
 <h2>Crashes</h2> <hr/>
 
-<p>Some of you may have noticed a problem with the previous chapter&#39;s program. Try entering this into the prompt and see what happens.</p>
+<p>Some of you may have noticed a problem with the previous chapter's program. Try entering this into the prompt and see what happens.</p>
 
 <pre><code data-language='lispy'>Lispy Version 0.0.0.0.3
 Press Ctrl+c to Exit
@@ -21,7 +21,7 @@ lispy&gt; / 10 0</code></pre>
 
 <p>For this we need a data structure that can act as either one thing or anything. For simplicity sake we are just going to use a <code>struct</code> with fields specific to each thing that can be represented, and a special field <code>type</code> to tell us exactly what fields are meaningful to access.</p>
 
-<p>This we are going to call an <code>lval</code>, which stands for <em>Lisp value</em>.</p>
+<p>This we are going to call an <code>lval</code>, which stands for <em>Lisp Value</em>.</p>
 
 <pre><code data-language='c'>/* Declare New lval Struct */
 typedef struct {
@@ -127,7 +127,7 @@ void lval_println(lval v) { lval_print(v); putchar(&#39;\n&#39;); }</code></pre>
 <div class="alert alert-warning">
   <p><strong>What is that <code>?</code> doing there?</strong></p>
 
-  <p>You'll notice that for division to check if the second argument is zero we use a question mark symbol <code>?</code>, followed by a colon <code>:</code>. This is called the <em>ternary operator</em>, and it allows you to write conditional statements on one line.</p>
+  <p>You'll notice that for division to check if the second argument is zero we use a question mark symbol <code>?</code>, followed by a colon <code>:</code>. This is called the <em>ternary operator</em>, and it allows you to write conditional expressions on one line.</p>
 
   <p>It works something like this. <code>&lt;condition&gt; ? &lt;then&gt; : &lt;else&gt;</code>. In other words, if the condition is true it returns what follows the <code>?</code>, otherwise it returns what follows <code>:</code>.</p>
 

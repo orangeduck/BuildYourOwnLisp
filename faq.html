@@ -20,7 +20,7 @@
 
 <p>With an already steep learning curve arrays seemed like a convenient omission to make. Teaching arrays in C is a very easy way to confuse a beginner about pointers, which are a far more important concept to learn. In C, the ways in which arrays and pointers are the same, and yet different, are subtle and numerous. Excluding fixed sized arrays, which have different behaviour anyway, pointers represent a superset of the behaviour of arrays, and so in this book teaching arrays would have been no more than teaching syntactic sugar.</p>
 
-<p>Those interested in arrays are encouraged to find out more. The book <a href="">Learn C the Hard Way</a> takes the opposite approach to this one, and teaches arrays first, with pointers being a variation. For those interested in arrays this might prove useful.</p>
+<p>Those interested in arrays are encouraged to find out more. The book <a href="">Learn C the Hard Way</a> takes the opposite approach to this, and teaches arrays first, with pointers being a variation. For those interested in arrays this might prove useful.</p>
 
 
 <h2>Why do you use left-handed pointer syntax?</h2> <hr/>
@@ -33,6 +33,16 @@
 
 <p>Once comfortable with the method behind C's declaration syntax, I encourage programmers to migrate toward the right-handed version.</p> 
 
+
+<h2>Why are there no Macros in this Lisp?</h2>
+
+<p>By far the biggest gripe conventional Lisp programmers have with the Lisp in this book is the lack of Macros. Instead of Macros a new concept of Q-Expressions is used to delay evaluation. To conventional Lisp programmers Q-Expressions are confusing because their semantics differ subtly to the quote Macro.</p>
+
+<p>I use Q-Expressions instead of Macros for a couple of reasons. First of all I believe them to be easier for beginners than Macros. When evaluation is delayed it is always explicit in the syntax, not implicit in the function name. It also means that Expressions are never seen alone, and are instead always evaluated.</p>
+
+<p>Secondly it is more consistent. It no longer requires the concept of Macros, but instead transforms quoted expressions to a more powerful concept. With more powerful quoted expressions everything can be defined as a function.</p>
+
+<p>Finally, Q-Expressions are distinctively more powerful than Macros. Using Q-Expressions it is possible to pass an argument to a function that evaluates to a Q-Expression, making input argument capable of being dynamic. Passing an expression to a Macro will always pause the evaluation, and so the arguments cannot be dynamic, only symbolic.</p>
 
 
 
