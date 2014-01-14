@@ -8,7 +8,7 @@
   <p><small>Cat &bull; Install at own risk.</small></p>
 </div>
 
-<p>Before we can start programming in C we'll need to install a couple of things and set up our environment so that we have everything we need. Because C is such a universal language this should hopefully be fairly simple. Essentially we need to install two main things. A <em>text editor</em> and a <em>compiler</em>.</p>
+<p>Before we can start programming in C we'll need to install a couple of things, and set up our environment so that we have everything we need. Because C is such a universal language this should hopefully be fairly simple. Essentially we need to install two main things. A <em>text editor</em> and a <em>compiler</em>.</p>
 
 
 <h2>Text Editor</h2> <hr/>
@@ -30,7 +30,7 @@
 
 <p>On <strong>Linux</strong> you can install a compiler by downloading some packages. If you are running Ubuntu or Debian you can install everything you need with the following command <code>sudo apt-get install build-essential</code>. If you are running Fedora or a similar Linux variant you can use this command <code>su -c "yum groupinstall development-tools"</code>.</p>
 
-<p>On <strong>Mac</strong> you can install a compiler by downloading and installing the latest version of XCode from Apple. If you are unsure of how to do this you can search online for "installing xcode" and follow any advice shown. You will then need to install the <em>Command Line Tools</em>. On Mac OS X 10.9 this can be done by running the command <code>xcode-select --install</code> from the command line. On Mac OS X prior to 10.9 this can be done by going to XCode Preferences, Downloads, and selecting <em>Command Line Tools</em> for Installation.</p>
+<p>On <strong>Mac</strong> you can install a compiler by downloading and installing the latest version of XCode from Apple. If you are unsure of how to do this you can search online for "installing xcode" and follow any advice shown. You will then need to install the <em>Command Line Tools</em>. On Mac OS X 10.9 this can be done by running the command <code>xcode-select --install</code> from the command line. On versions of Mac OS X prior to 10.9 this can be done by going to XCode Preferences, Downloads, and selecting <em>Command Line Tools</em> for Installation.</p>
 
 <p>On <strong>Windows</strong> you can install a compiler by downloading and installing <a href="http://www.mingw.org/">MinGW</a>. If you use the installer at some point it may present you with a list of possible packages. Make sure you pick at least <code>mingw32-base</code> and <code>msys-base</code>. Once installed you need to add the compiler and other programs to your system <code>PATH</code> variable. To do this follow <a href="http://www.computerhope.com/issues/ch000549.htm">these instructions</a> appending the directory <code>;C:\MinGW\bin</code> to the variable called <code>PATH</code>. You can create this variable if it doesn't exist. You may need to restart <code>cmd.exe</code> for the changes to take effect. This will allow you to run a compiler from the command line <code>cmd.exe</code>. It will also install other programs which make <code>cmd.exe</code> act like a Unix command line.</p>
 
@@ -79,7 +79,7 @@ int main(int argc, char** argv) {
 
 <p>This compiles the code in <code>hello_world.c</code>, reporting any warnings, and outputs the program to a new file called <code>hello_world</code>. We use the <code>-std=c99</code> flag to tell the compiler which <em>version</em> or <em>standard</em> of C we are programming with. This lets the compiler ensure our code is standardized, so that people with different operating systems or compilers will be able to use our code.</p>
 
-<p>If successful you should see the output file in the current directory. This can be run by typing <code>./hello_world</code> (or just <code>hello_world</code> on windows). If everything is correct you should see a friendly <code>Hello, world!</code> message appear.</p>
+<p>If successful you should see the output file in the current directory. This can be run by typing <code>./hello_world</code> (or just <code>hello_world</code> on Windows). If everything is correct you should see a friendly <code>Hello, world!</code> message appear.</p>
 
 <p><strong>Congratulations!</strong> You've just compiled and run your first C program.</p>
 
@@ -103,7 +103,7 @@ int main(int argc, char** argv) {
 
 <p>For people feeling more confident a program called <code>gdb</code> can be used to debug your C programs. This can be difficult and complicated to use, but it is also very powerful and can give you extremely valuable information and what went wrong and where. Information on how to use <code>gdb</code> can be found online.</p>
 
-<p>On <strong>Mac</strong> the most recent versions of OS X don't come with <code>gdb</code>. Instead you can <code>lldb</code> which does largely the same job.</p>
+<p>On <strong>Mac</strong> the most recent versions of OS X don't come with <code>gdb</code>. Instead you can use <code>lldb</code> which does largely the same job.</p>
 
 <p>On <strong>Linux</strong> or <strong>Mac</strong> <code>valgrind</code> can be used to aid the debugging of memory leaks and other more nasty errors. Valgrind is a tool that can save you hours, or even days, of debugging. It does not take much to get proficient at it, so investigating it is highly recommended. Information on how to use it can be found online.</p>
 
@@ -118,9 +118,9 @@ int main(int argc, char** argv) {
 <div class="alert alert-warning">
   <p><strong>What is this section for?</strong></p>
   
-  <p>In this section I&#39;ll link to the code I've written for this particular chapter of the book. When finishing with a chapter your code should probably look similar to mine.</p>
+  <p>In this section I&#39;ll link to the code I've written for this particular chapter of the book. When finishing with a chapter your code should probably look similar to mine. This code can be used for reference if the explanation has been unclear.</p>
 
-  <p>This code can be used for reference if the explanation has been unclear. If you encounter a bug please do not copy and paste my code into your project. Try to track down the bug yourself and use my code as a reference to highlight what may be wrong, or where the error may lie.</p>
+  <p>If you encounter a bug please do not copy and paste my code into your project. Try to track down the bug yourself and use my code as a reference to highlight what may be wrong, or where the error may lie.</p>
 </div>
 
 <div class="panel-group alert alert-warning" id="accordion">
