@@ -24,7 +24,9 @@
 <div class="alert alert-warning">
   <p><strong>I've never heard of Q-Expressions.</strong></p>
 
-  <p>In our Lisp we're going to be using Q-Expressions to stop expressions being evaluated. These don't exist in other Lisps, which have a different relationship with how they stop evaluation. Rather than a special Expression type they use <em>Macros</em>, which are like a normal functions that do not evaluate their arguments. A special Macro, the quote operator <code>'</code> exists, which can be used to stop the evaluation of almost anything. Sometimes Expressions that use this Macro are called <em>Quoted Expressions</em>. This is the inspiration for Q-Expressions, which are unique to our Lisp, and will be used instead of Macros for doing all the same tasks and more.</p>
+  <p>Q-Expressions don't exist in other Lisps. Other Lisps use <em>Macros</em> to stop evaluation. These look like normal functions, but they do not evaluate their arguments. A special Macro called quote <code>'</code> exists, which can be used to stop the evaluation of almost anything. This is the inspiration for Q-Expressions, which are unique to our Lisp, and will be used instead of Macros for doing all the same tasks and more.</p>
+  
+  <p>The way I've used <em>S-Expression</em> and <em>Q-Expression</em> in this book is a slight abuse of terminology, but I hope this misdemeanor makes the behaviour of our Lisp clearer.</p>
 </div>
 
 <pre><code data-language='c'>mpc_parser_t* Number = mpc_new(&quot;number&quot;);

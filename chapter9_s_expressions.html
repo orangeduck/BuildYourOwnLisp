@@ -16,16 +16,6 @@
 
 <p>This internal list structure, built up recursively of numbers, symbols, and other expressions inside parenthesis, is called an S-Expression. This stands for <em>symbolic expressions</em>, and we will extend our <code>lval</code> to be able to represent it. The evaluation behaviour of S-Expressions is the behaviour typical of Lisps we are used to so far. To evaluate an S-Expression we look at the first item in the list, and take this to be the operator. We then look at all the other items in the list, and take these as operands to get the result.</p>
 
-<!--
-<div class="alert alert-warning">
-  <p><strong>Don't Lisps use <a href="http://en.wikipedia.org/wiki/Cons">Cons cells</a>?</strong></p>
-
-  <p>Other Lisps have a slightly different definition of what an S-Expression is. In most other Lisps S-Expressions are defined inductively as either an <em>atom</em> such as a symbol of number, or two other S-Expressions joined, or <em>cons</em>, together.</p>
-  
-  <p>This naturally leads to an implementation using <em>linked lists</em>, a different data structure to the one we are using. I choose to represent S-Expressions as a variable sized array in this book for the purposes of simplicity, but it is important to be aware that the official definition, and typical implementation are both subtly different.</p>
-</div>
--->
-
 <h2>Pointers</h2> <hr/>
 
 <p>In C no concept of lists can be explored without dealing properly with pointers. Pointers are a famously misunderstood aspect of C. They are difficult to teach because while being conceptually very simple, they come with a lot of new terminology, and often no clear use-case. This makes them appear far more monstrous than they are. Luckily for us, we have a couple ideal use-cases, both of which are extremely typical in C, and will likely end up being how you use pointers 90% of the time.</p>
@@ -249,6 +239,14 @@ lval* lval_sexpr(void) {
 <p>If the given node is tagged as a <code>number</code> or <code>symbol</code>, then we use our constructors to return an <code>lval*</code> directly for those types. If the given node is the <code>root</code>, or an <code>sexpr</code>, then we create an empty S-Expression <code>lval</code> and slowly add each valid sub-expression contained in the tree.</p>
 
 <p>To add an element to an S-Expression we can create a function <code>lval_add</code>. This function increases the count of the Expression list by one, and then uses <code>realloc</code> to reallocate the amount of space required by <code>v-&gt;cell</code>. This new space can be used to store the extra <code>lval*</code> required. Using this new space it sets the final value of the list with <code>v-&gt;cell[v-&gt;count-1]</code> to the value <code>lval* x</code> passed in.</p>
+
+<div class="alert alert-warning">
+  <p><strong>Don't Lisps use <a href="http://en.wikipedia.org/wiki/Cons">Cons cells</a>?</strong></p>
+
+  <p>Other Lisps have a slightly different definition of what an S-Expression is. In most other Lisps S-Expressions are defined inductively as either an <em>atom</em> such as a symbol of number, or two other S-Expressions joined, or <em>cons</em>, together.</p>
+  
+  <p>This naturally leads to an implementation using <em>linked lists</em>, a different data structure to the one we are using. I choose to represent S-Expressions as a variable sized array in this book for the purposes of simplicity, but it is important to be aware that the official definition, and typical implementation are both subtly different.</p>
+</div>
 
 <pre><code class="lang-c">lval* lval_add(lval* v, lval* x) {
   v-&gt;count++;

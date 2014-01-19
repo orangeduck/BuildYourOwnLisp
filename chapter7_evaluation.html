@@ -5,14 +5,14 @@
 
 <p>Now we can read input, and we have it structured internally, but we are still unable to evaluate it. In this chapter we add the code that evaluates this structure and actually performs the computations encoded within.</p>
 
-<p>This structure is what was printed out in the previous chapter, and it is called an <em>Abstract Syntax Tree</em>. It represents the structure of the program as input by the user. At the leaves of this tree is the actual data to be processed - numbers and operators. At the branches is the information on how to traverse and evaluate it.</p>
+<p>This internal structure is what we saw printed out by the program in the previous chapter. It is called an <em>Abstract Syntax Tree</em>, and it represents the structure of the program as input by the user. At the leaves of this tree are numbers and operators - the actual data to be processed. At the branches are the rules used to produce this part of the tree - the information on how to traverse and evaluate it.</p>
 
 <div class='pull-left alert alert-warning' style="margin: 15px; text-align: center;">
   <img src="/static/img/tree.png" alt="tree"/>
   <p><small>Abstract Christmas Tree &bull; A seasonal variation</small></p>
 </div>
 
-<p>Before working out exactly how we are going to do this traversal, lets see how this structure is defined internally. If we peek inside <code>mpc.h</code> we can have a look at the definition of <code>mpc_ast_t</code>, which is the data structure we got from the parse.</p>
+<p>Before working out exactly how we are going to do this traversal, lets see exactly how this structure is defined internally. If we peek inside <code>mpc.h</code> we can have a look at the definition of <code>mpc_ast_t</code>, which is the data structure we got from the parse.</p>
 
 <pre style='margin-left: 375px;'><code data-language='c'>typedef struct mpc_ast_t {
   char* tag;
@@ -23,7 +23,7 @@
 
 <p>This struct has a number of fields we can access. Lets take a look at them one by one.</p>
 
-<p>The first field is <code>tag</code>. When we printed out the <em>abstract syntax tree</em> this was the information that precluded the contents of the node. It was a string containing a list of all the rules used to parse that particular item. For example <code>expr|number|regex</code>.</p>
+<p>The first field is <code>tag</code>. When we printed out the tree this was the information that precluded the contents of the node. It was a string containing a list of all the rules used to parse that particular item. For example <code>expr|number|regex</code>.</p>
 
 <p>This <code>tag</code> field is going to be important as it lets us see what type of thing the node is.</p>
 
@@ -60,7 +60,9 @@ printf("First Child Number of children: %i\n", c0->children_num);
   <p><small>Recursion &bull; Dangerous in a fire.</small></p>
 </div>
 
-<p>This pattern of repeated substructures could go on and on. Clearly if we want a function which can work on all possible trees we can't look to some arbitrary depth, we have to define it to work on trees of any depth. Luckily we can do this, by exploiting the nature of how these substructures repeat, and using a technique called <em>recursion</em>.</p>
+<p>This pattern of repeated substructures could go on and on. Clearly if we want a function which can work on all possible trees we can't look just a couple of nodes in down, we have to define it to work on trees of any depth.</p>
+
+<p>Luckily we can do this, by exploiting the nature of how these substructures repeat, and using a technique called <em>recursion</em>.</p>
 
 <p>Put simply a <em>recursive function</em> is one that calls itself as some part of its calculation.</p>
 
@@ -70,7 +72,7 @@ printf("First Child Number of children: %i\n", c0->children_num);
 
 <p>To begin we work out how it will act in the most simple case, if the input tree has no children. In this case we know the result is simply one. Now we can go on to define the more complex case, if the tree has one or more children. In this case the result will be one (for the node itself), plus the number of nodes in all of those children.</p>
 
-<p>But how do we find the number of nodes in all of the children? Well we can use the function we are in the process defining!</p>
+<p>But how do we find the number of nodes in all of the children? Well we can use the function we are in the process defining! <em>Yeah, Recursion.</em></p>
 
 <p>In C we might write it something like this.</p>
 
@@ -89,7 +91,7 @@ printf("First Child Number of children: %i\n", c0->children_num);
 
 <p>Like most things, recursive functions almost always end up following a similar pattern. First a <em>base case</em> is defined. This is the case that ends the recursion, such as <code>t->children_num == 0</code> in our previous example. After this the <em>recursive case</em> is defined, which breaks down a computation into smaller parts, and calls the function recursively to compute those parts, before combining them together.</p>
 
-<p>Recursive functions can take some thought, but make sure you have an understanding of them before continuing because we'll be making good use of them in the rest of the book.</p>
+<p>Recursive functions can take some thought, but make sure you have an understanding of them before continuing because we'll be making good use of them in the rest of the book. You can check out some of the bonus marks questions if you are still uncertain of how they work.</p>
 
 
 <h2>Evaluation</h2> <hr/>
@@ -112,7 +114,7 @@ printf("First Child Number of children: %i\n", c0->children_num);
 
 <p>One observation is that if a node is tagged with <code>number</code> it is always a number, has no children, and we can just convert the contents to an integer. This will act as the <em>base case</em> in our recursion.</p>
 
-<p>If a node is tagged with <code>expr</code>, and <em>not</em> <code>number</code>, we need to look at its second child (the first child is always <code>'('</code>) and see which operator it is. Then we need to apply this operator to the <em>evaluation</em> of the remaining children, excluding the final child which is always <code>')'</code>. This is our <em>recursive case</em>. This also needs to be done for the root node.</p>
+<p>If a node is tagged with <code>expr</code>, and is <em>not</em> a <code>number</code>, we need to look at its second child (the first child is always <code>'('</code>) and see which operator it is. Then we need to apply this operator to the <em>evaluation</em> of the remaining children, excluding the final child which is always <code>')'</code>. This is our <em>recursive case</em>. This also needs to be done for the root node.</p>
 
 <p>When we evaluate our tree, just like when counting the nodes, we'll need to accumulate the result. To represent this result we'll use the C type <code>long</code> which means a <em>long</em> <em>integer</em>.</p>
 
@@ -124,7 +126,7 @@ printf("First Child Number of children: %i\n", c0->children_num);
   <tr><td><code>strstr</code></td><td>Takes as input two <code>char*</code> and returns a pointer to the location of the second in the first, or <code>0</code> if the second is not a sub-string of the first.</td></tr>
 </table>
 
-<p>We can use <code>strcmp</code> to check which operator to use, and <code>strstr</code> to check if a tag contains some substring. Our final recursive function looks like this.</p>
+<p>We can use <code>strcmp</code> to check which operator to use, and <code>strstr</code> to check if a tag contains some substring. Altogether our recursive evaluation function looks like this.</p>
 
 <pre><code data-language='c'>long eval(mpc_ast_t* t) {
   
@@ -161,9 +163,9 @@ long eval_op(long x, char* op, long y) {
 
 <h2>Printing</h2> <hr/>
 
-<p>Instead of printing the <em>abstract syntax tree</em> we now want to print the result of the evaluation. Therefore we need to pass the tree into our <code>eval</code> function, and print the result we get using <code>printf</code> and the specifier <code>%li</code>, which is used for <code>long</code> type.</p>
+<p>Instead of printing the tree we now want to print the result of the evaluation. Therefore we need to pass the tree into our <code>eval</code> function, and print the result we get using <code>printf</code> and the specifier <code>%li</code>, which is used for <code>long</code> type.</p>
 
-<p>We also need to remember to delete the output <em>abstract syntax tree</em> after we are done evaluating it.</p>
+<p>We also need to remember to delete the output tree after we are done evaluating it.</p>
 
 <pre><code data-language='c'>long result = eval(r.output);
 printf(&quot;%li\n&quot;, result);
