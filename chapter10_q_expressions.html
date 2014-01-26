@@ -36,7 +36,7 @@ mpc_parser_t* Qexpr  = mpc_new(&quot;qexpr&quot;);
 mpc_parser_t* Expr   = mpc_new(&quot;expr&quot;);
 mpc_parser_t* Lispy  = mpc_new(&quot;lispy&quot;);
 
-mpca_lang(
+mpca_lang(MPC_LANG_DEFAULT,
   &quot;                                                    \
     number : /-?[0-9]+/ ;                              \
     symbol : &#39;+&#39; | &#39;-&#39; | &#39;*&#39; | &#39;/&#39; ;                   \
@@ -135,7 +135,7 @@ lispy&gt;
 
 <p>Like with our mathematical operators we should add these functions as possible valid symbols. Afterward we can go about trying to define their behaviour in a similar way to <code>builtin_op</code>.</p>
 
-<pre><code class="lang-c">mpca_lang(
+<pre><code class="lang-c">mpca_lang(MPC_LANG_DEFAULT,
   &quot;                                                                                         \
     number : /-?[0-9]+/ ;                                                                   \
     symbol : \&quot;list\&quot; | \&quot;head\&quot; | \&quot;tail\&quot; | \&quot;join\&quot; | \&quot;eval\&quot; | &#39;+&#39; | &#39;-&#39; | &#39;*&#39; | &#39;/&#39; ; \
@@ -686,7 +686,7 @@ int main(int argc, char** argv) {
   mpc_parser_t* Expr   = mpc_new("expr");
   mpc_parser_t* Lispy  = mpc_new("lispy");
   
-  mpca_lang(
+  mpca_lang(MPC_LANG_DEFAULT,
     "                                                                                         \
       number : /-?[0-9]+/ ;                                                                   \
       symbol : \"list\" | \"head\" | \"tail\" | \"eval\" | \"join\" | '+' | '-' | '*' | '/' ; \

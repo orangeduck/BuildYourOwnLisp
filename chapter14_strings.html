@@ -141,7 +141,7 @@ lispy&gt;</code></pre>
 
 <p>Our final grammar now look like this.</p>
 
-<pre><code data-language='c'>mpca_lang(
+<pre><code data-language='c'>mpca_lang(MPC_LANG_DEFAULT,
   &quot;                                              \
     number  : /-?[0-9]+/ ;                       \
     symbol  : /[a-zA-Z0-9_+\\-*\\/\\\\=&lt;&gt;!&amp;]+/ ; \
@@ -218,8 +218,7 @@ mpc_parser_t* Lispy;
     
   } else {
     /* Get Parse Error as String */
-    char* err_msg;
-    mpc_err_string(r.error, &err_msg);
+    char* err_msg = mpc_err_string(r.error);
     mpc_err_delete(r.error);
     
     /* Create new error message using it */
@@ -966,8 +965,7 @@ lval* builtin_load(lenv* e, lval* a) {
     
   } else {
     /* Get Parse Error as String */
-    char* err_msg;
-    mpc_err_string(r.error, &err_msg);
+    char* err_msg = mpc_err_string(r.error);
     mpc_err_delete(r.error);
     
     /* Create new error message using it */
@@ -1187,7 +1185,7 @@ int main(int argc, char** argv) {
   Expr    = mpc_new("expr");
   Lispy   = mpc_new("lispy");
   
-  mpca_lang(
+  mpca_lang(MPC_LANG_DEFAULT,
     "                                              \
       number  : /-?[0-9]+/ ;                       \
       symbol  : /[a-zA-Z0-9_+\\-*\\/\\\\=&lt;&gt;!&amp;]+/ ; \

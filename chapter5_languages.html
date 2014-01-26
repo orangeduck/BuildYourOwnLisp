@@ -115,7 +115,7 @@ mpc_parser_t* Noun      = mpc_new(&quot;noun&quot;);
 mpc_parser_t* Phrase    = mpc_new(&quot;phrase&quot;);
 mpc_parser_t* Doge      = mpc_new(&quot;doge&quot;);
 
-mpca_lang(
+mpca_lang(MPC_LANG_DEFAULT,
   &quot;                                                                     \
     adjective : \&quot;wow\&quot; | \&quot;many\&quot; | \&quot;so\&quot; | \&quot;such\&quot;;                 \
     noun      : \&quot;lisp\&quot; | \&quot;language\&quot; | \&quot;c\&quot; | \&quot;book\&quot; | \&quot;build\&quot;; \
@@ -133,7 +133,7 @@ mpc_cleanup(4, Adjective, Noun, Phrase, Doge);
 
 <p>Another thing to notice is that the process is now in two steps. First we create and name several rules using <code>mpc_new</code> and then we define them using <code>mpca_lang</code>.</p>
 
-<p>The first argument to <code>mpca_lang</code> is a long multi-line string in C. This is the <em>grammar</em> specification. It consists of a number of <em>re-write rules</em>. Each rule has the name of the rule on the left, a colon <code>:</code>, and on the right it&#39;s definition terminated with a semicolon <code>;</code>.</p>
+<p>The first argument to <code>mpca_lang</code> are the options flags. For this we just use the defaults. The second is a long multi-line string in C. This is the <em>grammar</em> specification. It consists of a number of <em>re-write rules</em>. Each rule has the name of the rule on the left, a colon <code>:</code>, and on the right it&#39;s definition terminated with a semicolon <code>;</code>.</p>
 
 <p>The special symbols used to define the rules on the right hand side work as follows.</p>
 
@@ -225,7 +225,7 @@ int main(int argc, char** argv) {
   mpc_parser_t* Phrase    = mpc_new("phrase");
   mpc_parser_t* Doge      = mpc_new("doge");
 
-  mpc_lang(
+  mpca_lang(MPC_LANG_DEFAULT,
     "                                                                     \
       adjective : \"wow\" | \"many\" | \"so\" | \"such\";                 \
       noun      : \"lisp\" | \"language\" | \"c\" | \"book\" | \"build\"; \

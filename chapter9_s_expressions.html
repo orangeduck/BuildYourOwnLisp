@@ -87,7 +87,7 @@ mpc_parser_t* Sexpr  = mpc_new(&quot;sexpr&quot;);
 mpc_parser_t* Expr   = mpc_new(&quot;expr&quot;);
 mpc_parser_t* Lispy  = mpc_new(&quot;lispy&quot;);
 
-mpca_lang(
+mpca_lang(MPC_LANG_DEFAULT,
   &quot;                                          \
     number : /-?[0-9]+/ ;                    \
     symbol : &#39;+&#39; | &#39;-&#39; | &#39;*&#39; | &#39;/&#39; ;         \
@@ -785,7 +785,7 @@ int main(int argc, char** argv) {
   mpc_parser_t* Expr   = mpc_new("expr");
   mpc_parser_t* Lispy  = mpc_new("lispy");
   
-  mpca_lang(
+  mpca_lang(MPC_LANG_DEFAULT,
     "                                          \
       number : /-?[0-9]+/ ;                    \
       symbol : '+' | '-' | '*' | '/' ;         \

@@ -598,7 +598,7 @@ lval* builtin_load(lenv* e, lval* a) {
   
   /* Parse File given by string name */
   mpc_result_t r;
-  if (mpc_fparse_contents(a->cell[0]->str, Lispy, &r)) {
+  if (mpc_parse_contents(a->cell[0]->str, Lispy, &r)) {
     
     /* Read contents */
     lval* expr = lval_read(r.output);
@@ -621,8 +621,7 @@ lval* builtin_load(lenv* e, lval* a) {
     
   } else {
     /* Get Parse Error as String */
-    char* err_msg;
-    mpc_err_string(r.error, &err_msg);
+    char* err_msg = mpc_err_string(r.error);
     mpc_err_delete(r.error);
     
     /* Create new error message using it */
@@ -842,7 +841,7 @@ int main(int argc, char** argv) {
   Expr    = mpc_new("expr");
   Lispy   = mpc_new("lispy");
   
-  mpca_lang(
+  mpca_lang(MPC_LANG_DEFAULT,
     "                                              \
       number  : /-?[0-9]+/ ;                       \
       symbol  : /[a-zA-Z0-9_+\\-*\\/\\\\=<>!&]+/ ; \
