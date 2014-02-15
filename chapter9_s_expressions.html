@@ -8,13 +8,14 @@
   <p><small>ALL CAPS &bull; SO RIGHT YET SO WRONG.</small></p>
 </div>
 
-<p>In the first chapter I mentioned that a Lisp is a language based around lists, but so far we've not seen many of them. In this chapter we rectify that, by finally converting our program into something that could vaguely be called a Lisp.</p>
+<p>Lisps are famous for having little distinction between data and code. They use the same structures to represent both. This allows them to do many powerful things other languages cannot. If we want this power for our programming language we're going to have to separate out the process or <em>reading</em> in input, and <em>evaluating</em> that input we have stored.</p>
 
-<p>The final result of this chapter will only differ slightly in behaviour from the previous chapter. Instead we are going to spend time changing how it works internally. This is called <em>re-factoring</em> and it will make our life a lot easier later on. Like preparation for a meal, just because we're not putting food onto plates it doesn't mean we're wasting time. And sometimes the anticipation is even better than the meal!
+<p>The final result of this chapter will only differ slightly in behaviour from the previous chapter. This is because we are going to spend time changing how things work internally. This is called <em>re-factoring</em> and it will make our life a lot easier later on. Like preparation for a meal, just because we're not putting food onto plates it doesn't mean we're wasting time. Sometimes the anticipation is even better than eating!
 
-<p>In this chapter we'll change our program to convert the <em>abstract syntax tree</em> input into an internal list structure we can store, and then evaluate in a single step.</p>
+<p>To store the program we will need to create an internal list structure that is built up recursively of numbers, symbols, and other lists. In Lisp, this structure is commonly called an S-Expression standing for <em>Symbolic Expression</em>. We will extend our <code>lval</code> structure to be able to represent it. The evaluation behaviour of S-Expressions is the behaviour typical of Lisps, that we are used to so far. To evaluate an S-Expression we look at the first item in the list, and take this to be the operator. We then look at all the other items in the list, and take these as operands to get the result.</p>
 
-<p>This internal list structure, built up recursively of numbers, symbols, and other expressions inside parenthesis, is called an S-Expression. This stands for <em>symbolic expressions</em>, and we will extend our <code>lval</code> to be able to represent it. The evaluation behaviour of S-Expressions is the behaviour typical of Lisps we are used to so far. To evaluate an S-Expression we look at the first item in the list, and take this to be the operator. We then look at all the other items in the list, and take these as operands to get the result.</p>
+<p>By introducing S-Expressions we'll finally be entering the world of Lisp.</p>
+
 
 <h2>Pointers</h2> <hr/>
 
@@ -24,21 +25,21 @@
 
 <p>A common problem is if we have a large struct containing many other sub structs we wish to pass around. Every time we call a function we must create another copy of it. Suddenly the amount of data that needs to be copied around just to call a function can become huge!</p>
 
-<p>A second problem is this. When we define a <code>struct</code>, it is always a fixed size. It has a limited number of fields, and each of these fields must be a type which itself is limited in size. If I want to call a function with just <em>a list of things</em>, where the number of <em>things</em> varies from call to call, clearly I can't use a <code>struct</code> to do this.</p>
+<p>A second problem is this. When we define a <code>struct</code>, it is always a fixed size. It has a limited number of fields, and each of these fields must be a struct which itself is limited in size. If I want to call a function with just <em>a list of things</em>, where the number of <em>things</em> varies from call to call, clearly I can't use a <code>struct</code> to do this.</p>
 
-<p>To get around these issues the developers of C (or y'know...someone) came up with a clever idea. They imagined computer memory as a single huge list of bytes. In this list each byte can be given a global index, or position in this list. The first byte is numbered <code>0</code>, the second is <code>1</code>, etc.</p>
+<p>To get around these issues the developers of C (or y'know...someone) came up with a clever idea. They imagined computer memory as a single huge list of bytes. In this list each byte can be given a global index, or position. A bit like a house number. The first byte is numbered <code>0</code>, the second is <code>1</code>, etc.</p>
 
 <p>In this case, all the data in the computer, including the structs and variables used in the currently running program, start at some index in this huge list. If, rather than copying the data itself to a function, we instead copy a number representing the <em>index</em> at where this data starts, the function being called can look up any amount of data it wants.</p>
 
 <p>By using <em>addresses</em> instead of the actual data, we can allow a function to access and modify some location in memory without having to copy any data. Functions can also use pointers to do other cool stuff, like output data to some address given as input.</p>
 
-<p>Because the total size of computer memory is fixed, the number of bytes needed to represent an address always the same. But if we keep track of it, the number of bytes the address points to can grown and shrink. This means we can create a variable sized data-structure and still sort of <em>pass</em> it to a function, which can inspect and modify it.</p>
+<p>Because the total size of computer memory is fixed, the number of bytes needed to represent an address is always the same. But if we keep track of it, the number of bytes the address points to can grown and shrink. This means we can create a variable sized data-structure and still sort of <em>pass</em> it to a function, which can inspect and modify it.</p>
 
 <p>So a pointer is just a number. A number representing the starting index of some data in memory. The type of the pointer hints to us, and the compiler, what type of data might be accessible at this location.</p>
 
-<p>We can declare pointer types by suffixing existing ones with the the <code>*</code> character. We've seen some examples of this already with <code>mpc_parser_t*</code> or <code>mpc_ast_t*</code>.</p>
+<p>We can declare pointer types by suffixing existing ones with the the <code>*</code> character. We've seen some examples of this already with <code>mpc_parser_t*</code>, <code>mpc_ast_t*</code>, or <code>char*</code>.</p>
 
-<p>To create a pointer to some data we have, we need to get its index, or <em>address</em>. To get the address of a some data we use the <em>address of</em> operator <code>&amp;</code>. Again you&#39;ve seen this before when we passed in a pointer to <code>mpc_parse</code> so it would output into our <code>mpc_result_t</code>.</p>
+<p>To create a pointer to some data, we need to get its index, or <em>address</em>. To get the address of a some data we use the <em>address of</em> operator <code>&amp;</code>. Again you&#39;ve seen this before when we passed in a pointer to <code>mpc_parse</code> so it would output into our <code>mpc_result_t</code>.</p>
 
 <p>Finally to get the data at an address, called <em>dereferencing</em>, we use the <code>*</code> operator on the left hand size of a variable. To get the data at the field of a pointer to a struct we use the arrow <code>-&gt;</code>. This you saw in chapter 7.</p>
 
@@ -431,7 +432,7 @@ lval* lval_take(lval* v, int i) {
   
   /* Ensure all arguments are numbers */
   for (int i = 0; i < a->count; i++) {
-    if (a&gt;cell[i]-&gt;type != LVAL_NUM) {
+    if (a-&gt;cell[i]-&gt;type != LVAL_NUM) {
       lval_del(a);
       return lval_err(&quot;Cannot operator on non number!&quot;);
     }

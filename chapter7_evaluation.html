@@ -60,7 +60,7 @@ printf("First Child Number of children: %i\n", c0->children_num);
   <p><small>Recursion &bull; Dangerous in a fire.</small></p>
 </div>
 
-<p>This pattern of repeated substructures could go on and on. Clearly if we want a function which can work on all possible trees we can't look just a couple of nodes in down, we have to define it to work on trees of any depth.</p>
+<p>This pattern of repeated substructures could go on and on. Clearly if we want a function which can work on all possible trees we can't look just a couple of nodes down, we have to define it to work on trees of any depth.</p>
 
 <p>Luckily we can do this, by exploiting the nature of how these substructures repeat, and using a technique called <em>recursion</em>.</p>
 
@@ -89,9 +89,9 @@ printf("First Child Number of children: %i\n", c0->children_num);
 
 <p>Recursive functions are weird because they require an odd leap of faith. First we have to assume we have some function which does something correctly already, and then we have to go about using this function, to write the initial function we assumed we had!</p>
 
-<p>Like most things, recursive functions almost always end up following a similar pattern. First a <em>base case</em> is defined. This is the case that ends the recursion, such as <code>t->children_num == 0</code> in our previous example. After this the <em>recursive case</em> is defined, which breaks down a computation into smaller parts, and calls the function recursively to compute those parts, before combining them together.</p>
+<p>Like most things, recursive functions almost always end up following a similar pattern. First a <em>base case</em> is defined. This is the case that ends the recursion, such as <code>t->children_num == 0</code> in our previous example. After this the <em>recursive case</em> is defined, such as <code>t->children_num >= 1</code> in our previous example, which breaks down a computation into smaller parts, and calls itself recursively to compute those parts, before combining them together.</p>
 
-<p>Recursive functions can take some thought, but make sure you have an understanding of them before continuing because we'll be making good use of them in the rest of the book. You can check out some of the bonus marks questions if you are still uncertain of how they work.</p>
+<p>Recursive functions can take some thought, so pause now and ensure you understand them before continuing onto other chapters because we'll be making good use of them in the rest of the book. If you are still uncertain, you can check out some of the bonus marks for this chapter to practice.</p>
 
 
 <h2>Evaluation</h2> <hr/>
