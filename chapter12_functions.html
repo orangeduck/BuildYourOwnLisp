@@ -30,7 +30,7 @@
 
 <p>All these ideas are explored in the study of functions, <em>Lambda calculus</em>. This is a field that combines logic, maths, and computer science. The name comes from the Greek letter Lambda, which is used in the representation of <em>binding variables</em>. Using Lambda calculus gives a way of defining, composing and building <em>functions</em> using a simple mathematical notation.</p>
 
-<p>We are going to use all of the previous ideas to add user defined functions to our language. Lisp is already well suited to this sort of playing around, and using these concepts it wont take much work for us to implement functions.</p>
+<p>We are going to use all of the previous ideas to add user defined functions to our language. Lisp is already well suited to this sort of playing around, and using these concepts it won't take much work for us to implement functions.</p>
 
 <p>The first step will be to write a builtin function that can create user defined functions. Here is one idea as to how it can be specified. The first argument could be a list of symbols, just like our <code>def</code> function. These symbols we call the <em>formal arguments</em>, also known as the <em>unbound variables</em>. They act as the inputs to our <em>partial computation</em>. The second argument could be another list. When running the function this is going to be evaluated with our builtin <code>eval</code> function.</p>
 
@@ -498,7 +498,7 @@ lispy> add-unpacked {5 6 7}
 18
 </code></pre>
 
-<p>Have a play around and see what other interesting and powerful functions you can try to come up with. You might be a bit limited for now. In the next chapter well add conditionals which will really start to make our language more complete. But that doesn't mean you wont be able to come up with some other interesting ideas now. Our Lisp really is getting richer!</p>
+<p>Have a play around and see what other interesting and powerful functions you can try to come up with. You might be a bit limited for now. In the next chapter well add conditionals which will really start to make our language more complete. But that doesn't mean you won't be able to come up with some other interesting ideas now. Our Lisp really is getting richer!</p>
 
 
 <h2>Reference</h2> <hr/>

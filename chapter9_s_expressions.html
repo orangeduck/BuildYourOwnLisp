@@ -322,7 +322,7 @@ void lval_println(lval* v) { lval_print(v); putchar(&#39;\n&#39;); }</code></pre
 
   <p>The <code>lval_expr_print</code> function calls the <code>lval_print</code> function and vice-versa. There is no way we can order them in the source file to resolve this dependency. Instead we need to <em>forward declare</em> one of them. This is declaring a function without giving it a body. It lets other functions call it, while allowing you to define it properly later on. To write a forward declaration write the function definition but instead of the body put a semicolon <code>;</code>. In this example we should put <code>void lval_print(lval* v);</code> somewhere in the source file before <code>lval_expr_print</code>.</p>
   
-  <p>You'll definitely run into this later, and I wont always alert you about it, so try to remember how to fix it!</p>
+  <p>You'll definitely run into this later, and I won't always alert you about it, so try to remember how to fix it!</p>
 </div>
 
 
