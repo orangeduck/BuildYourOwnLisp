@@ -89,11 +89,11 @@ except RuntimeError:
     cache = FakeCache()
 
 app = Flask(__name__)
-app.config['BASIC_AUTH_USERNAME'] = 'byol'
-app.config['BASIC_AUTH_PASSWORD'] = 'lovelace'
-app.config['BASIC_AUTH_FORCE'] = True
+#app.config['BASIC_AUTH_USERNAME'] = 'byol'
+#app.config['BASIC_AUTH_PASSWORD'] = 'lovelace'
+#app.config['BASIC_AUTH_FORCE'] = True
 
-app_auth = BasicAuth(app)
+#app_auth = BasicAuth(app)
 
 @app.route('/<page>')
 def route_page(page):
