@@ -91,7 +91,7 @@ mpc_parser_t* Noun = mpc_or(5,
 
 <pre><code data-language='c'>mpc_parser_t* Doge = mpc_many(mpcf_strfold, Phrase);</code></pre>
 
-<p>By creating a parser that looks for <em>zero or more</em> occurrences of another parser a cool thing has happened. Our <code>Doge</code> parser accepts inputs of any length. This means it's language is <em>infinite</em>. Here are just some examples of possible strings <code>Doge</code> could accept. Just as we discovered in the first section of this chapter we have used a finite number of re-write rules to create an infinite language.</p>
+<p>By creating a parser that looks for <em>zero or more</em> occurrences of another parser a cool thing has happened. Our <code>Doge</code> parser accepts inputs of any length. This means its language is <em>infinite</em>. Here are just some examples of possible strings <code>Doge</code> could accept. Just as we discovered in the first section of this chapter we have used a finite number of re-write rules to create an infinite language.</p>
 
 <pre><code data-language='c'>"wow book such language many lisp"
 "so c such build such language"
