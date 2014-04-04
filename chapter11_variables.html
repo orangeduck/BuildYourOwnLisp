@@ -12,7 +12,7 @@
 
 <p>Already we can do a number of cool things that other languages can't, such as putting code inside of lists. Now is the time to start adding in the <em>features</em> which will make our language practical. The first one of these is going to be <em>variables</em>.</p>
 
-<p>They're called variables, but it's a misleading name, because our variables wont vary. Our variables are <em>immutable</em> meaning they cannot change. Everything in our language so far has acted like it is <em>immutable</em>. When we evaluate an expression we have imagined that the old thing has been deleted and a new thing returned. In implementation often it is easier for us to reuse the data from the old thing to build the new thing, but conceptually it is a good way to think about how our language works.</p>
+<p>They're called variables, but it's a misleading name, because our variables won't vary. Our variables are <em>immutable</em> meaning they cannot change. Everything in our language so far has acted like it is <em>immutable</em>. When we evaluate an expression we have imagined that the old thing has been deleted and a new thing returned. In implementation often it is easier for us to reuse the data from the old thing to build the new thing, but conceptually it is a good way to think about how our language works.</p>
 
 <p>So actually our variables are simply a way of <em>naming values</em>. They let us assign a <em>name</em> to a <em>value</em>, and then let us get a copy of that <em>value</em> later on when we need it.</p>
 
@@ -84,7 +84,7 @@
 
 <p>We've come across this problem before with functions which depend on each other. The solution was to create a <em>forward declaration</em> which declared a function but left the body of it empty.</p>
 
-<p>In C we can do exactly the same with types. First we declare two <code>struct</code> types without a body. Secondly we typedef these to the names <code>lval</code> and <code>lenv</code>. Then we can define our <code>lbuiltin</code> function pointer type. And finally we can define the body of our <code>lval</code> struct. Now all our type issues are resolved and the compiler wont complain any more.</p>
+<p>In C we can do exactly the same with types. First we declare two <code>struct</code> types without a body. Secondly we typedef these to the names <code>lval</code> and <code>lenv</code>. Then we can define our <code>lbuiltin</code> function pointer type. And finally we can define the body of our <code>lval</code> struct. Now all our type issues are resolved and the compiler won't complain any more.</p>
 
 <pre><code data-language='c'>/* Forward Declarations */
 
@@ -286,7 +286,7 @@ void lenv_put(lenv* e, lval* k, lval* v) {
 
 <p>Once we've changed them to the correct type we can create a function that registers all of our builtins into an environment.</p>
 
-<p>For each builtin we want to create a function <code>lval</code> and symbol <code>lval</code> with the given name. We then register these with the environment using <code>lenv_put</code>. The environment always takes or returns copies of a values, so we need to remember to delete these two <code>lval</code> after registration as we wont need them anymore.</p>
+<p>For each builtin we want to create a function <code>lval</code> and symbol <code>lval</code> with the given name. We then register these with the environment using <code>lenv_put</code>. The environment always takes or returns copies of a values, so we need to remember to delete these two <code>lval</code> after registration as we won't need them anymore.</p>
 
 <p>If we split this task into two functions we can neatly register all of our builtins with some environment.</p>
 
@@ -441,7 +441,7 @@ lispy&gt;</code></pre>
 
 <p>The first step is to create a <code>va_list</code> struct and initialise it with <code>va_start</code>, passing in the last named argument. For other purposes it is possible to examine each argument passed in using <code>va_arg</code>, but we are going to pass our whole variable argument list directly to the <code>vsnprintf</code> function. This function acts like <code>printf</code> but instead writes to a string and takes in a <code>va_list</code>. Once we are done with our variable arguments, we shoulder call <code>va_end</code> to cleanup any resources used.</p>
 
-<p>The <code>vsnprintf</code> function outputs to a string, which we need to allocate some first. Because we don't know the size of this string until we've run the function we first allocate a buffer <code>512</code> characters big and then reallocate to a smaller buffer once we've output to it. If an error message is going to be longer than 512 character it will just get cut off, but hopefully this wont happen.</p>
+<p>The <code>vsnprintf</code> function outputs to a string, which we need to allocate some first. Because we don't know the size of this string until we've run the function we first allocate a buffer <code>512</code> characters big and then reallocate to a smaller buffer once we've output to it. If an error message is going to be longer than 512 character it will just get cut off, but hopefully this won't happen.</p>
 
 <p>Putting it all together our new error function looks like this.</p>
 
@@ -1114,7 +1114,7 @@ int main(int argc, char** argv) {
     <li class="list-group-item">&rsaquo; Change printing a builtin function print its name.</li>
     <li class="list-group-item">&rsaquo; Write a function for printing out all the named values in an environment.</li>
     <li class="list-group-item">&rsaquo; Redefine one of the builtin variables to something different.</li>
-    <li class="list-group-item">&rsaquo; Change redefinition one of the builtin variables to something different an error.</li>
+    <li class="list-group-item">&rsaquo; Change redefinition of one of the builtin variables to something different an error.</li>
     <li class="list-group-item">&rsaquo; Create an <code>exit</code> function for stopping the prompt and exiting.</li>
   </ul>
 </div>
