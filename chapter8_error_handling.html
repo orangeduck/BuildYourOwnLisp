@@ -46,7 +46,7 @@ enum { LVAL_NUM, LVAL_ERR };</code></pre>
 
 <p>An <code>enum</code> is a declaration of variables which under the hood are automatically assigned integer constant values. Above is how we would declare some enumerated values for the <code>type</code> field.</p>
 
-<p>We also want to declare an enumeration for the <em>error</em> field. We have three error cases in our particular program. There is division by zero, an unknown operator, or being passed a number that is too large to represented internally using a <code>long</code>. These can be enumerated as follows.</p>
+<p>We also want to declare an enumeration for the <em>error</em> field. We have three error cases in our particular program. There is division by zero, an unknown operator, or being passed a number that is too large to be represented internally using a <code>long</code>. These can be enumerated as follows.</p>
 
 <pre><code data-language='c'>/* Create Enumeration of Possible Error Types */
 enum { LERR_DIV_ZERO, LERR_BAD_OP, LERR_BAD_NUM };</code></pre>
@@ -104,7 +104,7 @@ void lval_println(lval v) { lval_print(v); putchar(&#39;\n&#39;); }</code></pre>
 
 <p>As well as changing the type signatures we need to change the functions such that they work correctly upon encountering either an <em>error</em> as input, or a <em>number</em> as input.</p>
 
-<p>In our <code>eval_op</code> function, if we encounter an error we should return it right away, and only do computation if both the arguments are numbers. We also should add our code to return an error rather than attempt to divide by zero. To fix the crash from right at the beginning of this chapter.</p>
+<p>In our <code>eval_op</code> function, if we encounter an error we should return it right away, and only do computation if both the arguments are numbers. We should modify our code to return an error rather than attempt to divide by zero. This will fix the crash from right at the beginning of this chapter.</p>
 
 <pre><code data-language='c'>lval eval_op(lval x, char* op, lval y) {
 
@@ -131,12 +131,12 @@ void lval_println(lval v) { lval_print(v); putchar(&#39;\n&#39;); }</code></pre>
 
   <p>It works something like this. <code>&lt;condition&gt; ? &lt;then&gt; : &lt;else&gt;</code>. In other words, if the condition is true it returns what follows the <code>?</code>, otherwise it returns what follows <code>:</code>.</p>
 
-  <p>Some people dislike this operator because they believe it makes code unclear. If you feel unfamiliar with it it can seem awkward, but once you get to know it there are rarely problems.</p>
+  <p>Some people dislike this operator because they believe it makes code unclear. If you feel unfamiliar with it, it can seem awkward, but once you get to know it there are rarely problems.</p>
 </div>
 
 <p>We need to give a similar treatment to our <code>eval</code> function. In this case because we've defined <code>eval_op</code> to robustly handle errors we just need to add the error conditions to our number conversion function.</p>
 
-<p>In this case we us the <code>strtol</code> function to convert from string to <code>long</code>. This lets use check a special variable <code>errno</code> to ensure the conversion goes correctly. This is a more robust way to convert numbers than our previous method using <code>atoi</code>.</p>
+<p>In this case we use the <code>strtol</code> function to convert from string to <code>long</code>. This allows us to check a special variable <code>errno</code> to ensure the conversion goes correctly. This is a more robust way to convert numbers than our previous method using <code>atoi</code>.</p>
 
 <pre><code data-language='c'>lval eval(mpc_ast_t* t) {
   
@@ -187,7 +187,7 @@ lispy> / 10 2
 
 <p>In programming we call this <em>plumbing</em>. Roughly speaking this is following instructions to try and tie together a bunch libraries or components, without fully understanding how they work internally.</p>
 
-<p>It requires <em>faith</em> and <em>intuition</em>. <em>Faith</em> is required to believe that if the stars align, and every incantation is correctly performed for this magical machine, the right thing really will happen. And <em>intuition</em> is required to work out what has gone wrong, and how to fix things when they don't go as planned.<p>
+<p>It requires <em>faith</em> and <em>intuition</em>. <em>Faith</em> is required to believe that if the stars align, and every incantation is correctly performed for this magical machine, the right thing will really happen. And <em>intuition</em> is required to work out what has gone wrong, and how to fix things when they don't go as planned.<p>
 
 <p>Unfortunately these can't be taught directly, so if you've made it this far then <em>congratulations!</em> You've made it over a difficult hump, and in the following chapters I promise we'll finish up with the plumbing, and actually start to programming that feels fresh and wholesome.</p>
 
