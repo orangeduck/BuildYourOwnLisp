@@ -131,7 +131,7 @@ void lval_println(lval v) { lval_print(v); putchar(&#39;\n&#39;); }</code></pre>
 
   <p>It works something like this. <code>&lt;condition&gt; ? &lt;then&gt; : &lt;else&gt;</code>. In other words, if the condition is true it returns what follows the <code>?</code>, otherwise it returns what follows <code>:</code>.</p>
 
-  <p>Some people dislike this operator because they believe it makes code unclear. If you feel unfamiliar with it, it can seem awkward, but once you get to know it there are rarely problems.</p>
+  <p>Some people dislike this operator because they believe it makes code unclear. If you are unfamiliar with the ternary operator, initially, you may feel awkward to use it; but once you get to know it there are rarely problems.</p>
 </div>
 
 <p>We need to give a similar treatment to our <code>eval</code> function. In this case because we've defined <code>eval_op</code> to robustly handle errors we just need to add the error conditions to our number conversion function.</p>
