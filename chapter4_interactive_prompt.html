@@ -164,7 +164,7 @@ int main(int argc, char** argv) {
 
 <p>On <strong>Linux</strong> this can be done using the command <code>sudo apt-get install libedit-dev</code>. On Fedora or similar you can use the command <code>su -c "yum install libedit-dev*"</code></pre>
 
-<p>On <strong>Mac</strong> the <code>editline</code> library should have been installed alongside the <em>Command Line Tools</em> but if not you can install the <code>readline</code> library as a drop-in replacement using Homebrew or MacPorts.</p>
+<p>On <strong>Mac</strong> the <code>editline</code> library should have been installed alongside the <em>Command Line Tools</em>. If you get an error about the history header not being found you can either try removing that line of code or installing the <code>readline</code> library, which can be used as a drop-in replacement. This can be installed using Homebrew or MacPorts.</p>
 
 <p>Once you have installed this you can try to compile it again. This time you'll get a different error.</p>
 
@@ -181,7 +181,7 @@ undefined reference to `add_history'
 <div class="alert alert-warning">
   <p><strong>It's still not working!</strong></p>
   
-  <p>Some systems might have slight variations on how to install, include, and link to <code>editline</code>. For example if you are on Arch linux the editline history header is <code>histedit.h</code>. On some systems there is no editline history header at all. If you are having trouble search online and see if you can find distribution specific instructions on how to use <code>editline</code> or <code>readline</code>, an equivalent library.</p>
+  <p>Some systems might have slight variations on how to install, include, and link to <code>editline</code>. For example on Mac and some other systems the history header may not be required and so that line of code can be removed. On Arch linux the editline history header is <code>histedit.h</code>. If you are having trouble search online and see if you can find distribution specific instructions on how to use <code>editline</code> or <code>readline</code>, an equivalent library.</p>
 </div>
 
 
