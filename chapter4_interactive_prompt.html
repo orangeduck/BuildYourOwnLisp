@@ -166,6 +166,8 @@ int main(int argc, char** argv) {
 
 <p>On <strong>Mac</strong> the <code>editline</code> library should have been installed alongside the <em>Command Line Tools</em> but if not you can install the <code>readline</code> library as a drop-in replacement using Homebrew or MacPorts.</p>
 
+<p>On some newer Mac OS installs the <code>editline</code> library will need to be called with just <code>#include <editline/readline.h><code> or else the build will fail when referencing <code>#include <editline/history.h></code>
+
 <p>Once you have installed this you can try to compile it again. This time you'll get a different error.</p>
 
 <pre><code>undefined reference to `readline'
