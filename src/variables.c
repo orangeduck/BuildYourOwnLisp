@@ -384,7 +384,7 @@ lval* builtin_op(lenv* e, lval* a, char* op) {
     if (strcmp(op, "*") == 0) { x->num *= y->num; }
     if (strcmp(op, "/") == 0) {
       if (y->num != 0) {
-        lval_del(x); lval_del(y); lval_del(a);
+        lval_del(x); lval_del(y);
         return lval_err("Division By Zero.");
       }
       x->num /= y->num;
