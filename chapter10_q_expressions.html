@@ -329,7 +329,7 @@ lval* lval_join(lval* x, lval* y) {
 <p>Then we can change our evaluation line in <code>lval_eval_sexpr</code> to call <code>builtin</code> rather than <code>builtin_op</code>.</p>
 
 <pre><code data-language='c'>/* Call builtin with operator */
-lval* result = builtin(v, func-&gt;sym);
+lval* result = builtin(v, f-&gt;sym);
 lval_del(func);
 return result;</code></pre>
 
