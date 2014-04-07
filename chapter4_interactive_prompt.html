@@ -159,15 +159,17 @@ int main(int argc, char** argv) {
 
 <p>If you try to compile this right away with the previous command you'll get an error. This is because you first need to install the <code>editline</code> library on your computer.</p>
 
-
 <pre><code>fatal error: editline/readline.h: No such file or directory #include &lt;editline/readline.h&gt;</code></pre>
 
-
-<p>On <strong>Mac</strong> the <code>editline</code> library comes with <em>Command Line Tools</em>.  If you get an error about the history header not being found, comment out the include line for history.h and install <em>Command Line Tools</em>. In OSX 10.9 (Mavericks) run <code>xcode-select --install</code>. Search for instructions if you are using a different version of OSX.
+<p>On <strong>Mac</strong> the <code>editline</code> library comes with <em>Command Line Tools</em>. Instructions for installing these can be found in <a href="http://www.buildyourownlisp.com/chapter2_installation">Chapter 2</a>. You may still get an error about the history header not being found. In this case remove the line <code>#include &lt;editline/history.h&gt;</code>, as this header may not be required.</p>
 
 <p>On <strong>Linux</strong> you can install <em>editline</em> with <code>sudo apt-get install libedit-dev</code>. On Fedora or similar you can use the command <code>su -c "yum install libedit-dev*"</code></pre>
 
-<p>Once you have installed <em>editline</em> you can try to compile it again. This time you'll get a different error complaining about an "undefined reference" or "undefined symbol" add_history.</p>
+<p>Once you have installed <em>editline</em> you can try to compile it again. This time you'll get a different error.</p>
+
+<pre><code>undefined reference to `readline'
+undefined reference to `add_history'
+</code></pre>
 
 <p>This means that you haven't <em>linked</em> your program to <code>editline</code>. This <em>linking</em> process allows the compiler to directly embed calls to <code>editline</code> in your program. You can make it link by adding the flag <code>-ledit</code> to your compile command, just before the output flag.</p>
 
@@ -178,7 +180,7 @@ int main(int argc, char** argv) {
 <div class="alert alert-warning">
   <p><strong>It's still not working!</strong></p>
   
-  <p>Some systems might have slight variations on how to install, include, and link to <code>editline</code>. For example on Arch linux the editline history header is <code>histedit.h</code>. If you are having trouble search online and see if you can find distribution specific instructions on how to use <code>editline</code> or <code>readline</code>, an equivalent library.</p>
+  <p>Some systems might have slight variations on how to install, include, and link to <code>editline</code>. For example on Arch linux the editline history header is <code>histedit.h</code>. If you are having trouble search online and see if you can find distribution specific instructions on how to install and use the <code>editline</code> library. If that fails search for instructions on the <code>readline</code> library. This is a drop-in replacement for editline. On Mac it can be installed using HomeBrew or MacPorts.</p>
 </div>
 
 
