@@ -166,9 +166,9 @@ mpc_ast_delete(r.output);</code></pre>
 
 <p>And we are done! Try running this new program and make sure there are no crashes when dividing by zero!</p>
 
-<pre><code data-language='lispy'>lispy> / 10 0
+<pre><code data-language='lispy'>lispy&gt; / 10 0
 Error: Division By Zero!
-lispy> / 10 2
+lispy&gt; / 10 2
 5</code></pre>
 
 
@@ -212,7 +212,7 @@ lispy> / 10 2
 static char buffer[2048];
 
 char* readline(char* prompt) {
-  fputs("lispy&gt; ", stdout);
+  fputs(prompt, stdout);
   fgets(buffer, 2048, stdin);
   char* cpy = malloc(strlen(buffer)+1);
   strcpy(cpy, buffer);

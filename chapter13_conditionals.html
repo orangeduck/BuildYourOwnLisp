@@ -212,7 +212,7 @@ lispy&gt; if (== x y) {+ x y} {- x y}
 static char buffer[2048];
 
 char* readline(char* prompt) {
-  fputs("lispy&gt; ", stdout);
+  fputs(prompt, stdout);
   fgets(buffer, 2048, stdin); 
   char* cpy = malloc(strlen(buffer)+1);
   strcpy(cpy, buffer);

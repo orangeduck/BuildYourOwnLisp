@@ -1,5 +1,6 @@
 <h1>Q-Expressions <small>&bull; Chapter 10</small></h1>
 
+
 <h2>Adding Features</h2> <hr/>
 
 <p>You'll notice that the following chapters will all follow a similar pattern. This pattern is the typical approach used to add new features to a language. It consists of a number of steps that bring a feature from start to finish. These are listed below, and are exactly what we're going to do in this chapter, to introduce a new feature called a Q-Expression.</p>
@@ -10,6 +11,7 @@
   <tr><td><strong>Step 2 &bull; Parsing</strong></td><td>Add new functions for reading this feature from the <em>abstract syntax tree</em>.</td></tr>
   <tr><td><strong>Step 3 &bull; Semantics</strong></td><td>Add new functions for evaluating and manipulating this feature.</td></tr>
 </table>
+
 
 <h2>Quoted Expressions</h2> <hr/>
 
@@ -367,7 +369,7 @@ lispy&gt; eval (head {(+ 1 2) (+ 10 20)})
 static char buffer[2048];
 
 char* readline(char* prompt) {
-  fputs("lispy&gt; ", stdout);
+  fputs(prompt, stdout);
   fgets(buffer, 2048, stdin);
   char* cpy = malloc(strlen(buffer)+1);
   strcpy(cpy, buffer);

@@ -5,7 +5,7 @@
 static char buffer[2048];
 
 char* readline(char* prompt) {
-  fputs("lispy> ", stdout);
+  fputs(prompt, stdout);
   fgets(buffer, 2048, stdin);
   char* cpy = malloc(strlen(buffer)+1);
   strcpy(cpy, buffer);

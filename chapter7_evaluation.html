@@ -39,15 +39,15 @@
 
 <pre><code data-language='c'>/* Load AST from output */
 mpc_ast_t* a = r.output;
-printf("Tag: %s\n", a->tag);
-printf("Contents: %s\n", a->contents);
-printf("Number of children: %i\n", a->children_num);
+printf("Tag: %s\n", a-&gt;tag);
+printf("Contents: %s\n", a-&gt;contents);
+printf("Number of children: %i\n", a-&gt;children_num);
 
 /* Get First Child */
-mpc_ast_t* c0 = a->children[0];
-printf("First Child Tag: %s\n", c0->tag);
-printf("First Child Contents: %s\n", c0->contents);
-printf("First Child Number of children: %i\n", c0->children_num);
+mpc_ast_t* c0 = a-&gt;children[0];
+printf("First Child Tag: %s\n", c0-&gt;tag);
+printf("First Child Contents: %s\n", c0-&gt;contents);
+printf("First Child Number of children: %i\n", c0-&gt;children_num);
 </code></pre>
 
 
@@ -77,11 +77,11 @@ printf("First Child Number of children: %i\n", c0->children_num);
 <p>In C we might write it something like this.</p>
 
 <pre><code data-language='C'>int number_of_nodes(mpc_ast_t* t) {
-  if (t->children_num == 0) { return 1; }
-  if (t->children_num >= 1) {
+  if (t-&gt;children_num == 0) { return 1; }
+  if (t-&gt;children_num &gt;= 1) {
     int total = 1;
     for (int i = 0; i < t->children_num; i++) {
-      total = total + number_of_nodes(t->children[i]);
+      total = total + number_of_nodes(t-&gt;children[i]);
     }
     return total;
   }
@@ -98,7 +98,7 @@ printf("First Child Number of children: %i\n", c0->children_num);
 
 <p>To evaluate the parse tree we are going to write a recursive function. But before we get started, let us try and see what observations we can make about the structure of the tree we get as input. Try printing out some expressions using your program from the previous chapter. See what you can notice.</p>
 
-<pre><code data-language='lispy'>lispy> + 1 (* 5 4)
+<pre><code data-language='lispy'>lispy&gt; + 1 (* 5 4)
 &gt;:
   regex:
   operator|char: '+'
@@ -131,18 +131,18 @@ printf("First Child Number of children: %i\n", c0->children_num);
 <pre><code data-language='c'>long eval(mpc_ast_t* t) {
   
   /* If tagged as number return it directly, otherwise expression. */ 
-  if (strstr(t->tag, "number")) { return atoi(t->contents); }
+  if (strstr(t-&gt;tag, "number")) { return atoi(t-&gt;contents); }
   
   /* The operator is always second child. */
-  char* op = t->children[1]->contents;
+  char* op = t-&gt;children[1]-&gt;contents;
   
   /* We store the third child in `x` */
-  long x = eval(t->children[2]);
+  long x = eval(t-&gt;children[2]);
   
   /* Iterate the remaining children, combining using our operator */
   int i = 3;
-  while (strstr(t->children[i]->tag, "expr")) {
-    x = eval_op(x, op, eval(t->children[i]));
+  while (strstr(t-&gt;children[i]-&gt;tag, "expr")) {
+    x = eval_op(x, op, eval(t-&gt;children[i]));
     i++;
   }
   
@@ -205,7 +205,7 @@ lispy&gt;</code></pre>
 static char buffer[2048];
 
 char* readline(char* prompt) {
-  fputs("lispy> ", stdout);
+  fputs(prompt, stdout);
   fgets(buffer, 2048, stdin);
   char* cpy = malloc(strlen(buffer)+1);
   strcpy(cpy, buffer);
