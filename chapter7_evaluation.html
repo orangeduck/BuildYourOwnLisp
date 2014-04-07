@@ -5,7 +5,7 @@
 
 <p>Now we can read input, and we have it structured internally, but we are still unable to evaluate it. In this chapter we add the code that evaluates this structure and actually performs the computations encoded within.</p>
 
-<p>This internal structure is what we saw printed out by the program in the previous chapter. It is called an <em>Abstract Syntax Tree</em>, and it represents the structure of the program as input by the user. At the leaves of this tree are numbers and operators - the actual data to be processed. At the branches are the rules used to produce this part of the tree - the information on how to traverse and evaluate it.</p>
+<p>This internal structure is what we saw printed out by the program in the previous chapter. It is called an <em>Abstract Syntax Tree</em>, and it represents the structure of the program based on the input entered by the user. At the leaves of this tree are numbers and operators - the actual data to be processed. At the branches are the rules used to produce this part of the tree - the information on how to traverse and evaluate it.</p>
 
 <div class='pull-left alert alert-warning' style="margin: 15px; text-align: center;">
   <img src="/static/img/tree.png" alt="tree"/>
@@ -31,7 +31,7 @@
 
 <p>Finally we see two fields that are going to help us traverse the tree. These are <code>children_num</code> and <code>children</code>. The first field tells us how many children a node has, and the second is an array of these children.</p>
 
-<p>The type of the <code>children</code> field is <code>mpc_ast_t**</code>. This is a double pointer type we've not seen before. This will be explained in greater detail in later chapters. For now you can think of it as a list of the child nodes of the this tree.</p>
+<p>The type of the <code>children</code> field is <code>mpc_ast_t**</code>. This is a double pointer type. It isn't as scary as it looks and will be explained in greater detail in later chapters. For now you can think of it as a list of the child nodes of the this tree.</p>
 
 <p>We can access a child node, by accessing this field using array notation. This is done by writing the field name <code>children</code> and suffixing it with square brackets containing the index of the child to access. For example to access the first child of the node we can use <code>children[0]</code>. Notice that C counts its array indices from <code>0</code>.</p>
 

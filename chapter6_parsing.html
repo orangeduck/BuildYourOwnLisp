@@ -36,7 +36,7 @@
 
 <h2>Regular Expressions</h2> <hr/>
 
-<p>We should be able to encode most of the above rules using things we know already, but <em>Number</em> and <em>Program</em> might pose some trouble. They contain a couple of constructs we've not learnt how to express yet. We don't know how to express the start or end of input, optional characters, or ranges of characters.</p>
+<p>We should be able to encode most of the above rules using things we know already, but <em>Number</em> and <em>Program</em> might pose some trouble. They contain a couple of constructs we've not learnt how to express yet. We don't know how to express the start or the end of input, optional characters, or range of characters.</p>
 
 <p>These can be expressed, but they require something called a <em>Regular Expression</em>. Regular expressions are a way of writing grammars for small sections of text such as words or numbers. Grammars written using regular expressions can't consist of multiple rules, but they do give precise, and concise, control over what is matched and what isn't. Here are some basic rules for writing regular expressions.</p>
 
@@ -81,7 +81,7 @@
 
 <h2>Polish Notation Grammar</h2> <hr/>
 
-<p>Formalising the above rules further, and using some regular expressions, we can write a final grammar for the language of polish notation as follows. Take a read over the below code and verify that it matches what we had written textually, and our ideas of polish notation.</p>
+<p>Formalising the above rules further, and using some regular expressions, we can write a final grammar for the language of polish notation as follows. Read the below code and verify that it matches what we had written textually, and our ideas of polish notation.</p>
 
 <pre><code data-language='c'>/* Create Some Parsers */
 mpc_parser_t* Number   = mpc_new(&quot;number&quot;);
@@ -129,7 +129,7 @@ if (mpc_parse(&quot;&lt;stdin&gt;&quot;, input, Lispy, &amp;r)) {
 
 <p>This code calls the <code>mpc_parse</code> function with our parser <code>Lispy</code>, and the input string <code>input</code>. It copies the result of the parse into <code>r</code> and returns <code>1</code> on success and <code>0</code> on failure. We use the address of operator <code>&amp;</code> on <code>r</code> when we pass it to the function. This operator will be explained in more detail in later chapters.</p>
 
-<p>On success a internal structure is is copied into <code>r</code>, in the field <code>output</code>. We can print out this structure using <code>mpc_ast_print</code> and delete it using <code>mpc_ast_delete</code>.</p>
+<p>On success a internal structure is copied into <code>r</code>, in the field <code>output</code>. We can print out this structure using <code>mpc_ast_print</code> and delete it using <code>mpc_ast_delete</code>.</p>
 
 <p>Otherwise there has been an error, which is copied into <code>r</code> in the field <code>error</code>. We can print it out using <code>mpc_err_print</code> and delete it using <code>mpc_err_delete</code>.</p>
 

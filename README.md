@@ -1,4 +1,4 @@
-Built your own Lisp
+Build your own Lisp
 ===================
 
 This is the HTML and website code for the book of the above title.
