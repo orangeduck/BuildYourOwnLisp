@@ -793,7 +793,7 @@ lval* lval_read_str(mpc_ast_t* t) {
   /* Cut off the final quote character */
   t->contents[strlen(t->contents)-1] = '\0';
   /* Copy the string missing out the first quote character */
-  char* unescaped = malloc(strlen(t->contents+1));
+  char* unescaped = malloc(strlen(t->contents+1)+1);
   strcpy(unescaped, t->contents+1);
   /* Pass through the unescape function */
   unescaped = mpcf_unescape(unescaped);
