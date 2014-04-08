@@ -248,7 +248,7 @@ void lenv_put(lenv* e, lval* k, lval* v) {
 
 <h2>Variable Evaluation</h2> <hr/>
 
-<p>Our evaluation function now depends on some environment. We should pass this in as an argument and use it to extract get a value if we encounter a symbol type.</p>
+<p>Our evaluation function now depends on some environment. We should pass this in as an argument and use it to get a value if we encounter a symbol type.</p>
 
 <pre><code data-language='c'>lval* lval_eval(lenv* e, lval* v) {
   if (v-&gt;type == LVAL_SYM)   { return lenv_get(e, v); }
@@ -361,7 +361,7 @@ lispy&gt;</code></pre>
 
 <p>The only way we can pass around symbols without them being evaluated is to put them between <code>{}</code> in a quoted expression. So we&#39;re going to use this technique for our define function. It will take as input a list of symbols, and a number of other values. It will then assign each of the values to each of the symbols.</p>
 
-<p>This function should act like any other builtin. It first checks for error conditions and then performs some command and return a value. In this case it first checks that the input arguments are the correct types. It then iterates over each symbol and value and puts them into the environment. If these is an error we can return this, but on success we will return the empty expression <code>()</code>.</p>
+<p>This function should act like any other builtin. It first checks for error conditions and then performs some command and returns a value. In this case it first checks that the input arguments are the correct types. It then iterates over each symbol and value and puts them into the environment. If there is an error we can return it, but on success we will return the empty expression <code>()</code>.</p>
 
 <pre><code data-language='c'>lval* builtin_def(lenv* e, lval* a) {
   LASSERT(a, (a-&gt;cell[0]-&gt;type == LVAL_QEXPR), &quot;Function &#39;def&#39; passed incorrect type!&quot;);
@@ -503,7 +503,7 @@ lispy&gt;</code></pre>
 
 <pre><code data-language='c'>LASSERT(a, (a-&gt;cell[0]-&gt;type == LVAL_QEXPR), 
   &quot;Function &#39;head&#39; passed incorrect type for argument 0. Got %s, Expected %s.&quot;,
-  ltype_name(a-&gt;cell[0]-&gt;type), type_name(LVAL_QEXPR));
+  ltype_name(a-&gt;cell[0]-&gt;type), ltype_name(LVAL_QEXPR));
 </code></pre>
 
 <p>Go ahead and improve the error reporting in all situations where we return an error in the code. This should make debugging many of the next stages much easier as we begin to write real, and complicated code using our new language! See if you can use macros to save on typing and automatically generate code for common methods of error reporting.</p>
