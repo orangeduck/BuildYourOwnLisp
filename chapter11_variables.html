@@ -248,10 +248,14 @@ void lenv_put(lenv* e, lval* k, lval* v) {
 
 <h2>Variable Evaluation</h2> <hr/>
 
-<p>Our evaluation function now depends on some environment. We should pass this in as an argument and use it to extract get a value if we encounter a symbol type.</p>
+<p>Our evaluation function now depends on some environment. We should pass this in as an argument and use it to extract get a value if we encounter a symbol type. Because our enviroment returns a copy of the value we need to remeber to delete the input symbol <code>lval*</code>.</p>
 
 <pre><code data-language='c'>lval* lval_eval(lenv* e, lval* v) {
-  if (v-&gt;type == LVAL_SYM)   { return lenv_get(e, v); }
+  if (v-&gt;type == LVAL_SYM) {
+    lval* x = lenv_get(e, v);
+    lval_del(v);
+    return x;
+  }
   if (v-&gt;type == LVAL_SEXPR) { return lval_eval_sexpr(e, v); }
   return v;
 }</code></pre>
@@ -1008,7 +1012,11 @@ lval* lval_eval_sexpr(lenv* e, lval* v) {
 }
 
 lval* lval_eval(lenv* e, lval* v) {
-  if (v-&gt;type == LVAL_SYM)   { return lenv_get(e, v); }
+  if (v-&gt;type == LVAL_SYM) {
+    lval* x = lenv_get(e, v);
+    lval_del(v);
+    return x;
+  }
   if (v-&gt;type == LVAL_SEXPR) { return lval_eval_sexpr(e, v); }
   return v;
 }

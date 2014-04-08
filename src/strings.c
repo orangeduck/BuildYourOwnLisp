@@ -689,7 +689,7 @@ void lenv_add_builtins(lenv* e) {
   
   /* String Functions */
   lenv_add_builtin(e, "load", builtin_load); 
-  lenv_add_builtin(e, "error", builtin_error); lenv_add_builtin(e, "print", builtin_print); 
+  lenv_add_builtin(e, "error", builtin_error); lenv_add_builtin(e, "print", builtin_print);
 }
 
 /* Evaluation */
@@ -777,7 +777,11 @@ lval* lval_eval_sexpr(lenv* e, lval* v) {
 }
 
 lval* lval_eval(lenv* e, lval* v) {
-  if (v->type == LVAL_SYM)   { return lenv_get(e, v); }
+  if (v->type == LVAL_SYM) {
+    lval* x = lenv_get(e, v);
+    lval_del(v);
+    return x;
+  }
   if (v->type == LVAL_SEXPR) { return lval_eval_sexpr(e, v); }
   return v;
 }
