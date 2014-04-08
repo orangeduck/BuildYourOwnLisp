@@ -156,7 +156,7 @@ lispy&gt;
 
 <p>The actual functionality of taking the head or tail of an Q-Expression shouldn't be too hard for us. We can make use of the existing functions we've defined for S-Expressions such as <code>lval_take</code> and <code>lval_pop</code>. But like <code>builtin_op</code> we also need to check that the inputs we get are valid.</p>
 
-<p>Lets take a look at <code>head</code> and <code>tail</code> first. These functions have a number of conditions under which they can't act. First of all we must ensure they are only passed a single argument, and that that argument is a Q-Expression. Then we need to ensure that this Q-Expression isn't empty and actually has some elements.</p>
+<p>Let's take a look at <code>head</code> and <code>tail</code> first. These functions have a number of conditions under which they can't act. First of all we must ensure they are only passed a single argument, and that that argument is a Q-Expression. Then we need to ensure that this Q-Expression isn't empty and actually has some elements.</p>
 
 <p>The <code>head</code> function can repeatedly pop and delete the item at index <code>1</code> until there is nothing else left in the list.</p>
 
@@ -329,7 +329,7 @@ lval* lval_join(lval* x, lval* y) {
 <p>Then we can change our evaluation line in <code>lval_eval_sexpr</code> to call <code>builtin</code> rather than <code>builtin_op</code>.</p>
 
 <pre><code data-language='c'>/* Call builtin with operator */
-lval* result = builtin(v, func-&gt;sym);
+lval* result = builtin(v, f-&gt;sym);
 lval_del(func);
 return result;</code></pre>
 
