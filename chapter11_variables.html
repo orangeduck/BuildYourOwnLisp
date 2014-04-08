@@ -248,7 +248,7 @@ void lenv_put(lenv* e, lval* k, lval* v) {
 
 <h2>Variable Evaluation</h2> <hr/>
 
-<p>Our evaluation function now depends on the some environment. We should pass this in as an argument and use it to extract get a value if we encounter a symbol type.</p>
+<p>Our evaluation function now depends on some environment. We should pass this in as an argument and use it to extract get a value if we encounter a symbol type.</p>
 
 <pre><code data-language='c'>lval* lval_eval(lenv* e, lval* v) {
   if (v-&gt;type == LVAL_SYM)   { return lenv_get(e, v); }
