@@ -103,7 +103,7 @@
 <p>For <strong>Deletion</strong>...</p>
 
 <pre><code data-language='c'>case LVAL_FUN: 
-  if (v-&gt;builtin != NULL) {
+  if (!v-&gt;builtin) {
     lenv_del(v-&gt;env);
     lval_del(v-&gt;formals);
     lval_del(v-&gt;body);
@@ -113,8 +113,10 @@ break;</code></pre>
 <p>For <strong>Copying</strong>...</p>
 
 <pre><code data-language='c'>case LVAL_FUN:
-  x-&gt;builtin = v-&gt;builtin;
-  if (x-&gt;builtin != NULL) {
+  if (!v-&gt;builtin) {
+    x-&gt;builtin = v-&gt;builtin;
+  } else {
+    x-&gt;builtin = NULL;
     x-&gt;env = lenv_copy(v-&gt;env);
     x-&gt;formals = lval_copy(v-&gt;formals);
     x-&gt;body = lval_copy(v-&gt;body);
