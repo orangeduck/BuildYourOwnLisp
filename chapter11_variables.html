@@ -228,8 +228,6 @@ void lenv_put(lenv* e, lval* k, lval* v) {
     if (strcmp(e-&gt;syms[i], k-&gt;sym) == 0) {
       lval_del(e-&gt;vals[i]);
       e-&gt;vals[i] = lval_copy(v);
-      e-&gt;syms[i] = realloc(e-&gt;syms[i], strlen(k-&gt;sym)+1);
-      strcpy(e-&gt;syms[i], k-&gt;sym);
       return;
     }
   }
@@ -248,7 +246,7 @@ void lenv_put(lenv* e, lval* k, lval* v) {
 
 <h2>Variable Evaluation</h2> <hr/>
 
-<p>Our evaluation function now depends on some environment. We should pass this in as an argument and use it to extract get a value if we encounter a symbol type. Because our enviroment returns a copy of the value we need to remeber to delete the input symbol <code>lval*</code>.</p>
+<p>Our evaluation function now depends on some environment. We should pass this in as an argument and use it to get a value if we encounter a symbol type. Because our enviroment returns a copy of the value we need to remeber to delete the input symbol <code>lval*</code>.</p>
 
 <pre><code data-language='c'>lval* lval_eval(lenv* e, lval* v) {
   if (v-&gt;type == LVAL_SYM) {
@@ -424,7 +422,7 @@ lispy&gt;</code></pre>
 
 <h2>Error Reporting</h2> <hr/>
 
-<p>So far our error reporting kind of sucks. We can report when an error occurs, and give a vague notion of what was the problem was, but we don't give the user much information about what exactly has gone wrong. For example if there is an unbound symbol we should be able to report exactly which symbol was unbound. This can help the user track down errors, typos, and other trivial problems.</p>
+<p>So far our error reporting kind of sucks. We can report when an error occurs, and give a vague notion of what the problem was, but we don't give the user much information about what exactly has gone wrong. For example if there is an unbound symbol we should be able to report exactly which symbol was unbound. This can help the user track down errors, typos, and other trivial problems.</p>
 
 <div class='pull-left alert alert-warning' style="margin: 15px; text-align: center;">
   <img src="/static/img/eclipses.png" alt="eclipses"/>
@@ -814,8 +812,6 @@ void lenv_put(lenv* e, lval* k, lval* v) {
     if (strcmp(e-&gt;syms[i], k-&gt;sym) == 0) {
       lval_del(e-&gt;vals[i]);
       e-&gt;vals[i] = lval_copy(v);
-      e-&gt;syms[i] = realloc(e-&gt;syms[i], strlen(k-&gt;sym)+1);
-      strcpy(e-&gt;syms[i], k-&gt;sym);
       return;
     }
   }
@@ -1024,6 +1020,7 @@ lval* lval_eval(lenv* e, lval* v) {
 /* Reading */
 
 lval* lval_read_num(mpc_ast_t* t) {
+  errno = 0;
   long x = strtol(t-&gt;contents, NULL, 10);
   return errno != ERANGE ? lval_num(x) : lval_err("Invalid Number.");
 }

@@ -280,8 +280,6 @@ void lenv_put(lenv* e, lval* k, lval* v) {
     if (strcmp(e->syms[i], k->sym) == 0) {
       lval_del(e->vals[i]);
       e->vals[i] = lval_copy(v);
-      e->syms[i] = realloc(e->syms[i], strlen(k->sym)+1);
-      strcpy(e->syms[i], k->sym);
       return;
     }
   }
@@ -490,6 +488,7 @@ lval* lval_eval(lenv* e, lval* v) {
 /* Reading */
 
 lval* lval_read_num(mpc_ast_t* t) {
+  errno = 0;
   long x = strtol(t->contents, NULL, 10);
   return errno != ERANGE ? lval_num(x) : lval_err("Invalid Number.");
 }

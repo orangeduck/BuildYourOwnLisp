@@ -142,6 +142,7 @@ void lval_println(lval v) { lval_print(v); putchar(&#39;\n&#39;); }</code></pre>
   
   if (strstr(t-&gt;tag, "number")) {
     /* Check if there is some error in conversion */
+    errno = 0;
     long x = strtol(t-&gt;contents, NULL, 10);
     return errno != ERANGE ? lval_num(x) : lval_err(LERR_BAD_NUM);
   }
@@ -299,6 +300,7 @@ lval eval(mpc_ast_t* t) {
   
   if (strstr(t-&gt;tag, "number")) {
     /* Check if there is some error in conversion */
+    errno = 0;
     long x = strtol(t-&gt;contents, NULL, 10);
     return errno != ERANGE ? lval_num(x) : lval_err(LERR_BAD_NUM);
   }

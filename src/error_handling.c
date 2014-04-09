@@ -92,6 +92,7 @@ lval eval(mpc_ast_t* t) {
   
   if (strstr(t->tag, "number")) {
     /* Check if there is some error in conversion */
+    errno = 0;
     long x = strtol(t->contents, NULL, 10);
     return errno != ERANGE ? lval_num(x) : lval_err(LERR_BAD_NUM);
   }
