@@ -316,8 +316,6 @@ void lenv_put(lenv* e, lval* k, lval* v) {
     if (strcmp(e->syms[i], k->sym) == 0) {
       lval_del(e->vals[i]);
       e->vals[i] = lval_copy(v);
-      e->syms[i] = realloc(e->syms[i], strlen(k->sym)+1);
-      strcpy(e->syms[i], k->sym);
       return;
     }
   }
