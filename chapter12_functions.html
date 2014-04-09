@@ -159,6 +159,13 @@ break;</code></pre>
   return lval_lambda(formals, body);
 }</code></pre>
 
+<div class="alert alert-warning">
+  <p><strong>Where did <code>LASSERT_NUM</code> and <code>LASSERT_TYPE</code> come from?</strong></p>
+
+  <p>I took the liberty of improving the error reporting macros for this chapter. This task was provided in the bonus marks of the previous chapter. It makes the code so much cleaner that it was hard to ignore!</p>
+
+  <p>If you were planning on completing this task yourself, now might be a good time to do it. Otherwise you can look at the reference code for this chapter to see what approach I took, and integrate that into your code.</p>
+</div>
 
 <div class='pull-right alert alert-warning' style="margin: 15px; text-align: center;">
   <img src="/static/img/playgroup.png" alt="playgroup"/>
@@ -388,9 +395,9 @@ lispy&gt; add-mul 10 20
 210
 lispy&gt; add-mul 10
 (\ {y} {+ x (* x y)})
-lispy&gt; def {add-mul-10} (add-mul 10)
+lispy&gt; def {add-mul-ten} (add-mul 10)
 ()
-lispy&gt; add-mul-10 50
+lispy&gt; add-mul-ten 50
 510
 lispy&gt;
 </code></pre>
