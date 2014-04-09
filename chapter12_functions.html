@@ -103,7 +103,7 @@
 <p>For <strong>Deletion</strong>...</p>
 
 <pre><code data-language='c'>case LVAL_FUN: 
-  if (v-&gt;builtin != NULL) {
+  if (!v-&gt;builtin) {
     lenv_del(v-&gt;env);
     lval_del(v-&gt;formals);
     lval_del(v-&gt;body);
@@ -113,8 +113,10 @@ break;</code></pre>
 <p>For <strong>Copying</strong>...</p>
 
 <pre><code data-language='c'>case LVAL_FUN:
-  x-&gt;builtin = v-&gt;builtin;
-  if (x-&gt;builtin != NULL) {
+  if (v-&gt;builtin) {
+    x-&gt;builtin = v-&gt;builtin;
+  } else {
+    x-&gt;builtin = NULL;
     x-&gt;env = lenv_copy(v-&gt;env);
     x-&gt;formals = lval_copy(v-&gt;formals);
     x-&gt;body = lval_copy(v-&gt;body);
@@ -395,13 +397,13 @@ lispy&gt;
 
 <h2>Variable Arguments</h2> <hr/>
 
-<p>We've defined some of our builtin functions so they can take in a variable number of arguments. Functions like <code>+</code> and <code>join</code> can take any number of arguments, and operator on them logically. We should find a way to let user defined functions work on multiple arguments also.</p>
+<p>We've defined some of our builtin functions so they can take in a variable number of arguments. Functions like <code>+</code> and <code>join</code> can take any number of arguments, and operate on them logically. We should find a way to let user defined functions work on multiple arguments also.</p>
 
 <p>Unfortunately there isn't an elegant way for us to allow for this, without adding in some special syntax. So we're going to hard-code some system into our language using a special symbol <code>&amp;</code>.</p>
 
 <p>We are going to let users define formal arguments that look like <code>{x &amp; xs}</code>, which means that a function will take in a single argument <code>x</code>, followed by zero or more other arguments, joined together into a list called <code>xs</code>. This is a bit like the ellipsis we used to declare variable arguments in C.</p>
 
-<p>When assigning our formal arguments we&#39;re going look for a <code>&amp;</code> symbol and if it exists take the next formal argument and assign it any remaining supplied arguments we&#39;ve been passed. It&#39;s important we convert this argument list to a Q-Expression. We need to also remember to check that <code>&amp;</code> is followed by a real symbol, and if it isn&#39;t we should throw an error.</p>
+<p>When assigning our formal arguments we&#39;re going to look for a <code>&amp;</code> symbol and if it exists take the next formal argument and assign it any remaining supplied arguments we&#39;ve been passed. It&#39;s important we convert this argument list to a Q-Expression. We need to also remember to check that <code>&amp;</code> is followed by a real symbol, and if it isn&#39;t we should throw an error.</p>
 
 <p>Just after the first symbol is popped from the formals in the <code>while</code> loop of <code>lval_call</code> we can add this special case.</p>
 
@@ -449,7 +451,7 @@ if (f-&gt;formals-&gt;count &gt; 0 &amp;&amp;
 
 <h3>Function Definition</h3>
 
-<p>Lambdas are clearly a simple and powerful way of defining functions. But the syntax is a little clumsy. There are a lot of brackets and symbols involved. Here is an interesting idea. We can try to write a function that defines a function itself, using in some way nicer syntax.</p>
+<p>Lambdas are clearly a simple and powerful way of defining functions. But the syntax is a little clumsy. There are a lot of brackets and symbols involved. Here is an interesting idea. We can try to write a function that defines a function itself, using some way nicer syntax.</p>
 
 <p>Essentially what we want is a function that can perform two steps at once. First creating a new function and then defining it some name. We could let the user supply the name and the formal arguments altogether and then separate these out for them and use them in the definition. Here is a function that does that. It takes as input some arguments and some body. It takes the head of the arguments to be the function name and the rest to be the formals to the function body.</p>
 
