@@ -264,7 +264,7 @@ int lval_eq(lval* x, lval* y) {
       if (x->count != y->count) { return 0; }
       for (int i = 0; i < x->count; i++) {
         /* If any element not equal then whole list not equal */
-        if (!lval_eq(x->cell[0], y->cell[0])) { return 0; }
+        if (!lval_eq(x->cell[i], y->cell[i])) { return 0; }
       }
       /* Otherwise lists must be equal */
       return 1;
