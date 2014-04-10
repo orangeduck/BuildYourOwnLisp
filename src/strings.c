@@ -290,7 +290,7 @@ int lval_eq(lval* x, lval* y) {
     case LVAL_SEXPR:
       if (x->count != y->count) { return 0; }
       for (int i = 0; i < x->count; i++) {
-        if (!lval_eq(x->cell[0], y->cell[0])) { return 0; }
+        if (!lval_eq(x->cell[i], y->cell[i])) { return 0; }
       }
       return 1;
     break;
