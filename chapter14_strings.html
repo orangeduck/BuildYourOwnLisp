@@ -160,7 +160,7 @@ lispy&gt;</code></pre>
 
 <pre><code data-language='c'>mpc_cleanup(8, Number, Symbol, String, Comment, Sexpr, Qexpr, Expr, Lispy);</code></pre>
 
-<p>Because comments are only for programmings reading the code, our internal function for reading them in just consists of ignoring them. We can add a clause to deal with them in a similar way to brackets and parenthesis in <code>lval_read</code>.</p>
+<p>Because comments are only for programmers reading the code, our internal function for reading them in just consists of ignoring them. We can add a clause to deal with them in a similar way to brackets and parenthesis in <code>lval_read</code>.</p>
 
 <pre><code data-language='c'>if (strstr(t-&gt;children[i]-&gt;tag, &quot;comment&quot;)) { continue; }</code></pre>
 
@@ -169,9 +169,9 @@ lispy&gt;</code></pre>
 
 <h2>Load Function</h2>
 
-<p>We want to built a function that can load and evaluate a file when passed a string of its name. To implement this function we'll need to make used of our grammar as we'll need it to to read in the file contents, parse, and evaluate them. Our load function is going to rely on our <code>mpc_parser*</code> called <code>Lispy</code>.</p>
+<p>We want to built a function that can load and evaluate a file when passed a string of its name. To implement this function we'll need to make use of our grammar as we'll need it to to read in the file contents, parse, and evaluate them. Our load function is going to rely on our <code>mpc_parser*</code> called <code>Lispy</code>.</p>
 
-<p>Therefore, just like with functions, we need to forward declare our parser pointers, and place them to the top of the file.</p>
+<p>Therefore, just like with functions, we need to forward declare our parser pointers, and place them at the top of the file.</p>
 
 <pre><code data-language='c'>mpc_parser_t* Number; 
 mpc_parser_t* Symbol; 
@@ -183,7 +183,7 @@ mpc_parser_t* Expr;
 mpc_parser_t* Lispy;
 </code></pre>
 
-<p>Our <code>load</code> function will be just like any other builtin. We need to start by checking that the input argument is a single string. Then we can use the <code>mpc_fparse_contents</code> function to read in the contents of a file using a grammar. Just like <code>mpc_parse</code> this parses the contents of a file into some <code>mpc_result</code> object, which is our case is an <em>abstract syntax tree</em> again or an <em>error</em>.</p>
+<p>Our <code>load</code> function will be just like any other builtin. We need to start by checking that the input argument is a single string. Then we can use the <code>mpc_parse_contents</code> function to read in the contents of a file using a grammar. Just like <code>mpc_parse</code> this parses the contents of a file into some <code>mpc_result</code> object, which is our case is an <em>abstract syntax tree</em> again or an <em>error</em>.</p>
 
 <p>Slightly differently to our command prompt, on successfully parsing a file we shouldn't treat it like one expression. When typing into a file we let users list multiple expressions and evaluate all of them individually. To achieve this behaviour we need to loop over each expression in the contents of the file and evaluate it one by one. If there are any errors we should print them and continue.</p>
 
@@ -195,7 +195,7 @@ mpc_parser_t* Lispy;
   
   /* Parse File given by string name */
   mpc_result_t r;
-  if (mpc_fparse_contents(a-&gt;cell[0]-&gt;str, Lispy, &r)) {
+  if (mpc_parse_contents(a-&gt;cell[0]-&gt;str, Lispy, &r)) {
     
     /* Read contents */
     lval* expr = lval_read(r.output);
@@ -942,7 +942,7 @@ lval* builtin_load(lenv* e, lval* a) {
   
   /* Parse File given by string name */
   mpc_result_t r;
-  if (mpc_fparse_contents(a-&gt;cell[0]-&gt;str, Lispy, &r)) {
+  if (mpc_parse_contents(a-&gt;cell[0]-&gt;str, Lispy, &r)) {
     
     /* Read contents */
     lval* expr = lval_read(r.output);
