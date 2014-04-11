@@ -198,6 +198,17 @@
     {if (== x (fst l)) {true} {elem x (tail l)}}
 })
 
+; Find element in list of pairs
+(fun {lookup x l} {
+  if (== l nil)
+    {error "No Element Found"}
+    {do
+      (= {key} (fst (fst l)))
+      (= {val} (snd (fst l)))
+      (if (== key x) {val} {lookup x (tail l)})
+    }
+})
+
 ; Zip two lists together into a list of pairs
 (fun {zip x y} {
   if (or (== x nil) (== y nil))
