@@ -33,8 +33,8 @@
 
 ; Perform Several things in Sequence
 (fun {do & l} {
-  if (== l {})
-    {{}}
+  if (== l nil)
+    {nil}
     {last l}
 })
 
@@ -50,7 +50,7 @@
 
 ; Minimum of Arguments
 (fun {min & xs} {
-  if (== (tail xs) {}) {fst xs}
+  if (== (tail xs) nil) {fst xs}
     {do 
       (= {rest} (unpack min (tail xs)))
       (= {item} (fst xs))
@@ -60,7 +60,7 @@
 
 ; Minimum of Arguments
 (fun {max & xs} {
-  if (== (tail xs) {}) {fst xs}
+  if (== (tail xs) nil) {fst xs}
     {do 
       (= {rest} (unpack max (tail xs)))
       (= {item} (fst xs))
@@ -71,13 +71,13 @@
 ;;; Conditional Functions
 
 (fun {select & cs} {
-  if (== cs {})
+  if (== cs nil)
     {error "No Selection Found"}
     {if (fst (fst cs)) {snd (fst cs)} {unpack select (tail cs)}}
 })
 
 (fun {case x & cs} {
-  if (== cs {})
+  if (== cs nil)
     {error "No Case Found"}
     {if (== x (fst (fst cs))) {snd (fst cs)} {unpack case (join (list x) (tail cs))}}
 })
@@ -100,7 +100,7 @@
 
 ; List Length
 (fun {len l} {
-  if (== l {})
+  if (== l nil)
     {0}
     {+ 1 (len (tail l))}
 })
@@ -117,42 +117,42 @@
 
 ; Apply Function to List
 (fun {map f l} {
-  if (== l {})
-    {{}}
+  if (== l nil)
+    {nil}
     {join (list (f (fst l))) (map f (tail l))}
 })
 
 ; Apply Filter to List
 (fun {filter f l} {
-  if (== l {})
-    {{}}
-    {join (if (f (fst l)) {head l} {{}}) (filter f (tail l))}
+  if (== l nil)
+    {nil}
+    {join (if (f (fst l)) {head l} {nil}) (filter f (tail l))}
 })
 
 ; Return all of list but last element
 (fun {init l} {
-  if (== (tail l) {})
-    {{}}
+  if (== (tail l) nil)
+    {nil}
     {join (head l) (init (tail l))}
 })
 
 ; Reverse List
 (fun {reverse l} {
-  if (== l {})
-    {{}}
+  if (== l nil)
+    {nil}
     {join (reverse (tail l)) (head l)}
 })
 
 ; Fold Left
 (fun {foldl f z l} {
-  if (== l {}) 
+  if (== l nil) 
     {z}
     {foldl f (f z (fst l)) (tail l)}
 })
 
 ; Fold Right
 (fun {foldr f z l} {
-  if (== l {}) 
+  if (== l nil) 
     {z}
     {f (fst l) (foldr f z (tail l))}
 })
@@ -163,7 +163,7 @@
 ; Take N items
 (fun {take n l} {
   if (== n 0)
-    {{}}
+    {nil}
     {join (head l) (take (- n 1) (tail l))}
 })
 
@@ -180,7 +180,7 @@
 ; Take While
 (fun {take-while f l} {
   if (not (unpack f (head l)))
-    {{}}
+    {nil}
     {join (head l) (take-while f (tail l))}
 })
 
@@ -193,33 +193,22 @@
 
 ; Element of List
 (fun {elem x l} {
-  if (== l {})
+  if (== l nil)
     {false}
     {if (== x (fst l)) {true} {elem x (tail l)}}
 })
 
-; Find element in list of pairs
-(fun {lookup x l} {
-  if (== l {})
-    {error "No Element Found"}
-    {do
-      (= {key} (fst (fst l)))
-      (= {val} (snd (fst l)))
-      (if (== key x) {val} {lookup x (tail l)})
-    }
-})
-
 ; Zip two lists together into a list of pairs
 (fun {zip x y} {
-  if (or (== x {}) (== y {}))
-    {{}}
+  if (or (== x nil) (== y nil))
+    {nil}
     {join (list (join (head x) (head y))) (zip (tail x) (tail y))}
 })
 
 ; Unzip a list of pairs into two lists
 (fun {unzip l} {
-  if (== l {})
-    {{{} {}}}
+  if (== l nil)
+    {{nil nil}}
     {do
       (= {x} (fst l))
       (= {xs} (unzip (tail l)))
