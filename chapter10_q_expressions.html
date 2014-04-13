@@ -330,7 +330,7 @@ lval* lval_join(lval* x, lval* y) {
 
 <pre><code data-language='c'>/* Call builtin with operator */
 lval* result = builtin(v, f-&gt;sym);
-lval_del(func);
+lval_del(f);
 return result;</code></pre>
 
 <p>Finally Q-Expressions should be fully supported in our language! Compile and run the latest version and see what you can do with the new list operators. Try putting code and symbols into our lists and evaluating them in different ways. The ability to put S-Expressions inside a list using Q-Expressions is pretty awesome. It means we can treat code like data itself. This is a flagship feature of Lisps, and something that really cannot be done in languages such as C!</p>
