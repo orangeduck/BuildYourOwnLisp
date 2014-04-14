@@ -179,7 +179,7 @@ lispy&gt; if (== x y) {+ x y} {- x y}
     {+ 1 (len (tail l))}
 })</code></pre>
 
-<p>There is a pleasant symmetry to this sort of recursive function. First we do something for the empty list (this is often called <em>the base case</em>). Then if we get something bigger, we take off a chunk such as the head of the list, and do something to it, before combining it with the rest of the thing to which the function has been already applied.</p>
+<p>Just as in C, there is a pleasant symmetry to this sort of recursive function. First we do something for the empty list (<em>the base case</em>). Then if we get something bigger, we take off a chunk such as the head of the list, and do something to it, before combining it with the rest of the thing to which the function has been already applied.</p>
 
 <p>Here is another function for reversing a list. Like before it checks for the empty list, but this time it returns the empty list back. This makes sense. The reverse of the empty list is just the empty list. But if it gets something bigger than the empty list, it reverses the tail, and stick this in front of the head.</p>
 

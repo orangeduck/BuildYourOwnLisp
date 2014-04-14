@@ -11,14 +11,14 @@
 
 <p>Hello, my name is Daniel Holden. I'm from the UK, and currently studying for a PhD at Edinburgh University. My research is in data driven tools for character animation.</p>
 
-<p>You may know me from one of my other projects such as <a href="http://libcello.org">libCello</a> or <a href="https://github.com/orangeduck/Corange">Corange</a>. As well as hacking on C, I enjoy graphics, game development, and theory of computation.</p>
+<p>You may know me from one of my other projects such as <a href="http://libcello.org">Cello</a> or <a href="https://github.com/orangeduck/Corange">Corange</a>. As well as hacking on C, I enjoy graphics, game development, and theory of computation.</p>
 
-<p>You can find my personal website <a href="http://theorangeduck.com/">here</a>. Or you can follow me on twitter <a href="https://twitter.com/anorangeduck">here</a>.</p>
+<p>You can take a look at my <a href="http://theorangeduck.com/">personal website</a>. Or you can <a href="https://twitter.com/anorangeduck">follow me on twitter</a>.</p>
 
 
 <h2>Why don't you teach arrays in this book?</h2> <hr/>
 
-<p>With an already steep learning curve arrays seemed like a convenient omission to make. Teaching arrays in C is a very easy way to confuse a beginner about pointers, which are a far more important concept to learn. In C, the ways in which arrays and pointers are the same, and yet different, are subtle and numerous. Excluding fixed sized arrays, which have different behaviour anyway, pointers represent a superset of the behaviour of arrays, and so in the context of this book, teaching arrays would have been no more than teaching syntactic sugar.</p>
+<p>With an already steep learning curve arrays seemed like a convenient omission to make. Teaching arrays in C is a very easy way to confuse a beginner about pointers, which are a far more important concept to learn. In C, the ways in which arrays and pointers are the same, and yet different, are subtle and numerous. Excluding fixed sized arrays, which have different behaviour altogether, pointers represent a superset of the behaviour of arrays, and so in the context of this book, teaching arrays would have been no more than teaching syntactic sugar.</p>
 
 <p>Those interested in arrays are encouraged to find out more. The book <a href="http://c.learncodethehardway.org/">Learn C the Hard Way</a> takes the opposite approach to me, and teaches arrays first, with pointers being described as a variation. For those interested in arrays this might prove useful.</p>
 
@@ -34,6 +34,15 @@
 <p>Once comfortable with the method behind C's declaration syntax, I encourage programmers to migrate toward the right-handed version.</p> 
 
 
+<h2>Why isn't the language parser written by hand?</h2> <hr/>
+
+<p>Lots of people tell me that using a library for the parsing is a big turn off for them, because writing a parser by hand is a really fun part of building a language. And for a Lisp it is so simple. There are a few reasons why I did not take this approach.</p>
+
+<p>First of all, when I was learning about programming languages, I found the theory of formal languages fascinating. I really enjoyed getting into the mind set of thinking about languages more abstractly. I think this is a fun thing to teach, as it opens up a lot of new thoughts and avenues of exploration. In my mind, the actual implementation details are less important.</p>
+
+<p>This approach also gives new programmers a chance to learn how to use a library. It gets them comfortable early on with weird interfaces, and other peoples' code. I think <em>Parser Combinator</em> libraries are a really good advert for effective functional composition. So I couldn't help putting in a shameless plug to some of my other work!</p>
+
+
 <h2>Why are there no Macros in this Lisp?</h2> <hr/>
 
 <p>By far the biggest gripe conventional Lisp programmers have with the Lisp in this book is the lack of Macros. Instead of Macros a new concept of Q-Expressions is used to delay evaluation. To conventional Lisp programmers Q-Expressions are confusing because their semantics differ subtly from the quote Macro.</p>
@@ -42,7 +51,7 @@
 
 <p>First of all I believe them to be easier for beginners than Macros. When evaluation is delayed it is always explicit, shown by the syntax, and not implicit in the function name. It also means that S-Expressions can never be returned by the prompt or seen in the wild. They are always evaluated.</p>
 
-<p>Secondly it is more consistent. It no longer requires the concept of Macros, but instead transforms quoted expressions to become the dominant, more powerful concept that does everything needed by either. With Q-Expressions there are only functions and Expressions, and the language is even more homo-iconic than before.</p>
+<p>Secondly it is more consistent. It no longer requires the concept of Macros, but instead transforms quoted expressions to become the dominant, more powerful concept that does everything needed by either. With Q-Expressions there are only <em>Functions</em> and <em>Expressions</em>, and the language is even more homo-iconic than before.</p>
 
 <p>Finally, Q-Expressions are distinctively more powerful than Macros. Using Q-Expressions it is possible to pass an argument to a function that evaluates to a Q-Expression, making input arguments capable of being dynamic. In conventional Lisps passing an expression to a Macro will always pause the evaluation, and so the arguments cannot be dynamic, only symbolic.</p>
 
