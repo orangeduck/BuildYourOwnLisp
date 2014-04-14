@@ -10,7 +10,7 @@ Corrections / Edits / Contributions Welcome
 
 `contact@theorangeduck.com`
 
-Licensed under Create Commons Attribution-NonCommercial-ShareAlike 3.0
+Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 3.0
 
 http://creativecommons.org/licenses/by-nc-sa/3.0/
 
