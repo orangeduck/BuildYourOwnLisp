@@ -252,7 +252,7 @@ int lval_eq(lval* x, lval* y) {
     
     /* If Builtin compare functions, otherwise compare formals and body */
     case LVAL_FUN:
-      if (x->builtin) {
+      if (x->builtin || y->builtin) {
         return x->builtin == y->builtin;
       } else {
         return lval_eq(x->formals, y->formals) && lval_eq(x->body, y->body);

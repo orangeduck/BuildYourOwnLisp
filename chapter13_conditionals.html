@@ -67,7 +67,7 @@ lval* builtin_le(lenv* e, lval* a) { return builtin_ord(e, a, "&lt;="); }
 
     /* If Builtin compare functions, otherwise compare formals and body */
     case LVAL_FUN:
-      if (x-&gt;builtin) {
+      if (x-&gt;builtin || y-&gt;builtin) {
         return x-&gt;builtin == y-&gt;builtin;
       } else {
         return lval_eq(x-&gt;formals, y-&gt;formals) &amp;&amp; lval_eq(x-&gt;body, y-&gt;body);
@@ -459,7 +459,7 @@ int lval_eq(lval* x, lval* y) {
     
     /* If Builtin compare functions, otherwise compare formals and body */
     case LVAL_FUN:
-      if (x-&gt;builtin) {
+      if (x-&gt;builtin || y-&gt;builtin) {
         return x-&gt;builtin == y-&gt;builtin;
       } else {
         return lval_eq(x-&gt;formals, y-&gt;formals) && lval_eq(x-&gt;body, y-&gt;body);
