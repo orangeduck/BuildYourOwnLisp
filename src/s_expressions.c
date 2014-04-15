@@ -186,9 +186,8 @@ lval* builtin_op(lval* a, char* op) {
         lval_del(x); lval_del(y);
         x = lval_err("Division By Zero.");
         break;
-      } else {
-        x->num /= y->num;
       }
+      x->num /= y->num;
     }
     
     /* Delete element now finished with */

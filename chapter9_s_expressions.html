@@ -459,9 +459,8 @@ lval* lval_take(lval* v, int i) {
       if (y-&gt;num == 0) {
         lval_del(x); lval_del(y);
         x = lval_err(&quot;Division By Zero!&quot;); break;
-      } else {
-        x-&gt;num /= y-&gt;num;
       }
+      x-&gt;num /= y-&gt;num;
     }
 
     /* Delete element now finished with */
