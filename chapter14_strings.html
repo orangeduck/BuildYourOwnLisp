@@ -625,7 +625,7 @@ int lval_eq(lval* x, lval* y) {
     case LVAL_SYM: return (strcmp(x-&gt;sym, y-&gt;sym) == 0);    
     case LVAL_STR: return (strcmp(x-&gt;str, y-&gt;str) == 0);    
     case LVAL_FUN:
-      if (x-&gt;builtin) {
+      if (x-&gt;builtin || y-&gt;builtin) {
         return x-&gt;builtin == y-&gt;builtin;
       } else {
         return lval_eq(x-&gt;formals, y-&gt;formals) && lval_eq(x-&gt;body, y-&gt;body);
