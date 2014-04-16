@@ -115,7 +115,7 @@ mpc_parser_t* Noun      = mpc_new(&quot;noun&quot;);
 mpc_parser_t* Phrase    = mpc_new(&quot;phrase&quot;);
 mpc_parser_t* Doge      = mpc_new(&quot;doge&quot;);
 
-mpca_lang(MPC_LANG_DEFAULT,
+mpca_lang(MPCA_LANG_DEFAULT,
   &quot;                                                                     \
     adjective : \&quot;wow\&quot; | \&quot;many\&quot; | \&quot;so\&quot; | \&quot;such\&quot;;                 \
     noun      : \&quot;lisp\&quot; | \&quot;language\&quot; | \&quot;c\&quot; | \&quot;book\&quot; | \&quot;build\&quot;; \
@@ -226,7 +226,7 @@ int main(int argc, char** argv) {
   mpc_parser_t* Phrase    = mpc_new("phrase");
   mpc_parser_t* Doge      = mpc_new("doge");
 
-  mpca_lang(MPC_LANG_DEFAULT,
+  mpca_lang(MPCA_LANG_DEFAULT,
     "                                                                     \
       adjective : \"wow\" | \"many\" | \"so\" | \"such\";                 \
       noun      : \"lisp\" | \"language\" | \"c\" | \"book\" | \"build\"; \

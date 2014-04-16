@@ -141,7 +141,7 @@ lispy&gt;</code></pre>
 
 <p>Our final grammar now look like this.</p>
 
-<pre><code data-language='c'>mpca_lang(MPC_LANG_DEFAULT,
+<pre><code data-language='c'>mpca_lang(MPCA_LANG_DEFAULT,
   &quot;                                              \
     number  : /-?[0-9]+/ ;                       \
     symbol  : /[a-zA-Z0-9_+\\-*\\/\\\\=&lt;&gt;!&amp;]+/ ; \
@@ -1189,7 +1189,7 @@ int main(int argc, char** argv) {
   Expr    = mpc_new("expr");
   Lispy   = mpc_new("lispy");
   
-  mpca_lang(MPC_LANG_DEFAULT,
+  mpca_lang(MPCA_LANG_DEFAULT,
     "                                              \
       number  : /-?[0-9]+/ ;                       \
       symbol  : /[a-zA-Z0-9_+\\-*\\/\\\\=&lt;&gt;!&amp;]+/ ; \
