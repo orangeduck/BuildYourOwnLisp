@@ -458,9 +458,9 @@ if (f-&gt;formals-&gt;count &gt; 0 &amp;&amp;
 
 <h3>Function Definition</h3>
 
-<p>Lambdas are clearly a simple and powerful way of defining functions. But the syntax is a little clumsy. There are a lot of brackets and symbols involved. Here is an interesting idea. We can try to write a function that defines a function itself, using some way nicer syntax.</p>
+<p>Lambdas are clearly a simple and powerful way of defining functions. But the syntax is a little clumsy. There are a lot of brackets and symbols involved. Here is an interesting idea. We can try to write a function that defines a function itself, using some nicer syntax.</p>
 
-<p>Essentially what we want is a function that can perform two steps at once. First creating a new function and then defining it some name. We could let the user supply the name and the formal arguments altogether and then separate these out for them and use them in the definition. Here is a function that does that. It takes as input some arguments and some body. It takes the head of the arguments to be the function name and the rest to be the formals to the function body.</p>
+<p>Essentially what we want is a function that can perform two steps at once. First it should create a new function, and then it should define it to some name. Here is the trick. We let the user supply the name and the formal arguments altogether in one list, and then separate these out for them, and use them in the definition. Here is a function that does that. It takes as input some arguments and some body. It takes the head of the arguments to be the function name and the rest to be the formal arguments. It passes the body directly to a lambda.</p>
 
 <pre><code data-language='lispy'>\ {args body} {def (head args) (\ (tail args) body)}</code></pre>
 
@@ -493,21 +493,29 @@ if (f-&gt;formals-&gt;count &gt; 0 &amp;&amp;
 
 <p>In some languages this is called <em>currying</em> and <em>uncurrying</em> respectively. This is named after <em>Haskell Curry</em> and unfortunately has nothing to do with our favourite spicy food.</p>
 
-<pre><code data-language='lispy'>lispy> uncurry head 5 6 7
-{5}
-lispy> curry + {5 6 7}
+<pre><code data-language='lispy'>lispy&gt; def {uncurry} pack
+()
+lispy&gt; def {curry} unpack
+()
+lispy&gt; curry + {5 6 7}
 18
+lispy&gt; uncurry head 5 6 7
+{5}
 </code></pre>
 
 <p>Because of the way our <em>partial evaluation</em> works we don't need to think of <em>currying</em> with a specific set of arguments. We can think of functions themselves being in <em>curried</em> or <em>uncurried</em> form.
 
-<pre><code data-language='lispy'>lispy> def {add-unpacked} (curry +)
+<pre><code data-language='lispy'>lispy&gt; def {add-uncurried} +
 ()
-lispy> add-unpacked {5 6 7}
+lispy&gt; def {add-curried} (curry +)
+()
+lispy&gt; add-curried {5 6 7}
+18
+lispy&gt; add-uncurried 5 6 7
 18
 </code></pre>
 
-<p>Have a play around and see what other interesting and powerful functions you can try to come up with. You might be a bit limited for now. In the next chapter well add conditionals which will really start to make our language more complete. But that doesn't mean you won't be able to come up with some other interesting ideas now. Our Lisp really is getting richer!</p>
+<p>Have a play around and see what other interesting and powerful functions you can try to come up with. You might be a bit limited for now. In the next chapter well add conditionals which will really start to make our language more complete. But that doesn't mean you won't be able to come up with some other interesting ideas. Our Lisp is really getting richer!</p>
 
 
 <h2>Reference</h2> <hr/>
