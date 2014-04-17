@@ -28,8 +28,8 @@
 (fun {pack f & xs} {f xs})
 
 ; Curried and Uncurried calling
-(def {curry} {unpack})
-(def {uncurry} {pack})
+(def {curry} unpack)
+(def {uncurry} pack)
 
 ; Perform Several things in Sequence
 (fun {do & l} {
@@ -58,7 +58,7 @@
     }
 })
 
-; Minimum of Arguments
+; Maximum of Arguments
 (fun {max & xs} {
   if (== (tail xs) nil) {fst xs}
     {do 

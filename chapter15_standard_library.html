@@ -48,8 +48,8 @@
 (fun {pack f &amp; xs} {f xs})
 
 &#59; Curried and Uncurried calling
-(def {curry} {unpack})
-(def {uncurry} {pack})</code></pre>
+(def {curry} unpack)
+(def {uncurry} pack)</code></pre>
 
 <p>Say we want to do several things in order. One way we can do this is to put each thing to do as an argument to some function. We known that arguments are evaluated in order from left to right, which is essentially sequencing events. For functions such as <code>print</code> and <code>load</code> we don't care much about what it evaluates to, but do care about the order in which it happens.</p>
 
@@ -357,8 +357,8 @@ lispy&gt;</code></pre>
 (fun {pack f & xs} {f xs})
 
 &#59; Curried and Uncurried calling
-(def {curry} {unpack})
-(def {uncurry} {pack})
+(def {curry} unpack)
+(def {uncurry} pack)
 
 &#59; Perform Several things in Sequence
 (fun {do & l} {
@@ -387,7 +387,7 @@ lispy&gt;</code></pre>
     }
 })
 
-&#59; Minimum of Arguments
+&#59; Maximum of Arguments
 (fun {max & xs} {
   if (== (tail xs) nil) {fst xs}
     {do 
