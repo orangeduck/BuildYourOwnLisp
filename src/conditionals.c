@@ -252,7 +252,7 @@ int lval_eq(lval* x, lval* y) {
     
     /* If Builtin compare functions, otherwise compare formals and body */
     case LVAL_FUN:
-      if (x->builtin) {
+      if (x->builtin || y->builtin) {
         return x->builtin == y->builtin;
       } else {
         return lval_eq(x->formals, y->formals) && lval_eq(x->body, y->body);
@@ -346,8 +346,6 @@ void lenv_put(lenv* e, lval* k, lval* v) {
     if (strcmp(e->syms[i], k->sym) == 0) {
       lval_del(e->vals[i]);
       e->vals[i] = lval_copy(v);
-      e->syms[i] = realloc(e->syms[i], strlen(k->sym)+1);
-      strcpy(e->syms[i], k->sym);
       return;
     }
   }
@@ -470,7 +468,8 @@ lval* builtin_op(lenv* e, lval* a, char* op) {
     if (strcmp(op, "/") == 0) {
       if (y->num != 0) {
         lval_del(x); lval_del(y);
-        return lval_err("Division By Zero.");
+        x = lval_err("Division By Zero.");
+        break;
       }
       x->num /= y->num;
     }
@@ -681,7 +680,11 @@ lval* lval_eval_sexpr(lenv* e, lval* v) {
 }
 
 lval* lval_eval(lenv* e, lval* v) {
-  if (v->type == LVAL_SYM)   { return lenv_get(e, v); }
+  if (v->type == LVAL_SYM) {
+    lval* x = lenv_get(e, v);
+    lval_del(v);
+    return x;
+  }
   if (v->type == LVAL_SEXPR) { return lval_eval_sexpr(e, v); }
   return v;
 }
@@ -689,6 +692,7 @@ lval* lval_eval(lenv* e, lval* v) {
 /* Reading */
 
 lval* lval_read_num(mpc_ast_t* t) {
+  errno = 0;
   long x = strtol(t->contents, NULL, 10);
   return errno != ERANGE ? lval_num(x) : lval_err("Invalid Number.");
 }
@@ -726,7 +730,7 @@ int main(int argc, char** argv) {
   mpc_parser_t* Expr   = mpc_new("expr");
   mpc_parser_t* Lispy  = mpc_new("lispy");
   
-  mpca_lang(MPC_LANG_DEFAULT,
+  mpca_lang(MPCA_LANG_DEFAULT,
     "                                                     \
       number : /-?[0-9]+/ ;                               \
       symbol : /[a-zA-Z0-9_+\\-*\\/\\\\=<>!&]+/ ;         \

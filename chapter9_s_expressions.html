@@ -37,7 +37,7 @@
 
 <p>So a pointer is just a number. A number representing the starting index of some data in memory. The type of the pointer hints to us, and the compiler, what type of data might be accessible at this location.</p>
 
-<p>We can declare pointer types by suffixing existing ones with the the <code>*</code> character. We've seen some examples of this already with <code>mpc_parser_t*</code>, <code>mpc_ast_t*</code>, or <code>char*</code>.</p>
+<p>We can declare pointer types by suffixing existing ones with the <code>*</code> character. We've seen some examples of this already with <code>mpc_parser_t*</code>, <code>mpc_ast_t*</code>, or <code>char*</code>.</p>
 
 <p>To create a pointer to some data, we need to get its index, or <em>address</em>. To get the address of a some data we use the <em>address of</em> operator <code>&amp;</code>. Again you&#39;ve seen this before when we passed in a pointer to <code>mpc_parse</code> so it would output into our <code>mpc_result_t</code>.</p>
 
@@ -73,7 +73,7 @@
 
 <p>When done with the memory at that location it must be released again. To do this the pointer received from <code>malloc</code> should be passed to the <code>free</code> function.</p>
 
-<p>Using the Heap is trickier than the Stack because it requires the programmer to remember to call <code>free</code> and to call it correctly. If he or she doesn't, the program may continuously allocate more and more memory. This is called a <em>memory leak</em>. A easy rule to avoid this is to ensure for each <code>malloc</code> there is a corresponding (and only one corresponding) <code>free</code>. If this can always be ensured the program should be handling The Heap correctly.</p>
+<p>Using the Heap is trickier than the Stack because it requires the programmer to remember to call <code>free</code> and to call it correctly. If he or she doesn't, the program may continuously allocate more and more memory. This is called a <em>memory leak</em>. An easy rule to avoid this is to ensure for each <code>malloc</code> there is a corresponding (and only one corresponding) <code>free</code>. If this can always be ensured the program should be handling The Heap correctly.</p>
 
 <p>I Imagine the Heap like a huge U-Store-It. We can call up the reception with <code>malloc</code> and request a number of boxes. With these boxes we can do what we want, and we know they will persist no matter how messy the building site gets. We can take things to and from the U-Store-It and the building site. It is useful to store materials and large objects which we only need to retrieve once in a while. The only problem is we need to remember to call the receptionist again with <code>free</code> when we are done. Otherwise soon we&#39;ll have requested all the boxes, have no space, and run up a huge bill.</p>
 
@@ -88,7 +88,7 @@ mpc_parser_t* Sexpr  = mpc_new(&quot;sexpr&quot;);
 mpc_parser_t* Expr   = mpc_new(&quot;expr&quot;);
 mpc_parser_t* Lispy  = mpc_new(&quot;lispy&quot;);
 
-mpca_lang(MPC_LANG_DEFAULT,
+mpca_lang(MPCA_LANG_DEFAULT,
   &quot;                                          \
     number : /-?[0-9]+/ ;                    \
     symbol : &#39;+&#39; | &#39;-&#39; | &#39;*&#39; | &#39;/&#39; ;         \
@@ -257,6 +257,7 @@ lval* lval_sexpr(void) {
 }
 
 lval* lval_read_num(mpc_ast_t* t) {
+  errno = 0;
   long x = strtol(t-&gt;contents, NULL, 10);
   return errno != ERANGE ? lval_num(x) : lval_err(&quot;invalid number&quot;);
 }
@@ -458,9 +459,8 @@ lval* lval_take(lval* v, int i) {
       if (y-&gt;num == 0) {
         lval_del(x); lval_del(y);
         x = lval_err(&quot;Division By Zero!&quot;); break;
-      } else {
-        x-&gt;num /= y-&gt;num;
       }
+      x-&gt;num /= y-&gt;num;
     }
 
     /* Delete element now finished with */
@@ -695,9 +695,8 @@ lval* builtin_op(lval* a, char* op) {
         lval_del(x); lval_del(y);
         x = lval_err("Division By Zero.");
         break;
-      } else {
-        x-&gt;num /= y-&gt;num;
       }
+      x-&gt;num /= y-&gt;num;
     }
     
     /* Delete element now finished with */
@@ -750,6 +749,7 @@ lval* lval_eval(lval* v) {
 }
 
 lval* lval_read_num(mpc_ast_t* t) {
+  errno = 0;
   long x = strtol(t-&gt;contents, NULL, 10);
   return errno != ERANGE ? lval_num(x) : lval_err("invalid number");
 }
@@ -786,7 +786,7 @@ int main(int argc, char** argv) {
   mpc_parser_t* Expr   = mpc_new("expr");
   mpc_parser_t* Lispy  = mpc_new("lispy");
   
-  mpca_lang(MPC_LANG_DEFAULT,
+  mpca_lang(MPCA_LANG_DEFAULT,
     "                                          \
       number : /-?[0-9]+/ ;                    \
       symbol : '+' | '-' | '*' | '/' ;         \

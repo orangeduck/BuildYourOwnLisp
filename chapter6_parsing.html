@@ -90,7 +90,7 @@ mpc_parser_t* Expr     = mpc_new(&quot;expr&quot;);
 mpc_parser_t* Lispy    = mpc_new(&quot;lispy&quot;);
 
 /* Define them with the following Language */
-mpca_lang(MPC_LANG_DEFAULT,
+mpca_lang(MPCA_LANG_DEFAULT,
   "                                                     \
     number   : /-?[0-9]+/ ;                             \
     operator : '+' | '-' | '*' | '/' ;                  \
@@ -139,25 +139,25 @@ if (mpc_parse(&quot;&lt;stdin&gt;&quot;, input, Lispy, &amp;r)) {
 Press Ctrl+c to Exit
 
 lispy&gt; + 5 (* 2 2)
-&gt;:
-  regex:
-  operator|char: '+'
-  expr|number|regex: '5'
-  expr|>:
-    char: '('
-    operator|char: '*'
-    expr|number|regex: '2'
-    expr|number|regex: '2'
-    char: ')'
-  regex:
+&gt;
+  regex
+  operator|char:1:1 '+'
+  expr|number|regex:1:3 '5'
+  expr|&gt;
+    char:1:5 '('
+    operator|char:1:6 '*'
+    expr|number|regex:1:8 '2'
+    expr|number|regex:1:10 '2'
+    char:1:11 ')'
+  regex
 lispy&gt; hello
-&lt;stdin&gt;:0:0: error: expected '+', '-', '*' or '/' at 'h'
-lispy&gt; / 1dog & cat
-&lt;stdin&gt;:0:3: error: expected end of input at 'd'
+&lt;stdin&gt;:1:1: error: expected whitespace, '+', '-', '*' or '/' at 'h'
+lispy&gt; / 1dog
+&lt;stdin&gt;:1:4: error: expected one of '0123456789', whitespace, '-', one or more of one of '0123456789', '(' or end of input at 'd'
 lispy&gt;</code></pre>
 
 <div class="alert alert-warning">
-  <p><strong>I'm getting an error <code>&lt;stdin&gt;:0:0: error: Parser Undefined!</code>.</strong></p>
+  <p><strong>I'm getting an error <code>&lt;stdin&gt;:1:1: error: Parser Undefined!</code>.</strong></p>
 
   <p>This error is due to the syntax for your grammar supplied to <code>mpca_lang</code> being incorrect. See if you can work out what part of the grammar is incorrect. You can use the reference code for this chapter to help you find this, and verify how the grammar should look.</p>
 </div>
@@ -209,7 +209,7 @@ int main(int argc, char** argv) {
   mpc_parser_t* Lispy    = mpc_new("lispy");
   
   /* Define them with the following Language */
-  mpca_lang(MPC_LANG_DEFAULT,
+  mpca_lang(MPCA_LANG_DEFAULT,
     "                                                     \
       number   : /-?[0-9]+/ ;                             \
       operator : '+' | '-' | '*' | '/' ;                  \

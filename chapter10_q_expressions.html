@@ -38,7 +38,7 @@ mpc_parser_t* Qexpr  = mpc_new(&quot;qexpr&quot;);
 mpc_parser_t* Expr   = mpc_new(&quot;expr&quot;);
 mpc_parser_t* Lispy  = mpc_new(&quot;lispy&quot;);
 
-mpca_lang(MPC_LANG_DEFAULT,
+mpca_lang(MPCA_LANG_DEFAULT,
   &quot;                                                    \
     number : /-?[0-9]+/ ;                              \
     symbol : &#39;+&#39; | &#39;-&#39; | &#39;*&#39; | &#39;/&#39; ;                   \
@@ -106,7 +106,7 @@ lval* lval_qexpr(void) {
 }
 </code></pre>
 
-<p>Using these simple changes we can update our reading function <code>lval_read</code> to be able to read in in Q-Expressions. Because we reused all the S-Expression data fields for our Q-Expression type, we can also reuse all of the functions for S-Expressions such as <code>lval_add</code>. Therefore to read in Q-Expressions we just need to add a special case for constructing an empty Q-Expression to <code>lval_read</code> just below where we detect and create empty S-Expressions from the <em>abstract syntax tree</em>.</p>
+<p>Using these simple changes we can update our reading function <code>lval_read</code> to be able to read in Q-Expressions. Because we reused all the S-Expression data fields for our Q-Expression type, we can also reuse all of the functions for S-Expressions such as <code>lval_add</code>. Therefore to read in Q-Expressions we just need to add a special case for constructing an empty Q-Expression to <code>lval_read</code> just below where we detect and create empty S-Expressions from the <em>abstract syntax tree</em>.</p>
 
 <pre><code data-language='C'>if (strstr(t->tag, "qexpr"))  { x = lval_qexpr(); }</code></pre>
 
@@ -137,7 +137,7 @@ lispy&gt;
 
 <p>Like with our mathematical operators we should add these functions as possible valid symbols. Afterward we can go about trying to define their behaviour in a similar way to <code>builtin_op</code>.</p>
 
-<pre><code class="lang-c">mpca_lang(MPC_LANG_DEFAULT,
+<pre><code class="lang-c">mpca_lang(MPCA_LANG_DEFAULT,
   &quot;                                                                                         \
     number : /-?[0-9]+/ ;                                                                   \
     symbol : \&quot;list\&quot; | \&quot;head\&quot; | \&quot;tail\&quot; | \&quot;join\&quot; | \&quot;eval\&quot; | &#39;+&#39; | &#39;-&#39; | &#39;*&#39; | &#39;/&#39; ; \
@@ -220,7 +220,7 @@ lval* builtin_tail(lval* a) {
   <p><small>Strawberry &bull; A delicious macro.</small></p>
 </div>
 
-<p>These <code>head</code> and <code>tail</code> functions do the correct thing, but the code pretty unclear, and long. There is so much error checking that the functionality is hard to see. One method we can use to clean it up is to use a <em>Macro</em>.</p>
+<p>These <code>head</code> and <code>tail</code> functions do the correct thing, but the code is pretty unclear, and long. There is so much error checking that the functionality is hard to see. One method we can use to clean it up is to use a <em>Macro</em>.</p>
 
 <p>A Macro is a <em>preprocessor</em> statement for creating function-like-things that are evaluated before the program is compiled. It can be used for many different things, one of which is what we need to do here, clean up code.</p>
 
@@ -330,7 +330,7 @@ lval* lval_join(lval* x, lval* y) {
 
 <pre><code data-language='c'>/* Call builtin with operator */
 lval* result = builtin(v, f-&gt;sym);
-lval_del(func);
+lval_del(f);
 return result;</code></pre>
 
 <p>Finally Q-Expressions should be fully supported in our language! Compile and run the latest version and see what you can do with the new list operators. Try putting code and symbols into our lists and evaluating them in different ways. The ability to put S-Expressions inside a list using Q-Expressions is pretty awesome. It means we can treat code like data itself. This is a flagship feature of Lisps, and something that really cannot be done in languages such as C!</p>
@@ -598,9 +598,8 @@ lval* builtin_op(lval* a, char* op) {
         lval_del(x); lval_del(y);
         x = lval_err("Division By Zero.");
         break;
-      } else {
-        x-&gt;num /= y-&gt;num;
       }
+      x-&gt;num /= y-&gt;num;
     }
     
     lval_del(y);
@@ -653,6 +652,7 @@ lval* lval_eval(lval* v) {
 }
 
 lval* lval_read_num(mpc_ast_t* t) {
+  errno = 0;
   long x = strtol(t-&gt;contents, NULL, 10);
   return errno != ERANGE ? lval_num(x) : lval_err("invalid number");
 }
@@ -688,7 +688,7 @@ int main(int argc, char** argv) {
   mpc_parser_t* Expr   = mpc_new("expr");
   mpc_parser_t* Lispy  = mpc_new("lispy");
   
-  mpca_lang(MPC_LANG_DEFAULT,
+  mpca_lang(MPCA_LANG_DEFAULT,
     "                                                                                         \
       number : /-?[0-9]+/ ;                                                                   \
       symbol : \"list\" | \"head\" | \"tail\" | \"eval\" | \"join\" | '+' | '-' | '*' | '/' ; \

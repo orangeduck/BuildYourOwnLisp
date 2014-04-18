@@ -281,7 +281,7 @@ int lval_eq(lval* x, lval* y) {
     case LVAL_SYM: return (strcmp(x->sym, y->sym) == 0);    
     case LVAL_STR: return (strcmp(x->str, y->str) == 0);    
     case LVAL_FUN: 
-      if (x->builtin) {
+      if (x->builtin || y->builtin) {
         return x->builtin == y->builtin;
       } else {
         return lval_eq(x->formals, y->formals) && lval_eq(x->body, y->body);
@@ -372,8 +372,6 @@ void lenv_put(lenv* e, lval* k, lval* v) {
     if (strcmp(e->syms[i], k->sym) == 0) {
       lval_del(e->vals[i]);
       e->vals[i] = lval_copy(v);
-      e->syms[i] = realloc(e->syms[i], strlen(k->sym)+1);
-      strcpy(e->syms[i], k->sym);
       return;
     }
   }
@@ -496,7 +494,8 @@ lval* builtin_op(lenv* e, lval* a, char* op) {
     if (strcmp(op, "/") == 0) {
       if (y->num != 0) {
         lval_del(x); lval_del(y);
-        return lval_err("Division By Zero.");
+        x = lval_err("Division By Zero.");
+        break;
       }
       x->num /= y->num;
     }
@@ -689,7 +688,7 @@ void lenv_add_builtins(lenv* e) {
   
   /* String Functions */
   lenv_add_builtin(e, "load", builtin_load); 
-  lenv_add_builtin(e, "error", builtin_error); lenv_add_builtin(e, "print", builtin_print); 
+  lenv_add_builtin(e, "error", builtin_error); lenv_add_builtin(e, "print", builtin_print);
 }
 
 /* Evaluation */
@@ -777,7 +776,11 @@ lval* lval_eval_sexpr(lenv* e, lval* v) {
 }
 
 lval* lval_eval(lenv* e, lval* v) {
-  if (v->type == LVAL_SYM)   { return lenv_get(e, v); }
+  if (v->type == LVAL_SYM) {
+    lval* x = lenv_get(e, v);
+    lval_del(v);
+    return x;
+  }
   if (v->type == LVAL_SEXPR) { return lval_eval_sexpr(e, v); }
   return v;
 }
@@ -785,6 +788,7 @@ lval* lval_eval(lenv* e, lval* v) {
 /* Reading */
 
 lval* lval_read_num(mpc_ast_t* t) {
+  errno = 0;
   long x = strtol(t->contents, NULL, 10);
   return errno != ERANGE ? lval_num(x) : lval_err("Invalid Number.");
 }
@@ -793,7 +797,7 @@ lval* lval_read_str(mpc_ast_t* t) {
   /* Cut off the final quote character */
   t->contents[strlen(t->contents)-1] = '\0';
   /* Copy the string missing out the first quote character */
-  char* unescaped = malloc(strlen(t->contents+1));
+  char* unescaped = malloc(strlen(t->contents+1)+1);
   strcpy(unescaped, t->contents+1);
   /* Pass through the unescape function */
   unescaped = mpcf_unescape(unescaped);
@@ -841,7 +845,7 @@ int main(int argc, char** argv) {
   Expr    = mpc_new("expr");
   Lispy   = mpc_new("lispy");
   
-  mpca_lang(MPC_LANG_DEFAULT,
+  mpca_lang(MPCA_LANG_DEFAULT,
     "                                              \
       number  : /-?[0-9]+/ ;                       \
       symbol  : /[a-zA-Z0-9_+\\-*\\/\\\\=<>!&]+/ ; \

@@ -115,7 +115,7 @@ mpc_parser_t* Noun      = mpc_new(&quot;noun&quot;);
 mpc_parser_t* Phrase    = mpc_new(&quot;phrase&quot;);
 mpc_parser_t* Doge      = mpc_new(&quot;doge&quot;);
 
-mpca_lang(MPC_LANG_DEFAULT,
+mpca_lang(MPCA_LANG_DEFAULT,
   &quot;                                                                     \
     adjective : \&quot;wow\&quot; | \&quot;many\&quot; | \&quot;so\&quot; | \&quot;such\&quot;;                 \
     noun      : \&quot;lisp\&quot; | \&quot;language\&quot; | \&quot;c\&quot; | \&quot;book\&quot; | \&quot;build\&quot;; \
@@ -129,7 +129,7 @@ mpca_lang(MPC_LANG_DEFAULT,
 mpc_cleanup(4, Adjective, Noun, Phrase, Doge);
 </code></pre>
 
-<p>Without having an exactly understanding of the syntax for that long string, it should be obvious how much <em>clearer</em> the grammar is in this format. If we learn what all the special symbols mean we barely have to squint our eyes to read it as one.</p>
+<p>Without having an exact understanding of the syntax for that long string, it should be obvious how much <em>clearer</em> the grammar is in this format. If we learn what all the special symbols mean we barely have to squint our eyes to read it as one.</p>
 
 <p>Another thing to notice is that the process is now in two steps. First we create and name several rules using <code>mpc_new</code> and then we define them using <code>mpca_lang</code>.</p>
 
@@ -226,7 +226,7 @@ int main(int argc, char** argv) {
   mpc_parser_t* Phrase    = mpc_new("phrase");
   mpc_parser_t* Doge      = mpc_new("doge");
 
-  mpca_lang(MPC_LANG_DEFAULT,
+  mpca_lang(MPCA_LANG_DEFAULT,
     "                                                                     \
       adjective : \"wow\" | \"many\" | \"so\" | \"such\";                 \
       noun      : \"lisp\" | \"language\" | \"c\" | \"book\" | \"build\"; \

@@ -12,8 +12,16 @@ lispy&gt; / 10 0</code></pre>
 
 <p>Ouch. The program crashed upon trying to divide by zero. It's okay if a program crashes during development, but our final program would hopefully never crash, and should always explain to the user what went wrong.</p>
 
+<div class='pull-left alert alert-warning' style="margin: 15px; text-align: center;">
+  <img src="/static/img/walterwhite.png" alt="walterwhite"/>
+  <p><small>Walter White &bull; Heisenberg</small></p>
+</div>
+
 <p>At the moment our program can produce syntax errors but it still has no functionality for reporting errors in the evaluation of expressions. We need to build in some kind of error handling functionality to do this. It can be awkward in C, but if we start off on the right track, it will pay off later on when our system gets more complicated.</p>
 
+<p>C programs crashing is a fact of life. If anything goes wrong the operating system kicks them out. They can crash for many different reasons, and in many different ways. You will see at least one <a href="http://en.wikipedia.org/wiki/Heisenbug">Heisenbug</a>.</p>
+
+<p>But there is no magic in how C programs work. If you face a really troublesome bug don't give up or sit and stare at the screen till your eyes bleed. Take this chance to properly learn how to use <code>gdb</code> and <code>valgrind</code>. These will be more weapons in your toolkit, and after the up front investment, save you a lot of time and pain.</p>
 
 <h2>Lisp Value</h2> <hr/>
 
@@ -142,6 +150,7 @@ void lval_println(lval v) { lval_print(v); putchar(&#39;\n&#39;); }</code></pre>
   
   if (strstr(t-&gt;tag, "number")) {
     /* Check if there is some error in conversion */
+    errno = 0;
     long x = strtol(t-&gt;contents, NULL, 10);
     return errno != ERANGE ? lval_num(x) : lval_err(LERR_BAD_NUM);
   }
@@ -299,6 +308,7 @@ lval eval(mpc_ast_t* t) {
   
   if (strstr(t-&gt;tag, "number")) {
     /* Check if there is some error in conversion */
+    errno = 0;
     long x = strtol(t-&gt;contents, NULL, 10);
     return errno != ERANGE ? lval_num(x) : lval_err(LERR_BAD_NUM);
   }
@@ -322,7 +332,7 @@ int main(int argc, char** argv) {
   mpc_parser_t* Expr = mpc_new("expr");
   mpc_parser_t* Lispy = mpc_new("lispy");
   
-  mpca_lang(MPC_LANG_DEFAULT,
+  mpca_lang(MPCA_LANG_DEFAULT,
     "                                                     \
       number   : /-?[0-9]+/ ;                             \
       operator : '+' | '-' | '*' | '/' ;                  \
@@ -369,6 +379,7 @@ int main(int argc, char** argv) {
 
 <div class="alert alert-warning">
   <ul class="list-group">
+    <li class="list-group-item">&rsaquo; Run the previous chapter's code through <code>gdb</code> and crash it. See what happens.</li>
     <li class="list-group-item">&rsaquo; How do you give an <code>enum</code> a name?</li>
     <li class="list-group-item">&rsaquo; What are <code>union</code> data types and how do they work?</li>
     <li class="list-group-item">&rsaquo; Can you change how <code>lval</code> is defined to use <code>union</code> instead of <code>struct</code>?</li>

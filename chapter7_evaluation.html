@@ -17,17 +17,20 @@
 <pre style='margin-left: 375px;'><code data-language='c'>typedef struct mpc_ast_t {
   char* tag;
   char* contents;
+  mpc_state_t state;
   int children_num;
   struct mpc_ast_t** children;
 } mpc_ast_t;</code></pre>
 
 <p>This struct has a number of fields we can access. Let's take a look at them one by one.</p>
 
-<p>The first field is <code>tag</code>. When we printed out the tree this was the information that precluded the contents of the node. It was a string containing a list of all the rules used to parse that particular item. For example <code>expr|number|regex</code>.</p>
+<p>The first field is <code>tag</code>. When we printed out the tree this was the information that preceded the contents of the node. It was a string containing a list of all the rules used to parse that particular item. For example <code>expr|number|regex</code>.</p>
 
 <p>This <code>tag</code> field is going to be important as it lets us see what type of thing the node is.</p>
 
 <p>The second field is <code>contents</code>. This will contain the actual contents of the node such as <code>'*'</code>, <code>'('</code> or <code>'5'</code>. You'll notice for branches this is empty, but for leaves we can use it to find the operator or number to use.</p>
+
+<p>The next field is <code>state</code>. This contains information about what state the parser was in when it found this node, such as the line and column number. We wont make use of this in our program.</p>
 
 <p>Finally we see two fields that are going to help us traverse the tree. These are <code>children_num</code> and <code>children</code>. The first field tells us how many children a node has, and the second is an array of these children.</p>
 
@@ -98,18 +101,18 @@ printf("First Child Number of children: %i\n", c0-&gt;children_num);
 
 <p>To evaluate the parse tree we are going to write a recursive function. But before we get started, let us try and see what observations we can make about the structure of the tree we get as input. Try printing out some expressions using your program from the previous chapter. See what you can notice.</p>
 
-<pre><code data-language='lispy'>lispy&gt; + 1 (* 5 4)
-&gt;:
-  regex:
-  operator|char: '+'
-  expr|number|regex: '1'
-  expr|&gt;:
-    char: '('
-    operator|char: '*'
-    expr|number|regex: '5'
-    expr|number|regex: '4'
-    char: ')'
-  regex:
+<pre><code data-language='lispy'>lispy&gt; * 10 (+ 1 51)
+&gt;
+  regex
+  operator|char:1:1 '*'
+  expr|number|regex:1:3 '10'
+  expr|&gt;
+    char:1:6 '('
+    operator|char:1:7 '+'
+    expr|number|regex:1:9 '1'
+    expr|number|regex:1:11 '51'
+    char:1:13 ')'
+  regex
 </code></pre>
 
 <p>One observation is that if a node is tagged with <code>number</code> it is always a number, has no children, and we can just convert the contents to an integer. This will act as the <em>base case</em> in our recursion.</p>
@@ -259,7 +262,7 @@ int main(int argc, char** argv) {
   mpc_parser_t* Expr = mpc_new("expr");
   mpc_parser_t* Lispy = mpc_new("lispy");
   
-  mpca_lang(MPC_LANG_DEFAULT,
+  mpca_lang(MPCA_LANG_DEFAULT,
     "                                                     \
       number   : /-?[0-9]+/ ;                             \
       operator : '+' | '-' | '*' | '/' ;                  \

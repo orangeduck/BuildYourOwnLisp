@@ -234,9 +234,8 @@ lval* builtin_op(lval* a, char* op) {
         lval_del(x); lval_del(y);
         x = lval_err("Division By Zero.");
         break;
-      } else {
-        x->num /= y->num;
       }
+      x->num /= y->num;
     }
     
     lval_del(y);
@@ -289,6 +288,7 @@ lval* lval_eval(lval* v) {
 }
 
 lval* lval_read_num(mpc_ast_t* t) {
+  errno = 0;
   long x = strtol(t->contents, NULL, 10);
   return errno != ERANGE ? lval_num(x) : lval_err("invalid number");
 }
@@ -324,7 +324,7 @@ int main(int argc, char** argv) {
   mpc_parser_t* Expr   = mpc_new("expr");
   mpc_parser_t* Lispy  = mpc_new("lispy");
   
-  mpca_lang(MPC_LANG_DEFAULT,
+  mpca_lang(MPCA_LANG_DEFAULT,
     "                                                                                         \
       number : /-?[0-9]+/ ;                                                                   \
       symbol : \"list\" | \"head\" | \"tail\" | \"eval\" | \"join\" | '+' | '-' | '*' | '/' ; \

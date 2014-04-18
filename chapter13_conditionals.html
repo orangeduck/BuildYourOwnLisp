@@ -67,7 +67,7 @@ lval* builtin_le(lenv* e, lval* a) { return builtin_ord(e, a, "&lt;="); }
 
     /* If Builtin compare functions, otherwise compare formals and body */
     case LVAL_FUN:
-      if (x-&gt;builtin) {
+      if (x-&gt;builtin || y-&gt;builtin) {
         return x-&gt;builtin == y-&gt;builtin;
       } else {
         return lval_eq(x-&gt;formals, y-&gt;formals) &amp;&amp; lval_eq(x-&gt;body, y-&gt;body);
@@ -179,7 +179,7 @@ lispy&gt; if (== x y) {+ x y} {- x y}
     {+ 1 (len (tail l))}
 })</code></pre>
 
-<p>There is a pleasant symmetry to this sort of recursive function. First we do something for the empty list (this is often called <em>the base case</em>). Then if we get something bigger, we take off a chunk such as the head of the list, and do something to it, before combining it with the rest of the thing to which the function has been already applied.</p>
+<p>Just as in C, there is a pleasant symmetry to this sort of recursive function. First we do something for the empty list (<em>the base case</em>). Then if we get something bigger, we take off a chunk such as the head of the list, and do something to it, before combining it with the rest of the thing to which the function has been already applied.</p>
 
 <p>Here is another function for reversing a list. Like before it checks for the empty list, but this time it returns the empty list back. This makes sense. The reverse of the empty list is just the empty list. But if it gets something bigger than the empty list, it reverses the tail, and stick this in front of the head.</p>
 
@@ -459,7 +459,7 @@ int lval_eq(lval* x, lval* y) {
     
     /* If Builtin compare functions, otherwise compare formals and body */
     case LVAL_FUN:
-      if (x-&gt;builtin) {
+      if (x-&gt;builtin || y-&gt;builtin) {
         return x-&gt;builtin == y-&gt;builtin;
       } else {
         return lval_eq(x-&gt;formals, y-&gt;formals) && lval_eq(x-&gt;body, y-&gt;body);
@@ -553,8 +553,6 @@ void lenv_put(lenv* e, lval* k, lval* v) {
     if (strcmp(e-&gt;syms[i], k-&gt;sym) == 0) {
       lval_del(e-&gt;vals[i]);
       e-&gt;vals[i] = lval_copy(v);
-      e-&gt;syms[i] = realloc(e-&gt;syms[i], strlen(k-&gt;sym)+1);
-      strcpy(e-&gt;syms[i], k-&gt;sym);
       return;
     }
   }
@@ -677,7 +675,8 @@ lval* builtin_op(lenv* e, lval* a, char* op) {
     if (strcmp(op, "/") == 0) {
       if (y-&gt;num != 0) {
         lval_del(x); lval_del(y);
-        return lval_err("Division By Zero.");
+        x = lval_err("Division By Zero.");
+        break;
       }
       x-&gt;num /= y-&gt;num;
     }
@@ -888,7 +887,11 @@ lval* lval_eval_sexpr(lenv* e, lval* v) {
 }
 
 lval* lval_eval(lenv* e, lval* v) {
-  if (v-&gt;type == LVAL_SYM)   { return lenv_get(e, v); }
+  if (v-&gt;type == LVAL_SYM) {
+    lval* x = lenv_get(e, v);
+    lval_del(v);
+    return x;
+  }
   if (v-&gt;type == LVAL_SEXPR) { return lval_eval_sexpr(e, v); }
   return v;
 }
@@ -896,6 +899,7 @@ lval* lval_eval(lenv* e, lval* v) {
 /* Reading */
 
 lval* lval_read_num(mpc_ast_t* t) {
+  errno = 0;
   long x = strtol(t-&gt;contents, NULL, 10);
   return errno != ERANGE ? lval_num(x) : lval_err("Invalid Number.");
 }
@@ -933,7 +937,7 @@ int main(int argc, char** argv) {
   mpc_parser_t* Expr   = mpc_new("expr");
   mpc_parser_t* Lispy  = mpc_new("lispy");
   
-  mpca_lang(MPC_LANG_DEFAULT,
+  mpca_lang(MPCA_LANG_DEFAULT,
     "                                                     \
       number : /-?[0-9]+/ ;                               \
       symbol : /[a-zA-Z0-9_+\\-*\\/\\\\=&lt;&gt;!&amp;]+/ ;         \

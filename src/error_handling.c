@@ -92,6 +92,7 @@ lval eval(mpc_ast_t* t) {
   
   if (strstr(t->tag, "number")) {
     /* Check if there is some error in conversion */
+    errno = 0;
     long x = strtol(t->contents, NULL, 10);
     return errno != ERANGE ? lval_num(x) : lval_err(LERR_BAD_NUM);
   }
@@ -115,7 +116,7 @@ int main(int argc, char** argv) {
   mpc_parser_t* Expr = mpc_new("expr");
   mpc_parser_t* Lispy = mpc_new("lispy");
   
-  mpca_lang(MPC_LANG_DEFAULT,
+  mpca_lang(MPCA_LANG_DEFAULT,
     "                                                     \
       number   : /-?[0-9]+/ ;                             \
       operator : '+' | '-' | '*' | '/' ;                  \

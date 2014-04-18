@@ -113,7 +113,7 @@ break;</code></pre>
 <p>For <strong>Copying</strong>...</p>
 
 <pre><code data-language='c'>case LVAL_FUN:
-  if (!x-&gt;builtin) {
+  if (v-&gt;builtin) {
     x-&gt;builtin = v-&gt;builtin;
   } else {
     x-&gt;builtin = NULL;
@@ -159,6 +159,13 @@ break;</code></pre>
   return lval_lambda(formals, body);
 }</code></pre>
 
+<div class="alert alert-warning">
+  <p><strong>Where did <code>LASSERT_NUM</code> and <code>LASSERT_TYPE</code> come from?</strong></p>
+
+  <p>I took the liberty of improving the error reporting macros for this chapter. This task was provided in the bonus marks of the previous chapter. It makes the code so much cleaner that it was hard to ignore!</p>
+
+  <p>If you were planning on completing this task yourself, now might be a good time to do it. Otherwise you can look at the reference code for this chapter to see what approach I took, and integrate that into your code.</p>
+</div>
 
 <div class='pull-right alert alert-warning' style="margin: 15px; text-align: center;">
   <img src="/static/img/playgroup.png" alt="playgroup"/>
@@ -388,9 +395,9 @@ lispy&gt; add-mul 10 20
 210
 lispy&gt; add-mul 10
 (\ {y} {+ x (* x y)})
-lispy&gt; def {add-mul-10} (add-mul 10)
+lispy&gt; def {add-mul-ten} (add-mul 10)
 ()
-lispy&gt; add-mul-10 50
+lispy&gt; add-mul-ten 50
 510
 lispy&gt;
 </code></pre>
@@ -451,9 +458,9 @@ if (f-&gt;formals-&gt;count &gt; 0 &amp;&amp;
 
 <h3>Function Definition</h3>
 
-<p>Lambdas are clearly a simple and powerful way of defining functions. But the syntax is a little clumsy. There are a lot of brackets and symbols involved. Here is an interesting idea. We can try to write a function that defines a function itself, using some way nicer syntax.</p>
+<p>Lambdas are clearly a simple and powerful way of defining functions. But the syntax is a little clumsy. There are a lot of brackets and symbols involved. Here is an interesting idea. We can try to write a function that defines a function itself, using some nicer syntax.</p>
 
-<p>Essentially what we want is a function that can perform two steps at once. First creating a new function and then defining it some name. We could let the user supply the name and the formal arguments altogether and then separate these out for them and use them in the definition. Here is a function that does that. It takes as input some arguments and some body. It takes the head of the arguments to be the function name and the rest to be the formals to the function body.</p>
+<p>Essentially what we want is a function that can perform two steps at once. First it should create a new function, and then it should define it to some name. Here is the trick. We let the user supply the name and the formal arguments altogether in one list, and then separate these out for them, and use them in the definition. Here is a function that does that. It takes as input some arguments and some body. It takes the head of the arguments to be the function name and the rest to be the formal arguments. It passes the body directly to a lambda.</p>
 
 <pre><code data-language='lispy'>\ {args body} {def (head args) (\ (tail args) body)}</code></pre>
 
@@ -486,21 +493,29 @@ if (f-&gt;formals-&gt;count &gt; 0 &amp;&amp;
 
 <p>In some languages this is called <em>currying</em> and <em>uncurrying</em> respectively. This is named after <em>Haskell Curry</em> and unfortunately has nothing to do with our favourite spicy food.</p>
 
-<pre><code data-language='lispy'>lispy> uncurry head 5 6 7
-{5}
-lispy> curry + {5 6 7}
+<pre><code data-language='lispy'>lispy&gt; def {uncurry} pack
+()
+lispy&gt; def {curry} unpack
+()
+lispy&gt; curry + {5 6 7}
 18
+lispy&gt; uncurry head 5 6 7
+{5}
 </code></pre>
 
 <p>Because of the way our <em>partial evaluation</em> works we don't need to think of <em>currying</em> with a specific set of arguments. We can think of functions themselves being in <em>curried</em> or <em>uncurried</em> form.
 
-<pre><code data-language='lispy'>lispy> def {add-unpacked} (curry +)
+<pre><code data-language='lispy'>lispy&gt; def {add-uncurried} +
 ()
-lispy> add-unpacked {5 6 7}
+lispy&gt; def {add-curried} (curry +)
+()
+lispy&gt; add-curried {5 6 7}
+18
+lispy&gt; add-uncurried 5 6 7
 18
 </code></pre>
 
-<p>Have a play around and see what other interesting and powerful functions you can try to come up with. You might be a bit limited for now. In the next chapter well add conditionals which will really start to make our language more complete. But that doesn't mean you won't be able to come up with some other interesting ideas now. Our Lisp really is getting richer!</p>
+<p>Have a play around and see what other interesting and powerful functions you can try to come up with. You might be a bit limited for now. In the next chapter well add conditionals which will really start to make our language more complete. But that doesn't mean you won't be able to come up with some other interesting ideas. Our Lisp is really getting richer!</p>
 
 
 <h2>Reference</h2> <hr/>
@@ -834,8 +849,6 @@ void lenv_put(lenv* e, lval* k, lval* v) {
     if (strcmp(e-&gt;syms[i], k-&gt;sym) == 0) {
       lval_del(e-&gt;vals[i]);
       e-&gt;vals[i] = lval_copy(v);
-      e-&gt;syms[i] = realloc(e-&gt;syms[i], strlen(k-&gt;sym)+1);
-      strcpy(e-&gt;syms[i], k-&gt;sym);
       return;
     }
   }
@@ -964,7 +977,8 @@ lval* builtin_op(lenv* e, lval* a, char* op) {
     if (strcmp(op, "/") == 0) {
       if (y-&gt;num != 0) {
         lval_del(x); lval_del(y);
-        return lval_err("Division By Zero.");
+        x = lval_err("Division By Zero.");
+        break;
       }
       x-&gt;num /= y-&gt;num;
     }
@@ -1141,7 +1155,11 @@ lval* lval_eval_sexpr(lenv* e, lval* v) {
 }
 
 lval* lval_eval(lenv* e, lval* v) {
-  if (v-&gt;type == LVAL_SYM)   { return lenv_get(e, v); }
+  if (v-&gt;type == LVAL_SYM) {
+    lval* x = lenv_get(e, v);
+    lval_del(v);
+    return x;
+  }
   if (v-&gt;type == LVAL_SEXPR) { return lval_eval_sexpr(e, v); }
   return v;
 }
@@ -1149,6 +1167,7 @@ lval* lval_eval(lenv* e, lval* v) {
 /* Reading */
 
 lval* lval_read_num(mpc_ast_t* t) {
+  errno = 0;
   long x = strtol(t-&gt;contents, NULL, 10);
   return errno != ERANGE ? lval_num(x) : lval_err("Invalid Number.");
 }
@@ -1186,7 +1205,7 @@ int main(int argc, char** argv) {
   mpc_parser_t* Expr   = mpc_new("expr");
   mpc_parser_t* Lispy  = mpc_new("lispy");
   
-  mpca_lang(MPC_LANG_DEFAULT,
+  mpca_lang(MPCA_LANG_DEFAULT,
     "                                                     \
       number : /-?[0-9]+/ ;                               \
       symbol  : /[a-zA-Z0-9_+\\-*\\/\\\\=&lt;&gt;!&amp;]+/ ;        \

@@ -99,7 +99,7 @@ char* str;
   /* Cut off the final quote character */
   t-&gt;contents[strlen(t-&gt;contents)-1] = &#39;\0&#39;;
   /* Copy the string missing out the first quote character */
-  char* unescaped = malloc(strlen(t-&gt;contents+1));
+  char* unescaped = malloc(strlen(t-&gt;contents+1)+1);
   strcpy(unescaped, t-&gt;contents+1);
   /* Pass through the unescape function */
   unescaped = mpcf_unescape(unescaped);
@@ -131,7 +131,7 @@ lispy&gt;</code></pre>
 
 <p>Just like in C, we can use comments in inform other people (or ourselves) about what the code is meant to do or why it has been written. In C comments go between <code>/*</code> and <code>*/</code>. Lisp comments, on the other hand, start with <code>;</code> and run to the end of the line.</p>
 
-<p>I attempted to research why Lisps use <code>;</code> for comments, but it appears that the origins of this have been lost in the mists of time. In absence of real truth I imagine it as a small rebellion against the imperative languages such as C and Java which use semicolons so shamelessly and frequently to separate/terminate statements. Compared to Lisp all these languages are just comments!</p>
+<p>I attempted to research why Lisps use <code>;</code> for comments, but it appears that the origins of this have been lost in the mists of time. In absence of truth I imagine it as a small rebellion against the imperative languages such as C and Java which use semicolons so shamelessly and frequently to separate/terminate statements. Compared to Lisp all these languages are just comments!</p>
 
 <p>So in lisp a comment is defined by a semicolon <code>;</code> followed by any number of characters that are not newline characters represented by either <code>\r</code> or <code>\n</code>. We can use another regex to define it.</p>
 
@@ -141,7 +141,7 @@ lispy&gt;</code></pre>
 
 <p>Our final grammar now look like this.</p>
 
-<pre><code data-language='c'>mpca_lang(MPC_LANG_DEFAULT,
+<pre><code data-language='c'>mpca_lang(MPCA_LANG_DEFAULT,
   &quot;                                              \
     number  : /-?[0-9]+/ ;                       \
     symbol  : /[a-zA-Z0-9_+\\-*\\/\\\\=&lt;&gt;!&amp;]+/ ; \
@@ -625,7 +625,7 @@ int lval_eq(lval* x, lval* y) {
     case LVAL_SYM: return (strcmp(x-&gt;sym, y-&gt;sym) == 0);    
     case LVAL_STR: return (strcmp(x-&gt;str, y-&gt;str) == 0);    
     case LVAL_FUN:
-      if (x-&gt;builtin) {
+      if (x-&gt;builtin || y-&gt;builtin) {
         return x-&gt;builtin == y-&gt;builtin;
       } else {
         return lval_eq(x-&gt;formals, y-&gt;formals) && lval_eq(x-&gt;body, y-&gt;body);
@@ -716,8 +716,6 @@ void lenv_put(lenv* e, lval* k, lval* v) {
     if (strcmp(e-&gt;syms[i], k-&gt;sym) == 0) {
       lval_del(e-&gt;vals[i]);
       e-&gt;vals[i] = lval_copy(v);
-      e-&gt;syms[i] = realloc(e-&gt;syms[i], strlen(k-&gt;sym)+1);
-      strcpy(e-&gt;syms[i], k-&gt;sym);
       return;
     }
   }
@@ -840,7 +838,8 @@ lval* builtin_op(lenv* e, lval* a, char* op) {
     if (strcmp(op, "/") == 0) {
       if (y-&gt;num != 0) {
         lval_del(x); lval_del(y);
-        return lval_err("Division By Zero.");
+        x = lval_err("Division By Zero.");
+        break;
       }
       x-&gt;num /= y-&gt;num;
     }
@@ -1121,7 +1120,11 @@ lval* lval_eval_sexpr(lenv* e, lval* v) {
 }
 
 lval* lval_eval(lenv* e, lval* v) {
-  if (v-&gt;type == LVAL_SYM)   { return lenv_get(e, v); }
+  if (v-&gt;type == LVAL_SYM) {
+    lval* x = lenv_get(e, v);
+    lval_del(v);
+    return x;
+  }
   if (v-&gt;type == LVAL_SEXPR) { return lval_eval_sexpr(e, v); }
   return v;
 }
@@ -1129,6 +1132,7 @@ lval* lval_eval(lenv* e, lval* v) {
 /* Reading */
 
 lval* lval_read_num(mpc_ast_t* t) {
+  errno = 0;
   long x = strtol(t-&gt;contents, NULL, 10);
   return errno != ERANGE ? lval_num(x) : lval_err("Invalid Number.");
 }
@@ -1137,7 +1141,7 @@ lval* lval_read_str(mpc_ast_t* t) {
   /* Cut off the final quote character */
   t-&gt;contents[strlen(t-&gt;contents)-1] = '\0';
   /* Copy the string missing out the first quote character */
-  char* unescaped = malloc(strlen(t-&gt;contents+1));
+  char* unescaped = malloc(strlen(t-&gt;contents+1)+1);
   strcpy(unescaped, t-&gt;contents+1);
   /* Pass through the unescape function */
   unescaped = mpcf_unescape(unescaped);
@@ -1185,7 +1189,7 @@ int main(int argc, char** argv) {
   Expr    = mpc_new("expr");
   Lispy   = mpc_new("lispy");
   
-  mpca_lang(MPC_LANG_DEFAULT,
+  mpca_lang(MPCA_LANG_DEFAULT,
     "                                              \
       number  : /-?[0-9]+/ ;                       \
       symbol  : /[a-zA-Z0-9_+\\-*\\/\\\\=&lt;&gt;!&amp;]+/ ; \

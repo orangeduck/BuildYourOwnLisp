@@ -37,7 +37,7 @@
 
 <p>This rule lets symbols be any of, the standard C identifier characters <code>a-zA-Z0-9_</code>, the arithmetic operator characters <code>+\\-*\\/</code>, the backslash character <code>\\\\</code>, the comparison operator characters <code>=&lt;&gt;!</code>, or an ampersands <code>&amp;</code>. This will give us all the flexibility we need for defining new and existing symbols.</p>
 
-<pre><code data-language='C'>mpca_lang(MPC_LANG_DEFAULT,
+<pre><code data-language='C'>mpca_lang(MPCA_LANG_DEFAULT,
   "                                                     \
     number : /-?[0-9]+/ ;                               \
     symbol : /[a-zA-Z0-9_+\\-*\\/\\\\=&lt;&gt;!&amp;]+/ ;         \
@@ -228,8 +228,6 @@ void lenv_put(lenv* e, lval* k, lval* v) {
     if (strcmp(e-&gt;syms[i], k-&gt;sym) == 0) {
       lval_del(e-&gt;vals[i]);
       e-&gt;vals[i] = lval_copy(v);
-      e-&gt;syms[i] = realloc(e-&gt;syms[i], strlen(k-&gt;sym)+1);
-      strcpy(e-&gt;syms[i], k-&gt;sym);
       return;
     }
   }
@@ -248,10 +246,14 @@ void lenv_put(lenv* e, lval* k, lval* v) {
 
 <h2>Variable Evaluation</h2> <hr/>
 
-<p>Our evaluation function now depends on some environment. We should pass this in as an argument and use it to get a value if we encounter a symbol type.</p>
+<p>Our evaluation function now depends on some environment. We should pass this in as an argument and use it to get a value if we encounter a symbol type. Because our environment returns a copy of the value we need to remember to delete the input symbol <code>lval</code>.</p>
 
 <pre><code data-language='c'>lval* lval_eval(lenv* e, lval* v) {
-  if (v-&gt;type == LVAL_SYM)   { return lenv_get(e, v); }
+  if (v-&gt;type == LVAL_SYM) {
+    lval* x = lenv_get(e, v);
+    lval_del(v);
+    return x;
+  }
   if (v-&gt;type == LVAL_SEXPR) { return lval_eval_sexpr(e, v); }
   return v;
 }</code></pre>
@@ -282,11 +284,19 @@ void lenv_put(lenv* e, lval* k, lval* v) {
 
 <h2>Builtins</h2> <hr/>
 
-<p>Now that our evaluation relies on the new function type we need to make sure we can register all of our builtin functions with the environment before we start the interactive prompt. At the moment our builtin functions might not be the correct type. We need to change their type signature such that they take in some environment, and where appropriate change them to pass this environment into other calls that require it.</p>
+<p>Now that our evaluation relies on the new function type we need to make sure we can register all of our builtin functions with the environment before we start the interactive prompt. At the moment our builtin functions are not the correct type. We need to change their type signature such that they take in some environment, and where appropriate change them to pass this environment into other calls that require it. I wont post the code for this, so go ahead and change the type signatures of the buildin functions to take an <code>lenv*</code> as their first argument now. You can look at the sample code for this chapter if you are confused.</p>
 
-<p>Once we've changed them to the correct type we can create a function that registers all of our builtins into an environment.</p>
+<p>As an example we can make use of our <code>builtin_op</code> function to define separate builtins for each of the maths functions our language supports.</p>
 
-<p>For each builtin we want to create a function <code>lval</code> and symbol <code>lval</code> with the given name. We then register these with the environment using <code>lenv_put</code>. The environment always takes or returns copies of a values, so we need to remember to delete these two <code>lval</code> after registration as we won't need them anymore.</p>
+<pre><code data-language='c'>lval* builtin_add(lenv* e, lval* a) { return builtin_op(e, a, "+"); }
+lval* builtin_sub(lenv* e, lval* a) { return builtin_op(e, a, "-"); }
+lval* builtin_mul(lenv* e, lval* a) { return builtin_op(e, a, "*"); }
+lval* builtin_div(lenv* e, lval* a) { return builtin_op(e, a, "/"); }
+</code></pre>
+
+<p>Once we've changed the builtins to the correct type we can create a function that registers all of our builtins into an environment.</p>
+
+<p>For each builtin we want to create a function <code>lval</code> and symbol <code>lval</code> with the given name. We then register these with the environment using <code>lenv_put</code>. The environment always takes or returns copies of a values, so we need to remember to delete these two <code>lval</code> after registration as we won't need them any more.</p>
 
 <p>If we split this task into two functions we can neatly register all of our builtins with some environment.</p>
 
@@ -420,7 +430,7 @@ lispy&gt;</code></pre>
 
 <h2>Error Reporting</h2> <hr/>
 
-<p>So far our error reporting kind of sucks. We can report when an error occurs, and give a vague notion of what was the problem was, but we don't give the user much information about what exactly has gone wrong. For example if there is an unbound symbol we should be able to report exactly which symbol was unbound. This can help the user track down errors, typos, and other trivial problems.</p>
+<p>So far our error reporting kind of sucks. We can report when an error occurs, and give a vague notion of what the problem was, but we don't give the user much information about what exactly has gone wrong. For example if there is an unbound symbol we should be able to report exactly which symbol was unbound. This can help the user track down errors, typos, and other trivial problems.</p>
 
 <div class='pull-left alert alert-warning' style="margin: 15px; text-align: center;">
   <img src="/static/img/eclipses.png" alt="eclipses"/>
@@ -479,7 +489,11 @@ lispy&gt;</code></pre>
 <p>Because we might use <code>args</code> in the construction of the error message we need to make sure we don't delete it until we've created the error value.</p>
 
 <pre><code data-language='c'>#define LASSERT(args, cond, fmt, ...) \
-  if (!(cond)) { lval* err = lval_err(fmt, ##__VA_ARGS__); lval_del(args); return err; }</code></pre>
+  if (!(cond)) { \
+    lval* err = lval_err(fmt, ##__VA_ARGS__); \
+    lval_del(args); \
+    return err; \
+  }</code></pre>
 
 <p>Now we can update some of our error messages to make them more informative. For example if the incorrect number of arguments were passed we can specify how many were required and how many were given.</p>
 
@@ -810,8 +824,6 @@ void lenv_put(lenv* e, lval* k, lval* v) {
     if (strcmp(e-&gt;syms[i], k-&gt;sym) == 0) {
       lval_del(e-&gt;vals[i]);
       e-&gt;vals[i] = lval_copy(v);
-      e-&gt;syms[i] = realloc(e-&gt;syms[i], strlen(k-&gt;sym)+1);
-      strcpy(e-&gt;syms[i], k-&gt;sym);
       return;
     }
   }
@@ -915,7 +927,8 @@ lval* builtin_op(lenv* e, lval* a, char* op) {
     if (strcmp(op, "/") == 0) {
       if (y-&gt;num != 0) {
         lval_del(x); lval_del(y);
-        return lval_err("Division By Zero.");
+        x = lval_err("Division By Zero.");
+        break;
       }
       x-&gt;num /= y-&gt;num;
     }
@@ -1008,7 +1021,11 @@ lval* lval_eval_sexpr(lenv* e, lval* v) {
 }
 
 lval* lval_eval(lenv* e, lval* v) {
-  if (v-&gt;type == LVAL_SYM)   { return lenv_get(e, v); }
+  if (v-&gt;type == LVAL_SYM) {
+    lval* x = lenv_get(e, v);
+    lval_del(v);
+    return x;
+  }
   if (v-&gt;type == LVAL_SEXPR) { return lval_eval_sexpr(e, v); }
   return v;
 }
@@ -1016,6 +1033,7 @@ lval* lval_eval(lenv* e, lval* v) {
 /* Reading */
 
 lval* lval_read_num(mpc_ast_t* t) {
+  errno = 0;
   long x = strtol(t-&gt;contents, NULL, 10);
   return errno != ERANGE ? lval_num(x) : lval_err("Invalid Number.");
 }
@@ -1053,7 +1071,7 @@ int main(int argc, char** argv) {
   mpc_parser_t* Expr   = mpc_new("expr");
   mpc_parser_t* Lispy  = mpc_new("lispy");
   
-  mpca_lang(MPC_LANG_DEFAULT,
+  mpca_lang(MPCA_LANG_DEFAULT,
     "                                                     \
       number : /-?[0-9]+/ ;                               \
       symbol : /[a-zA-Z0-9_+\\-*\\/\\\\=&lt;&gt;!&amp;]+/ ;         \
@@ -1111,7 +1129,7 @@ int main(int argc, char** argv) {
     <li class="list-group-item">&rsaquo; Create a Macro to aid specifically with reporting type errors.</li>
     <li class="list-group-item">&rsaquo; Create a Macro to aid specifically with reporting argument count errors.</li>
     <li class="list-group-item">&rsaquo; Create a Macro to aid specifically with reporting empty list errors.</li>
-    <li class="list-group-item">&rsaquo; Change printing a builtin function print its name.</li>
+    <li class="list-group-item">&rsaquo; Change printing a builtin function so that it prints its name.</li>
     <li class="list-group-item">&rsaquo; Write a function for printing out all the named values in an environment.</li>
     <li class="list-group-item">&rsaquo; Redefine one of the builtin variables to something different.</li>
     <li class="list-group-item">&rsaquo; Change redefinition of one of the builtin variables to something different an error.</li>
