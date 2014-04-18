@@ -52,7 +52,11 @@ header = """
     ga('create', 'UA-46885107-1', 'buildyourownlisp.com');
     ga('send', 'pageview');
   </script>
-  
+  <style>
+  @media (max-width: 640px) {
+      h4 { font-size: 90%%; }
+      }
+  </style>
   </head>
   <body style="background: url(static/img/tiletop.png) repeat-x;">
   
