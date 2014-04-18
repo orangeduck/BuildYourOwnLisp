@@ -56,12 +56,15 @@ header = """
   </head>
   <body style="background: url(static/img/tiletop.png) repeat-x;">
   
-    <div class='container' style='width:750px; margin-top:50px;'>
+    <div class='container' style="max-width:750px; margin-top:50px;">
+        <div class="row">
+         <div class="col-xs-12">
     
 """
 
 footer = """
-  
+         </div>
+        </div> 
     </div>
   
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
