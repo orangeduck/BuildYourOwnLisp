@@ -52,16 +52,23 @@ header = """
     ga('create', 'UA-46885107-1', 'buildyourownlisp.com');
     ga('send', 'pageview');
   </script>
-  
+  <style>
+  @media (max-width: 640px) {
+      h4 { font-size: 90%%; }
+      }
+  </style>
   </head>
   <body style="background: url(static/img/tiletop.png) repeat-x;">
   
-    <div class='container' style='width:750px; margin-top:50px;'>
+    <div class='container' style='max-width:750px; margin-top:50px;'>
+        <div class='row'>
+         <div class='col-xs-12'>
     
 """
 
 footer = """
-  
+         </div>
+        </div> 
     </div>
   
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
