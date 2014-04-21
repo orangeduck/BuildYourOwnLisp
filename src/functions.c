@@ -442,7 +442,7 @@ lval* builtin_op(lenv* e, lval* a, char* op) {
     if (strcmp(op, "-") == 0) { x->num -= y->num; }
     if (strcmp(op, "*") == 0) { x->num *= y->num; }
     if (strcmp(op, "/") == 0) {
-      if (y->num != 0) {
+      if (y->num == 0) {
         lval_del(x); lval_del(y);
         x = lval_err("Division By Zero.");
         break;
