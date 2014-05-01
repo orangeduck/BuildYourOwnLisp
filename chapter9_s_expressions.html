@@ -435,7 +435,7 @@ lval* lval_take(lval* v, int i) {
   for (int i = 0; i < a->count; i++) {
     if (a-&gt;cell[i]-&gt;type != LVAL_NUM) {
       lval_del(a);
-      return lval_err(&quot;Cannot operator on non number!&quot;);
+      return lval_err(&quot;Cannot operate on non-number!&quot;);
     }
   }
   
