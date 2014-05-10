@@ -214,7 +214,7 @@ void lenv_del(lenv* e) {
     if (strcmp(e-&gt;syms[i], k-&gt;sym) == 0) { return lval_copy(e-&gt;vals[i]); }
   }
   /* If no symbol found return error */
-  return lval_err(&quot;unbound symbol!&quot;,);
+  return lval_err(&quot;unbound symbol!&quot;);
 }
 
 void lenv_put(lenv* e, lval* k, lval* v) {
