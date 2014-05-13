@@ -344,7 +344,7 @@ lval* builtin_tail(lenv* e, lval* a) {
 
 lval* builtin_eval(lenv* e, lval* a) {
   LASSERT_NUM("eval", a, 1);
-  LASSERT_TYPE("tail", a, 0, LVAL_QEXPR);
+  LASSERT_TYPE("eval", a, 0, LVAL_QEXPR);
   
   lval* x = lval_take(a, 0);
   x->type = LVAL_SEXPR;
