@@ -284,7 +284,7 @@ lenv_add_builtin(e, &quot;=&quot;,   builtin_put);</code></pre>
 
 <h2>Function Calling</h2> <hr/>
 
-<p>We need to write the code that runs when an expression gets evaluated and an function <code>lval</code> is called.</p>
+<p>We need to write the code that runs when an expression gets evaluated and a function <code>lval</code> is called.</p>
 
 <p>When this function type is a builtin we can call it as before, using the function pointer, but we need to do something separate for our user defined functions. We need to bind each of the arguments passed in, to each of the symbols in the <code>formals</code> field. Once this is done we need to evaluate the <code>body</code> field, using the <code>env</code> field as an environment, and the calling environment as a parent.</p>
 
@@ -515,7 +515,7 @@ lispy&gt; add-uncurried 5 6 7
 18
 </code></pre>
 
-<p>Have a play around and see what other interesting and powerful functions you can try to come up with. You might be a bit limited for now. In the next chapter well add conditionals which will really start to make our language more complete. But that doesn't mean you won't be able to come up with some other interesting ideas. Our Lisp is really getting richer!</p>
+<p>Have a play around and see what other interesting and powerful functions you can try to come up with. You might be a bit limited for now. In the next chapter we'll add conditionals which will really start to make our language more complete. But that doesn't mean you won't be able to come up with some other interesting ideas. Our Lisp is really getting richer!</p>
 
 
 <h2>Reference</h2> <hr/>
