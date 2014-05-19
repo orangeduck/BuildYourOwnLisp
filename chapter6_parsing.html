@@ -84,10 +84,10 @@
 <p>Formalising the above rules further, and using some regular expressions, we can write a final grammar for the language of polish notation as follows. Read the below code and verify that it matches what we had written textually, and our ideas of polish notation.</p>
 
 <pre><code data-language='c'>/* Create Some Parsers */
-mpc_parser_t* Number   = mpc_new(&quot;number&quot;);
-mpc_parser_t* Operator = mpc_new(&quot;operator&quot;);
-mpc_parser_t* Expr     = mpc_new(&quot;expr&quot;);
-mpc_parser_t* Lispy    = mpc_new(&quot;lispy&quot;);
+mpc_parser_t* Number   = mpc_new("number");
+mpc_parser_t* Operator = mpc_new("operator");
+mpc_parser_t* Expr     = mpc_new("expr");
+mpc_parser_t* Lispy    = mpc_new("lispy");
 
 /* Define them with the following Language */
 mpca_lang(MPCA_LANG_DEFAULT,
@@ -117,7 +117,7 @@ mpc_cleanup(4, Number, Operator, Expr, Lispy);</code></pre>
 
 <pre><code data-language='c'>/* Attempt to Parse the user Input */
 mpc_result_t r;
-if (mpc_parse(&quot;&lt;stdin&gt;&quot;, input, Lispy, &amp;r)) {
+if (mpc_parse("&lt;stdin&gt;", input, Lispy, &amp;r)) {
   /* On Success Print the AST */
   mpc_ast_print(r.output);
   mpc_ast_delete(r.output);

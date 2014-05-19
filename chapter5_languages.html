@@ -106,22 +106,22 @@ mpc_parser_t* Noun = mpc_or(5,
 
 <h2>Natural Grammars</h2> <hr/>
 
-<p><code>mpc</code> lets us write grammars in a more natural form too. Rather than using C functions that look less like a grammar, we can specify the whole thing in one long string. When using this method we don&#39;t have to worry about how to join or discard inputs, with functions such as <code>mpcf_strfold</code>, or <code>free</code>. All of that is done automatically for us!</p>
+<p><code>mpc</code> lets us write grammars in a more natural form too. Rather than using C functions that look less like a grammar, we can specify the whole thing in one long string. When using this method we don't have to worry about how to join or discard inputs, with functions such as <code>mpcf_strfold</code>, or <code>free</code>. All of that is done automatically for us!</p>
 
 <p>Here is how we would recreate the previous examples using this method.</p>
 
-<pre><code data-language='c'>mpc_parser_t* Adjective = mpc_new(&quot;adjective&quot;);
-mpc_parser_t* Noun      = mpc_new(&quot;noun&quot;);
-mpc_parser_t* Phrase    = mpc_new(&quot;phrase&quot;);
-mpc_parser_t* Doge      = mpc_new(&quot;doge&quot;);
+<pre><code data-language='c'>mpc_parser_t* Adjective = mpc_new("adjective");
+mpc_parser_t* Noun      = mpc_new("noun");
+mpc_parser_t* Phrase    = mpc_new("phrase");
+mpc_parser_t* Doge      = mpc_new("doge");
 
 mpca_lang(MPCA_LANG_DEFAULT,
-  &quot;                                                                     \
-    adjective : \&quot;wow\&quot; | \&quot;many\&quot; | \&quot;so\&quot; | \&quot;such\&quot;;                 \
-    noun      : \&quot;lisp\&quot; | \&quot;language\&quot; | \&quot;c\&quot; | \&quot;book\&quot; | \&quot;build\&quot;; \
+  "                                                                     \
+    adjective : \"wow\" | \"many\" | \"so\" | \"such\";                 \
+    noun      : \"lisp\" | \"language\" | \"c\" | \"book\" | \"build\"; \
     phrase    : &lt;adjective&gt; &lt;noun&gt;;                                     \
     doge      : &lt;phrase&gt;*;                                              \
-  &quot;,
+  ",
   Adjective, Noun, Phrase, Doge);
 
 /* Do some parsing here... */
@@ -133,7 +133,7 @@ mpc_cleanup(4, Adjective, Noun, Phrase, Doge);
 
 <p>Another thing to notice is that the process is now in two steps. First we create and name several rules using <code>mpc_new</code> and then we define them using <code>mpca_lang</code>.</p>
 
-<p>The first argument to <code>mpca_lang</code> are the options flags. For this we just use the defaults. The second is a long multi-line string in C. This is the <em>grammar</em> specification. It consists of a number of <em>re-write rules</em>. Each rule has the name of the rule on the left, a colon <code>:</code>, and on the right it&#39;s definition terminated with a semicolon <code>;</code>.</p>
+<p>The first argument to <code>mpca_lang</code> are the options flags. For this we just use the defaults. The second is a long multi-line string in C. This is the <em>grammar</em> specification. It consists of a number of <em>re-write rules</em>. Each rule has the name of the rule on the left, a colon <code>:</code>, and on the right it's definition terminated with a semicolon <code>;</code>.</p>
 
 <p>The special symbols used to define the rules on the right hand side work as follows.</p>
 
@@ -150,7 +150,7 @@ mpc_cleanup(4, Adjective, Noun, Phrase, Doge);
 <div class="alert alert-warning">
   <p><strong>Sounds familiar...</strong></p>
 
-  <p>Did you notice that the description of what the input string to <code>mpca_lang</code> should look like sort of sounded like I was specifying a grammar? That&#39;s because it was! <code>mpc</code> uses itself internally to parse the input you give it to <code>mpca_lang</code>. It does it by specifying a <em>grammar</em> in code using the previous method. How neat is that..</p>
+  <p>Did you notice that the description of what the input string to <code>mpca_lang</code> should look like sort of sounded like I was specifying a grammar? That's because it was! <code>mpc</code> uses itself internally to parse the input you give it to <code>mpca_lang</code>. It does it by specifying a <em>grammar</em> in code using the previous method. How neat is that..</p>
 </div>
 
 <p>Using what is described above verify that what I've written above is equal to what we specified in code.</p>

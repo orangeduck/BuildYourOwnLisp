@@ -74,7 +74,7 @@
 <pre><code data-language='lispy'>lispy&gt; let {do (= {x} 100) (x)}
 100
 lispy&gt; x
-Error: Unbound Symbol &#39;x&#39;
+Error: Unbound Symbol 'x'
 lispy&gt;</code></pre>
 
 
@@ -90,13 +90,13 @@ lispy&gt;</code></pre>
 
 <h2>Miscellaneous Functions</h2> <hr/>
 
-<p>Here are a couple of miscellaneous functions that don&#39;t really fit in anywhere. See if you can guess their intended functionality.</p>
+<p>Here are a couple of miscellaneous functions that don't really fit in anywhere. See if you can guess their intended functionality.</p>
 
 <pre><code data-language='lispy'>(fun {flip f a b} {f b a})
 (fun {ghost &amp; xs} {eval xs})
 (fun {comp f g x} {f (g x)})</code></pre>
 
-<p>The <code>flip</code> function takes a function <code>f</code> and two arguments <code>a</code> and <code>b</code>. It then applies <code>f</code> to <code>a</code> and <code>b</code> in the reversed order. This might be useful when we want a function to be <em>partially evaluated</em>. If we want to partially evaluate a function by only passing it in it&#39;s second argument we can use <code>flip</code> to give us a new function that takes the first two arguments in reversed order.</p>
+<p>The <code>flip</code> function takes a function <code>f</code> and two arguments <code>a</code> and <code>b</code>. It then applies <code>f</code> to <code>a</code> and <code>b</code> in the reversed order. This might be useful when we want a function to be <em>partially evaluated</em>. If we want to partially evaluate a function by only passing it in it's second argument we can use <code>flip</code> to give us a new function that takes the first two arguments in reversed order.</p>
 
 <p>This means if you want to apply the second argument of a function you can just apply the first argument to the <code>flip</code> of this function.</p>
 
@@ -211,12 +211,12 @@ lispy&gt;
 {-5 -6 -7 -8 -2 -22 -44}
 lispy&gt; map (\ {x} {+ x 10}) {5 2 11}
 {15 12 21}
-lispy&gt; print {&quot;hello&quot; &quot;world&quot;}
-{&quot;hello&quot; &quot;world&quot;}
+lispy&gt; print {"hello" "world"}
+{"hello" "world"}
 ()
-lispy&gt; map print {&quot;hello&quot; &quot;world&quot;}
-&quot;hello&quot;
-&quot;world&quot;
+lispy&gt; map print {"hello" "world"}
+"hello"
+"world"
 {() ()}
 lispy&gt;</code></pre>
 
@@ -259,7 +259,7 @@ lispy&gt;</code></pre>
 
 <pre><code data-language='lispy'>(fun {select &amp; cs} {
   if (== cs nil)
-    {error &quot;No Selection Found&quot;}
+    {error "No Selection Found"}
     {if (fst (fst cs)) {snd (fst cs)} {unpack select (tail cs)}}
 })</code></pre>
 
@@ -271,17 +271,17 @@ lispy&gt;</code></pre>
 &#59; Print Day of Month suffix
 (fun {month-day-suffix i} {
   select
-    {(== i 0)  &quot;st&quot;}
-    {(== i 1)  &quot;nd&quot;}
-    {(== i 3)  &quot;rd&quot;}
-    {otherwise &quot;th&quot;}
+    {(== i 0)  "st"}
+    {(== i 1)  "nd"}
+    {(== i 3)  "rd"}
+    {otherwise "th"}
 })</code></pre>
 
 <p>This is actually somewhat more powerful than the C <code>switch</code> statement. In C rather than passing in conditions the input value is compared only for equality with a number of constant candidates. We can also define this function in our Lisp, where we compare a value to a number of candidates. In this function we take some value <code>x</code> followed by zero or more two-element lists again. If the first element in the two-element list is equal to <code>x</code>, the second element is evaluated, otherwise the process continues down the list.</p>
 
 <pre><code data-language='lispy'>(fun {case x &amp; cs} {
   if (== cs nil)
-    {error &quot;No Case Found&quot;}
+    {error "No Case Found"}
     {if (== x (fst (fst cs))) {snd (fst cs)} {unpack case (join (list x) (tail cs))}}
 })</code></pre>
 
@@ -289,13 +289,13 @@ lispy&gt;</code></pre>
 
 <pre><code data-language='lispy'>(fun {day-name x} {
   case x
-    {0 &quot;Monday&quot;}
-    {1 &quot;Tuesday&quot;}
-    {2 &quot;Wednesday&quot;}
-    {3 &quot;Thursday&quot;}
-    {4 &quot;Friday&quot;}
-    {5 &quot;Saturday&quot;}
-    {6 &quot;Sunday&quot;}
+    {0 "Monday"}
+    {1 "Tuesday"}
+    {2 "Wednesday"}
+    {3 "Thursday"}
+    {4 "Friday"}
+    {5 "Saturday"}
+    {6 "Sunday"}
 })</code></pre>
 
 

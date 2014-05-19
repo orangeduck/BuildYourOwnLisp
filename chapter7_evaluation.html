@@ -156,10 +156,10 @@ printf("First Child Number of children: %i\n", c0-&gt;children_num);
 
 <pre><code data-language='c'>/* Use operator string to see which operation to perform */
 long eval_op(long x, char* op, long y) {
-  if (strcmp(op, &quot;+&quot;) == 0) { return x + y; }
-  if (strcmp(op, &quot;-&quot;) == 0) { return x - y; }
-  if (strcmp(op, &quot;*&quot;) == 0) { return x * y; }
-  if (strcmp(op, &quot;/&quot;) == 0) { return x / y; }
+  if (strcmp(op, "+") == 0) { return x + y; }
+  if (strcmp(op, "-") == 0) { return x - y; }
+  if (strcmp(op, "*") == 0) { return x * y; }
+  if (strcmp(op, "/") == 0) { return x / y; }
   return 0;
 }</code></pre>
 
@@ -171,7 +171,7 @@ long eval_op(long x, char* op, long y) {
 <p>We also need to remember to delete the output tree after we are done evaluating it.</p>
 
 <pre><code data-language='c'>long result = eval(r.output);
-printf(&quot;%li\n&quot;, result);
+printf("%li\n", result);
 mpc_ast_delete(r.output);</code></pre>
 
 <p>If all of this is successful we should be able to do some basic maths with our new programming language!</p>

@@ -31,22 +31,22 @@
   <p>The way I've used <em>S-Expression</em> and <em>Q-Expression</em> in this book is a slight abuse of terminology, but I hope this misdemeanor makes the behaviour of our Lisp clearer.</p>
 </div>
 
-<pre><code data-language='c'>mpc_parser_t* Number = mpc_new(&quot;number&quot;);
-mpc_parser_t* Symbol = mpc_new(&quot;symbol&quot;);
-mpc_parser_t* Sexpr  = mpc_new(&quot;sexpr&quot;);
-mpc_parser_t* Qexpr  = mpc_new(&quot;qexpr&quot;);
-mpc_parser_t* Expr   = mpc_new(&quot;expr&quot;);
-mpc_parser_t* Lispy  = mpc_new(&quot;lispy&quot;);
+<pre><code data-language='c'>mpc_parser_t* Number = mpc_new("number");
+mpc_parser_t* Symbol = mpc_new("symbol");
+mpc_parser_t* Sexpr  = mpc_new("sexpr");
+mpc_parser_t* Qexpr  = mpc_new("qexpr");
+mpc_parser_t* Expr   = mpc_new("expr");
+mpc_parser_t* Lispy  = mpc_new("lispy");
 
 mpca_lang(MPCA_LANG_DEFAULT,
-  &quot;                                                    \
+  "                                                    \
     number : /-?[0-9]+/ ;                              \
-    symbol : &#39;+&#39; | &#39;-&#39; | &#39;*&#39; | &#39;/&#39; ;                   \
-    sexpr  : &#39;(&#39; &lt;expr&gt;* &#39;)&#39; ;                         \
-    qexpr  : &#39;{&#39; &lt;expr&gt;* &#39;}&#39; ;                         \
+    symbol : '+' | '-' | '*' | '/' ;                   \
+    sexpr  : '(' &lt;expr&gt;* ')' ;                         \
+    qexpr  : '{' &lt;expr&gt;* '}' ;                         \
     expr   : &lt;number&gt; | &lt;symbol&gt; | &lt;sexpr&gt; | &lt;qexpr&gt; ; \
     lispy  : /^/ &lt;expr&gt;* /$/ ;                         \
-  &quot;,
+  ",
   Number, Symbol, Sexpr, Qexpr, Expr, Lispy);</code></pre>
 
 <p>We also must remember to update our cleanup function to deal with the new rule we've added.</p>
@@ -137,15 +137,15 @@ lispy&gt;
 
 <p>Like with our mathematical operators we should add these functions as possible valid symbols. Afterward we can go about trying to define their behaviour in a similar way to <code>builtin_op</code>.</p>
 
-<pre><code class="lang-c">mpca_lang(MPCA_LANG_DEFAULT,
-  &quot;                                                                                         \
+<pre><code data-language='c'>mpca_lang(MPCA_LANG_DEFAULT,
+  "                                                                                         \
     number : /-?[0-9]+/ ;                                                                   \
-    symbol : \&quot;list\&quot; | \&quot;head\&quot; | \&quot;tail\&quot; | \&quot;join\&quot; | \&quot;eval\&quot; | &#39;+&#39; | &#39;-&#39; | &#39;*&#39; | &#39;/&#39; ; \
-    sexpr  : &#39;(&#39; &lt;expr&gt;* &#39;)&#39; ;                                                              \
-    qexpr  : &#39;{&#39; &lt;expr&gt;* &#39;}&#39; ;                                                              \
+    symbol : \"list\" | \"head\" | \"tail\" | \"join\" | \"eval\" | '+' | '-' | '*' | '/' ; \
+    sexpr  : '(' &lt;expr&gt;* ')' ;                                                              \
+    qexpr  : '{' &lt;expr&gt;* '}' ;                                                              \
     expr   : &lt;number&gt; | &lt;symbol&gt; | &lt;sexpr&gt; | &lt;qexpr&gt; ;                                      \
     lispy  : /^/ &lt;expr&gt;* /$/ ;                                                              \
-  &quot;,
+  ",
   Number, Symbol, Sexpr, Qexpr, Expr, Lispy)
 </code></pre>
 
@@ -162,21 +162,21 @@ lispy&gt;
 
 <p>The <code>tail</code> function is even more simple. It can pop and delete the item at index <code>0</code>, leaving the tail remaining. An initial attempt at these functions might look like this.</p>
 
-<pre><code class="lang-c">lval* builtin_head(lval* a) {
+<pre><code data-language="c">lval* builtin_head(lval* a) {
   /* Check Error Conditions */
   if (a-&gt;count != 1) {
     lval_del(a);
-    return lval_err(&quot;Function &#39;head&#39; passed too many arguments!&quot;);
+    return lval_err("Function 'head' passed too many arguments!");
   }
   
   if (a-&gt;cell[0]-&gt;type != LVAL_QEXPR) {
     lval_del(a);
-    return lval_err(&quot;Function &#39;head&#39; passed incorrect types!&quot;);
+    return lval_err("Function 'head' passed incorrect types!");
   }
   
   if (a-&gt;cell[0]-&gt;count == 0) {
     lval_del(a);
-    return lval_err(&quot;Function &#39;head&#39; passed {}!&quot;);
+    return lval_err("Function 'head' passed {}!");
   }
 
   /* Otherwise take first argument */
@@ -191,17 +191,17 @@ lval* builtin_tail(lval* a) {
   /* Check Error Conditions */
   if (a-&gt;count != 1) {
     lval_del(a);
-    return lval_err(&quot;Function &#39;tail&#39; passed too many arguments!&quot;);
+    return lval_err("Function 'tail' passed too many arguments!");
   }
   
   if (a-&gt;cell[0]-&gt;type != LVAL_QEXPR) {
     lval_del(a);
-    return lval_err(&quot;Function &#39;tail&#39; passed incorrect types!&quot;);
+    return lval_err("Function 'tail' passed incorrect types!");
   }  
   
   if (a-&gt;cell[0]-&gt;count == 0) {
     lval_del(a);
-    return lval_err(&quot;Function &#39;tail&#39; passed {}!&quot;);
+    return lval_err("Function 'tail' passed {}!");
   }
 
   /* Take first argument */
@@ -228,7 +228,7 @@ lval* builtin_tail(lval* a) {
 
 <p>We can design a macro to help with our error conditions called <code>LASSERT</code>. Macros are typically given names in all caps to help distinguish them from normal C functions. This macro take in three arguments <code>args</code>, <code>cond</code> and <code>err</code>. It then generates code as shown on the right hand side, but with these variables pasted in at the locations where they are named. This pattern is a good fit for all of our error conditions.</p>
 
-<pre><code class="lang-c">#define LASSERT(args, cond, err) if (!(cond)) { lval_del(args); return lval_err(err); }</code></pre>
+<pre><code data-language="c">#define LASSERT(args, cond, err) if (!(cond)) { lval_del(args); return lval_err(err); }</code></pre>
 
 <p>We can use this to change how our above functions are written, without actually changing what code is generated by the compiler. This makes it much easier to read for the programmer, and saves a bit of typing. The rest of the error conditions for our functions should become a piece of cake to write too!</p>
 
@@ -236,10 +236,10 @@ lval* builtin_tail(lval* a) {
 
 <p>Using this our <code>head</code> and <code>tail</code> functions are defined as follows. Notice how much clearer their real functionality is.</p>
 
-<pre><code class="lang-c">lval* builtin_head(lval* a) {
-  LASSERT(a, (a-&gt;count == 1                 ), &quot;Function &#39;head&#39; passed too many arguments!&quot;);
-  LASSERT(a, (a-&gt;cell[0]-&gt;type == LVAL_QEXPR), &quot;Function &#39;head&#39; passed incorrect type!&quot;);
-  LASSERT(a, (a-&gt;cell[0]-&gt;count != 0        ), &quot;Function &#39;head&#39; passed {}!&quot;);
+<pre><code data-language="c">lval* builtin_head(lval* a) {
+  LASSERT(a, (a-&gt;count == 1                 ), "Function 'head' passed too many arguments!");
+  LASSERT(a, (a-&gt;cell[0]-&gt;type == LVAL_QEXPR), "Function 'head' passed incorrect type!");
+  LASSERT(a, (a-&gt;cell[0]-&gt;count != 0        ), "Function 'head' passed {}!");
 
   lval* v = lval_take(a, 0);  
   while (v-&gt;count &gt; 1) { lval_del(lval_pop(v, 1)); }
@@ -247,9 +247,9 @@ lval* builtin_tail(lval* a) {
 }
 
 lval* builtin_tail(lval* a) {
-  LASSERT(a, (a-&gt;count == 1                 ), &quot;Function &#39;tail&#39; passed too many arguments!&quot;);
-  LASSERT(a, (a-&gt;cell[0]-&gt;type == LVAL_QEXPR), &quot;Function &#39;tail&#39; passed incorrect type!&quot;);
-  LASSERT(a, (a-&gt;cell[0]-&gt;count != 0        ), &quot;Function &#39;tail&#39; passed {}!&quot;);
+  LASSERT(a, (a-&gt;count == 1                 ), "Function 'tail' passed too many arguments!");
+  LASSERT(a, (a-&gt;cell[0]-&gt;type == LVAL_QEXPR), "Function 'tail' passed incorrect type!");
+  LASSERT(a, (a-&gt;cell[0]-&gt;count != 0        ), "Function 'tail' passed {}!");
 
   lval* v = lval_take(a, 0);  
   lval_del(lval_pop(v, 0));
@@ -268,8 +268,8 @@ lval* builtin_tail(lval* a) {
 }
 
 lval* builtin_eval(lval* a) {
-  LASSERT(a, (a-&gt;count == 1                 ), &quot;Function &#39;eval&#39; passed too many arguments!&quot;);
-  LASSERT(a, (a-&gt;cell[0]-&gt;type == LVAL_QEXPR), &quot;Function &#39;eval&#39; passed incorrect type!&quot;);
+  LASSERT(a, (a-&gt;count == 1                 ), "Function 'eval' passed too many arguments!");
+  LASSERT(a, (a-&gt;cell[0]-&gt;type == LVAL_QEXPR), "Function 'eval' passed incorrect type!");
 
   lval* x = lval_take(a, 0);
   x-&gt;type = LVAL_SEXPR;
@@ -282,7 +282,7 @@ lval* builtin_eval(lval* a) {
 
 <p>Unlike the others it can take multiple arguments, so its structure looks somewhat more like that of <code>builtin_op</code>. First we check that all of the arguments are Q-Expressions and then we join them together one-by-one. To do this we use the function <code>lval_join</code>. This works by repeatedly popping each item from <code>y</code> and adding it to <code>x</code> until <code>y</code> is empty. It then deletes <code>y</code> and returns <code>x</code>.</p>
 
-<pre><code class="lang-c">lval* builtin_join(lval* a) {
+<pre><code data-language="c">lval* builtin_join(lval* a) {
 
   for (int i = 0; i &lt; a-&gt;count; i++) {
     LASSERT(a, (a-&gt;cell[i]-&gt;type == LVAL_QEXPR), "Function 'join' passed incorrect type.");
@@ -316,14 +316,14 @@ lval* lval_join(lval* x, lval* y) {
 <p>We've now got all of our builtin functions defined. We need to make a function that can call the correct one depending on what symbol it encounters in evaluation. We can do this using <code>strcmp</code> and <code>strstr</code>.</p>
 
 <pre><code data-language='c'>lval* builtin(lval* a, char* func) {
-  if (strcmp(&quot;list&quot;, func) == 0) { return builtin_list(a); }
-  if (strcmp(&quot;head&quot;, func) == 0) { return builtin_head(a); }
-  if (strcmp(&quot;tail&quot;, func) == 0) { return builtin_tail(a); }
-  if (strcmp(&quot;join&quot;, func) == 0) { return builtin_join(a); }
-  if (strcmp(&quot;eval&quot;, func) == 0) { return builtin_eval(a); }
-  if (strstr(&quot;+-/*&quot;, func)) { return builtin_op(a, func); }
+  if (strcmp("list", func) == 0) { return builtin_list(a); }
+  if (strcmp("head", func) == 0) { return builtin_head(a); }
+  if (strcmp("tail", func) == 0) { return builtin_tail(a); }
+  if (strcmp("join", func) == 0) { return builtin_join(a); }
+  if (strcmp("eval", func) == 0) { return builtin_eval(a); }
+  if (strstr("+-/*", func)) { return builtin_op(a, func); }
   lval_del(a);
-  return lval_err(&quot;Unknown Function!&quot;);
+  return lval_err("Unknown Function!");
 }</code></pre>
 
 <p>Then we can change our evaluation line in <code>lval_eval_sexpr</code> to call <code>builtin</code> rather than <code>builtin_op</code>.</p>

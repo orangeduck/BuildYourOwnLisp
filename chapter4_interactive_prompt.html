@@ -12,7 +12,7 @@
 
 <p>This is a program that prompts the user for some input, and when supplied with it, replies back with some message. Using this will be the easiest way to test our programming language and see how it acts. This system is also called a <em>REPL</em>, which stands for <em>read</em>-<em>evaluate</em>-<em>print</em> <em>loop</em>. It is a common way of interacting with a programming language which you may have used before in languages such as <em>Python</em>.</p>
 
-<p>Before building a full <em>REPL</em> we&#39;ll start with something simpler. We are going to make a system that prompts the user, and echoes any input straight back. If we make this we can later extend it to parse the user input and evaluate it, as if it were an actual Lisp program.</p>
+<p>Before building a full <em>REPL</em> we'll start with something simpler. We are going to make a system that prompts the user, and echoes any input straight back. If we make this we can later extend it to parse the user input and evaluate it, as if it were an actual Lisp program.</p>
 
 
 <h2>An Interactive Prompt</h2> <hr/>
@@ -29,20 +29,20 @@ static char input[2048];
 int main(int argc, char** argv) {
 
   /* Print Version and Exit Information */
-  puts(&quot;Lispy Version 0.0.0.0.1&quot;);
-  puts(&quot;Press Ctrl+c to Exit\n&quot;);
+  puts("Lispy Version 0.0.0.0.1");
+  puts("Press Ctrl+c to Exit\n");
 
   /* In a never ending loop */
   while (1) {
 
     /* Output our prompt */
-    fputs(&quot;lispy&gt; &quot;, stdout);
+    fputs("lispy&gt; ", stdout);
 
     /* Read a line of user input of maximum size 2048 */
     fgets(input, 2048, stdin);
 
     /* Echo input back to user */
-    printf(&quot;No you&#39;re a %s&quot;, input);
+    printf("No you're a %s", input);
   }
 
   return 0;
@@ -87,11 +87,11 @@ int main(int argc, char** argv) {
 Press Ctrl+c to Exit
 
 lispy&gt; hello
-No You&#39;re a hello
+No You're a hello
 lispy&gt; my name is Dan
-No You&#39;re a my name is Dan
+No You're a my name is Dan
 lispy&gt; Stop being so rude!
-No You&#39;re a Stop being so rude!
+No You're a Stop being so rude!
 lispy&gt;</code></pre>
 
 
@@ -242,7 +242,7 @@ int main(int argc, char** argv) {
   while (1) {
     
     /* Now in either case readline will be correctly defined */
-    char* input = readline("lispy> ");
+    char* input = readline("lispy&gt; ");
     add_history(input);
 
     printf("No you're a %s\n", input);

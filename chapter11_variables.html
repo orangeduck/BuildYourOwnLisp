@@ -214,7 +214,7 @@ void lenv_del(lenv* e) {
     if (strcmp(e-&gt;syms[i], k-&gt;sym) == 0) { return lval_copy(e-&gt;vals[i]); }
   }
   /* If no symbol found return error */
-  return lval_err(&quot;unbound symbol!&quot;);
+  return lval_err("unbound symbol!");
 }
 
 void lenv_put(lenv* e, lval* k, lval* v) {
@@ -272,7 +272,7 @@ void lenv_put(lenv* e, lval* k, lval* v) {
   lval* f = lval_pop(v, 0);
   if (f-&gt;type != LVAL_FUN) {
     lval_del(v); lval_del(f);
-    return lval_err(&quot;first element is not a function&quot;);
+    return lval_err("first element is not a function");
   }
 
   /* If so call function to get result */
@@ -309,13 +309,13 @@ lval* builtin_div(lenv* e, lval* a) { return builtin_op(e, a, "/"); }
 
 void lenv_add_builtins(lenv* e) {  
   /* List Functions */
-  lenv_add_builtin(e, &quot;list&quot;, builtin_list);
-  lenv_add_builtin(e, &quot;head&quot;, builtin_head); lenv_add_builtin(e, &quot;tail&quot;,  builtin_tail);
-  lenv_add_builtin(e, &quot;eval&quot;, builtin_eval); lenv_add_builtin(e, &quot;join&quot;,  builtin_join);
+  lenv_add_builtin(e, "list", builtin_list);
+  lenv_add_builtin(e, "head", builtin_head); lenv_add_builtin(e, "tail",  builtin_tail);
+  lenv_add_builtin(e, "eval", builtin_eval); lenv_add_builtin(e, "join",  builtin_join);
 
   /* Mathematical Functions */
-  lenv_add_builtin(e, &quot;+&quot;,    builtin_add); lenv_add_builtin(e, &quot;-&quot;,     builtin_sub);
-  lenv_add_builtin(e, &quot;*&quot;,    builtin_mul); lenv_add_builtin(e, &quot;/&quot;,     builtin_div);
+  lenv_add_builtin(e, "+",    builtin_add); lenv_add_builtin(e, "-",     builtin_sub);
+  lenv_add_builtin(e, "*",    builtin_mul); lenv_add_builtin(e, "/",     builtin_div);
 }</code></pre>
 
 <p>The final step is to call this function before we create the interactive prompt. We also need to remember to delete the environment once we are finished.</p>
@@ -367,25 +367,25 @@ lispy&gt;</code></pre>
 
 <p>We've managed to register our builtins as variables but we still don't have a way for users to define their own variables.</p>
 
-<p>This is actually a bit awkward. We need to get the user to pass in a symbol to name, as well as the value to assign to it. But symbols can&#39;t appear on their own. Otherwise the evaluation function will attempt to retrieve a value for them from the environment.</p>
+<p>This is actually a bit awkward. We need to get the user to pass in a symbol to name, as well as the value to assign to it. But symbols can't appear on their own. Otherwise the evaluation function will attempt to retrieve a value for them from the environment.</p>
 
-<p>The only way we can pass around symbols without them being evaluated is to put them between <code>{}</code> in a quoted expression. So we&#39;re going to use this technique for our define function. It will take as input a list of symbols, and a number of other values. It will then assign each of the values to each of the symbols.</p>
+<p>The only way we can pass around symbols without them being evaluated is to put them between <code>{}</code> in a quoted expression. So we're going to use this technique for our define function. It will take as input a list of symbols, and a number of other values. It will then assign each of the values to each of the symbols.</p>
 
 <p>This function should act like any other builtin. It first checks for error conditions and then performs some command and returns a value. In this case it first checks that the input arguments are the correct types. It then iterates over each symbol and value and puts them into the environment. If there is an error we can return it, but on success we will return the empty expression <code>()</code>.</p>
 
 <pre><code data-language='c'>lval* builtin_def(lenv* e, lval* a) {
-  LASSERT(a, (a-&gt;cell[0]-&gt;type == LVAL_QEXPR), &quot;Function &#39;def&#39; passed incorrect type!&quot;);
+  LASSERT(a, (a-&gt;cell[0]-&gt;type == LVAL_QEXPR), "Function 'def' passed incorrect type!");
 
   /* First argument is symbol list */
   lval* syms = a-&gt;cell[0];
 
   /* Ensure all elements of first list are symbols */
   for (int i = 0; i &lt; syms-&gt;count; i++) {
-    LASSERT(a, (syms-&gt;cell[i]-&gt;type == LVAL_SYM), &quot;Function &#39;def&#39; cannot define non-symbol&quot;);
+    LASSERT(a, (syms-&gt;cell[i]-&gt;type == LVAL_SYM), "Function 'def' cannot define non-symbol");
   }
 
   /* Check correct number of symbols and values */
-  LASSERT(a, (syms-&gt;count == a-&gt;count-1), &quot;Function &#39;def&#39; cannot define incorrect number of values to symbols&quot;);
+  LASSERT(a, (syms-&gt;count == a-&gt;count-1), "Function 'def' cannot define incorrect number of values to symbols");
 
   /* Assign copies of values to symbols */
   for (int i = 0; i &lt; syms-&gt;count; i++) {
@@ -399,7 +399,7 @@ lispy&gt;</code></pre>
 <p>We need to register this new builtin using our builtin function <code>lenv_add_builtins</code>.</p>
 
 <pre><code data-language='c'>/* Variable Functions */
-lenv_add_builtin(e, &quot;def&quot;,  builtin_def);</code></pre>
+lenv_add_builtin(e, "def",  builtin_def);</code></pre>
 
 <p>Now we should be able to support user defined variables! Because our <code>def</code> function takes in a list of symbols we can do some cool things storing and manipulating symbols in lists before passing them to be defined. Have a play around in the prompt and ensure everything is working correctly. You should get behaviour as follows. See what other complex methods are possible for the definition and evaluation of variables. Once we get to defining functions we'll really see some of the neat things that can be done with this approach.</p>
 
@@ -478,9 +478,9 @@ lispy&gt;</code></pre>
   return v;
 }</code></pre>
 
-<p>Using this we can then start adding in some better error messages to our functions. As an example we can look at <code>lenv_get</code>. When a symbol can&#39;t be found, rather than reporting a generic error, we can actually report the name that was not found.</p>
+<p>Using this we can then start adding in some better error messages to our functions. As an example we can look at <code>lenv_get</code>. When a symbol can't be found, rather than reporting a generic error, we can actually report the name that was not found.</p>
 
-<pre><code data-language='c'>return lval_err(&quot;Unbound Symbol &#39;%s&#39;&quot;, k-&gt;sym);</code></pre>
+<pre><code data-language='c'>return lval_err("Unbound Symbol '%s'", k-&gt;sym);</code></pre>
 
 <p>We can also adapt our <code>LASSERT</code> macro such that it can take variable arguments too. Because this is a macro and not a standard function the syntax is slightly different. On the left hand side of the definition we use the ellipses notation again, but on the right hand side we use a special variable <code>__VA_ARGS__</code> to paste in the contents of all the other arguments.</p>
 
@@ -497,26 +497,26 @@ lispy&gt;</code></pre>
 
 <p>Now we can update some of our error messages to make them more informative. For example if the incorrect number of arguments were passed we can specify how many were required and how many were given.</p>
 
-<pre><code data-language='c'>LASSERT(a, (a-&gt;count == 1), &quot;Function &#39;head&#39; passed too many arguments. Got %i, Expected %i.&quot;, a-&gt;count, 1);</code></pre>
+<pre><code data-language='c'>LASSERT(a, (a-&gt;count == 1), "Function 'head' passed too many arguments. Got %i, Expected %i.", a-&gt;count, 1);</code></pre>
 
 <p>We can also improve our error reporting for type errors. We should attempt to report what type was expected by a function and what type it actually got. Before we can do this it would be useful to have a function that took as input some type enumeration and returned a string representation of that type.</p>
 
 <pre><code data-language='c'>char* ltype_name(int t) {
   switch(t) {
-    case LVAL_FUN: return &quot;Function&quot;;
-    case LVAL_NUM: return &quot;Number&quot;;
-    case LVAL_ERR: return &quot;Error&quot;;
-    case LVAL_SYM: return &quot;Symbol&quot;;
-    case LVAL_SEXPR: return &quot;S-Expression&quot;;
-    case LVAL_QEXPR: return &quot;Q-Expression&quot;;
-    default: return &quot;Unknown&quot;;
+    case LVAL_FUN: return "Function";
+    case LVAL_NUM: return "Number";
+    case LVAL_ERR: return "Error";
+    case LVAL_SYM: return "Symbol";
+    case LVAL_SEXPR: return "S-Expression";
+    case LVAL_QEXPR: return "Q-Expression";
+    default: return "Unknown";
   }
 }</code></pre>
 
 <p>Then we can use this function in our <code>LASSERT</code> functions to report what was retrieved and what was expected in a useful way.</p>
 
 <pre><code data-language='c'>LASSERT(a, (a-&gt;cell[0]-&gt;type == LVAL_QEXPR), 
-  &quot;Function &#39;head&#39; passed incorrect type for argument 0. Got %s, Expected %s.&quot;,
+  "Function 'head' passed incorrect type for argument 0. Got %s, Expected %s.",
   ltype_name(a-&gt;cell[0]-&gt;type), ltype_name(LVAL_QEXPR));
 </code></pre>
 

@@ -16,7 +16,7 @@ Rainbow.extend('c', [
     },
     {
         'name': 'keyword.operator',
-        'pattern': /\+|\!|\-|&(gt|lt|amp);|\||\*|\=|\:|\;|\?|\[|\]|\(|\)|\{|\}/g
+        'pattern': /\+|\!|\-|\&(gt|lt|amp)\;|\||\*|\=|\:|\;|\?|\[|\]|\(|\)|\{|\}/g
     },
     {
         'name': 'constant.numeric',

@@ -39,7 +39,7 @@
 
 <p>We can declare pointer types by suffixing existing ones with the <code>*</code> character. We've seen some examples of this already with <code>mpc_parser_t*</code>, <code>mpc_ast_t*</code>, or <code>char*</code>.</p>
 
-<p>To create a pointer to some data, we need to get its index, or <em>address</em>. To get the address of a some data we use the <em>address of</em> operator <code>&amp;</code>. Again you&#39;ve seen this before when we passed in a pointer to <code>mpc_parse</code> so it would output into our <code>mpc_result_t</code>.</p>
+<p>To create a pointer to some data, we need to get its index, or <em>address</em>. To get the address of a some data we use the <em>address of</em> operator <code>&amp;</code>. Again you've seen this before when we passed in a pointer to <code>mpc_parse</code> so it would output into our <code>mpc_result_t</code>.</p>
 
 <p>Finally to get the data at an address, called <em>dereferencing</em>, we use the <code>*</code> operator on the left hand size of a variable. To get the data at the field of a pointer to a struct we use the arrow <code>-&gt;</code>. This you saw in chapter 7.</p>
 
@@ -75,27 +75,27 @@
 
 <p>Using the Heap is trickier than the Stack because it requires the programmer to remember to call <code>free</code> and to call it correctly. If he or she doesn't, the program may continuously allocate more and more memory. This is called a <em>memory leak</em>. An easy rule to avoid this is to ensure for each <code>malloc</code> there is a corresponding (and only one corresponding) <code>free</code>. If this can always be ensured the program should be handling The Heap correctly.</p>
 
-<p>I Imagine the Heap like a huge U-Store-It. We can call up the reception with <code>malloc</code> and request a number of boxes. With these boxes we can do what we want, and we know they will persist no matter how messy the building site gets. We can take things to and from the U-Store-It and the building site. It is useful to store materials and large objects which we only need to retrieve once in a while. The only problem is we need to remember to call the receptionist again with <code>free</code> when we are done. Otherwise soon we&#39;ll have requested all the boxes, have no space, and run up a huge bill.</p>
+<p>I Imagine the Heap like a huge U-Store-It. We can call up the reception with <code>malloc</code> and request a number of boxes. With these boxes we can do what we want, and we know they will persist no matter how messy the building site gets. We can take things to and from the U-Store-It and the building site. It is useful to store materials and large objects which we only need to retrieve once in a while. The only problem is we need to remember to call the receptionist again with <code>free</code> when we are done. Otherwise soon we'll have requested all the boxes, have no space, and run up a huge bill.</p>
 
 
 <h2>Parsing Expressions</h2> <hr/>
 
 <p>Because we're now thinking in S-Expressions, and not Polish Notation we need to update our parser. The syntax for S-Expressions is simple. It is just a number of other Expressions between parenthesis, where an Expression can be a Number, Operator, or other S-Expression . We can modify our existing parse rules to reflect this. We also are going to rename our <code>operator</code> rule to <code>symbol</code>. This is in anticipation of adding more operators, variables and functions later.</p>
 
-<pre><code data-language='c'>mpc_parser_t* Number = mpc_new(&quot;number&quot;);
-mpc_parser_t* Symbol = mpc_new(&quot;symbol&quot;);
-mpc_parser_t* Sexpr  = mpc_new(&quot;sexpr&quot;);
-mpc_parser_t* Expr   = mpc_new(&quot;expr&quot;);
-mpc_parser_t* Lispy  = mpc_new(&quot;lispy&quot;);
+<pre><code data-language='c'>mpc_parser_t* Number = mpc_new("number");
+mpc_parser_t* Symbol = mpc_new("symbol");
+mpc_parser_t* Sexpr  = mpc_new("sexpr");
+mpc_parser_t* Expr   = mpc_new("expr");
+mpc_parser_t* Lispy  = mpc_new("lispy");
 
 mpca_lang(MPCA_LANG_DEFAULT,
-  &quot;                                          \
+  "                                          \
     number : /-?[0-9]+/ ;                    \
-    symbol : &#39;+&#39; | &#39;-&#39; | &#39;*&#39; | &#39;/&#39; ;         \
-    sexpr  : &#39;(&#39; &lt;expr&gt;* &#39;)&#39; ;               \
+    symbol : '+' | '-' | '*' | '/' ;         \
+    sexpr  : '(' &lt;expr&gt;* ')' ;               \
     expr   : &lt;number&gt; | &lt;symbol&gt; | &lt;sexpr&gt; ; \
     lispy  : /^/ &lt;expr&gt;* /$/ ;               \
-  &quot;,
+  ",
   Number, Symbol, Sexpr, Expr, Lispy);</code></pre>
 
 <p>We should also remember to cleanup these rules on exit.</p>
@@ -136,7 +136,7 @@ enum { LVAL_ERR, LVAL_NUM, LVAL_SYM, LVAL_SEXPR };
   char* err;
   char* sym;
 
-  /* Count and Pointer to a list of &quot;lval*&quot; */
+  /* Count and Pointer to a list of "lval*" */
   int count;
   struct lval** cell;
 
@@ -206,7 +206,7 @@ lval* lval_sexpr(void) {
 
 <p>We now need a special function to delete <code>lval*</code>. This should call <code>free</code> on the pointer itself to release the memory acquired from <code>malloc</code>, but more importantly it should inspect the type of the <code>lval</code>, and release any memory pointed to by its fields. If we match every call to one of the above construction functions with <code>lval_del</code> we can ensure we will get no memory leaks.</p>
 
-<pre><code class="lang-c">void lval_del(lval* v) {
+<pre><code data-language="c">void lval_del(lval* v) {
 
   switch (v-&gt;type) {
     /* Do nothing special for number type */
@@ -226,7 +226,7 @@ lval* lval_sexpr(void) {
     break;
   }
 
-  /* Finally free the memory allocated for the &quot;lval&quot; struct itself */
+  /* Finally free the memory allocated for the "lval" struct itself */
   free(v);
 }</code></pre>
     
@@ -249,7 +249,7 @@ lval* lval_sexpr(void) {
   <p>This naturally leads to an implementation using <em>linked lists</em>, a different data structure to the one we are using. I choose to represent S-Expressions as a variable sized array in this book for the purposes of simplicity, but it is important to be aware that the official definition, and typical implementation are both subtly different.</p>
 </div>
 
-<pre><code class="lang-c">lval* lval_add(lval* v, lval* x) {
+<pre><code data-language="c">lval* lval_add(lval* v, lval* x) {
   v-&gt;count++;
   v-&gt;cell = realloc(v-&gt;cell, sizeof(lval*) * v-&gt;count);
   v-&gt;cell[v-&gt;count-1] = x;
@@ -259,27 +259,27 @@ lval* lval_sexpr(void) {
 lval* lval_read_num(mpc_ast_t* t) {
   errno = 0;
   long x = strtol(t-&gt;contents, NULL, 10);
-  return errno != ERANGE ? lval_num(x) : lval_err(&quot;invalid number&quot;);
+  return errno != ERANGE ? lval_num(x) : lval_err("invalid number");
 }
 
 lval* lval_read(mpc_ast_t* t) {
 
   /* If Symbol or Number return conversion to that type */
-  if (strstr(t-&gt;tag, &quot;number&quot;)) { return lval_read_num(t); }
-  if (strstr(t-&gt;tag, &quot;symbol&quot;)) { return lval_sym(t-&gt;contents); }
+  if (strstr(t-&gt;tag, "number")) { return lval_read_num(t); }
+  if (strstr(t-&gt;tag, "symbol")) { return lval_sym(t-&gt;contents); }
 
   /* If root (&gt;) or sexpr then create empty list */
   lval* x = NULL;
-  if (strcmp(t-&gt;tag, &quot;&gt;&quot;) == 0) { x = lval_sexpr(); } 
-  if (strstr(t-&gt;tag, &quot;sexpr&quot;))  { x = lval_sexpr(); }
+  if (strcmp(t-&gt;tag, "&gt;") == 0) { x = lval_sexpr(); } 
+  if (strstr(t-&gt;tag, "sexpr"))  { x = lval_sexpr(); }
 
   /* Fill this list with any valid expression contained within */
   for (int i = 0; i &lt; t-&gt;children_num; i++) {
-    if (strcmp(t-&gt;children[i]-&gt;contents, &quot;(&quot;) == 0) { continue; }
-    if (strcmp(t-&gt;children[i]-&gt;contents, &quot;)&quot;) == 0) { continue; }
-    if (strcmp(t-&gt;children[i]-&gt;contents, &quot;}&quot;) == 0) { continue; }
-    if (strcmp(t-&gt;children[i]-&gt;contents, &quot;{&quot;) == 0) { continue; }
-    if (strcmp(t-&gt;children[i]-&gt;tag,  &quot;regex&quot;) == 0) { continue; }
+    if (strcmp(t-&gt;children[i]-&gt;contents, "(") == 0) { continue; }
+    if (strcmp(t-&gt;children[i]-&gt;contents, ")") == 0) { continue; }
+    if (strcmp(t-&gt;children[i]-&gt;contents, "}") == 0) { continue; }
+    if (strcmp(t-&gt;children[i]-&gt;contents, "{") == 0) { continue; }
+    if (strcmp(t-&gt;children[i]-&gt;tag,  "regex") == 0) { continue; }
     x = lval_add(x, lval_read(t-&gt;children[i]));
   }
 
@@ -292,16 +292,16 @@ lval* lval_read(mpc_ast_t* t) {
 
 <p>To print out S-Expressions we can create another function that loops over all the sub-expressions of an expression and prints these individually separated by spaces, just like how they are input.</p>
 
-<pre><code class="lang-c">void lval_expr_print(lval* v, char open, char close) {
+<pre><code data-language="c">void lval_expr_print(lval* v, char open, char close) {
   putchar(open);
   for (int i = 0; i &lt; v-&gt;count; i++) {
 
     /* Print Value contained within */
     lval_print(v-&gt;cell[i]);
 
-    /* Don&#39;t print trailing space if last element */
+    /* Don't print trailing space if last element */
     if (i != (v-&gt;count-1)) {
-      putchar(&#39; &#39;);
+      putchar(' ');
     }
   }
   putchar(close);
@@ -309,14 +309,14 @@ lval* lval_read(mpc_ast_t* t) {
 
 void lval_print(lval* v) {
   switch (v-&gt;type) {
-    case LVAL_NUM:   printf(&quot;%li&quot;, v-&gt;num); break;
-    case LVAL_ERR:   printf(&quot;Error: %s&quot;, v-&gt;err); break;
-    case LVAL_SYM:   printf(&quot;%s&quot;, v-&gt;sym); break;
-    case LVAL_SEXPR: lval_expr_print(v, &#39;(&#39;, &#39;)&#39;); break;
+    case LVAL_NUM:   printf("%li", v-&gt;num); break;
+    case LVAL_ERR:   printf("Error: %s", v-&gt;err); break;
+    case LVAL_SYM:   printf("%s", v-&gt;sym); break;
+    case LVAL_SEXPR: lval_expr_print(v, '(', ')'); break;
   }
 }
 
-void lval_println(lval* v) { lval_print(v); putchar(&#39;\n&#39;); }</code></pre>
+void lval_println(lval* v) { lval_print(v); putchar('\n'); }</code></pre>
 
 <div class="alert alert-warning">
   <p><strong>I can't declare these functions because they call each other.</strong></p>
@@ -356,7 +356,7 @@ lispy&gt;</code></pre>
 
 <p>To evaluate all other types we just return them directly back.</p>
 
-<pre><code class="lang-c">lval* lval_eval_sexpr(lval* v) {
+<pre><code data-language="c">lval* lval_eval_sexpr(lval* v) {
 
   /* Evaluate Children */
   for (int i = 0; i &lt; v-&gt;count; i++) {
@@ -378,7 +378,7 @@ lispy&gt;</code></pre>
   lval* f = lval_pop(v, 0);
   if (f-&gt;type != LVAL_SYM) {
     lval_del(f); lval_del(v);
-    return lval_err(&quot;S-expression Does not start with symbol!&quot;);
+    return lval_err("S-expression Does not start with symbol!");
   }
 
   /* Call builtin with operator */
@@ -400,11 +400,11 @@ lval* lval_eval(lval* v) {
 
 <p>The <code>lval_take</code> function is similar to <code>lval_pop</code> but it deletes the list it has extracted the element from. This is like taking an element from the list and deleting the rest. It is a slight variation on <code>lval_pop</code> but it makes our code easier to read in some places. Unlike <code>lval_pop</code>, only the expression you take from the list needs to be deleted by <code>lval_del</code>.</p>
 
-<pre><code class="lang-c">lval* lval_pop(lval* v, int i) {
-  /* Find the item at &quot;i&quot; */
+<pre><code data-language="c">lval* lval_pop(lval* v, int i) {
+  /* Find the item at "i" */
   lval* x = v-&gt;cell[i];
 
-  /* Shift the memory following the item at &quot;i&quot; over the top of it */
+  /* Shift the memory following the item at "i" over the top of it */
   memmove(&amp;v-&gt;cell[i], &amp;v-&gt;cell[i+1], sizeof(lval*) * (v-&gt;count-i-1));
 
   /* Decrease the count of items in the list */
@@ -429,13 +429,13 @@ lval* lval_take(lval* v, int i) {
 
 <p>If there have been no errors the input arguments are deleted and the new expression returned.</p>
 
-<pre><code class="lang-c">lval* builtin_op(lval* a, char* op) {
+<pre><code data-language="c">lval* builtin_op(lval* a, char* op) {
   
   /* Ensure all arguments are numbers */
   for (int i = 0; i < a->count; i++) {
     if (a-&gt;cell[i]-&gt;type != LVAL_NUM) {
       lval_del(a);
-      return lval_err(&quot;Cannot operate on non-number!&quot;);
+      return lval_err("Cannot operate on non-number!");
     }
   }
   
@@ -443,7 +443,7 @@ lval* lval_take(lval* v, int i) {
   lval* x = lval_pop(a, 0);
 
   /* If no arguments and sub then perform unary negation */
-  if ((strcmp(op, &quot;-&quot;) == 0) &amp;&amp; a-&gt;count == 0) { x-&gt;num = -x-&gt;num; }
+  if ((strcmp(op, "-") == 0) &amp;&amp; a-&gt;count == 0) { x-&gt;num = -x-&gt;num; }
 
   /* While there are still elements remaining */
   while (a-&gt;count &gt; 0) {
@@ -452,13 +452,13 @@ lval* lval_take(lval* v, int i) {
     lval* y = lval_pop(a, 0);
 
     /* Perform operation */
-    if (strcmp(op, &quot;+&quot;) == 0) { x-&gt;num += y-&gt;num; }
-    if (strcmp(op, &quot;-&quot;) == 0) { x-&gt;num -= y-&gt;num; }
-    if (strcmp(op, &quot;*&quot;) == 0) { x-&gt;num *= y-&gt;num; }
-    if (strcmp(op, &quot;/&quot;) == 0) {
+    if (strcmp(op, "+") == 0) { x-&gt;num += y-&gt;num; }
+    if (strcmp(op, "-") == 0) { x-&gt;num -= y-&gt;num; }
+    if (strcmp(op, "*") == 0) { x-&gt;num *= y-&gt;num; }
+    if (strcmp(op, "/") == 0) {
       if (y-&gt;num == 0) {
         lval_del(x); lval_del(y);
-        x = lval_err(&quot;Division By Zero!&quot;); break;
+        x = lval_err("Division By Zero!"); break;
       }
       x-&gt;num /= y-&gt;num;
     }
@@ -543,7 +543,7 @@ typedef struct lval {
   char* err;
   char* sym;
   
-  /* Count and Pointer to a list of &quot;lval*&quot; */
+  /* Count and Pointer to a list of "lval*" */
   int count;
   struct lval** cell;
   
