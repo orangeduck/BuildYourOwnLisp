@@ -1,10 +1,6 @@
-/**
- * GitHub theme
- *
- * @author Craig Campbell
- * @version 1.0.4
- */
+ 
 pre {
+    font-family: Consolas, 'Liberation Mono', 'DejaVu Sans Mono', 'Courier New', monospace;
     border: 1px solid #ccc;
     word-wrap: break-word;
     padding: 6px 10px;
@@ -13,6 +9,7 @@ pre {
 }
 
 code {
+    font-family: Consolas, 'Liberation Mono', 'DejaVu Sans Mono', 'Courier New', monospace;
     border: 1px solid #eaeaea;
     margin: 0px 2px;
     padding: 0px 5px;
@@ -20,6 +17,7 @@ code {
 }
 
 pre code {
+    font-family: Consolas, 'Liberation Mono', 'DejaVu Sans Mono', 'Courier New', monospace;
     border: 0px;
     padding: 0px;
     margin: 0px;
@@ -29,7 +27,7 @@ pre code {
 }
 
 pre, code {
-    font-family: Consolas, 'Liberation Mono', Courier, monospace;
+    font-family: Consolas, 'Liberation Mono', 'DejaVu Sans Mono', 'Courier New', monospace;
     color: #333;
     background: #fcfcfc;
     -moz-border-radius: 3px;
@@ -38,54 +36,66 @@ pre, code {
 }
 
 pre, pre code {
+    font-family: Consolas, 'Liberation Mono', 'DejaVu Sans Mono', 'Courier New', monospace;
     font-size: 13px;
 }
 
 pre .comment {
+    font-family: Consolas, 'Liberation Mono', 'DejaVu Sans Mono', 'Courier New', monospace;
     color: #679b7c;
 }
 
 pre .keyword {
+    font-family: Consolas, 'Liberation Mono', 'DejaVu Sans Mono', 'Courier New', monospace;
     font-weight: bold;
     color: #0080c0;
 }
 
 pre .keyword.operator {
+    font-family: Consolas, 'Liberation Mono', 'DejaVu Sans Mono', 'Courier New', monospace;
     color: #0000a0;
 }
 
 pre .keyword.builtin {
+    font-family: Consolas, 'Liberation Mono', 'DejaVu Sans Mono', 'Courier New', monospace;
     color: #800000;
 }
 
 pre .constant.numeric {
+    font-family: Consolas, 'Liberation Mono', 'DejaVu Sans Mono', 'Courier New', monospace;
     color: #ff8000;
 }
 
 pre .constant.string {
+    font-family: Consolas, 'Liberation Mono', 'DejaVu Sans Mono', 'Courier New', monospace;
     color: #808080;
 }
 
 pre .constant.character {
+    font-family: Consolas, 'Liberation Mono', 'DejaVu Sans Mono', 'Courier New', monospace;
     color: #808080;
 }
 
 pre .meta {
+    font-family: Consolas, 'Liberation Mono', 'DejaVu Sans Mono', 'Courier New', monospace;
     font-weight: bold;
     color: #2f2f46;
 }
 
 pre .meta.preprocessor {
+    font-family: Consolas, 'Liberation Mono', 'DejaVu Sans Mono', 'Courier New', monospace;
     font-weight: normal;
     color: #808040;
 }
 
 pre .support.type {
+    font-family: Consolas, 'Liberation Mono', 'DejaVu Sans Mono', 'Courier New', monospace;
     font-weight: bold;
     color: #800000;
 }
 
 pre .storage {
+    font-family: Consolas, 'Liberation Mono', 'DejaVu Sans Mono', 'Courier New', monospace;
     font-weight: bold;
     color: #ae3f71;
 }
