@@ -1,9 +1,10 @@
 import os
+import logging
 
 from werkzeug.contrib.cache import MemcachedCache
 from werkzeug.datastructures import ImmutableOrderedMultiDict
 
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask.ext.mail import Mail, Message
 from urllib2 import urlopen
 
@@ -100,6 +101,10 @@ except RuntimeError:
 app  = Flask(__name__)
 mail = Mail(app)
 
+handler = logging.FileHandler(os.path.join(os.path.split(__file__)[0], 'debug.log'))
+handler.setLevel(logging.INFO)
+app.logger.addHandler(handler) 
+
 #from flask.ext.basicauth import BasicAuth
 #app.config['BASIC_AUTH_USERNAME'] = 'byol'
 #app.config['BASIC_AUTH_PASSWORD'] = 'lovelace'
@@ -143,7 +148,7 @@ def route_paypal():
     verify_string = '&'.join(('%s=%s' % (param, value) for param, value in request.form.iteritems()))
     verify_string = verify_string + '&%s=%s' % ('cmd', '_notify-validate')
     
-    status = urlopen('https://www.sandbox.paypal.com/cgi-bin/webscr', data=verify_string).read()
+    status = urlopen('https://www.paypal.com/cgi-bin/webscr', data=verify_string).read()
     
     print status
     
