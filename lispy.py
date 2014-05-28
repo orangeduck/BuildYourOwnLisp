@@ -1,12 +1,14 @@
 import os
 
 from werkzeug.contrib.cache import MemcachedCache
+from werkzeug.datastructures import ImmutableOrderedMultiDict
 
-from flask import Flask
-from flask.ext.basicauth import BasicAuth
+from flask import Flask, jsonify
+from flask.ext.mail import Mail, Message
+from urllib2 import urlopen
 
 pages = [
-    'splash.html', 'contents.html', 'credits.html', 'faq.html', '404.html',
+    'splash.html', 'contents.html', 'credits.html', 'faq.html', '404.html', 'ebook.html', 'test.html',
     'chapter1_introduction.html',       'chapter2_installation.html',   'chapter3_basics.html',
     'chapter4_interactive_prompt.html', 'chapter5_languages.html',      'chapter6_parsing.html',
     'chapter7_evaluation.html',         'chapter8_error_handling.html', 'chapter9_s_expressions.html', 
@@ -16,7 +18,7 @@ pages = [
 ]
 
 titles = [
-    '', 'Contents', 'Credits', 'Frequently Asked Questions', 'Page Missing',
+    '', 'Contents', 'Credits', 'Frequently Asked Questions', 'Page Missing', 'eBook', 'Test',
     'Introduction &bull; Chapter 1',       'Installation &bull; Chapter 2',   'Basics &bull; Chapter 3',
     'Interactive Prompt &bull; Chapter 4', 'languages &bull; Chapter 5',      'Parsing &bull; Chapter 6',
     'Evaluation &bull; Chapter 7',         'Error Handling &bull; Chapter 8', 'S-Expressions &bull; Chapter 9',
@@ -95,12 +97,16 @@ except RuntimeError:
         
     cache = FakeCache()
 
-app = Flask(__name__)
+app  = Flask(__name__)
+mail = Mail(app)
+
+#from flask.ext.basicauth import BasicAuth
 #app.config['BASIC_AUTH_USERNAME'] = 'byol'
 #app.config['BASIC_AUTH_PASSWORD'] = 'lovelace'
 #app.config['BASIC_AUTH_FORCE'] = True
-
 #app_auth = BasicAuth(app)
+
+""" Page """
 
 @app.route('/<page>')
 def route_page(page):
@@ -121,6 +127,70 @@ def route_page(page):
 @app.route('/')
 def route_index():
     return route_page('splash')
+    
+""" Paypal Stuff """
+
+def ordered_storage(f):
+    def decorator(*args, **kwargs):
+        request.parameter_storage_class = ImmutableOrderedMultiDict
+        return f(*args, **kwargs)
+    return decorator
+
+@app.route('/paypal', methods=['POST'])
+@ordered_storage
+def route_paypal():
+    
+    verify_string = '&'.join(('%s=%s' % (param, value) for param, value in request.form.iteritems()))
+    verify_string = verify_string + '&%s=%s' % ('cmd', '_notify-validate')
+    
+    status = urlopen('https://www.sandbox.paypal.com/cgi-bin/webscr', data=verify_string).read()
+    
+    print status
+    
+    if status == 'VERIFIED':
+        """ Do something with the verified transaction details. """
+        print 'PayPal transaction was verified successfully.'
+        print request.form
+        
+        msg = Message("Build Your Own Lisp - eBook Download",
+            sender="contact@buildyourownlisp.com",
+            recipients=[request.form.get('payer_email')],
+            
+            body="Hi,\n"
+                 "\n"
+                 "Thanks for purchasing the eBook for Build Your Own Lisp. "
+                 "I really appreciate your support!\n"
+                 "\n"
+                 "Attached is the eBook in .pub, .mobi, and .pdf format. "
+                 "If you need it in a different format, or need any help "
+                 "using these files don't hesitate to get in contact.\n"
+                 "\n"
+                 "This e-mail should be considered a proof of purchase. "
+                 "If you want an updated version of the eBook please "
+                 "contact this address with a copy of this e-mail.\n"
+                 "\n"
+                 "If you have any other problems please contact this "
+                 "address and I will try to resolve them as soon as "
+                 "possible.\n"
+                 "\n"
+                 "Thanks again, and I hope you enjoy the book!\n"
+                 "\n"
+                 "- Dan\n")
+        
+        ebook_files = ["BuildYourOwnLisp.epub", "BuildYourOwnLisp.mobi", "BuildYourOwnLisp.pdf"]
+        ebook_mimes = ["application/epub+zip", "application/x-mobipocket-ebook", "application/pdf"]
+        
+        for file, mime in zip(ebook_files, ebook_mimes):
+            with app.open_resource(file) as f: msg.attach(file, mime, f.read())
+        
+        msg.send()
+        
+    else:
+        print 'Paypal IPN string %s did not validate' % verify_string
+
+    return jsonify({'status': 'complete'})
+    
+""" Main """
     
 if __name__ == '__main__':
     app.run()
