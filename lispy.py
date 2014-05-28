@@ -101,9 +101,9 @@ except RuntimeError:
 app  = Flask(__name__)
 mail = Mail(app)
 
-handler = logging.FileHandler(os.path.join(os.path.split(__file__)[0], 'debug.log'))
+handler = logging.FileHandler(os.path.join(os.path.split(__file__)[0], 'error.log'))
 handler.setLevel(logging.INFO)
-app.logger.addHandler(handler) 
+app.logger.addHandler(handler)
 
 #from flask.ext.basicauth import BasicAuth
 #app.config['BASIC_AUTH_USERNAME'] = 'byol'
@@ -150,33 +150,31 @@ def route_paypal():
     
     status = urlopen('https://www.paypal.com/cgi-bin/webscr', data=verify_string).read()
     
-    print status
-    
     if status == 'VERIFIED':
-        """ Do something with the verified transaction details. """
-        print 'PayPal transaction was verified successfully.'
-        print request.form
         
-        msg = Message("Build Your Own Lisp - eBook Download",
+        msg = Message("Build Your Own Lisp - eBook Attached",
             sender="contact@buildyourownlisp.com",
             recipients=[request.form.get('payer_email')],
             
-            body="Hi,\n"
+            body="Hello,\n"
                  "\n"
-                 "Thanks for purchasing the eBook for Build Your Own Lisp. "
-                 "I really appreciate your support!\n"
+                 "Many thanks for purchasing the eBook for Build Your Own Lisp. "
+                 "I really appreciate your contribution and support!\n"
                  "\n"
                  "Attached is the eBook in .pub, .mobi, and .pdf format. "
                  "If you need it in a different format, or need any help "
-                 "using these files don't hesitate to get in contact.\n"
+                 "using these files don't hesitate to get in contact. "
+                 "I will do what I can to help. I can also provide these "
+                 "files for you in a different way if you are having "
+                 "trouble accessing the attachments. \n"
                  "\n"
                  "This e-mail should be considered a proof of purchase. "
                  "If you want an updated version of the eBook please "
-                 "contact this address with a copy of this e-mail.\n"
-                 "\n"
-                 "If you have any other problems please contact this "
-                 "address and I will try to resolve them as soon as "
-                 "possible.\n"
+                 "contact this address, with a copy of this e-mail. "
+                 "I will supply you with an updated copy. "
+                 "If you have any other problems or questions, please "
+                 "contact this address and I will try to resolve them "
+                 "as soon as possible.\n"
                  "\n"
                  "Thanks again, and I hope you enjoy the book!\n"
                  "\n"
@@ -188,10 +186,10 @@ def route_paypal():
         for file, mime in zip(ebook_files, ebook_mimes):
             with app.open_resource(file) as f: msg.attach(file, mime, f.read())
         
-        msg.send()
+        mail.send(msg)
         
     else:
-        print 'Paypal IPN string %s did not validate' % verify_string
+        app.logger.error('Paypal IPN string %s did not validate' % verify_string)
 
     return jsonify({'status': 'complete'})
     
@@ -199,3 +197,4 @@ def route_paypal():
     
 if __name__ == '__main__':
     app.run()
+
