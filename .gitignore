@@ -1,2 +1,8 @@
 *~
 *.exe
+*.log
+*.pyc
+purchases
+BuildYourOwnLisp.epub
+BuildYourOwnLisp.mobi
+BuildYourOwnLisp.pdf
