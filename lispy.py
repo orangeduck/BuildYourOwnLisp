@@ -172,7 +172,7 @@ def route_paypal():
     verify_string = '&'.join(('%s=%s' % (param, value) for param, value in request.form.iteritems()))
     verify_string = verify_string + '&%s=%s' % ('cmd', '_notify-validate')
     
-    status = urlopen('https://www.sandbox.paypal.com/cgi-bin/webscr', data=verify_string).read()
+    status = urlopen('https://www.paypal.com/cgi-bin/webscr', data=verify_string).read()
     
     if status == 'VERIFIED':
         
@@ -182,7 +182,7 @@ def route_paypal():
         with open(keys, 'a') as keyfile:
             keyfile.write(datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S')+' '+id+'\n')
         
-        msg = Message("Build Your Own Lisp - eBook Attached",
+        msg = Message("Build Your Own Lisp - eBook Download",
             sender="contact@buildyourownlisp.com",
             recipients=[request.form.get('payer_email')],
             
@@ -200,7 +200,7 @@ def route_paypal():
                  "\n"
                  "If you need it in a different format to these, or "
                  "need any help using these files don't hesitate to "
-                 "get in contact. "
+                 "get in contact.\n"
                  "\n"
                  "This e-mail should be considered a proof of purchase. "
                  "These links will expire in 60 days, so if you want an "
@@ -212,7 +212,7 @@ def route_paypal():
                  "\n"
                  "Thanks again, and I hope you enjoy the book!\n"
                  "\n"
-                 "- Dan\n" % (id, id, id))
+                 "* Dan\n" % (id, id, id))
         
         mail.send(msg)
         
