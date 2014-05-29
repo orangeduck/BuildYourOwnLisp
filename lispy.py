@@ -1,15 +1,17 @@
 import os
 import logging
+import random
+import datetime
 
 from werkzeug.contrib.cache import MemcachedCache
 from werkzeug.datastructures import ImmutableOrderedMultiDict
 
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_file
 from flask.ext.mail import Mail, Message
 from urllib2 import urlopen
 
 pages = [
-    'splash.html', 'contents.html', 'credits.html', 'faq.html', '404.html', 'ebook.html', 'test.html',
+    'splash.html', 'contents.html', 'credits.html', 'faq.html', '404.html', 'ebook.html', 'test.html', 'invalid.html',
     'chapter1_introduction.html',       'chapter2_installation.html',   'chapter3_basics.html',
     'chapter4_interactive_prompt.html', 'chapter5_languages.html',      'chapter6_parsing.html',
     'chapter7_evaluation.html',         'chapter8_error_handling.html', 'chapter9_s_expressions.html', 
@@ -19,7 +21,7 @@ pages = [
 ]
 
 titles = [
-    '', 'Contents', 'Credits', 'Frequently Asked Questions', 'Page Missing', 'eBook', 'Test',
+    '', 'Contents', 'Credits', 'Frequently Asked Questions', 'Page Missing', 'eBook', 'Test', 'Invalid Download',
     'Introduction &bull; Chapter 1',       'Installation &bull; Chapter 2',   'Basics &bull; Chapter 3',
     'Interactive Prompt &bull; Chapter 4', 'languages &bull; Chapter 5',      'Parsing &bull; Chapter 6',
     'Evaluation &bull; Chapter 7',         'Error Handling &bull; Chapter 8', 'S-Expressions &bull; Chapter 9',
@@ -133,6 +135,28 @@ def route_page(page):
 def route_index():
     return route_page('splash')
     
+@app.route('/download/<id>/<type>')
+def route_download(id, type):
+    
+    keys = os.path.join(os.path.split(__file__)[0], 'keys.txt')
+    
+    with open(keys, 'r') as keyfile:
+        keys = map(lambda x: x.strip(), keyfile.readlines())
+        keys = map(lambda x: x.split(' '), keys)
+        keys = set([key[1] for key in keys if 
+              (datetime.datetime.now() - 
+               datetime.datetime.strptime(key[0], '%Y-%m-%d-%H:%M:%S')) 
+             < datetime.timedelta(days=60)])
+    
+    if id in keys:
+        if   type == 'epub': return send_file('BuildYourOwnLisp.epub', mimetype='application/epub+zip')
+        elif type == 'mobi': return send_file('BuildYourOwnLisp.mobi', mimetype='application/x-mobipocket-ebook')
+        elif type ==  'pdf': return send_file('BuildYourOwnLisp.pdf',  mimetype='application/pdf')
+        else: return route_page('invalid')
+        
+    else: route_page('invalid')
+    
+    
 """ Paypal Stuff """
 
 def ordered_storage(f):
@@ -148,9 +172,15 @@ def route_paypal():
     verify_string = '&'.join(('%s=%s' % (param, value) for param, value in request.form.iteritems()))
     verify_string = verify_string + '&%s=%s' % ('cmd', '_notify-validate')
     
-    status = urlopen('https://www.paypal.com/cgi-bin/webscr', data=verify_string).read()
+    status = urlopen('https://www.sandbox.paypal.com/cgi-bin/webscr', data=verify_string).read()
     
     if status == 'VERIFIED':
+        
+        id = ''.join([chr(i) for i in [random.randrange(97, 122) for _ in xrange(25)]])
+        
+        keys = os.path.join(os.path.split(__file__)[0], 'keys.txt')
+        with open(keys, 'a') as keyfile:
+            keyfile.write(datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S')+' '+id+'\n')
         
         msg = Message("Build Your Own Lisp - eBook Attached",
             sender="contact@buildyourownlisp.com",
@@ -161,30 +191,28 @@ def route_paypal():
                  "Many thanks for purchasing the eBook for Build Your Own Lisp. "
                  "I really appreciate your contribution and support!\n"
                  "\n"
-                 "Attached is the eBook in .pub, .mobi, and .pdf format. "
-                 "If you need it in a different format, or need any help "
-                 "using these files don't hesitate to get in contact. "
-                 "I will do what I can to help. I can also provide these "
-                 "files for you in a different way if you are having "
-                 "trouble accessing the attachments. \n"
+                 "Please follow these download links to download "
+                 "the ebook in each of the different formats.\n"
+                 "\n"
+                 "http://buildyourownlisp.com/download/%s/epub/\n"
+                 "http://buildyourownlisp.com/download/%s/mobi/\n"
+                 "http://buildyourownlisp.com/download/%s/pdf/\n"
+                 "\n"
+                 "If you need it in a different format to these, or "
+                 "need any help using these files don't hesitate to "
+                 "get in contact. "
                  "\n"
                  "This e-mail should be considered a proof of purchase. "
-                 "If you want an updated version of the eBook please "
-                 "contact this address, with a copy of this e-mail. "
-                 "I will supply you with an updated copy. "
-                 "If you have any other problems or questions, please "
-                 "contact this address and I will try to resolve them "
-                 "as soon as possible.\n"
+                 "These links will expire in 60 days, so if you want an "
+                 "updated version of the eBook please contact this address, "
+                 "with a copy of this e-mail. I will supply you with new "
+                 "links to an updated version. If you have any other "
+                 "problems or questions, please contact this address "
+                 "and I will try to resolve them as soon as possible.\n"
                  "\n"
                  "Thanks again, and I hope you enjoy the book!\n"
                  "\n"
-                 "- Dan\n")
-        
-        ebook_files = ["BuildYourOwnLisp.epub", "BuildYourOwnLisp.mobi", "BuildYourOwnLisp.pdf"]
-        ebook_mimes = ["application/epub+zip", "application/x-mobipocket-ebook", "application/pdf"]
-        
-        for file, mime in zip(ebook_files, ebook_mimes):
-            with app.open_resource(file) as f: msg.attach(file, mime, f.read())
+                 "- Dan\n" % (id, id, id))
         
         mail.send(msg)
         
