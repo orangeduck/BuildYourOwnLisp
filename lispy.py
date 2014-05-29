@@ -135,6 +135,10 @@ def route_page(page):
 def route_index():
     return route_page('splash')
     
+@app.errorhandler(404)
+def route_404(e):
+    return redirect(url_for('route_page', page='404'))
+    
 @app.route('/download/<id>/<type>')
 def route_download(id, type):
     
