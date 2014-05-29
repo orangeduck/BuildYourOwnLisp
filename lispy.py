@@ -138,7 +138,7 @@ def route_index():
 @app.route('/download/<id>/<type>')
 def route_download(id, type):
     
-    keys = os.path.join(os.path.split(__file__)[0], 'keys.txt')
+    keys = os.path.join(os.path.split(__file__)[0], 'purchases')
     
     with open(keys, 'r') as keyfile:
         keys = map(lambda x: x.strip(), keyfile.readlines())
@@ -178,7 +178,7 @@ def route_paypal():
         
         id = ''.join([chr(i) for i in [random.randrange(97, 122) for _ in xrange(25)]])
         
-        keys = os.path.join(os.path.split(__file__)[0], 'keys.txt')
+        keys = os.path.join(os.path.split(__file__)[0], 'purchases')
         with open(keys, 'a') as keyfile:
             keyfile.write(datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S')+' '+id+'\n')
         
