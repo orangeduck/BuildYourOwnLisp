@@ -154,7 +154,7 @@ def route_download(id, type):
         elif type ==  'pdf': return send_file('BuildYourOwnLisp.pdf',  mimetype='application/pdf')
         else: return route_page('invalid')
         
-    else: route_page('invalid')
+    else: return route_page('invalid')
     
     
 """ Paypal Stuff """
