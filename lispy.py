@@ -6,7 +6,7 @@ import datetime
 from werkzeug.contrib.cache import MemcachedCache
 from werkzeug.datastructures import ImmutableOrderedMultiDict
 
-from flask import Flask, jsonify, request, send_file
+from flask import Flask, jsonify, request, send_file, redirect, url_for
 from flask.ext.mail import Mail, Message
 from urllib2 import urlopen
 
@@ -152,9 +152,9 @@ def route_download(id, type):
         if   type == 'epub': return send_file('BuildYourOwnLisp.epub', mimetype='application/epub+zip')
         elif type == 'mobi': return send_file('BuildYourOwnLisp.mobi', mimetype='application/x-mobipocket-ebook')
         elif type ==  'pdf': return send_file('BuildYourOwnLisp.pdf',  mimetype='application/pdf')
-        else: return route_page('invalid')
+        else: return redirect(url_for('route_page', page='invalid'))
         
-    else: return route_page('invalid')
+    else: return redirect(url_for('route_page', page='invalid'))
     
     
 """ Paypal Stuff """
@@ -194,9 +194,9 @@ def route_paypal():
                  "Please follow these download links to download "
                  "the ebook in each of the different formats.\n"
                  "\n"
-                 "http://buildyourownlisp.com/download/%s/epub/\n"
-                 "http://buildyourownlisp.com/download/%s/mobi/\n"
-                 "http://buildyourownlisp.com/download/%s/pdf/\n"
+                 "http://buildyourownlisp.com/download/%s/epub\n"
+                 "http://buildyourownlisp.com/download/%s/mobi\n"
+                 "http://buildyourownlisp.com/download/%s/pdf\n"
                  "\n"
                  "If you need it in a different format to these, or "
                  "need any help using these files don't hesitate to "
