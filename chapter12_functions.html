@@ -315,9 +315,9 @@ lenv_add_builtin(e, "=",   builtin_put);</code></pre>
 
 <p>This creates a function that has been <em>partially evaluated</em> and reflects our previous idea of a function being some kind of <em>partial computation</em>. If we start with a function that takes two arguments, and pass in a single argument, we can bind this first argument and return a new function with its first formal argument bound, and its second remaining empty.</p>
 
-<p>We can use this metaphor to create a cute image of how functions work. We can imagine each expression consisting of a function at the front which repeatedly consumes the input directly to its right. Once it has consumed the input to its right, if it is full (requires no more inputs) it evaluates and replaces itself with some value. If it needs more it replaced itself with another new, fuller function, with one of its variables bound and repeats the process.</p>
+<p>This metaphor creates a cute image of how functions work. We can imagine a function at the front of an expression, repeatedly consuming inputs directly to its right. After consuming the first input to its right, if it is full (requires no more inputs), it evaluates and replaces itself with some new value. If instead, it is still it still requires more, it replaces itself with another, more complete function, with one of its variables bound. This process repeats until the final value for the program is created.</p>
 
-<p>So you can imagine functions like a little Pac-Man, not consuming all inputs at once, but iteratively eating inputs to the right and getting bigger and bigger until it is full. This isn't actually how we're going to implement it in code, but either way it is <em>fun to imagine</em>.</p>
+<p>So you can imagine functions like a little Pac-Man, not consuming all inputs at once, but iteratively eating inputs to the right, getting bigger and bigger until it is full and explodes to create something new. This isn't actually how we're going to implement it in code, but it is still <em>fun to imagine</em>.</p>
 
 <pre><code data-language='c'>lval* lval_call(lenv* e, lval* f, lval* a) {
 
