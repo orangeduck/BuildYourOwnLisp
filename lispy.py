@@ -8,7 +8,13 @@ from werkzeug.datastructures import ImmutableOrderedMultiDict
 
 from flask import Flask, jsonify, request, send_file, redirect, url_for
 from flask.ext.mail import Mail, Message
-from urllib2 import urlopen
+
+try:
+    # For Python 3.0 and later
+    from urllib.request import urlopen
+except ImportError:
+    # Fall back to Python 2's urllib2
+    from urllib2 import urlopen
 
 pages = [
     'splash.html', 'contents.html', 'credits.html', 'faq.html', '404.html', 'ebook.html', 'test.html', 'invalid.html',
