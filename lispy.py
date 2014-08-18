@@ -21,7 +21,7 @@ pages = [
 ]
 
 titles = [
-    '', 'Contents', 'Credits', 'Frequently Asked Questions', 'Page Missing', 'eBook', 'Test', 'Invalid Download',
+    'Learn C', 'Contents', 'Credits', 'Frequently Asked Questions', 'Page Missing', 'eBook', 'Test', 'Invalid Download',
     'Introduction &bull; Chapter 1',       'Installation &bull; Chapter 2',   'Basics &bull; Chapter 3',
     'Interactive Prompt &bull; Chapter 4', 'languages &bull; Chapter 5',      'Parsing &bull; Chapter 6',
     'Evaluation &bull; Chapter 7',         'Error Handling &bull; Chapter 8', 'S-Expressions &bull; Chapter 9',
