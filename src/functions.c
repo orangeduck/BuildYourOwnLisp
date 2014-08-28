@@ -229,7 +229,8 @@ void lval_print(lval* v) {
       if (v->builtin) {
         printf("<builtin>");
       } else {
-        printf("(\\ "); lval_print(v->formals); putchar(' '); lval_print(v->body); putchar(')');
+        printf("(\\ "); lval_print(v->formals);
+        putchar(' '); lval_print(v->body); putchar(')');
       }
     break;
     case LVAL_NUM:   printf("%li", v->num); break;
@@ -299,7 +300,9 @@ lenv* lenv_copy(lenv* e) {
 lval* lenv_get(lenv* e, lval* k) {
   
   for (int i = 0; i < e->count; i++) {
-    if (strcmp(e->syms[i], k->sym) == 0) { return lval_copy(e->vals[i]); }
+    if (strcmp(e->syms[i], k->sym) == 0) {
+      return lval_copy(e->vals[i]);
+    }
   }
   
   /* If no symbol check in parent otherwise error */
@@ -367,7 +370,7 @@ lval* builtin_lambda(lenv* e, lval* a) {
   for (int i = 0; i < a->cell[0]->count; i++) {
     LASSERT(a, (a->cell[0]->cell[i]->type == LVAL_SYM),
       "Cannot define non-symbol. Got %s, Expected %s.",
-      ltype_name(a->cell[0]->cell[i]->type), ltype_name(LVAL_SYM));
+      ltype_name(a->cell[0]->cell[i]->type),ltype_name(LVAL_SYM));
   }
   
   /* Pop first two arguments and pass them to lval_lambda */
@@ -468,26 +471,37 @@ lval* builtin_var(lenv* e, lval* a, char* func) {
   lval* syms = a->cell[0];
   for (int i = 0; i < syms->count; i++) {
     LASSERT(a, (syms->cell[i]->type == LVAL_SYM),
-      "Function '%s' cannot define non-symbol. Got %s, Expected %s.",
-      func, ltype_name(syms->cell[i]->type), ltype_name(LVAL_SYM));
+      "Function '%s' cannot define non-symbol. "
+      "Got %s, Expected %s.", func, 
+      ltype_name(syms->cell[i]->type), ltype_name(LVAL_SYM));
   }
   
   LASSERT(a, (syms->count == a->count-1),
-    "Function '%s' passed too many arguments for symbols. Got %i, Expected %i.",
-    func, syms->count, a->count-1);
+    "Function '%s' passed too many arguments for symbols. "
+    "Got %i, Expected %i.", func, syms->count, a->count-1);
     
   for (int i = 0; i < syms->count; i++) {
-    /* If 'def' define in global scope. If 'put' define in local scope */
-    if (strcmp(func, "def") == 0) { lenv_def(e, syms->cell[i], a->cell[i+1]); }
-    if (strcmp(func, "=")   == 0) { lenv_put(e, syms->cell[i], a->cell[i+1]); } 
+    /* If 'def' define in globally. If 'put' define in locally */
+    if (strcmp(func, "def") == 0) {
+      lenv_def(e, syms->cell[i], a->cell[i+1]);
+    }
+    
+    if (strcmp(func, "=")   == 0) {
+      lenv_put(e, syms->cell[i], a->cell[i+1]);
+    } 
   }
   
   lval_del(a);
   return lval_sexpr();
 }
 
-lval* builtin_def(lenv* e, lval* a) { return builtin_var(e, a, "def"); }
-lval* builtin_put(lenv* e, lval* a) { return builtin_var(e, a, "="); }
+lval* builtin_def(lenv* e, lval* a) {
+  return builtin_var(e, a, "def");
+}
+
+lval* builtin_put(lenv* e, lval* a) {
+  return builtin_var(e, a, "=");
+}
 
 void lenv_add_builtin(lenv* e, char* name, lbuiltin func) {
   lval* k = lval_sym(name);
@@ -563,7 +577,7 @@ lval* lval_call(lenv* e, lval* f, lval* a) {
   /* Argument list is now bound so can be cleaned up */
   lval_del(a);
   
-  /* If '&' remains in formal list it should be bound to empty list */
+  /* If '&' remains in formal list bind to empty list */
   if (f->formals->count > 0 &&
     strcmp(f->formals->cell[0]->sym, "&") == 0) {
     
@@ -587,11 +601,12 @@ lval* lval_call(lenv* e, lval* f, lval* a) {
   /* If all formals have been bound evaluate */
   if (f->formals->count == 0) {
   
-    /* Set Function Environment parent to current evaluation Environment */
+    /* Set environment parent to evaluation environment */
     f->env->par = e;
     
     /* Evaluate and return */
-    return builtin_eval(f->env, lval_add(lval_sexpr(), lval_copy(f->body)));
+    return builtin_eval(f->env, 
+      lval_add(lval_sexpr(), lval_copy(f->body)));
   } else {
     /* Otherwise return partially evaluated function */
     return lval_copy(f);
@@ -610,7 +625,8 @@ lval* lval_eval_sexpr(lenv* e, lval* v) {
   lval* f = lval_pop(v, 0);
   if (f->type != LVAL_FUN) {
     lval* err = lval_err(
-      "S-Expression starts with incorrect type. Got %s, Expected %s.",
+      "S-Expression starts with incorrect type. "
+      "Got %s, Expected %s.",
       ltype_name(f->type), ltype_name(LVAL_FUN));
     lval_del(f); lval_del(v);
     return err;

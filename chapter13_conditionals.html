@@ -30,18 +30,37 @@
   LASSERT_TYPE(op, a, 1, LVAL_NUM);
   
   int r;
-  if (strcmp(op, "&gt;")  == 0) { r = (a-&gt;cell[0]-&gt;num &gt;  a-&gt;cell[1]-&gt;num); }
-  if (strcmp(op, "&lt;")  == 0) { r = (a-&gt;cell[0]-&gt;num &lt;  a-&gt;cell[1]-&gt;num); }
-  if (strcmp(op, "&gt;=") == 0) { r = (a-&gt;cell[0]-&gt;num &gt;= a-&gt;cell[1]-&gt;num); }
-  if (strcmp(op, "&lt;=") == 0) { r = (a-&gt;cell[0]-&gt;num &lt;= a-&gt;cell[1]-&gt;num); }
+  if (strcmp(op, "&gt;")  == 0) {
+    r = (a-&gt;cell[0]-&gt;num &gt;  a-&gt;cell[1]-&gt;num);
+  }
+  if (strcmp(op, "&lt;")  == 0) {
+    r = (a-&gt;cell[0]-&gt;num &lt;  a-&gt;cell[1]-&gt;num);
+  }
+  if (strcmp(op, "&gt;=") == 0) {
+    r = (a-&gt;cell[0]-&gt;num &gt;= a-&gt;cell[1]-&gt;num);
+  }
+  if (strcmp(op, "&lt;=") == 0) {
+    r = (a-&gt;cell[0]-&gt;num &lt;= a-&gt;cell[1]-&gt;num);
+  }
   lval_del(a);
   return lval_num(r);
 }
 
-lval* builtin_gt(lenv* e, lval* a) { return builtin_ord(e, a, "&gt;");  }
-lval* builtin_lt(lenv* e, lval* a) { return builtin_ord(e, a, "&lt;");  }
-lval* builtin_ge(lenv* e, lval* a) { return builtin_ord(e, a, "&gt;="); }
-lval* builtin_le(lenv* e, lval* a) { return builtin_ord(e, a, "&lt;="); }
+lval* builtin_gt(lenv* e, lval* a) {
+  return builtin_ord(e, a, "&gt;");
+}
+
+lval* builtin_lt(lenv* e, lval* a) {
+  return builtin_ord(e, a, "&lt;");
+}
+
+lval* builtin_ge(lenv* e, lval* a) {
+  return builtin_ord(e, a, "&gt;=");
+}
+
+lval* builtin_le(lenv* e, lval* a) {
+  return builtin_ord(e, a, "&lt;=");
+}
 </code></pre>
 
 
@@ -65,12 +84,13 @@ lval* builtin_le(lenv* e, lval* a) { return builtin_ord(e, a, "&lt;="); }
     case LVAL_ERR: return (strcmp(x-&gt;err, y-&gt;err) == 0);
     case LVAL_SYM: return (strcmp(x-&gt;sym, y-&gt;sym) == 0);
 
-    /* If Builtin compare functions, otherwise compare formals and body */
+    /* If builtin compare, otherwise compare formals and body */
     case LVAL_FUN:
       if (x-&gt;builtin || y-&gt;builtin) {
         return x-&gt;builtin == y-&gt;builtin;
       } else {
-        return lval_eq(x-&gt;formals, y-&gt;formals) &amp;&amp; lval_eq(x-&gt;body, y-&gt;body);
+        return lval_eq(x-&gt;formals, y-&gt;formals) 
+          &amp;&amp; lval_eq(x-&gt;body, y-&gt;body);
       }
 
     /* If list compare every individual element */
@@ -93,14 +113,23 @@ lval* builtin_le(lenv* e, lval* a) { return builtin_ord(e, a, "&lt;="); }
 <pre><code data-language='c'>lval* builtin_cmp(lenv* e, lval* a, char* op) {
   LASSERT_NUM(op, a, 2);
   int r;
-  if (strcmp(op, "==") == 0) { r =  lval_eq(a-&gt;cell[0], a-&gt;cell[1]); }
-  if (strcmp(op, "!=") == 0) { r = !lval_eq(a-&gt;cell[0], a-&gt;cell[1]); }
+  if (strcmp(op, "==") == 0) {
+    r =  lval_eq(a-&gt;cell[0], a-&gt;cell[1]);
+  }
+  if (strcmp(op, "!=") == 0) {
+    r = !lval_eq(a-&gt;cell[0], a-&gt;cell[1]);
+  }
   lval_del(a);
   return lval_num(r);
 }
 
-lval* builtin_eq(lenv* e, lval* a) { return builtin_cmp(e, a, "=="); }
-lval* builtin_ne(lenv* e, lval* a) { return builtin_cmp(e, a, "!="); }</code></pre>
+lval* builtin_eq(lenv* e, lval* a) {
+  return builtin_cmp(e, a, "==");
+}
+
+lval* builtin_ne(lenv* e, lval* a) {
+  return builtin_cmp(e, a, "!=");
+}</code></pre>
 
 
 <h2>If Function</h2> <hr/>
@@ -136,10 +165,13 @@ lval* builtin_ne(lenv* e, lval* a) { return builtin_cmp(e, a, "!="); }</code></p
 <p>All that remains is for us to register all of these new builtins and we are again ready to go!</p>
 
 <pre><code data-language='c'>/* Comparison Functions */
-lenv_add_builtin(e, "if",   builtin_if);
-lenv_add_builtin(e, "==",   builtin_eq); lenv_add_builtin(e, "!=",   builtin_ne);
-lenv_add_builtin(e, "&gt;",    builtin_gt); lenv_add_builtin(e, "&lt;",    builtin_lt);
-lenv_add_builtin(e, "&gt;=",   builtin_ge); lenv_add_builtin(e, "&lt;=",   builtin_le);
+lenv_add_builtin(e, "if",    builtin_if);
+lenv_add_builtin(e, "==",    builtin_eq);
+lenv_add_builtin(e, "!=",    builtin_ne);
+lenv_add_builtin(e, "&gt;",  builtin_gt);
+lenv_add_builtin(e, "&lt;",  builtin_lt);
+lenv_add_builtin(e, "&gt;=", builtin_ge);
+lenv_add_builtin(e, "&lt;=", builtin_le);
 </code></pre>
 
 <p>Have a quick mess around to check that everything is working correctly.</p>

@@ -95,7 +95,7 @@ void lval_del(lval* v) {
     break;
   }
   
-  /* Finally free the memory allocated for the "lval" struct itself */
+  /* Free the memory allocated for the "lval" struct itself */
   free(v);
 }
 
@@ -110,8 +110,9 @@ lval* lval_pop(lval* v, int i) {
   /* Find the item at "i" */
   lval* x = v->cell[i];
   
-  /* Shift the memory following the item at "i" over the top of it */
-  memmove(&v->cell[i], &v->cell[i+1], sizeof(lval*) * (v->count-i-1));
+  /* Shift memory after the item at "i" over the top */
+  memmove(&v->cell[i], &v->cell[i+1],
+    sizeof(lval*) * (v->count-i-1));
   
   /* Decrease the count of items in the list */
   v->count--;
@@ -169,7 +170,9 @@ lval* builtin_op(lval* a, char* op) {
   lval* x = lval_pop(a, 0);
   
   /* If no arguments and sub then perform unary negation */
-  if ((strcmp(op, "-") == 0) && a->count == 0) { x->num = -x->num; }
+  if ((strcmp(op, "-") == 0) && a->count == 0) {
+    x->num = -x->num;
+  }
   
   /* While there are still elements remaining */
   while (a->count > 0) {
@@ -242,7 +245,8 @@ lval* lval_eval(lval* v) {
 lval* lval_read_num(mpc_ast_t* t) {
   errno = 0;
   long x = strtol(t->contents, NULL, 10);
-  return errno != ERANGE ? lval_num(x) : lval_err("invalid number");
+  return errno != ERANGE ?
+    lval_num(x) : lval_err("invalid number");
 }
 
 lval* lval_read(mpc_ast_t* t) {

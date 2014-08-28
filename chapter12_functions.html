@@ -129,7 +129,8 @@ break;</code></pre>
   if (v-&gt;builtin) {
     printf("&lt;builtin&gt;");
   } else {
-    printf("(\\ "); lval_print(v-&gt;formals); putchar(' '); lval_print(v-&gt;body); putchar(')');
+    printf("(\\ "); lval_print(v-&gt;formals);
+    putchar(' '); lval_print(v-&gt;body); putchar(')');
   }
 break;</code></pre>
 
@@ -148,7 +149,7 @@ break;</code></pre>
   for (int i = 0; i &lt; a-&gt;cell[0]-&gt;count; i++) {
     LASSERT(a, (a-&gt;cell[0]-&gt;cell[i]-&gt;type == LVAL_SYM),
       "Cannot define non-symbol. Got %s, Expected %s.",
-      ltype_name(a-&gt;cell[0]-&gt;cell[i]-&gt;type), ltype_name(LVAL_SYM));
+      ltype_name(a-&gt;cell[0]-&gt;cell[i]-&gt;type),ltype_name(LVAL_SYM));
   }
   
   /* Pop first two arguments and pass them to lval_lambda */
@@ -209,7 +210,9 @@ lenv* lenv_new(void) {
 <pre><code data-language='c'>lval* lenv_get(lenv* e, lval* k) {
 
   for (int i = 0; i &lt; e-&gt;count; i++) {
-    if (strcmp(e-&gt;syms[i], k-&gt;sym) == 0) { return lval_copy(e-&gt;vals[i]); }
+    if (strcmp(e-&gt;syms[i], k-&gt;sym) == 0) {
+      return lval_copy(e-&gt;vals[i]);
+    }
   }
 
   /* If no symbol check in parent otherwise error */
@@ -249,37 +252,49 @@ lenv* lenv_new(void) {
 
 <p>At the moment this distinction may seem useless, but later on we will use it to write partial results of calculations to local variables inside a function. We should add another builtin for <em>local</em> assignment. We'll call this <code>put</code> in C, but give it the <code>=</code> symbol in Lisp. We can adapt our <code>builtin_def</code> function and re-use the common code, just like we do with our mathematical operators.</p>
 
+<p>Then we need to register these as a builtins.</p>
+
+<pre><code data-language='c'>lenv_add_builtin(e, "def", builtin_def);
+lenv_add_builtin(e, "=",   builtin_put);</code></pre>
+
 <pre><code data-language='c'>lval* builtin_var(lenv* e, lval* a, char* func) {
   LASSERT_TYPE(func, a, 0, LVAL_QEXPR);
   
   lval* syms = a-&gt;cell[0];
   for (int i = 0; i &lt; syms->count; i++) {
     LASSERT(a, (syms-&gt;cell[i]-&gt;type == LVAL_SYM),
-      "Function '%s' cannot define non-symbol. Got %s, Expected %s.",
-      func, ltype_name(syms-&gt;cell[i]-&gt;type), ltype_name(LVAL_SYM));
+      "Function '%s' cannot define non-symbol. "
+      "Got %s, Expected %s.", func, 
+      ltype_name(syms-&gt;cell[i]-&gt;type),
+      ltype_name(LVAL_SYM));
   }
   
   LASSERT(a, (syms-&gt;count == a-&gt;count-1),
-    "Function '%s' passed too many arguments for symbols. Got %i, Expected %i.",
-    func, syms-&gt;count, a-&gt;count-1);
+    "Function '%s' passed too many arguments for symbols. "
+    "Got %i, Expected %i.", func, syms-&gt;count, a-&gt;count-1);
     
   for (int i = 0; i &lt; syms-&gt;count; i++) {
-    /* If 'def' define in global scope. If 'put' define in local scope */
-    if (strcmp(func, "def") == 0) { lenv_def(e, syms-&gt;cell[i], a-&gt;cell[i+1]); }
-    if (strcmp(func, "=")   == 0) { lenv_put(e, syms-&gt;cell[i], a-&gt;cell[i+1]); } 
+    /* If 'def' define in globally. If 'put' define in locally */
+    if (strcmp(func, "def") == 0) {
+      lenv_def(e, syms-&gt;cell[i], a-&gt;cell[i+1]);
+    }
+    
+    if (strcmp(func, "=")   == 0) {
+      lenv_put(e, syms-&gt;cell[i], a-&gt;cell[i+1]);
+    } 
   }
   
   lval_del(a);
   return lval_sexpr();
 }
 
-lval* builtin_def(lenv* e, lval* a) { return builtin_var(e, a, "def"); }
-lval* builtin_put(lenv* e, lval* a) { return builtin_var(e, a, "="); }</code></pre>
+lval* builtin_def(lenv* e, lval* a) {
+  return builtin_var(e, a, "def");
+}
 
-<p>Then we need to register these as a builtins.</p>
-
-<pre><code data-language='c'>lenv_add_builtin(e, "def", builtin_def);
-lenv_add_builtin(e, "=",   builtin_put);</code></pre>
+lval* builtin_put(lenv* e, lval* a) {
+  return builtin_var(e, a, "=");
+}</code></pre>
 
 
 <h2>Function Calling</h2> <hr/>
@@ -306,10 +321,11 @@ lenv_add_builtin(e, "=",   builtin_put);</code></pre>
   f-&gt;env-&gt;par = e;
 
   /* Evaluate the body */
-  return builtin_eval(f-&gt;env, lval_add(lval_sexpr(), lval_copy(f-&gt;body)));
+  return builtin_eval(f-&gt;env, 
+    lval_add(lval_sexpr(), lval_copy(f-&gt;body)));
 }</code></pre>
 
-<p>This works fine providing all error conditions are met, but it doesn't deal correctly with the case where the number of arguments supplied, and the number of formal arguments required, differ. In this situation it will just crash.</p>
+<p>But this doesn't act correctly when the number of arguments supplied, and the number of formal arguments differ. In this situation it will crash.</p>
 
 <p>Actually this is an interesting case, and leaves us a couple of options. We <em>could</em> just throw an error when the argument count supplied is incorrect, but we can do something more fun. When too few arguments are supplied we could instead bind the first few formal arguments of the function and then return it, leaving the rest unbound.</p>
 
@@ -333,7 +349,9 @@ lenv_add_builtin(e, "=",   builtin_put);</code></pre>
 
     /* If we've ran out of formal arguments to bind */
     if (f-&gt;formals-&gt;count == 0) {
-      lval_del(a); return lval_err("Function passed too many arguments. Got %i, Expected %i.", given, total); 
+      lval_del(a); return lval_err(
+        "Function passed too many arguments. "
+        "Got %i, Expected %i.", given, total); 
     }
 
     /* Pop the first symbol from the formals */
@@ -355,11 +373,12 @@ lenv_add_builtin(e, "=",   builtin_put);</code></pre>
   /* If all formals have been bound evaluate */
   if (f-&gt;formals-&gt;count == 0) {
 
-    /* Set Function Environment parent to current evaluation Environment */
+    /* Set environment parent to evaluation environment */
     f-&gt;env-&gt;par = e;
 
     /* Evaluate and return */
-    return builtin_eval(f-&gt;env, lval_add(lval_sexpr(), lval_copy(f-&gt;body)));
+    return builtin_eval(
+      f-&gt;env, lval_add(lval_sexpr(), lval_copy(f-&gt;body)));
   } else {
     /* Otherwise return partially evaluated function */
     return lval_copy(f);
@@ -374,7 +393,8 @@ lenv_add_builtin(e, "=",   builtin_put);</code></pre>
 <pre><code data-language='c'>lval* f = lval_pop(v, 0);
 if (f->type != LVAL_FUN) {
   lval* err = lval_err(
-    "S-Expression starts with incorrect type. Got %s, Expected %s.",
+    "S-Expression starts with incorrect type. "
+    "Got %s, Expected %s.",
     ltype_name(f->type), ltype_name(LVAL_FUN));
   lval_del(f); lval_del(v);
   return err;
@@ -420,7 +440,8 @@ if (strcmp(sym-&gt;sym, "&amp;") == 0) {
   /* Ensure '&amp;' is followed by another symbol */
   if (f-&gt;formals-&gt;count != 1) {
     lval_del(a);
-    return lval_err("Function format invalid. Symbol '&amp;' not followed by single symbol.");
+    return lval_err("Function format invalid. "
+      "Symbol '&amp;' not followed by single symbol.");
   }
 
   /* Next formal should be bound to remaining arguments */
@@ -432,13 +453,14 @@ if (strcmp(sym-&gt;sym, "&amp;") == 0) {
 
 <p>Suppose when calling the function the user doesn't supply any variable arguments, but only the first named ones. In this case we need to set the symbol following <code>&amp;</code> to the empty list. Just after we delete the argument list, and before we check to see if all the formals have been evaluated add in this special case.</p>
 
-<pre><code data-language='c'>/* If '&amp;' remains in formal list it should be bound to empty list */
+<pre><code data-language='c'>/* If '&amp;' remains in formal list bind to empty list */
 if (f-&gt;formals-&gt;count &gt; 0 &amp;&amp;
   strcmp(f-&gt;formals-&gt;cell[0]-&gt;sym, "&amp;") == 0) {
 
   /* Check to ensure that &amp; is not passed invalidly. */
   if (f-&gt;formals-&gt;count != 2) {
-    return lval_err("Function format invalid. Symbol '&amp;' not followed by single symbol.");
+    return lval_err("Function format invalid. "
+      "Symbol '&amp;' not followed by single symbol.");
   }
 
   /* Pop and delete '&amp;' symbol */

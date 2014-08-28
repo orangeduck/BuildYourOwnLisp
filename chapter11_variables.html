@@ -95,7 +95,8 @@ typedef struct lenv lenv;
 
 /* Lisp Value */
 
-enum { LVAL_ERR, LVAL_NUM, LVAL_SYM, LVAL_FUN, LVAL_SEXPR, LVAL_QEXPR };
+enum { LVAL_ERR, LVAL_NUM,   LVAL_SYM, 
+       LVAL_FUN, LVAL_SEXPR, LVAL_QEXPR };
 
 typedef lval*(*lbuiltin)(lenv*, lval*);
 
@@ -147,8 +148,13 @@ struct lval {
     case LVAL_NUM: x-&gt;num = v-&gt;num; break;
     
     /* Copy Strings using malloc and strcpy */
-    case LVAL_ERR: x-&gt;err = malloc(strlen(v-&gt;err) + 1); strcpy(x-&gt;err, v-&gt;err); break;
-    case LVAL_SYM: x-&gt;sym = malloc(strlen(v-&gt;sym) + 1); strcpy(x-&gt;sym, v-&gt;sym); break;
+    case LVAL_ERR:
+      x-&gt;err = malloc(strlen(v-&gt;err) + 1);
+      strcpy(x-&gt;err, v-&gt;err); break;
+    
+    case LVAL_SYM:
+      x-&gt;sym = malloc(strlen(v-&gt;sym) + 1);
+      strcpy(x-&gt;sym, v-&gt;sym); break;
 
     /* Copy Lists by copying each sub-expression */
     case LVAL_SEXPR:
@@ -211,7 +217,9 @@ void lenv_del(lenv* e) {
   for (int i = 0; i &lt; e-&gt;count; i++) {
     /* Check if the stored string matches the symbol string */
     /* If it does, return a copy of the value */
-    if (strcmp(e-&gt;syms[i], k-&gt;sym) == 0) { return lval_copy(e-&gt;vals[i]); }
+    if (strcmp(e-&gt;syms[i], k-&gt;sym) == 0) {
+      return lval_copy(e-&gt;vals[i]);
+    }
   }
   /* If no symbol found return error */
   return lval_err("unbound symbol!");
@@ -232,7 +240,7 @@ void lenv_put(lenv* e, lval* k, lval* v) {
     }
   }
 
-  /* If no existing entry found then allocate space for new entry */
+  /* If no existing entry found allocate space for new entry */
   e-&gt;count++;
   e-&gt;vals = realloc(e-&gt;vals, sizeof(lval*) * e-&gt;count);
   e-&gt;syms = realloc(e-&gt;syms, sizeof(char*) * e-&gt;count);
@@ -262,8 +270,13 @@ void lenv_put(lenv* e, lval* k, lval* v) {
 
 <pre><code data-language='c'>lval* lval_eval_sexpr(lenv* e, lval* v) {
 
-  for (int i = 0; i &lt; v-&gt;count; i++) { v-&gt;cell[i] = lval_eval(e, v-&gt;cell[i]); }
-  for (int i = 0; i &lt; v-&gt;count; i++) { if (v-&gt;cell[i]-&gt;type == LVAL_ERR) { return lval_take(v, i); } }
+  for (int i = 0; i &lt; v-&gt;count; i++) {
+    v-&gt;cell[i] = lval_eval(e, v-&gt;cell[i]);
+  }
+  
+  for (int i = 0; i &lt; v-&gt;count; i++) {
+    if (v-&gt;cell[i]-&gt;type == LVAL_ERR) { return lval_take(v, i); }
+  }
 
   if (v-&gt;count == 0) { return v; }  
   if (v-&gt;count == 1) { return lval_take(v, 0); }
@@ -288,10 +301,21 @@ void lenv_put(lenv* e, lval* k, lval* v) {
 
 <p>As an example we can make use of our <code>builtin_op</code> function to define separate builtins for each of the maths functions our language supports.</p>
 
-<pre><code data-language='c'>lval* builtin_add(lenv* e, lval* a) { return builtin_op(e, a, "+"); }
-lval* builtin_sub(lenv* e, lval* a) { return builtin_op(e, a, "-"); }
-lval* builtin_mul(lenv* e, lval* a) { return builtin_op(e, a, "*"); }
-lval* builtin_div(lenv* e, lval* a) { return builtin_op(e, a, "/"); }
+<pre><code data-language='c'>lval* builtin_add(lenv* e, lval* a) {
+  return builtin_op(e, a, "+");
+}
+
+lval* builtin_sub(lenv* e, lval* a) {
+  return builtin_op(e, a, "-");
+}
+
+lval* builtin_mul(lenv* e, lval* a) {
+  return builtin_op(e, a, "*");
+}
+
+lval* builtin_div(lenv* e, lval* a) {
+  return builtin_op(e, a, "/");
+}
 </code></pre>
 
 <p>Once we've changed the builtins to the correct type we can create a function that registers all of our builtins into an environment.</p>
@@ -310,12 +334,16 @@ lval* builtin_div(lenv* e, lval* a) { return builtin_op(e, a, "/"); }
 void lenv_add_builtins(lenv* e) {  
   /* List Functions */
   lenv_add_builtin(e, "list", builtin_list);
-  lenv_add_builtin(e, "head", builtin_head); lenv_add_builtin(e, "tail",  builtin_tail);
-  lenv_add_builtin(e, "eval", builtin_eval); lenv_add_builtin(e, "join",  builtin_join);
+  lenv_add_builtin(e, "head", builtin_head);
+  lenv_add_builtin(e, "tail", builtin_tail);
+  lenv_add_builtin(e, "eval", builtin_eval);
+  lenv_add_builtin(e, "join", builtin_join);
 
   /* Mathematical Functions */
-  lenv_add_builtin(e, "+",    builtin_add); lenv_add_builtin(e, "-",     builtin_sub);
-  lenv_add_builtin(e, "*",    builtin_mul); lenv_add_builtin(e, "/",     builtin_div);
+  lenv_add_builtin(e, "+", builtin_add);
+  lenv_add_builtin(e, "-", builtin_sub);
+  lenv_add_builtin(e, "*", builtin_mul);
+  lenv_add_builtin(e, "/", builtin_div);
 }</code></pre>
 
 <p>The final step is to call this function before we create the interactive prompt. We also need to remember to delete the environment once we are finished.</p>
@@ -374,18 +402,22 @@ lispy&gt;</code></pre>
 <p>This function should act like any other builtin. It first checks for error conditions and then performs some command and returns a value. In this case it first checks that the input arguments are the correct types. It then iterates over each symbol and value and puts them into the environment. If there is an error we can return it, but on success we will return the empty expression <code>()</code>.</p>
 
 <pre><code data-language='c'>lval* builtin_def(lenv* e, lval* a) {
-  LASSERT(a, (a-&gt;cell[0]-&gt;type == LVAL_QEXPR), "Function 'def' passed incorrect type!");
+  LASSERT(a, a-&gt;cell[0]-&gt;type == LVAL_QEXPR,
+    "Function 'def' passed incorrect type!");
 
   /* First argument is symbol list */
   lval* syms = a-&gt;cell[0];
 
   /* Ensure all elements of first list are symbols */
   for (int i = 0; i &lt; syms-&gt;count; i++) {
-    LASSERT(a, (syms-&gt;cell[i]-&gt;type == LVAL_SYM), "Function 'def' cannot define non-symbol");
+    LASSERT(a, syms-&gt;cell[i]-&gt;type == LVAL_SYM,
+      "Function 'def' cannot define non-symbol");
   }
 
   /* Check correct number of symbols and values */
-  LASSERT(a, (syms-&gt;count == a-&gt;count-1), "Function 'def' cannot define incorrect number of values to symbols");
+  LASSERT(a, syms-&gt;count == a-&gt;count-1,
+    "Function 'def' cannot define incorrect "
+    "number of values to symbols");
 
   /* Assign copies of values to symbols */
   for (int i = 0; i &lt; syms-&gt;count; i++) {
@@ -445,7 +477,7 @@ lispy&gt;</code></pre>
 
 <p>To declare that a function takes variables arguments in the type signature you use the special syntax of ellipsis <code>...</code>, which represent the rest of the arguments.</p>
 
-<p><code data-language='c'>lval* lval_err(char* fmt, ...);</code></p>
+<pre><code data-language='c'>lval* lval_err(char* fmt, ...);</code></pre>
 
 <p>Then, inside the function there are some standard library functions we can use to examine what the caller has passed in.</p>
 
@@ -466,7 +498,7 @@ lispy&gt;</code></pre>
   /* Allocate 512 bytes of space */
   v-&gt;err = malloc(512);
 
-  /* printf into the error string with a maximum of 511 characters */
+  /* printf the error string with a maximum of 511 characters */
   vsnprintf(v-&gt;err, 511, fmt, va);
 
   /* Reallocate to number of bytes actually used */
@@ -497,7 +529,10 @@ lispy&gt;</code></pre>
 
 <p>Now we can update some of our error messages to make them more informative. For example if the incorrect number of arguments were passed we can specify how many were required and how many were given.</p>
 
-<pre><code data-language='c'>LASSERT(a, (a-&gt;count == 1), "Function 'head' passed too many arguments. Got %i, Expected %i.", a-&gt;count, 1);</code></pre>
+<pre><code data-language='c'>LASSERT(a, a-&gt;count == 1,
+  "Function 'head' passed too many arguments. "
+  "Got %i, Expected %i.",
+  a-&gt;count, 1);</code></pre>
 
 <p>We can also improve our error reporting for type errors. We should attempt to report what type was expected by a function and what type it actually got. Before we can do this it would be useful to have a function that took as input some type enumeration and returned a string representation of that type.</p>
 
@@ -515,8 +550,9 @@ lispy&gt;</code></pre>
 
 <p>Then we can use this function in our <code>LASSERT</code> functions to report what was retrieved and what was expected in a useful way.</p>
 
-<pre><code data-language='c'>LASSERT(a, (a-&gt;cell[0]-&gt;type == LVAL_QEXPR), 
-  "Function 'head' passed incorrect type for argument 0. Got %s, Expected %s.",
+<pre><code data-language='c'>LASSERT(a, a-&gt;cell[0]-&gt;type == LVAL_QEXPR, 
+  "Function 'head' passed incorrect type for argument 0. "
+  "Got %s, Expected %s.",
   ltype_name(a-&gt;cell[0]-&gt;type), ltype_name(LVAL_QEXPR));
 </code></pre>
 

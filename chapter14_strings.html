@@ -19,7 +19,9 @@
 
 <p>We start, as in other chapters, by adding an entry to our enum and adding an entry to our <code>lval</code> to represent the type's data.</p>
 
-<pre><code data-language='c'>enum { LVAL_ERR, LVAL_NUM, LVAL_SYM, LVAL_STR, LVAL_FUN, LVAL_SEXPR, LVAL_QEXPR };</code></pre>
+<pre><code data-language='c'>
+enum { LVAL_ERR, LVAL_NUM,   LVAL_SYM, LVAL_STR, 
+       LVAL_FUN, LVAL_SEXPR, LVAL_QEXPR };</code></pre>
 
 <pre><code data-language='c'>/* Basic */
 long num;
@@ -46,7 +48,8 @@ char* str;
 
 <p>For <strong>Copying</strong>...</p>
 
-<pre><code data-language='c'>case LVAL_STR: x-&gt;str = malloc(strlen(v-&gt;str) + 1); strcpy(x-&gt;str, v-&gt;str); break;</code></pre>
+<pre><code data-language='c'>case LVAL_STR: x-&gt;str = malloc(strlen(v-&gt;str) + 1);
+  strcpy(x-&gt;str, v-&gt;str); break;</code></pre>
 
 <p>For <strong>Equality</strong>...</p>
 
@@ -158,7 +161,9 @@ lispy&gt;</code></pre>
 
 <p>And the cleanup function looks like this.</p>
 
-<pre><code data-language='c'>mpc_cleanup(8, Number, Symbol, String, Comment, Sexpr, Qexpr, Expr, Lispy);</code></pre>
+<pre><code data-language='c'>mpc_cleanup(8, 
+  Number, Symbol, String, Comment, 
+  Sexpr,  Qexpr,  Expr,   Lispy);</code></pre>
 
 <p>Because comments are only for programmers reading the code, our internal function for reading them in just consists of ignoring them. We can add a clause to deal with them in a similar way to brackets and parenthesis in <code>lval_read</code>.</p>
 
@@ -246,7 +251,7 @@ if (argc &gt;= 2) {
   /* loop over each supplied filename (starting from 1) */
   for (int i = 1; i &lt; argc; i++) {
 
-    /* Create an argument list with a single argument being the filename */
+    /* Argument list with a single argument, the filename */
     lval* args = lval_add(lval_sexpr(), lval_str(argv[i]));
 
     /* Pass to builtin load and get the result */
@@ -304,8 +309,9 @@ if (argc &gt;= 2) {
 <p>The final step is to register these as builtins. Now finally we can start building up libraries and writing them to files!</p>
 
 <pre><code data-language='c'>/* String Functions */
-lenv_add_builtin(e, "load", builtin_load); 
-lenv_add_builtin(e, "error", builtin_error); lenv_add_builtin(e, "print", builtin_print);
+lenv_add_builtin(e, "load",  builtin_load); 
+lenv_add_builtin(e, "error", builtin_error);
+lenv_add_builtin(e, "print", builtin_print);
 </code></pre>
 
 <pre><code data-language='lispy'>lispy&gt; print "Hello World!"

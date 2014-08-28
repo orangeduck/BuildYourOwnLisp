@@ -115,16 +115,6 @@ enum { LVAL_ERR, LVAL_NUM, LVAL_SYM, LVAL_SEXPR };
 
 <p>We will also need to keep track of how many <code>lval*</code> are in this list, so we add an extra field <code>count</code> to record this.</p> 
 
-<div class="alert alert-warning">
-  <p><strong>Are there ever pointers to pointers to pointers?</strong></p>
-
-  <p>There is an old programming joke (and by <em>programming joke</em> I mean <em>silly anecdote</em>), which says you can rate C programmers by how many stars are on their pointers.</p>
-
-  <p>Beginners program might only use <code>char*</code> or the odd <code>int*</code>, so they were called <em>one star programmer</em>. Most intermediate programs contain double pointer types such as <code>lval**</code>. These programmers are therefore called <em>two star programmers</em>. To spot a triple pointer is something special. You would be viewing the work of someone grand and terrible, writing code not meant to be read with mortal eyes. As such being called a <em>three star programmer</em> is rarely a compliment.</p>
-  
-  <p>As far as I know, a quadruple pointer has never been seen in the wild.</p>
-</div>
-
 <p>To represent symbols we're going to use a string. We're also going to change the representation of errors to a string. This means we can store a unique error message rather than just an error code. This will make our error reporting better and more flexible, and we can get rid of the original error <code>enum</code>. Our updated <code>lval</code> struct looks like this.</p>
 
 <pre><code data-language='c'>typedef struct lval {
@@ -141,6 +131,16 @@ enum { LVAL_ERR, LVAL_NUM, LVAL_SYM, LVAL_SEXPR };
   struct lval** cell;
 
 } lval;</code></pre>
+
+<div class="alert alert-warning">
+  <p><strong>Are there ever pointers to pointers to pointers?</strong></p>
+
+  <p>There is an old programming joke (and by <em>programming joke</em> I mean <em>silly anecdote</em>), which says you can rate C programmers by how many stars are on their pointers.</p>
+
+  <p>Beginners program might only use <code>char*</code> or the odd <code>int*</code>, so they were called <em>one star programmer</em>. Most intermediate programs contain double pointer types such as <code>lval**</code>. These programmers are therefore called <em>two star programmers</em>. To spot a triple pointer is something special. You would be viewing the work of someone grand and terrible, writing code not meant to be read with mortal eyes. As such being called a <em>three star programmer</em> is rarely a compliment.</p>
+  
+  <p>As far as I know, a quadruple pointer has never been seen in the wild.</p>
+</div>
 
 <div class="alert alert-warning">
   <p><strong>What is that <code>struct</code> keyword doing there?</strong></p>
@@ -226,7 +226,7 @@ lval* lval_sexpr(void) {
     break;
   }
 
-  /* Finally free the memory allocated for the "lval" struct itself */
+  /* Free the memory allocated for the "lval" struct itself */
   free(v);
 }</code></pre>
     
@@ -259,7 +259,8 @@ lval* lval_sexpr(void) {
 lval* lval_read_num(mpc_ast_t* t) {
   errno = 0;
   long x = strtol(t-&gt;contents, NULL, 10);
-  return errno != ERANGE ? lval_num(x) : lval_err("invalid number");
+  return errno != ERANGE ?
+    lval_num(x) : lval_err("invalid number");
 }
 
 lval* lval_read(mpc_ast_t* t) {
@@ -404,8 +405,9 @@ lval* lval_eval(lval* v) {
   /* Find the item at "i" */
   lval* x = v-&gt;cell[i];
 
-  /* Shift the memory following the item at "i" over the top of it */
-  memmove(&amp;v-&gt;cell[i], &amp;v-&gt;cell[i+1], sizeof(lval*) * (v-&gt;count-i-1));
+  /* Shift memory after the item at "i" over the top */
+  memmove(&amp;v-&gt;cell[i], &amp;v-&gt;cell[i+1],
+    sizeof(lval*) * (v-&gt;count-i-1));
 
   /* Decrease the count of items in the list */
   v-&gt;count--;
@@ -443,7 +445,9 @@ lval* lval_take(lval* v, int i) {
   lval* x = lval_pop(a, 0);
 
   /* If no arguments and sub then perform unary negation */
-  if ((strcmp(op, "-") == 0) &amp;&amp; a-&gt;count == 0) { x-&gt;num = -x-&gt;num; }
+  if ((strcmp(op, "-") == 0) &amp;&amp; a-&gt;count == 0) {
+    x-&gt;num = -x-&gt;num;
+  }
 
   /* While there are still elements remaining */
   while (a-&gt;count &gt; 0) {

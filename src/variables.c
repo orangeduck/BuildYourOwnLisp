@@ -31,7 +31,8 @@ typedef struct lenv lenv;
 
 /* Lisp Value */
 
-enum { LVAL_ERR, LVAL_NUM, LVAL_SYM, LVAL_FUN, LVAL_SEXPR, LVAL_QEXPR };
+enum { LVAL_ERR, LVAL_NUM,   LVAL_SYM, 
+       LVAL_FUN, LVAL_SEXPR, LVAL_QEXPR };
 
 typedef lval*(*lbuiltin)(lenv*, lval*);
 
@@ -65,7 +66,7 @@ lval* lval_err(char* fmt, ...) {
   /* Allocate 512 bytes of space */
   v->err = malloc(512);
   
-  /* printf into the error string with a maximum of 511 characters */
+  /* printf the error string with a maximum of 511 characters */
   vsnprintf(v->err, 511, fmt, va);
   
   /* Reallocate to number of bytes actually used */
@@ -139,8 +140,13 @@ lval* lval_copy(lval* v) {
     case LVAL_NUM: x->num = v->num; break;
     
     /* Copy Strings using malloc and strcpy */
-    case LVAL_ERR: x->err = malloc(strlen(v->err) + 1); strcpy(x->err, v->err); break;
-    case LVAL_SYM: x->sym = malloc(strlen(v->sym) + 1); strcpy(x->sym, v->sym); break;
+    case LVAL_ERR:
+      x->err = malloc(strlen(v->err) + 1);
+      strcpy(x->err, v->err); break;
+      
+    case LVAL_SYM:
+      x->sym = malloc(strlen(v->sym) + 1);
+      strcpy(x->sym, v->sym); break;
     
     /* Copy Lists by copying each sub-expression */
     case LVAL_SEXPR:
@@ -263,7 +269,9 @@ lval* lenv_get(lenv* e, lval* k) {
   for (int i = 0; i < e->count; i++) {
     /* Check if the stored string matches the symbol string */
     /* If it does, return a copy of the value */
-    if (strcmp(e->syms[i], k->sym) == 0) { return lval_copy(e->vals[i]); }
+    if (strcmp(e->syms[i], k->sym) == 0) {
+      return lval_copy(e->vals[i]);
+    }
   }
   /* If no symbol found return error */
   return lval_err("Unbound Symbol '%s'", k->sym);
@@ -284,7 +292,7 @@ void lenv_put(lenv* e, lval* k, lval* v) {
     }
   }
   
-  /* If no existing entry found then allocate space for new entry */
+  /* If no existing entry found allocate space for new entry */
   e->count++;
   e->vals = realloc(e->vals, sizeof(lval*) * e->count);
   e->syms = realloc(e->syms, sizeof(char*) * e->count);
@@ -396,10 +404,21 @@ lval* builtin_op(lenv* e, lval* a, char* op) {
   return x;
 }
 
-lval* builtin_add(lenv* e, lval* a) { return builtin_op(e, a, "+"); }
-lval* builtin_sub(lenv* e, lval* a) { return builtin_op(e, a, "-"); }
-lval* builtin_mul(lenv* e, lval* a) { return builtin_op(e, a, "*"); }
-lval* builtin_div(lenv* e, lval* a) { return builtin_op(e, a, "/"); }
+lval* builtin_add(lenv* e, lval* a) {
+  return builtin_op(e, a, "+");
+}
+
+lval* builtin_sub(lenv* e, lval* a) {
+  return builtin_op(e, a, "-");
+}
+
+lval* builtin_mul(lenv* e, lval* a) {
+  return builtin_op(e, a, "*");
+}
+
+lval* builtin_div(lenv* e, lval* a) {
+  return builtin_op(e, a, "/");
+}
 
 lval* builtin_def(lenv* e, lval* a) {
 
@@ -438,16 +457,20 @@ void lenv_add_builtin(lenv* e, char* name, lbuiltin func) {
 
 void lenv_add_builtins(lenv* e) {
   /* Variable Functions */
-  lenv_add_builtin(e, "def",  builtin_def);
+  lenv_add_builtin(e, "def", builtin_def);
   
   /* List Functions */
   lenv_add_builtin(e, "list", builtin_list);
-  lenv_add_builtin(e, "head", builtin_head); lenv_add_builtin(e, "tail",  builtin_tail);
-  lenv_add_builtin(e, "eval", builtin_eval); lenv_add_builtin(e, "join",  builtin_join);
+  lenv_add_builtin(e, "head", builtin_head);
+  lenv_add_builtin(e, "tail", builtin_tail);
+  lenv_add_builtin(e, "eval", builtin_eval);
+  lenv_add_builtin(e, "join", builtin_join);
   
   /* Mathematical Functions */
-  lenv_add_builtin(e, "+",    builtin_add); lenv_add_builtin(e, "-",     builtin_sub);
-  lenv_add_builtin(e, "*",    builtin_mul); lenv_add_builtin(e, "/",     builtin_div);
+  lenv_add_builtin(e, "+", builtin_add);
+  lenv_add_builtin(e, "-", builtin_sub);
+  lenv_add_builtin(e, "*", builtin_mul);
+  lenv_add_builtin(e, "/", builtin_div);
 }
 
 /* Evaluation */

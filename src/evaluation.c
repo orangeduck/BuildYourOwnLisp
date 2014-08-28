@@ -33,7 +33,7 @@ long eval_op(long x, char* op, long y) {
 
 long eval(mpc_ast_t* t) {
   
-  /* If tagged as number return it directly, otherwise expression. */ 
+  /* If tagged as number return it directly. */ 
   if (strstr(t->tag, "number")) { return atoi(t->contents); }
   
   /* The operator is always second child. */
@@ -42,7 +42,7 @@ long eval(mpc_ast_t* t) {
   /* We store the third child in `x` */
   long x = eval(t->children[2]);
   
-  /* Iterate the remaining children, combining using our operator */
+  /* Iterate the remaining children and combining. */
   int i = 3;
   while (strstr(t->children[i]->tag, "expr")) {
     x = eval_op(x, op, eval(t->children[i]));

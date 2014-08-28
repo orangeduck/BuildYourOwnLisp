@@ -50,7 +50,8 @@ printf("Number of children: %i\n", a-&gt;children_num);
 mpc_ast_t* c0 = a-&gt;children[0];
 printf("First Child Tag: %s\n", c0-&gt;tag);
 printf("First Child Contents: %s\n", c0-&gt;contents);
-printf("First Child Number of children: %i\n", c0-&gt;children_num);
+printf("First Child Number of children: %i\n",
+  c0-&gt;children_num);
 </code></pre>
 
 
@@ -133,8 +134,10 @@ printf("First Child Number of children: %i\n", c0-&gt;children_num);
 
 <pre><code data-language='c'>long eval(mpc_ast_t* t) {
   
-  /* If tagged as number return it directly, otherwise expression. */ 
-  if (strstr(t-&gt;tag, "number")) { return atoi(t-&gt;contents); }
+  /* If tagged as number return it directly. */ 
+  if (strstr(t-&gt;tag, "number")) {
+    return atoi(t-&gt;contents);
+  }
   
   /* The operator is always second child. */
   char* op = t-&gt;children[1]-&gt;contents;
@@ -142,7 +145,7 @@ printf("First Child Number of children: %i\n", c0-&gt;children_num);
   /* We store the third child in `x` */
   long x = eval(t-&gt;children[2]);
   
-  /* Iterate the remaining children, combining using our operator */
+  /* Iterate the remaining children and combining. */
   int i = 3;
   while (strstr(t-&gt;children[i]-&gt;tag, "expr")) {
     x = eval_op(x, op, eval(t-&gt;children[i]));
@@ -182,10 +185,7 @@ Press Ctrl+c to Exit
 lispy&gt; + 5 6
 11
 lispy&gt; - (* 10 10) (+ 1 1 1)
-97
-lispy&gt; - (/ 10 2) 20
--15
-lispy&gt;</code></pre>
+97</code></pre>
 
 
 <h2>Reference</h2> <hr/>

@@ -42,8 +42,9 @@ typedef struct lenv lenv;
 
 /* Lisp Value */
 
-enum { LVAL_ERR, LVAL_NUM, LVAL_SYM, LVAL_STR, LVAL_FUN, LVAL_SEXPR, LVAL_QEXPR };
-
+enum { LVAL_ERR, LVAL_NUM,   LVAL_SYM, LVAL_STR, 
+       LVAL_FUN, LVAL_SEXPR, LVAL_QEXPR };
+       
 typedef lval*(*lbuiltin)(lenv*, lval*);
 
 struct lval {
@@ -687,8 +688,9 @@ void lenv_add_builtins(lenv* e) {
   lenv_add_builtin(e, ">=",   builtin_ge); lenv_add_builtin(e, "<=",   builtin_le);
   
   /* String Functions */
-  lenv_add_builtin(e, "load", builtin_load); 
-  lenv_add_builtin(e, "error", builtin_error); lenv_add_builtin(e, "print", builtin_print);
+  lenv_add_builtin(e, "load",  builtin_load); 
+  lenv_add_builtin(e, "error", builtin_error);
+  lenv_add_builtin(e, "print", builtin_print);
 }
 
 /* Evaluation */
@@ -897,7 +899,7 @@ int main(int argc, char** argv) {
     /* loop over each supplied filename (starting from 1) */
     for (int i = 1; i < argc; i++) {
       
-      /* Create an argument list with a single argument being the filename */
+      /* Argument list with a single argument, the filename */
       lval* args = lval_add(lval_sexpr(), lval_str(argv[i]));
       
       /* Pass to builtin load and get the result */
@@ -911,7 +913,9 @@ int main(int argc, char** argv) {
   
   lenv_del(e);
   
-  mpc_cleanup(8, Number, Symbol, String, Comment, Sexpr, Qexpr, Expr, Lispy);
+  mpc_cleanup(8, 
+    Number, Symbol, String, Comment, 
+    Sexpr,  Qexpr,  Expr,   Lispy);
   
   return 0;
 }

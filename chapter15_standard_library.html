@@ -157,16 +157,16 @@ lispy&gt;
   if (== l nil)
     {0}
     {+ 1 (len (tail l))}
-})
+})</code></pre>
 
-; Nth item in List
+<pre><code data-language='lispy'>; Nth item in List
 (fun {nth n l} {
   if (== n 0)
     {fst l}
     {nth (- n 1) (tail l)}
-})
+})</code></pre>
 
-; Last item in List
+<pre><code data-language='lispy'>; Last item in List
 (fun {last l} {nth (- (len l) 1) l})</code></pre>
 
 <p>There are lots of other useful functions that follow this same pattern. We can define functions for taking and dropping the first so many elements of a list, or functions for checking if a value is an element of a list.</p>
@@ -176,19 +176,19 @@ lispy&gt;
   if (== n 0)
     {nil}
     {join (head l) (take (- n 1) (tail l))}
-})
+})</code></pre>
 
-; Drop N items
+<pre><code data-language='lispy'>; Drop N items
 (fun {drop n l} {
   if (== n 0)
     {l}
     {drop (- n 1) (tail l)}
-})
+})</code></pre>
 
-; Split at N
-(fun {split n l} {list (take n l) (drop n l)})
+<pre><code data-language='lispy'>; Split at N
+(fun {split n l} {list (take n l) (drop n l)})</code></pre>
 
-; Element of List
+<pre><code data-language='lispy'>; Element of List
 (fun {elem x l} {
   if (== l nil)
     {false}
@@ -282,7 +282,8 @@ lispy&gt;</code></pre>
 <pre><code data-language='lispy'>(fun {case x &amp; cs} {
   if (== cs nil)
     {error "No Case Found"}
-    {if (== x (fst (fst cs))) {snd (fst cs)} {unpack case (join (list x) (tail cs))}}
+    {if (== x (fst (fst cs))) {snd (fst cs)} {
+      unpack case (join (list x) (tail cs))}}
 })</code></pre>
 
 <p>The syntax for this function becomes really nice and simple. See if you can think up any other control structures or useful functions that you'd like to implement using these sorts of methods.</p>

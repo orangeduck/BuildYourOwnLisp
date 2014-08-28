@@ -63,17 +63,17 @@
 
 <p>If you squint your eyes you could attempt to read the code as if it were the rules we specified above.</p>
 
-<pre><code data-language='c'>/* Build a new parser 'Adjective' to recognize descriptions */
+<pre><code data-language='c'>/* Build a parser 'Adjective' to recognize descriptions */
 mpc_parser_t* Adjective = mpc_or(4, 
   mpc_sym("wow"), mpc_sym("many"),
   mpc_sym("so"),  mpc_sym("such")
 );
 
-/* Build a new parser 'Noun' to recognize things */
+/* Build a parser 'Noun' to recognize things */
 mpc_parser_t* Noun = mpc_or(5,
   mpc_sym("lisp"), mpc_sym("language"),
-  mpc_sym("c"),    mpc_sym("book"),
-  mpc_sym("build")
+  mpc_sym("book"),mpc_sym("build"), 
+  mpc_sym("c")
 );
 </code></pre>
 
@@ -85,7 +85,8 @@ mpc_parser_t* Noun = mpc_or(5,
 
 <p>To define <code>Phrase</code> we can reference our existing parsers. We need to use the function <code>mpc_and</code>, that specifies one thing is required then another. As input we pass it <code>Adjective</code> and <code>Noun</code>, our previously defined parsers. This function also takes the arguments <code>mpcf_strfold</code> and <code>free</code>, which say how to join or delete the results of these parsers. Ignore these arguments for now.</p>
 
-<pre><code data-language='c'>mpc_parser_t* Phrase = mpc_and(2, mpcf_strfold, Adjective, Noun, free);</code></pre>
+<pre><code data-language='c'>mpc_parser_t* Phrase = mpc_and(2, mpcf_strfold, 
+  Adjective, Noun, free);</code></pre>
 
 <p>To define <em>Doge</em> we must specify that <em>zero or more</em> of some parser is required. For this we need to use the function <code>mpc_many</code>. As before, this function requires the special variable <code>mpcf_strfold</code> to say how the results are joined together, which we can ignore.</p>
 
@@ -116,11 +117,13 @@ mpc_parser_t* Phrase    = mpc_new("phrase");
 mpc_parser_t* Doge      = mpc_new("doge");
 
 mpca_lang(MPCA_LANG_DEFAULT,
-  "                                                                     \
-    adjective : \"wow\" | \"many\" | \"so\" | \"such\";                 \
-    noun      : \"lisp\" | \"language\" | \"c\" | \"book\" | \"build\"; \
-    phrase    : &lt;adjective&gt; &lt;noun&gt;;                                     \
-    doge      : &lt;phrase&gt;*;                                              \
+  "                                           \
+    adjective : \"wow\" | \"many\"            \
+              |  \"so\" | \"such\";           \
+    noun      : \"lisp\" | \"language\"       \
+              | \"book\" | \"build\" | \"c\"; \
+    phrase    : &lt;adjective&gt; &lt;noun&gt;;           \
+    doge      : &lt;phrase&gt;*;                    \
   ",
   Adjective, Noun, Phrase, Doge);
 
@@ -140,7 +143,7 @@ mpc_cleanup(4, Adjective, Noun, Phrase, Doge);
 <table class='table'>
   <tr><td><code>"ab"</code></td><td>The string <code>ab</code> is required.</td></tr>
   <tr><td><code>'a'</code></td><td>The character <code>a</code> is required.</td></tr>
-  <tr><td><code>'a' 'b'</code></td><td>First <code>'a'</code> is required, then <code>'b'</code> is required..</td></tr>
+  <tr><td><code>'a' 'b'</code></td><td>First <code>'a'</code> is required, then <code>'b'</code> is required.</td></tr>
   <tr><td><code>'a' | 'b'</code></td><td>Either <code>'a'</code> is required, or <code>'b'</code> is required.</td></tr>
   <tr><td><code>'a'*</code></td><td>Zero or more <code>'a'</code> are required.</td></tr>
   <tr><td><code>'a'+</code></td><td>One or more <code>'a'</code> are required.</td></tr>
