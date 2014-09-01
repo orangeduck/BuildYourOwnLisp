@@ -36,6 +36,14 @@ titles = [
     'Bonus Projects &bull; Chapter 16'
 ]
 
+sources = [
+    (), (), (), (), (), (), (), (),
+    (), ('hello_world.c', ), (),
+    ('prompt_unix.c', 'prompt_windows.c', 'prompt.c'), ('doge_code.c', 'doge_grammar.c'),
+    ('parsing.c', ), ('evaluation.c', ), ('error_handling.c',), ('s_expressions.c',), ('q_expressions.c',),
+    ('variables.c',), ('functions.c',), ('conditionals.c',), ('strings.c',), ('prelude.lspy',), (),
+]
+
 header = """
 <!DOCTYPE html>
 <html>
@@ -121,18 +129,69 @@ app.logger.addHandler(handler)
 
 """ Page """
 
+code_header = """
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" data-parent="#accordion" href="#collapse%s">
+          %s
+        </a>
+      </h4>
+    </div>
+    <div id="collapse%s" class="panel-collapse collapse">
+      <div class="panel-body">
+"""
+
+code_footer = """
+      </div>
+    </div>
+  </div>
+"""
+
+def code_html(codes):
+    
+    string = ('<div class="panel-group alert alert-warning" id="accordion">\n'
+              '  <div class="panel panel-default">')
+    
+    for num, code in zip(('One', 'Two', 'Three', 'Four', 'Five'), codes):
+        
+        string += code_header % (num, code, num)
+        
+        if code.endswith('.lspy'):
+            string += '<pre><code data-language=\'lispy\'>'
+        else:
+            string += '<pre><code data-language=\'c\'>'
+        
+        path = os.path.join(os.path.split(__file__)[0], 'src', code)
+        
+        with open(path, 'r') as f:
+            contents = f.read()
+            contents = contents.replace('&', '&amp;')
+            contents = contents.replace('<', '&lt;')
+            contents = contents.replace('>', '&gt;')
+            string += contents
+        
+        string = string.rstrip() + '</code></pre>'
+        string += code_footer + '\n\n'
+    
+    string += '</div>\n  </div>'
+
+    return string
+    
 @app.route('/<page>')
 def route_page(page):
     page = page + '.html'
     if not page in pages: page = '404.html'
     path = os.path.join(os.path.split(__file__)[0], page)
     
-    title = titles[pages.index(page)]
+    index = pages.index(page)
+    title = titles[index]
+    codes = sources[index]
     
     contents = cache.get("lispy-" + path)
     if contents is None:
         contents = open(path, 'r').read()
-        contents = (header % title) + contents + footer
+        contents = (header % title) + contents.replace('<references />', code_html(codes)) + footer
         cache.set("lispy-" + path, contents, timeout=5*60)
         
     return contents
@@ -234,5 +293,5 @@ def route_paypal():
 """ Main """
     
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
 
