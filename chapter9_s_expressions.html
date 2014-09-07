@@ -8,7 +8,7 @@
   <p><small>ALL CAPS &bull; SO RIGHT YET SO WRONG.</small></p>
 </div>
 
-<p>Lisps are famous for having little distinction between data and code. They use the same structures to represent both. This allows them to do many powerful things which other languages cannot do. If we want this power for our programming language we're going to have to separate out the process of <em>reading</em> in input, and <em>evaluating</em> that input we have stored.</p>
+<p>Lisps are famous for having little distinction between data and code. They use the same structures to represent both. This allows them to do many powerful things which other languages cannot do. If we want this power for our programming language we're going to have to separate out the process of <em>reading</em> in input, and <em>evaluating</em> the input we have stored.</p>
 
 <p>The final result of this chapter will only differ slightly in behaviour from the previous chapter. This is because we are going to spend time changing how things work internally. This is called <em>re-factoring</em> and it will make our life a lot easier later on. Like preparation for a meal, just because we're not putting food onto plates it doesn't mean we're wasting time. Sometimes the anticipation is even better than eating!</p>
 
@@ -23,7 +23,7 @@
 
 <p>The reason we need pointers in C is because of how function calling works. When you call a function in C the arguments are always passed <em>by value</em>. This means <em>a copy</em> of them is passed to the function you call. This is true for <code>int</code>, <code>long</code>, <code>char</code>, and user defined <code>struct</code> types such as <code>lval</code>. Most of the time this is great but occasionally it can cause issues.</p>
 
-<p>A common problem is if we have a large struct containing many other sub structs we wish to pass around. Every time we call a function we must create another copy of it. Suddenly the amount of data that needs to be copied around just to call a function can become huge!</p>
+<p>A common problem occurs when we have a large struct containing many other sub structs we wish to pass around. Every time we call a function we must create another copy of it. Suddenly the amount of data that needs to be copied around just to call a function can become huge!</p>
 
 <p>A second problem is this. When we define a <code>struct</code>, it is always a fixed size. It has a limited number of fields, and each of these fields must be a struct which itself is limited in size. If I want to call a function with just <em>a list of things</em>, where the number of <em>things</em> varies from call to call, clearly I can't use a <code>struct</code> to do this.</p>
 
@@ -31,9 +31,9 @@
 
 <p>In this case, all the data in the computer, including the structs and variables used in the currently running program, start at some index in this huge list. If, rather than copying the data itself to a function, we instead copy a number representing the <em>index</em> at where this data starts, the function being called can look up any amount of data it wants.</p>
 
-<p>By using <em>addresses</em> instead of the actual data, we can allow a function to access and modify some location in memory without having to copy any data. Functions can also use pointers to do other cool stuff, like output data to some address given as input.</p>
+<p>By using <em>addresses</em> instead of the actual data, we can allow a function to access and modify some location in memory without having to copy any data. Functions can also use pointers to do other stuff, like output data to some address given as input.</p>
 
-<p>Because the total size of computer memory is fixed, the number of bytes needed to represent an address is always the same. But if we keep track of it, the number of bytes the address points to can grow and shrink. This means we can create a variable sized data-structure and still sort of <em>pass</em> it to a function, which can inspect and modify it.</p>
+<p>Because the total size of computer memory is fixed, the number of bytes needed to represent an address is always the same. But if we keep track of it, the number of bytes the address points to can grow and shrink. This means we can create a variable sized data-structure and still <em>pass</em> it to a function, which can inspect and modify it.</p>
 
 <p>So a pointer is just a number. A number representing the starting index of some data in memory. The type of the pointer hints to us, and the compiler, what type of data might be accessible at this location.</p>
 
@@ -46,7 +46,7 @@
 
 <h2>The Stack &amp; The Heap</h2> <hr/>
 
-<p>I said that memory can be visualized of as one long list of bytes. Actually it is better to imagine it split into two sections. These sections are called <em>The Stack</em> and <em>The Heap</em>.</p>
+<p>I said that memory can be visualised of as one long list of bytes. Actually it is better to imagine it split into two sections. These sections are called <em>The Stack</em> and <em>The Heap</em>.</p>
 
 <p>Some of you may have heard tales of these mysterious locations, such as <em>"the stack grows down but the heap grows up"</em>, or <em>"there can be many stacks, but only one heap"</em>. These sorts of things don't matter much. Dealing with the stack and the heap in C can be complex, but it doesn't have to be a mystery. In essence they are just two sections of memory used for two different tasks.</p>
 
@@ -109,7 +109,7 @@ mpca_lang(MPCA_LANG_DEFAULT,
 
 <pre><code data-language='c'>enum { LVAL_ERR, LVAL_NUM, LVAL_SYM, LVAL_SEXPR };</code></pre>
 
-<p>S-Expressions are variable length <em>lists</em> of other values. As we learnt at the beginning of this chapter we can't create variable length structs, so we are going to need to use a pointer. We are going to create a pointer field <code>cell</code> which points to a location where we store a list of <code>lval*</code>. That is pointers to the other individual <code>lval</code>. Our field should therefore be a double pointer type <code>lval**</code>. A <em>pointer to <code>lval</code> pointers</em>. We will also need to keep track of how many <code>lval*</code> are in this list, so we add an extra field <code>count</code> to record this.</p> 
+<p>S-Expressions are variable length <em>lists</em> of other values. As we learnt at the beginning of this chapter we can't create variable length structs, so we are going to need to use a pointer. We are going to create a pointer field <code>cell</code> which points to a location where we store a list of <code>lval*</code>. More specifically pointers to the other individual <code>lval</code>. Our field should therefore be a double pointer type <code>lval**</code>. A <em>pointer to <code>lval</code> pointers</em>. We will also need to keep track of how many <code>lval*</code> are in this list, so we add an extra field <code>count</code> to record this.</p> 
 
 <p>To represent symbols we're going to use a string. We're also going to change the representation of errors to a string. This means we can store a unique error message rather than just an error code. This will make our error reporting better and more flexible, and we can get rid of the original error <code>enum</code>. Our updated <code>lval</code> struct looks like this.</p>
 
@@ -127,9 +127,9 @@ mpca_lang(MPCA_LANG_DEFAULT,
 <div class="alert alert-warning">
   <p><strong>Are there ever pointers to pointers to pointers?</strong></p>
 
-  <p>There is an old programming joke (and by <em>programming joke</em> I mean <em>silly anecdote</em>), which says you can rate C programmers by how many stars are on their pointers.</p>
+  <p>There is an old programming joke which says you can rate C programmers by how many stars are on their pointers.</p>
 
-  <p>Beginners program might only use <code>char*</code> or the odd <code>int*</code>, so they were called <em>one star programmer</em>. Most intermediate programs contain double pointer types such as <code>lval**</code>. These programmers are therefore called <em>two star programmers</em>. To spot a triple pointer is something special. You would be viewing the work of someone grand and terrible, writing code not meant to be read with mortal eyes. As such being called a <em>three star programmer</em> is rarely a compliment.</p>
+  <p>Beginner's programs might only use <code>char*</code> or the odd <code>int*</code>, so they were called <em>one star programmers</em>. Most intermediate programs contain double pointer types such as <code>lval**</code>. These programmers are therefore called <em>two star programmers</em>. To spot a triple pointer is something special. You would be viewing the work of someone grand and terrible, writing code not meant to be read with mortal eyes. As such being called a <em>three star programmer</em> is rarely a compliment.</p>
   
   <p>As far as I know, a quadruple pointer has never been seen in the wild.</p>
 </div>
@@ -137,14 +137,14 @@ mpca_lang(MPCA_LANG_DEFAULT,
 <div class="alert alert-warning">
   <p><strong>What is that <code>struct</code> keyword doing there?</strong></p>
 
-  <p>Our new definition of <code>lval</code> needs to contain a reference to itself. This means we have to slightly change how it is defined. Before we open the curly brackets we can put the name of the struct, and then refer to this inside using <code>struct lval</code>. Even though a struct can refer to its own type, it must only contain pointers to its own type, not its own type directly. Otherwise the size of the struct would refer to itself, and grow infinite in size when you tried to calculate it!</p>
+  <p>Our new definition of <code>lval</code> needs to contain a reference to itself. This means we have to slightly change how it is defined. Before we open the curly brackets we can put the name of the struct, and then refer to this inside the definition using <code>struct lval</code>. Even though a struct can refer to its own type, it must only contain pointers to its own type, not its own type directly. Otherwise the size of the struct would refer to itself, and grow infinite in size when you tried to calculate it!</p>
 </div>
 
 <h2>Constructors &amp; Destructors</h2> <hr/>
 
 <p>We can change our <code>lval</code> construction functions to return pointers to an <code>lval</code>, rather than one directly. This will make keeping track of <code>lval</code> variables easier. For this we need to use <code>malloc</code> with the <code>sizeof</code> function to allocate enough space for the <code>lval</code> struct, and then to fill in the fields with the relevant information using the arrow operator <code>-&gt;</code>.</p>
 
-<p>When we construct an <code>lval</code> its fields may contain pointers to other things that have been allocated on the heap. This means we need to be careful. Whenever we are done with an <code>lval</code> we also need to delete the things it points to on the heap. We will have to make a rule to ourselves. Whenever we free the memory allocated for an <code>lval</code>, we also free all the things it points to.</p>
+<p>When we construct an <code>lval</code> its fields may contain pointers to other things that have been allocated on the heap. This means we need to be careful. Whenever we are finished with an <code>lval</code> we also need to delete the things it points to on the heap. We will have to make a rule for ourselves. Whenever we free the memory allocated for an <code>lval</code>, we also free all the things it points to.</p>
 
 <pre><code data-language='c'>/* Construct a pointer to a new Number lval */ 
 lval* lval_num(long x) {
@@ -286,9 +286,9 @@ lval* lval_sexpr(void) {
 
 <h2>Printing Expressions</h2> <hr/>
 
-<p>We are so close to trying out all of our new changes! We need to modify our print function to print out S-Expressions types. Using this we can double check that the <em>reading</em> phase is working correctly by printing out the S-Expressions we read in and verifying they match those we input.</p>
+<p>We are now so close to trying out all of our new changes. We need to modify our print function to print out S-Expressions types. Using this we can double check that the <em>reading</em> phase is working correctly by printing out the S-Expressions we read in and verifying they match those we input.</p>
 
-<p>To print out S-Expressions we can create another function that loops over all the sub-expressions of an expression and prints these individually separated by spaces, just like how they are input.</p>
+<p>To print out S-Expressions we can create another function that loops over all the sub-expressions of an expression and prints these individually separated by spaces, in the same way they are input.</p>
 
 <pre><code data-language="c">void lval_expr_print(lval* v, char open, char close) {
   putchar(open);
@@ -320,9 +320,9 @@ void lval_println(lval* v) { lval_print(v); putchar('\n'); }</code></pre>
 <div class="alert alert-warning">
   <p><strong>I can't declare these functions because they call each other.</strong></p>
 
-  <p>The <code>lval_expr_print</code> function calls the <code>lval_print</code> function and vice-versa. There is no way we can order them in the source file to resolve this dependency. Instead we need to <em>forward declare</em> one of them. This is declaring a function without giving it a body. It lets other functions call it, while allowing you to define it properly later on. To write a forward declaration write the function definition but instead of the body put a semicolon <code>;</code>. In this example we should put <code>void lval_print(lval* v);</code> somewhere in the source file before <code>lval_expr_print</code>.</p>
+  <p>The <code>lval_expr_print</code> function calls the <code>lval_print</code> function and vice-versa. There is no way we can order them in the source file to resolve this dependency. Instead we need to <em>forward declare</em> one of them. This is declaring a function without giving it a body. It lets other functions call it, while allowing you to define it properly later on. To write a forward declaration, write the function definition but instead of the body put a semicolon <code>;</code>. In this example we should put <code>void lval_print(lval* v);</code> somewhere in the source file before <code>lval_expr_print</code>.</p>
   
-  <p>You'll definitely run into this later, and I won't always alert you about it, so try to remember how to fix it!</p>
+  <p>You'll definitely run into this later, and I won't always alert you to it, so try to remember how to fix it!</p>
 </div>
 
 

@@ -2,7 +2,7 @@
 
 <h2>Doing it yourself</h2> <hr/>
 
-<p>We've come quite far now. Your knowledge of C should be good enough for you to stand on your own feet a little more. If you're feeling confident, this chapter is a perfect opportunity to stretch your wings out, and attempt something on your own. It is a fairly short chapter and essentially consists of adding a couple of new builtin functions to deal with comparison and ordering.</p>
+<p>We've come quite far now. Your knowledge of C should be good enough for you to stand on your own feet a little more. If you're feeling confident, this chapter is a perfect opportunity to stretch your wings out and attempt something on your own. It is a fairly short chapter and essentially consists of adding a couple of new builtin functions to deal with comparison and ordering.</p>
 
 <div class='pull-right alert alert-warning' style="margin: 15px; text-align: center;">
   <img src="/static/img/pug.png" alt="pug" class="img-responsive" width="219px" height="329px"/>
@@ -20,7 +20,7 @@
 
 <p>Therefore our ordering functions are a little like a simplified version of our arithmetic functions. They'll only work on numbers, and we only want them to work on two arguments.</p>
 
-<p>If these error conditions are met the maths is simple, we want to return a number <code>lval</code> either <code>0</code> or <code>1</code> depending on the equality comparison between the two input <code>lval</code>. We can use C's comparison operators to do this. Like our arithmetic functions we'll make use of a single function to do all of the comparisons.</p>
+<p>If these error conditions are met the maths is simple. We want to return a number <code>lval</code> either <code>0</code> or <code>1</code> depending on the equality comparison between the two input <code>lval</code>. We can use C's comparison operators to do this. Like our arithmetic functions we'll make use of a single function to do all of the comparisons.</p>
 
 <p>First we check the error conditions, then we compare the numbers in each of the arguments to get some result. Finally we return this result as a number value.</p>
 
@@ -138,7 +138,7 @@ lval* builtin_ne(lenv* e, lval* a) {
 
 <h2>If Function</h2> <hr/>
 
-<p>To make our comparison operators useful well need an <code>if</code> function. This function is a little like the ternary operation in C. Upon some condition being true it evaluates to one thing, otherwise it evaluates to another.</p>
+<p>To make our comparison operators useful we'll need an <code>if</code> function. This function is a little like the ternary operation in C. Upon some condition being true it evaluates to one thing, and if the condition is false, it evaluates to another.</p>
 
 <p>We can again make use of Q-Expressions to encode a computation. First we get the user to pass in the result of a comparison, then we get the user to pass in two Q-Expressions representing the code to be evaluated upon a condition being either true or false.</p>
 
@@ -166,7 +166,7 @@ lval* builtin_ne(lenv* e, lval* a) {
   return x;
 }</code></pre>
 
-<p>All that remains is for us to register all of these new builtins and we are again ready to go!</p>
+<p>All that remains is for us to register all of these new builtins and we are again ready to go.</p>
 
 <pre><code data-language='c'>/* Comparison Functions */
 lenv_add_builtin(e, "if",    builtin_if);
@@ -203,7 +203,7 @@ lispy&gt; if (== x y) {+ x y} {- x y}
 
 <h2>Recursive Functions</h2> <hr/>
 
-<p>By Introducing conditionals we've actually made our language a lot more powerful. This is because they effectively let us implement recursive functions.</p>
+<p>By introducing conditionals we've actually made our language a lot more powerful. This is because they effectively let us implement recursive functions.</p>
 
 <p>Recursive functions are those which call themselves. We've used these already in C to perform reading in and evaluation of expressions. The reason we require conditionals for these is because they let us test for the situation where we wish to terminate the recursion.</p>
 
@@ -217,7 +217,7 @@ lispy&gt; if (== x y) {+ x y} {- x y}
 
 <p>Just as in C, there is a pleasant symmetry to this sort of recursive function. First we do something for the empty list (<em>the base case</em>). Then if we get something bigger, we take off a chunk such as the head of the list, and do something to it, before combining it with the rest of the thing to which the function has been already applied.</p>
 
-<p>Here is another function for reversing a list. Like before it checks for the empty list, but this time it returns the empty list back. This makes sense. The reverse of the empty list is just the empty list. But if it gets something bigger than the empty list, it reverses the tail, and stick this in front of the head.</p>
+<p>Here is another function for reversing a list. As before it checks for the empty list, but this time it returns the empty list back. This makes sense. The reverse of the empty list is just the empty list. But if it gets something bigger than the empty list, it reverses the tail, and stick this in front of the head.</p>
 
 <pre><code data-language='lispy'>(fun {reverse l} {
   if (== l {})
@@ -225,7 +225,7 @@ lispy&gt; if (== x y) {+ x y} {- x y}
     {join (reverse (tail l)) (head l)}
 })</code></pre>
 
-<p>We're going to use this technique to build lots functions like this, this is because it is going to be the primary way to achieve looping in our language.</p>
+<p>We're going to use this technique to build many functions. This is because it is going to be the primary way to achieve looping in our language.</p>
 
 
 <h2>Reference</h2> <hr/>

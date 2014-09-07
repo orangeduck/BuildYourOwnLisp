@@ -3,9 +3,9 @@
 
 <h2>Only the Beginning</h2> <hr/>
 
-<p>Although we've done a lot with our Lisp, it is still some way off from a fully complete, production strength programming language. If you tried to use it for any sufficiently large project there are a number of issues you would eventually run into, and improvements you'd have to make. Solving these problems would be what would bring it more into the scope of a fully fledged programming language.</p>
+<p>Although we've done a lot with our Lisp, it is still some way off from a fully complete, production-strength programming language. If you tried to use it for any sufficiently large project there are a number of issues you would eventually run into and improvements you'd have to make. Solving these problems would be what would bring it more into the scope of a fully fledged programming language.</p>
 
-<p>Here are some of these issues you would likely encounter, potential solutions to these problems, and some other fun ideas for other improvements too. Some may take a few hundred lines of code, others a few thousand. The choice of what to tackle is up to you. If you've become fond of your language you may enjoy doing some of these projects.</p>
+<p>Here are some of these issues you would likely encounter, potential solutions to these problems, and some other fun ideas for other improvements. Some may take a few hundred lines of code, others a few thousand. The choice of what to tackle is up to you. If you've become fond of your language you may enjoy doing some of these projects.</p>
 
 
 <h2>Native Types</h2> <hr/>
@@ -38,7 +38,7 @@
 
 <p>One essential part of bootstrapping a language is to give it proper abilities for opening, reading, and writing files. This means wrapping all the C functions such as <code>fread</code>, <code>fwrite</code>, <code>fgetc</code>, etc in Lisp equivalents. This is a fairly straight forward task, but does require writing quite a large number of wrapper functions. This is why we've not done it for our language so far.</p>
 
-<p>On a similar note it would be great to give our language access to whatever operating systems calls are appropriate. We should give it the ability to change directory, list files in a directory and that sort of thing. This is an easy task but again requires a lot of wrapping of C functions. It is essential for any real practical use of this language as something like a scripting language.</p>
+<p>On a similar note it would be great to give our language access to whatever operating systems calls are appropriate. We should give it the ability to change directory, list files in a directory and that sort of thing. This is an easy task but again requires a lot of wrapping of C functions. It is essential for any real practical use of this language as a scripting language.</p>
 
 <p>People who wish to make use of their language for doing simple scripting tasks and string manipulation may be interested in implementing this project.</p>
 
@@ -47,16 +47,16 @@
 
 <p>Many other Lisps allow you to write things like <code>(def x 100)</code> to define the value <code>100</code> to <code>x</code>. In our lisp this wouldn't work because it would attempt to evaluate the <code>x</code> to whatever value was stored as <code>x</code> in the environment. In other Lisps these functions are called <em>macros</em>, and when encountered they stop the evaluation of their arguments, and manipulate them un-evaluated. They let you write things that look like normal function calls, but actually do complex and interesting things.</p>
 
-<p>These are kind of a fun thing to have in a language. They make it so you can add a little bit of <em>magic</em> to some of the workings. In many cases this can make syntax nicer or allow a user to not repeat themselves.</p>
+<p>These are fun thing to have in a language. They make it so you can add a little bit of <em>magic</em> to some of the workings. In many cases this can make syntax nicer or allow a user to not repeat themselves.</p>
 
-<p>Personally I like how our language handles things like <code>def</code> and <code>if</code> without resorting to macros, but if you dislike how it works currently, and want it to be more similar to conventional Lisps, this might be something you are interested in implementing.</p>
+<p>I like how our language handles things like <code>def</code> and <code>if</code> without resorting to macros, but if you dislike how it works currently, and want it to be more similar to conventional Lisps, this might be something you are interested in implementing.</p>
 
 
 <h2>Variable Hashtable</h2> <hr/>
 
 <p>At the moment when we lookup variable names in our language we just do a linear search over all of the variables in the environment. This gets more and more inefficient the more variables we have defined.</p>
 
-<p>A more efficient way to do this is to implement a <em>Hash Table</em>. This technique converts the variable name to some integer and uses this to index into an array of a known size to find the value associated with this symbol. This is a really important data structure in programming and will crop up everywhere because of its fantastic performance under heavy loads.</p>
+<p>A more efficient way to do this is to implement a <em>Hash Table</em>. This technique converts the variable name to an integer and uses this to index into an array of a known size to find the value associated with this symbol. This is a really important data structure in programming and will crop up everywhere because of its fantastic performance under heavy loads.</p>
 
 <p>Anyone who is interested in learning more about data structures and algorithms would be smart to take a shot at implementing this data structure or one of its variations.</p> 
 
@@ -67,7 +67,7 @@
 
 <p>If we wish to reduce this overhead we need to lower the number of calls to <code>malloc</code>. One method of doing this is to call <code>malloc</code> once at the beginning of the program, allocating a large pool of memory. We should then replace all our <code>malloc</code> calls with calls to some function that slices and dices up this memory for use in the program. This means that we are emulating some of the behaviour of the operating system, but in a faster local way. This idea is called <em>memory pool allocation</em> and is a common technique used in game development, and other performance sensitive applications.</p>
 
-<p>This can be tricky to implement correctly, but conceptually does not need to be complex. If you want a quick method for getting large gains in performance looking into this might interest you.</p>
+<p>This can be tricky to implement correctly, but conceptually does not need to be complex. If you want a quick method for getting large gains in performance, looking into this might interest you.</p>
 
 
 <h2>Garbage Collection</h2> <hr/>
@@ -79,7 +79,7 @@
   <p><small>Garbage Collection &bull; Pick up that can.</small></p>
 </div>
 
-<p>If we store pointers to values, rather than copies, we need to ensure that the data pointed to is not deleted before some other value tries to make use of it. We want to deleted it when there are no longer any references to it. One method to do this, called <em>Mark and Sweep</em>, is to monitor those values that are in the environment, as well as every value that has been allocated. When a variable is put into the environment it, and everything it references, is <em>marked</em>. Then, when we wish to free memory, we can then iterate over every allocation, and delete any that are not marked.</p>
+<p>If we store pointers to values, rather than copies, we need to ensure that the data pointed to is not delete before some other value tries to make use of it. We want to deleted it when there are no longer any references to it. One method to do this, called <em>Mark and Sweep</em>, is to monitor those values that are in the environment, as well as every value that has been allocated. When a variable is put into the environment it, and everything it references, is <em>marked</em>. Then, when we wish to free memory, we can then iterate over every allocation, and delete any that are not marked.</p>
 
 <p>This is called <em>Garbage Collection</em> and is an integral part to many programming languages. As with pool allocation, implementing a <em>Garbage Collector</em> does not need to be complicated, but it does need to be done carefully, in particularly if you wish to make it efficient. Implementing this would be essential to making this language practical for working with large amounts of data. A particularly good tutorial on implementing a garbage collector in C can be found <a href="http://journal.stuffwithstuff.com/2013/12/08/babys-first-garbage-collector/">here</a>.</p>
 
@@ -88,7 +88,7 @@
 
 <h2>Tail Call Optimisation</h2> <hr/>
 
-<p>Our programming language uses <em>recursion</em> to do its looping. This is conceptually a really neat way to do it, but practically it is quite poor. Recursive functions call themselves to collect all of the partial results of a computation, and only then combine all the results together. This is a wasteful way of doing computation when partial results can be accumulated as some total over a loop. This is particularly problematic for loops that are intended to run for many, or infinite, iterations.</p>
+<p>Our programming language uses <em>recursion</em> to do its looping. This is conceptually a really clever way to do it, but practically it is quite poor. Recursive functions call themselves to collect all of the partial results of a computation, and only then combine all the results together. This is a wasteful way of doing computation when partial results can be accumulated as some total over a loop. This is particularly problematic for loops that are intended to run for many, or infinite, iterations.</p>
 
 <p>Some recursive functions can be automatically converted to corresponding <code>while</code> loops, which accumulate totals step by step, rather than altogether. This automatic conversion is called <em>tail call optimisation</em> and is an essential optimisation for programs that do a lot of looping using recursion.</p>
 
@@ -99,7 +99,7 @@
 
 <p>When our language tries to lookup a variable that has been undefined it throws an error. It would be better if it could tell us which variables are undefined before evaluating the program. This would let us avoid typos and other annoying bugs. Finding these issues before the program is run is called <em>lexical scoping</em>, and uses the rules for variable definition to try and infer which variables are defined and which aren't at each point in the program, without doing any evaluation.</p>
 
-<p>This could be a difficult task to get exactly right, but should be interesting to anyone who wants to make their programming language more safe to use, and less bug-prone.</p>
+<p>This could be a difficult task to get exactly right, but should be interesting to anyone who wants to make their programming language safer to use, and less bug-prone.</p>
 
 
 <div class='pull-right alert alert-warning' style="margin: 15px; text-align: center;">
@@ -116,7 +116,7 @@
 
 <h2>Conclusion</h2> <hr/>
 
-<p>Many thanks for following along with this book. I hope you've found something of interest in its pages. If you did enjoy it please tell your friends about it! If you are going to continue developing your language then best of luck and I hope you learn many more cool things about C, programming languages, and computer science.</p>
+<p>Many thanks for reading this book. I hope you've found something of interest in its pages. If you did enjoy it please tell your friends about it. If you are going to continue developing your language then best of luck and I hope you learn many more things about C, programming languages, and computer science.</p>
 
 <p>Most of all I hope you've had fun building your own Lisp. Until next time!</p>
 

@@ -3,20 +3,6 @@
 
 <h2>Overview</h2> <hr/>
 
-<!--
-<div class='pull-right alert alert-warning' style="margin: 15px; text-align: center;">
-  <img src="/static/img/crash.png" alt="crash"/>
-  <p><small>Crash &bull; of course</small></p>
-</div>
--->
-
-<!--
-<div class='pull-right alert alert-warning' style="margin: 15px; text-align: center;">
-  <img src="/static/img/breakfast.png" alt="breakfast"/>
-  <p><small>Fried Breakfast &bull; The basics in life.</small></p>
-</div>
--->
-
 <div class='pull-right alert alert-warning' style="margin: 15px; text-align: center;">
   <img src="/static/img/programs.png" alt="programs" class="img-responsive" width="251px" height="410px"/>
   <p><small>Programs &bull; Useful for the theatre.</small></p>
@@ -24,7 +10,7 @@
 
 <p>In this chapter I've prepared a quick overview of the basic features of C. There are very few <em>features</em> in C, and the syntax is relatively simple. But this doesn't mean it is easy. All the depth hides below the surface. Because of this we're going to cover the <em>features</em> and <em>syntax</em> fairly quickly now, and see them in greater depth as we continue.</p>
 
-<p>The goal of this chapter is get everyone on the same page. People totally new to C should therefore read it in some consideration, and take some time over it, while those with some existing experience may find it easier to skim and return to later as required.</p>
+<p>The goal of this chapter is to get everyone on the same page. People totally new to C should therefore take some time over it, while those with some existing experience may find it easier to skim and return to later as required.</p>
 
 
 <h2>Programs</h2> <hr/>
@@ -66,7 +52,7 @@
 
 <h2>Function Declarations</h2> <hr/>
 
-<p>A Function is a computation that manipulates variables, and optionally changes the state of the program. It takes as input some variables and returns some single variable as output.</p>
+<p>A function is a computation that manipulates variables, and optionally changes the state of the program. It takes as input some variables and returns some single variable as output.</p>
 
 <p>To declare a function we write the type of the variable it returns, the name of the function, and then in parenthesis a list of the variables it takes as input , separated by commas. The contents of the function are put inside curly brackets <code>{}</code>, and lists all of the statements the function executes, terminated by semicolons <code>;</code>. A <code>return</code> statement is used to let the function finish and output a variable.</p>
 
@@ -119,7 +105,7 @@ float length = sqrt(p.x * p.x + p.y * p.y);
 
 <h2>Strings</h2> <hr/>
 
-<p>In C strings are represented by the pointer type <code>char*</code>. Under the hood they are stored as a list of characters, where the final character is a special character called the <em>null terminator</em>. Strings are a complicated, and important part of C, which we'll learn to use effectively in the next few chapters.</p>
+<p>In C strings are represented by the pointer type <code>char*</code>. Under the hood they are stored as a list of characters, where the final character is a special character called the <em>null terminator</em>. Strings are a complicated and important part of C, which we'll learn to use effectively in the next few chapters.</p>
 
 <p>Strings can also be declared literally by putting text between quotation marks. We used this in the previous chapter with our string <code>"Hello, World!"</code>. For now, remember that if you see <code>char*</code>, you can read it as a <em>string</em>.</p> 
 

@@ -5,7 +5,7 @@
 
 <p>A programming language is very similar to a real language. There is a structure behind it, and some rules which dictate what is, and isn't, a valid thing to say. When we read and write natural language, we are unconsciously learning these rules, and the same is true for programming languages. We can utilise these rules to understand others, and generate our own speech, or code.</p>
 
-<p>In the 1950s the linguist <em>Noam Chomsky</em> formalised a number of <a href="http://en.wikipedia.org/wiki/Chomsky_hierarchy">important observations</a> about languages. Many of these form the basis of our understanding of language today. One of these was the observation that natural languages are built up of recursive and repeated substructures.</p>
+<p>In the 1950s the linguist Noam Chomsky formalised a number of <a href="http://en.wikipedia.org/wiki/Chomsky_hierarchy">important observations</a> about languages. Many of these form the basis of our understanding of language today. One of these was the observation that natural languages are built up of recursive and repeated substructures.</p>
 
 <div class='pull-left alert alert-warning' style="margin: 15px; text-align: center;">
   <img src="/static/img/cat.png" alt="cat" class="img-responsive" width="227px" height="246px"/>
@@ -34,25 +34,25 @@
 
 <p>&rsaquo; <code>if (x > 5) { <strong>if (x > 10) { return x; }</strong> }</code></p>
 
-<p>The consequence of this observation by <em>Noam Chomsky</em> was important. It meant that although there is an infinite number of different things that can be said, or written down, in a particular language; it is still possible to process and understand all of them, with a finite number of these re-write rules. The name given to a set of these re-write rules is a <em>grammar</em>.</p>
+<p>The consequence of this observation by NoamChomsky was important. It meant that although there is an infinite number of different things that can be said, or written down in a particular language. It is still possible to process and understand all of them with a finite number of re-write rules. The name given to a set of re-write rules is a <em>grammar</em>.</p>
 
-<p>We can describe re-write rules in a number of ways. One way is textual. We could say something like, "a <em>sentence</em> must contain a <em>verb phrase</em>", or "a <em>verb phrase</em> can be either a <em>verb</em> or, an <em>adverb</em> and a <em>verb</em>". This method is good for humans but it is too vague for computers to understand. When programming we need to write down a more formal description of a grammar.</p>
+<p>We can describe re-write rules in a number of ways. One way is textual. We could say something like, "a <em>sentence</em> must be a <em>verb phrase</em>", or "a <em>verb phrase</em> can be either a <em>verb</em> or, an <em>adverb</em> and a <em>verb</em>". This method is good for humans but it is too imprecise for computers to understand. When programming we need to write down a more formal description of a grammar.</p>
 
-<p>To write a programming language such as our Lisp we are going to need to understand grammars. For reading in the user input we need to write a <em>grammar</em> which describes it. Then we can use it along with our user input, to decide if the input is valid. We can also use it to build a structured internal representation, which will make the job of <em>understanding</em> it, and then <em>evaluating</em> it, performing the computations encoded within, much easier.</p>
+<p>To write a programming language such as our Lisp we are going to need to understand grammars. For reading in the user input we need to write a <em>grammar</em> which describes it. Then we can use it along with our user input, to decide if the input is valid. We can also use it to build a structured internal representation, which will make the job of understanding it, and then evaluating it, performing the computations encoded within, much easier.</p>
 
 <p>This is where a library called <code>mpc</code> comes in.</p>
 
 
 <h2>Parser Combinators</h2> <hr/>
 
-<p><code>mpc</code> is a <em>Parser Combinator</em> library written by yours truly. This means it is a library that allows you to build programs that understand and process particular languages. These are known as <em>parsers</em>. There are many different ways of building parsers, but the nice thing about using a <em>Parser Combinator</em> library is that it lets you build <em>parsers</em> easily, just by specifying the <em>grammar</em> ... sort of.</p>
+<p><code>mpc</code> is a <em>Parser Combinator</em> library I have written. This means it is a library that allows you to build programs that understand and process particular languages. These are known as <em>parsers</em>. There are many different ways of building parsers, but the cool thing about using a <em>Parser Combinator</em> library is that it lets you build <em>parsers</em> easily, just by specifying the <em>grammar</em> ... sort of.</p>
 
-<p>Many <em>Parser Combinator</em> libraries actually work by letting you write normal code that <em>looks a bit like</em> a grammar, not by actually specifying a grammar directly. In many situations this is fine, but sometimes it can get clunky and complicated. Luckily for us <code>mpc</code> allows for us to write normal code that just <em>looks like</em> a grammar, <em>or</em> we can use special notation to write a grammar directly!</p>
+<p>Many Parser Combinator libraries actually work by letting you write normal code that <em>looks a bit like</em> a grammar, not by actually specifying a grammar directly. In many situations this is fine, but sometimes it can get clunky and complicated. Luckily for us <code>mpc</code> allows us to write normal code that just looks like a grammar, <em>or</em> we can use special notation to write a grammar directly!</p>
 
 
 <h2>Coding Grammars</h2> <hr/>
 
-<p>So what does code that <em>looks like</em> a grammar..<em>look like</em>? Let us take a look at <code>mpc</code> by trying to write code for a grammar that recognizes <a href="http://knowyourmeme.com/memes/doge">the language of Shiba Inu</a>. More colloquially know as <em>Doge</em>. This language we are going to define as follows.</p>
+<p>So what does code that looks like a grammar..<em>look like</em>? Let us take a look at <code>mpc</code> by trying to write code for a grammar that recognizes <a href="http://knowyourmeme.com/memes/doge">the language of Shiba Inu</a>. More colloquially know as <em>Doge</em>. This language we are going to define as follows.</p>
 
 <p>&rsaquo; An <em>Adjective</em> is either <em>"wow"</em>, <em>"many"</em>, <em>"so"</em> or <em>"such"</em>.</p>
 <p>&rsaquo; A <em>Noun</em> is either <em>"lisp"</em>, <em>"language"</em>, <em>"c"</em>, <em>"book"</em> or <em>"build"</em>.</p>
@@ -61,7 +61,7 @@
 
 <p>We can start by trying to define <em>Adjective</em> and <em>Noun</em>. To do this we create two new parsers, represented by the type <code>mpc_parser_t*</code>, and we store them in the variables <code>Adjective</code> and <code>Noun</code>. We use the function <code>mpc_or</code> to create a parser where one of several options should be used, and the function <code>mpc_sym</code> to wrap our initial strings.</p>
 
-<p>If you squint your eyes you could attempt to read the code as if it were the rules we specified above.</p>
+<p>If you squint you could attempt to read the code as if it were the rules we specified above.</p>
 
 <pre><code data-language='c'>/* Build a parser 'Adjective' to recognize descriptions */
 mpc_parser_t* Adjective = mpc_or(4, 
@@ -80,7 +80,7 @@ mpc_parser_t* Noun = mpc_or(5,
 <div class="alert alert-warning">
   <p><strong>How can I access these <code>mpc</code> functions?</strong></p>
   
-  <p>For now don't worry about compiling or running any of the sample code in this chapter. Just read it and see if you can understand the theory behind grammars. In the next chapter we'll get setup with <code>mpc</code> and use it for a language closer to our Lisp.</p>
+  <p>For now don't worry about compiling or running any of the sample code in this chapter. Just focus on understanding the theory behind grammars. In the next chapter we'll get set up with <code>mpc</code> and use it for a language closer to our Lisp.</p>
 </div>
 
 <p>To define <code>Phrase</code> we can reference our existing parsers. We need to use the function <code>mpc_and</code>, that specifies one thing is required then another. As input we pass it <code>Adjective</code> and <code>Noun</code>, our previously defined parsers. This function also takes the arguments <code>mpcf_strfold</code> and <code>free</code>, which say how to join or delete the results of these parsers. Ignore these arguments for now.</p>
@@ -92,7 +92,7 @@ mpc_parser_t* Noun = mpc_or(5,
 
 <pre><code data-language='c'>mpc_parser_t* Doge = mpc_many(mpcf_strfold, Phrase);</code></pre>
 
-<p>By creating a parser that looks for <em>zero or more</em> occurrences of another parser a cool thing has happened. Our <code>Doge</code> parser accepts inputs of any length. This means its language is <em>infinite</em>. Here are just some examples of possible strings <code>Doge</code> could accept. Just as we discovered in the first section of this chapter we have used a finite number of re-write rules to create an infinite language.</p>
+<p>By creating a parser that looks for <em>zero or more</em> occurrences of another parser an interesting thing has happened. Our <code>Doge</code> parser accepts inputs of any length. This means its language is <em>infinite</em>. Here are just some examples of possible strings <code>Doge</code> could accept. Just as we discovered in the first section of this chapter we have used a finite number of re-write rules to create an infinite language.</p>
 
 <pre><code data-language='c'>"wow book such language many lisp"
 "so c such build such language"
@@ -107,7 +107,7 @@ mpc_parser_t* Noun = mpc_or(5,
 
 <h2>Natural Grammars</h2> <hr/>
 
-<p><code>mpc</code> lets us write grammars in a more natural form too. Rather than using C functions that look less like a grammar, we can specify the whole thing in one long string. When using this method we don't have to worry about how to join or discard inputs, with functions such as <code>mpcf_strfold</code>, or <code>free</code>. All of that is done automatically for us!</p>
+<p><code>mpc</code> lets us write grammars in a more natural form too. Rather than using C functions that look less like a grammar, we can specify the whole thing in one long string. When using this method we don't have to worry about how to join or discard inputs, with functions such as <code>mpcf_strfold</code>, or <code>free</code>. All of that is done automatically for us.</p>
 
 <p>Here is how we would recreate the previous examples using this method.</p>
 
@@ -132,11 +132,11 @@ mpca_lang(MPCA_LANG_DEFAULT,
 mpc_cleanup(4, Adjective, Noun, Phrase, Doge);
 </code></pre>
 
-<p>Without having an exact understanding of the syntax for that long string, it should be obvious how much <em>clearer</em> the grammar is in this format. If we learn what all the special symbols mean we barely have to squint our eyes to read it as one.</p>
+<p>Without having an exact understanding of the syntax for that long string, it should be obvious how much <em>clearer</em> the grammar is in this format. If we learn what all the special symbols mean we barely need to squint.</p>
 
 <p>Another thing to notice is that the process is now in two steps. First we create and name several rules using <code>mpc_new</code> and then we define them using <code>mpca_lang</code>.</p>
 
-<p>The first argument to <code>mpca_lang</code> are the options flags. For this we just use the defaults. The second is a long multi-line string in C. This is the <em>grammar</em> specification. It consists of a number of <em>re-write rules</em>. Each rule has the name of the rule on the left, a colon <code>:</code>, and on the right it's definition terminated with a semicolon <code>;</code>.</p>
+<p>The first argument to <code>mpca_lang</code> are the options flags. For this we just use the defaults. The second is a long multi-line string in C. This is the <em>grammar</em> specification. It consists of a number of <em>re-write rules</em>. Each rule has the name of the rule on the left, a colon <code>:</code>, and on the right its definition terminated with a semicolon <code>;</code>.</p>
 
 <p>The special symbols used to define the rules on the right hand side work as follows.</p>
 
@@ -153,14 +153,14 @@ mpc_cleanup(4, Adjective, Noun, Phrase, Doge);
 <div class="alert alert-warning">
   <p><strong>Sounds familiar...</strong></p>
 
-  <p>Did you notice that the description of what the input string to <code>mpca_lang</code> should look like sort of sounded like I was specifying a grammar? That's because it was! <code>mpc</code> uses itself internally to parse the input you give it to <code>mpca_lang</code>. It does it by specifying a <em>grammar</em> in code using the previous method. How neat is that..</p>
+  <p>Did you notice that the description of what the input string to <code>mpca_lang</code> should look like sounded like I was specifying a grammar? That's because it was. <code>mpc</code> uses itself internally to parse the input you give it to <code>mpca_lang</code>. It does it by specifying a <em>grammar</em> in code using the previous method. How neat is that..</p>
 </div>
 
-<p>Using what is described above verify that what I've written above is equal to what we specified in code.</p>
+<p>Using the table described above verify that what I've written above is equal to what we specified in code.</p>
 
-<p>This method of specifying a grammar is what we are going to use in the following chapters. It might seem overwhelming at first. Grammars can be difficult to understand right away. But as we continue you will become much more familiar with how to create and edit them.</p>
+<p>This method of specifying a grammar is what we are going to use in the following chapters. It might seem overwhelming at first. Grammars can be difficult to understand. But as we continue you will become much more familiar with how to create and edit them.</p>
 
-<p>This chapter is about theory, so if you are going to try some of the bonus marks, don't worry too much about correctness. Thinking in the right mindset is more important. Feel free to invent symbols and notation for certain concepts to make them simpler to write down. Some of the bonus marks also might require cyclic or recursive grammar stuctures, so don't worry if you have to use these!</p>
+<p>This chapter is about theory, so if you are going to try some of the bonus tasks, don't worry too much about correctness. Thinking in the right mindset is more important. Feel free to invent symbols and notation for certain concepts to make them simpler to write down. Some of the bonus task also might require cyclic or recursive grammar stuctures, so don't worry if you have to use these!</p>
 
 
 

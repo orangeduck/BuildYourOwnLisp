@@ -2,35 +2,35 @@
 
 <h2>What is a Function?</h2> <hr/>
 
-<p>Functions are the essence of all programming. Back in the early days of computer science they represented a naive dream. The idea was that we could reduce computation into these smaller and smaller bits of re-usable code. Given enough time, and a proper structure for libraries, eventually we would have written code required for all computational needs. No longer would people have to write their own functions, and programming would consist of an easy job of stitching together components.</p>
+<p>Functions are the essence of all programming. In the early days of computer science they represented a naive dream. The idea was that we could reduce computation into these smaller and smaller bits of re-usable code. Given enough time, and a proper structure for libraries, eventually we would have written code required for all computational needs. No longer would people have to write their own functions, and programming would consist of an easy job of stitching together components.</p>
 
-<p>This dream hasn't come true yet, but it persists, no matter how flawed. Each new programming technique, or paradigm, that comes along shakes up this idea a little. They promise better re-use of code. Better abstractions, and an easier life for all.</p>
+<p>This dream hasn't come true yet, but it persists, no matter how flawed. Each new programming technique or paradigm that comes along shakes up this idea a little. They promise better re-use of code. Better abstractions, and an easier life for all.</p>
 
 <div class='pull-right alert alert-warning' style="margin: 15px; text-align: center;">
   <img src="/static/img/bananas.png" alt="bananas" class="img-responsive" width="369px" height="238px"/>
   <p><small>Bananaphone &bull; Another naive dream.</small></p>
 </div>
 
-<p>In reality what each paradigm delivers is simply <em>different</em> abstractions. There has always been a trade-off. For each higher level of thinking about programming, some piece is thrown away. And this means, no matter how well you decide what to keep and what to leave, occasionally someone will need that piece that has been lost. But through all of this, one way or the other, functions have always persisted, and continually proven to be effective.</p>
+<p>In reality what each paradigm delivers is simply <em>different</em> abstractions. There has always been a trade-off. For each higher level of thinking about programming, some piece is thrown away. And this means, no matter how well you decide what to keep and what to leave, occasionally someone will need that piece that has been lost. But through all of this, one way or the other, functions have always persisted, and have continually proven to be effective.</p>
 
 <p>We've used functions in C, we know what they <em>look like</em>, but we don't know exactly what they <em>are</em>. Here are a few ways to think about them.</p>
 
-<p>One way to think about functions is as description of some computation you want to be performed later. When you define a function it is like saying "when I use <em>this</em> name I want <em>that</em> sort of thing to happen". This is a very practical idea of a function. It is very intuitive, and metaphorical to language. This is the way you would command a human, or animal. Another thing I like about this is that it captures the delayed nature of functions. Functions are defined once, but can be called on repeatedly after.</p>
+<p>One way to think about functions is as description of some computation you want to be performed later. When you define a function it is like saying "when I use <em>this</em> name I want <em>that</em> sort of thing to happen". This is a very practical idea of a function. It is very intuitive, and metaphorical to language. This is the way you would command a human or animal. Another thing I like about this is that it captures the delayed nature of functions. Functions are defined once, but can be called on repeatedly after.</p>
 
-<p>Another way to think about functions is as a black box that takes some input and produces some output. This idea is subtly different from the former. It is more algebraic, and doesn't talk about <em>computation</em> or <em>commands</em>. This idea is a mathematical concept, and is not tied to some particular machine, or language. In some situations this idea is exceptionally useful. It allows us to think about functions without worrying about their internals, or how they are computed exactly. We can then combine and compose them together without worry of something subtle going wrong. This is the core idea behind an abstraction, and is what allows layers of complexity to work together with each other rather than conflict. This idea's strength can also be its downfall. Because it does not mention anything about computation it does not deal with a number of real world concerns. <em>"How long will this function take to run?"</em>, <em>"Is this function efficient?"</em>, <em>"Will it modify the state of my program? If so how?"</em>.</p>
+<p>Another way to think about functions is as a black box that takes some input and produces some output. This idea is subtly different from the former. It is more algebraic, and doesn't talk about <em>computation</em> or <em>commands</em>. This idea is a mathematical concept, and is not tied to some particular machine, or language. In some situations this idea is exceptionally useful. It allows us to think about functions without worrying about their internals, or how they are computed exactly. We can then combine and compose functions together without worry of something subtle going wrong. This is the core idea behind an abstraction, and is what allows layers of complexity to work together with each other rather than conflict. This idea's strength can also be its downfall. Because it does not mention anything about computation it does not deal with a number of real world concerns. <em>"How long will this function take to run?"</em>, <em>"Is this function efficient?"</em>, <em>"Will it modify the state of my program? If so how?"</em>.</p>
 
 <div class='pull-left alert alert-warning' style="margin: 15px; text-align: center;">
   <img src="/static/img/black_box.png" alt="black_box" class="img-responsive" width="294px" height="293px"/>
   <p><small>Black Box &bull; Your typical function.</small></p>
 </div>
 
-<p>A third method is to think of functions as <em>partial computations</em>. Like the Mathematical model they can take some inputs. These values are required before it can complete the computation. This is why it is called <em>partial</em>. But like the computational model, the body of the function consists of a computation specified in some language of commands. These inputs are called <em>unbound variables</em>, and to finish the computation one simply supplies them. Like fitting a cog into a machine which was before spinning aimlessly, this completes all that is needed for the computation to run, and the machine runs. The output of these <em>partial computations</em> is itself a variable with an unknown value. This output can be placed as input to a new function, and so one function relies on another.</p>
+<p>A third method is to think of functions as <em>partial computations</em>. Like the Mathematical model they can take some inputs. These values are required before the function can complete the computation. This is why it is called <em>partial</em>. But like the computational model, the body of the function consists of a computation specified in some language of commands. These inputs are called <em>unbound variables</em>, and to finish the computation one simply supplies them. Like fitting a cog into a machine which previously spinning aimlessly, this completes all that is needed for the computation to run, and the machine runs. The output of these <em>partial computations</em> is itself a variable with an unknown value. This output can be placed as input to a new function, and so one function relies on another.</p>
 
-<p>An advantage of this idea over the Mathematical Model is that we recognize that functions <em>contain computation</em>. We see that when the computation runs, some physical process is going on in the machine. This means we recognize the fact that certain things take time to elapse, or that a function might change the program state, or do anything else we're not sure about!</p>
+<p>An advantage of this idea over the mathematical model is that we recognize that functions <em>contain computation</em>. We see that when the computation runs, some physical process is going on in the machine. This means we recognise the fact that certain things take time to elapse, or that a function might change the program state, or do anything else we're not sure about.</p>
 
 <p>All these ideas are explored in the study of functions, <em>Lambda calculus</em>. This is a field that combines logic, maths, and computer science. The name comes from the Greek letter Lambda, which is used in the representation of <em>binding variables</em>. Using Lambda calculus gives a way of defining, composing and building <em>functions</em> using a simple mathematical notation.</p>
 
-<p>We are going to use all of the previous ideas to add user defined functions to our language. Lisp is already well suited to this sort of playing around, and using these concepts it won't take much work for us to implement functions.</p>
+<p>We are going to use all of the previous ideas to add user defined functions to our language. Lisp is already well suited to this sort of playing around and using these concepts, it won't take much work for us to implement functions.</p>
 
 <p>The first step will be to write a builtin function that can create user defined functions. Here is one idea as to how it can be specified. The first argument could be a list of symbols, just like our <code>def</code> function. These symbols we call the <em>formal arguments</em>, also known as the <em>unbound variables</em>. They act as the inputs to our <em>partial computation</em>. The second argument could be another list. When running the function this is going to be evaluated with our builtin <code>eval</code> function.</p>
 
@@ -163,7 +163,7 @@ break;</code></pre>
 <div class="alert alert-warning">
   <p><strong>Where did <code>LASSERT_NUM</code> and <code>LASSERT_TYPE</code> come from?</strong></p>
 
-  <p>I took the liberty of improving the error reporting macros for this chapter. This task was provided in the bonus marks of the previous chapter. It makes the code so much cleaner that it was hard to ignore!</p>
+  <p>I took the liberty of improving the error reporting macros for this chapter. This task was suggested in the bonus marks of the previous chapter. It makes the code so much cleaner that it was hard to ignore!</p>
 
   <p>If you were planning on completing this task yourself, now might be a good time to do it. Otherwise you can look at the reference code for this chapter to see what approach I took, and integrate that into your code.</p>
 </div>
@@ -329,13 +329,13 @@ lenv_add_builtin(e, "=",   builtin_put);</code></pre>
 
 <p>But this doesn't act correctly when the number of arguments supplied, and the number of formal arguments differ. In this situation it will crash.</p>
 
-<p>Actually this is an interesting case, and leaves us a couple of options. We <em>could</em> just throw an error when the argument count supplied is incorrect, but we can do something more fun. When too few arguments are supplied we could instead bind the first few formal arguments of the function and then return it, leaving the rest unbound.</p>
+<p>Actually this is an interesting case, and leaves us a couple of options. We <em>could</em> just throw an error when the argument count supplied is incorrect, but we can do something that is more fun. When too few arguments are supplied we could instead bind the first few formal arguments of the function and then return it, leaving the rest unbound.</p>
 
 <p>This creates a function that has been <em>partially evaluated</em> and reflects our previous idea of a function being some kind of <em>partial computation</em>. If we start with a function that takes two arguments, and pass in a single argument, we can bind this first argument and return a new function with its first formal argument bound, and its second remaining empty.</p>
 
 <p>This metaphor creates a cute image of how functions work. We can imagine a function at the front of an expression, repeatedly consuming inputs directly to its right. After consuming the first input to its right, if it is full (requires no more inputs), it evaluates and replaces itself with some new value. If instead, it is still it still requires more, it replaces itself with another, more complete function, with one of its variables bound. This process repeats until the final value for the program is created.</p>
 
-<p>So you can imagine functions like a little Pac-Man, not consuming all inputs at once, but iteratively eating inputs to the right, getting bigger and bigger until it is full and explodes to create something new. This isn't actually how we're going to implement it in code, but it is still <em>fun to imagine</em>.</p>
+<p>So you can imagine functions like a little Pac-Man, not consuming all inputs at once, but iteratively eating inputs to the right, getting bigger and bigger until it is full and explodes to create something new. This isn't actually how we're going to implement it in code, but it is still fun to imagine.</p>
 
 <pre><code data-language='c'>lval* lval_call(lenv* e, lval* f, lval* a) {
 
@@ -388,7 +388,7 @@ lenv_add_builtin(e, "=",   builtin_put);</code></pre>
 
 }</code></pre>
 
-<p>The above function does exactly as we explained above, with correct error handling added in too. First it iterates over the passed in arguments attempting to place each one in the environment. Then it checks if the environment is full, and if so evaluates, otherwise returns a copy of itself with some arguments filled.</p>
+<p>The above function does exactly as we explained, with correct error handling added in too. First it iterates over the passed in arguments attempting to place each one in the environment. Then it checks if the environment is full, and if so evaluates, otherwise returns a copy of itself with some arguments filled.</p>
 
 <p>If we update our evaluation function <code>lval_eval_sexpr</code> to call <code>lval_call</code>, we can give our new system a spin.</p>
 
@@ -449,7 +449,7 @@ if (strcmp(sym-&gt;sym, "&amp;") == 0) {
   break;
 }</code></pre>
 
-<p>Suppose when calling the function the user doesn't supply any variable arguments, but only the first named ones. In this case we need to set the symbol following <code>&amp;</code> to the empty list. Just after we delete the argument list, and before we check to see if all the formals have been evaluated add in this special case.</p>
+<p>Suppose when calling the function the user doesn't supply any variable arguments, but only the first named ones. In this case we need to set the symbol following <code>&amp;</code> to the empty list. Just after we delete the argument list, and before we check to see if all the formals have been evaluated, add in this special case.</p>
 
 <pre><code data-language='c'>/* If '&amp;' remains in formal list bind to empty list */
 if (f-&gt;formals-&gt;count &gt; 0 &amp;&amp;
@@ -478,7 +478,7 @@ if (f-&gt;formals-&gt;count &gt; 0 &amp;&amp;
 
 <h3>Function Definition</h3>
 
-<p>Lambdas are clearly a simple and powerful way of defining functions. But the syntax is a little clumsy. There are a lot of brackets and symbols involved. Here is an interesting idea. We can try to write a function that defines a function itself, using some nicer syntax.</p>
+<p>Lambdas are clearly a simple and powerful way of defining functions. But the syntax is a little clumsy. There are a lot of brackets and symbols involved. Here is an interesting idea. We can try to write a function that defines a function itself, using some simpler syntax.</p>
 
 <p>Essentially what we want is a function that can perform two steps at once. First it should create a new function, and then it should define it to some name. Here is the trick. We let the user supply the name and the formal arguments altogether in one list, and then separate these out for them, and use them in the definition. Here is a function that does that. It takes as input some arguments and some body. It takes the head of the arguments to be the function name and the rest to be the formal arguments. It passes the body directly to a lambda.</p>
 
@@ -499,7 +499,7 @@ if (f-&gt;formals-&gt;count &gt; 0 &amp;&amp;
 
 <h3>Currying</h3>
 
-<p>At the moment functions like <code>+</code> take a variable number of arguments. In some situations that's great, but what if we instead had a list of arguments we wished to pass it. In this situation it is rendered somewhat useless.</p>
+<p>At the moment functions like <code>+</code> take a variable number of arguments. In some situations that's great, but what if we had a list of arguments we wished to pass to it. In this situation it is rendered somewhat useless.</p>
 
 <p>Again we can try to create a function to solve this problem. If we can create a list in the format we wish to use for our expression we can use <code>eval</code> to treat it as such. In the situation of <code>+</code> we could append this function to the front of the list and then perform the evaluation.</p>
 
@@ -535,7 +535,7 @@ lispy&gt; add-uncurried 5 6 7
 18
 </code></pre>
 
-<p>Have a play around and see what other interesting and powerful functions you can try to come up with. You might be a bit limited for now. In the next chapter we'll add conditionals which will really start to make our language more complete. But that doesn't mean you won't be able to come up with some other interesting ideas. Our Lisp is really getting richer!</p>
+<p>Have a play around and see what other interesting and powerful functions you can try to come up with. In the next chapter we'll add conditionals which will really start to make our language more complete. But that doesn't mean you won't be able to come up with some other interesting ideas. Our Lisp is getting richer.</p>
 
 
 <h2>Reference</h2> <hr/>

@@ -19,9 +19,9 @@ lispy&gt; / 10 0</code></pre>
 
 <p>At the moment our program can produce syntax errors but it still has no functionality for reporting errors in the evaluation of expressions. We need to build in some kind of error handling functionality to do this. It can be awkward in C, but if we start off on the right track, it will pay off later on when our system gets more complicated.</p>
 
-<p>C programs crashing is a fact of life. If anything goes wrong the operating system kicks them out. They can crash for many different reasons, and in many different ways. You will see at least one <a href="http://en.wikipedia.org/wiki/Heisenbug">Heisenbug</a>.</p>
+<p>C programs crashing is a fact of life. If anything goes wrong the operating system kicks them out. Programs can crash for many different reasons, and in many different ways. You will see at least one <a href="http://en.wikipedia.org/wiki/Heisenbug">Heisenbug</a>.</p>
 
-<p>But there is no magic in how C programs work. If you face a really troublesome bug don't give up or sit and stare at the screen till your eyes bleed. Take this chance to properly learn how to use <code>gdb</code> and <code>valgrind</code>. These will be more weapons in your toolkit, and after the up front investment, save you a lot of time and pain.</p>
+<p>But there is no magic in how C programs work. If you face a really troublesome bug don't give up or sit and stare at the screen till your eyes bleed. Take this chance to properly learn how to use <code>gdb</code> and <code>valgrind</code>. These will be more weapons in your tool-kit, and after the initial investment, save you a lot of time and pain.</p>
 
 <h2>Lisp Value</h2> <hr/>
 
@@ -43,16 +43,16 @@ typedef struct {
 
 <p>You'll notice the type of the fields <code>type</code>, and <code>err</code>, is <code>int</code>. This means they are represented by a single integer number.</p>
 
-<p>The reason we pick <code>int</code> is because we will assign meaning to each integer value, to encode what we require. For example we can make a rule <em>"If <code>type</code> is <code>0</code> then the structure is a Number."</em>, or <em>"If <code>type</code> is <code>1</code> then the structure is an Error."</em> This is a good way of doing things. It is simple and effective.</p>
+<p>The reason we pick <code>int</code> is because we will assign meaning to each integer value, to encode what we require. For example we can make a rule <em>"If <code>type</code> is <code>0</code> then the structure is a Number."</em>, or <em>"If <code>type</code> is <code>1</code> then the structure is an Error."</em> This is a simple and effective way of doing things.</p>
 
 <p>But if we litter our code with stray <code>0</code> and <code>1</code> then it is going to become increasingly unclear as to what is happening. Instead we can use named constants that have been assigned these integer values. This gives the reader an indication as to <em>why</em> one might be comparing a number to <code>0</code> or <code>1</code> and <em>what</em> is meant in this context.</p>
 
-<p>In C this is supported using something called an <code>enum</code>.</p>
+<p>In C this is supported using an <code>enum</code>.</p>
 
 <pre><code data-language='c'>/* Create Enumeration of Possible lval Types */
 enum { LVAL_NUM, LVAL_ERR };</code></pre>
 
-<p>An <code>enum</code> is a declaration of variables which under the hood are automatically assigned integer constant values. Above is how we would declare some enumerated values for the <code>type</code> field.</p>
+<p>An <code>enum</code> is a declaration of variables which under the hood are automatically assigned integer constant values. Above describes how we would declare some enumerated values for the <code>type</code> field.</p>
 
 <p>We also want to declare an enumeration for the <em>error</em> field. We have three error cases in our particular program. There is division by zero, an unknown operator, or being passed a number that is too large to be represented internally using a <code>long</code>. These can be enumerated as follows.</p>
 
@@ -82,7 +82,7 @@ lval lval_err(int x) {
 
 <p>These functions first create an <code>lval</code> called <code>v</code>, and assign the fields before returning it.</p>
 
-<p>Because our <code>lval</code> function can now be one of two things we can no longer just use <code>printf</code> to output it. We will want to do different behaviour depending upon the type of the <code>lval</code> that is given. There is a concise way to do this in C using the <code>switch</code> statement. This takes some value as input and compares it to other known values, known as <em>cases</em>. When the values are equal it executes the code that follows up until the next <code>break</code> statement.</p>
+<p>Because our <code>lval</code> function can now be one of two things we can no longer just use <code>printf</code> to output it. We will want to behave differently depending upon the type of the <code>lval</code> that is given. There is a concise way to do this in C using the <code>switch</code> statement. This takes some value as input and compares it to other known values, known as <em>cases</em>. When the values are equal it executes the code that follows up until the next <code>break</code> statement.</p>
 
 <p>Using this we can build a function that can print an <code>lval</code> of any type like this.</p>
 
@@ -119,7 +119,7 @@ void lval_println(lval v) { lval_print(v); putchar('\n'); }</code></pre>
 
 <p>As well as changing the type signatures we need to change the functions such that they work correctly upon encountering either an <em>error</em> as input, or a <em>number</em> as input.</p>
 
-<p>In our <code>eval_op</code> function, if we encounter an error we should return it right away, and only do computation if both the arguments are numbers. We should modify our code to return an error rather than attempt to divide by zero. This will fix the crash from right at the beginning of this chapter.</p>
+<p>In our <code>eval_op</code> function, if we encounter an error we should return it right away, and only do computation if both the arguments are numbers. We should modify our code to return an error rather than attempt to divide by zero. This will fix the crash described at the beginning of this chapter.</p>
 
 <pre><code data-language='c'>lval eval_op(lval x, char* op, lval y) {
 
@@ -148,7 +148,7 @@ void lval_println(lval v) { lval_print(v); putchar('\n'); }</code></pre>
 
   <p>It works something like this. <code>&lt;condition&gt; ? &lt;then&gt; : &lt;else&gt;</code>. In other words, if the condition is true it returns what follows the <code>?</code>, otherwise it returns what follows <code>:</code>.</p>
 
-  <p>Some people dislike this operator because they believe it makes code unclear. If you are unfamiliar with the ternary operator, initially, you may feel awkward to use it; but once you get to know it there are rarely problems.</p>
+  <p>Some people dislike this operator because they believe it makes code unclear. If you are unfamiliar with the ternary operator, you may initially find it awkward to use; but once you get to know it there are rarely problems.</p>
 </div>
 
 <p>We need to give a similar treatment to our <code>eval</code> function. In this case because we've defined <code>eval_op</code> to robustly handle errors we just need to add the error conditions to our number conversion function.</p>
@@ -182,7 +182,7 @@ void lval_println(lval v) { lval_print(v); putchar('\n'); }</code></pre>
 lval_println(result);
 mpc_ast_delete(r.output);</code></pre>
 
-<p>And we are done! Try running this new program and make sure there are no crashes when dividing by zero!</p>
+<p>And we are done! Try running this new program and make sure there are no crashes when dividing by zero.</p>
 
 <pre><code data-language='lispy'>lispy&gt; / 10 0
 Error: Division By Zero!
@@ -199,15 +199,15 @@ lispy&gt; / 10 2
 
 <p>Some of you who have gotten this far in the book may feel uncomfortable with how it is progressing. You may feel you've managed to follow instructions well enough, but don't have a clear understanding of all of the underlying mechanisms going on behind the scenes.</p>
 
-<p>If this is the case I want to reassure you that you are doing well. If you don't understand the internals it's because I have not explained everything in sufficient depth. This is okay.</p>
+<p>If this is the case I want to reassure you that you are doing well. If you don't understand the internals it's because I may not have explained everything in sufficient depth. This is okay.</p>
 
-<p>To be able to progress and get code to work under these conditions is a really great skill in programming, and if you've made it this far it shows you have it.</p>
+<p>To be able to progress and get code to work under these conditions is a great skill in programming, and if you've made it this far it shows you have it.</p>
 
-<p>In programming we call this <em>plumbing</em>. Roughly speaking this is following instructions to try and tie together a bunch of libraries or components, without fully understanding how they work internally.</p>
+<p>In programming we call this <em>plumbing</em>. Roughly speaking this is following instructions to try to tie together a bunch of libraries or components, without fully understanding how they work internally.</p>
 
 <p>It requires <em>faith</em> and <em>intuition</em>. <em>Faith</em> is required to believe that if the stars align, and every incantation is correctly performed for this magical machine, the right thing will really happen. And <em>intuition</em> is required to work out what has gone wrong, and how to fix things when they don't go as planned.</p>
 
-<p>Unfortunately these can't be taught directly, so if you've made it this far then <em>congratulations!</em> You've made it over a difficult hump, and in the following chapters I promise we'll finish up with the plumbing, and actually start programming that feels fresh and wholesome.</p>
+<p>Unfortunately these can't be taught directly, so if you've made it this far then you've made it over a difficult hump, and in the following chapters I promise we'll finish up with the plumbing, and actually start programming that feels fresh and wholesome.</p>
 
 
 <h2>Reference</h2> <hr/>

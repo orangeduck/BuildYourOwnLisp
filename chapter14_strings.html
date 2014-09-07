@@ -8,9 +8,9 @@
   <p><small>String &bull; How long is it.</small></p>
 </div>
 
-<p>Our Lisp is finally pretty functional. We should be able to write almost any functions we want. We can build some quite complex constructs using it, and even do some cool things that can't be done in lots of other heavyweight and popular languages!</p>
+<p>Our Lisp is finally functional. We should be able to write almost any functions we want. We can build some quite complex constructs using it, and even do some cool things that can't be done in lots of other heavyweight and popular languages;</p>
 
-<p>Every time we update our program and run it again it is getting annoying having to type in again all of our functions. In this chapter we'll add the functionality to load code from a file and run it. This will allow us to start building a standard library up. Along the way we'll also add support for code comments, strings, and printing.</p>
+<p>Every time we update our program and run it again it is annoying having to type in all of our functions. In this chapter we'll add the functionality to load code from a file and run it. This will allow us to start building up a standard library up. Along the way we'll also add support for code comments, strings, and printing.</p>
 
 
 <h2>String Type</h2> <hr/>
@@ -19,8 +19,7 @@
 
 <p>We start, as in other chapters, by adding an entry to our enum and adding an entry to our <code>lval</code> to represent the type's data.</p>
 
-<pre><code data-language='c'>
-enum { LVAL_ERR, LVAL_NUM,   LVAL_SYM, LVAL_STR, 
+<pre><code data-language='c'>enum { LVAL_ERR, LVAL_NUM,   LVAL_SYM, LVAL_STR, 
        LVAL_FUN, LVAL_SEXPR, LVAL_QEXPR };</code></pre>
 
 <pre><code data-language='c'>/* Basic */
@@ -59,7 +58,7 @@ char* str;
 
 <pre><code data-language='c'>case LVAL_STR: return "String";</code></pre>
 
-<p>For <strong>Printing</strong> we need to do a little more. The string we store internally is different to the string we want to print. We want to print a string as a user might input it, using escape characters such as <code>\n</code> to represent a newline.</p>
+<p>For <strong>Printing</strong> we need to do a little more. The string we store internally is different to the string we want to print. We want to print a string as a user might input it, using escape characters such as <code>\n</code> to represent a new line.</p>
 
 <p>We therefore need to escape it before we print it. Luckily we can make use of a <code>mpc</code> function that will do this for us.</p>
 
@@ -84,13 +83,13 @@ char* str;
 
 <h2>Reading Strings</h2> <hr/>
 
-<p>Now we need to add support for parsing strings. As usual this requires first adding a new grammar rule called <code>string</code> and add it to our parser.</p>
+<p>Now we need to add support for parsing strings. As usual this requires first adding a new grammar rule called <code>string</code> and adding it to our parser.</p>
 
 <p>The rule we are going to use that represents a string is going to be the same as for C style strings. This means a string is essentially a series of escape characters, or normal characters, between two quotation marks <code>""</code>. We can specify this as a regular expression inside our grammar string as follows.</p>
 
 <pre><code>string  : /\"(\\\\.|[^\"])*\"/ ;</code></pre>
 
-<p>This looks pretty complicated but makes a lot more sense when explained in parts. It reads like this. A string is a <code>"</code> character, followed by zero or more of either a backslash <code>\\</code> followed by any other character <code>.</code>, or anything that <em>isn't</em> a <code>"</code> character <code>[^\\"]</code>. Finally it ends with another <code>"</code> character.</p>
+<p>This looks complicated but makes a lot more sense when explained in parts. It reads like this. A string is a <code>"</code> character, followed by zero or more of either a backslash <code>\\</code> followed by any other character <code>.</code>, or anything that <em>isn't</em> a <code>"</code> character <code>[^\\"]</code>. Finally it ends with another <code>"</code> character.</p>
 
 <p>We also need to add a case to deal with this in the <code>lval_read</code> function.</p>
 
@@ -134,7 +133,7 @@ lispy&gt;</code></pre>
 
 <p>Just like in C, we can use comments in inform other people (or ourselves) about what the code is meant to do or why it has been written. In C comments go between <code>/*</code> and <code>*/</code>. Lisp comments, on the other hand, start with <code>;</code> and run to the end of the line.</p>
 
-<p>I attempted to research why Lisps use <code>;</code> for comments, but it appears that the origins of this have been lost in the mists of time. In absence of truth I imagine it as a small rebellion against the imperative languages such as C and Java which use semicolons so shamelessly and frequently to separate/terminate statements. Compared to Lisp all these languages are just comments!</p>
+<p>I attempted to research why Lisps use <code>;</code> for comments, but it appears that the origins of this have been lost in the mists of time. I imagine it as a small rebellion against the imperative languages such as C and Java which use semicolons so shamelessly and frequently to separate/terminate statements. Compared to Lisp all these languages are just comments.</p>
 
 <p>So in lisp a comment is defined by a semicolon <code>;</code> followed by any number of characters that are not newline characters represented by either <code>\r</code> or <code>\n</code>. We can use another regex to define it.</p>
 
@@ -142,7 +141,7 @@ lispy&gt;</code></pre>
 
 <p>As with strings we need to create a new parser and use this to update our language in <code>mpca_lang</code>. We also need to remember to add the parser to <code>mpc_cleanup</code>, and update the first integer argument to reflect the new number of parsers passed in.</p>
 
-<p>Our final grammar now look like this.</p>
+<p>Our final grammar now looks like this.</p>
 
 <pre><code data-language='c'>mpca_lang(MPCA_LANG_DEFAULT,
   "                                              \
@@ -192,7 +191,7 @@ mpc_parser_t* Lispy;
 
 <p>Slightly differently to our command prompt, on successfully parsing a file we shouldn't treat it like one expression. When typing into a file we let users list multiple expressions and evaluate all of them individually. To achieve this behaviour we need to loop over each expression in the contents of the file and evaluate it one by one. If there are any errors we should print them and continue.</p>
 
-<p>If there is a parse error instead of chucking it away we're going to extract the message and put it into a error <code>lval</code> which we return. If there are no errors the return value for this builtin can just be the empty expression. The full code for this looks like this.</p>
+<p>If there is a parse error we're going to extract the message and put it into a error <code>lval</code> which we return. If there are no errors the return value for this builtin can just be the empty expression. The full code for this looks like this.</p>
 
 <pre><code data-language='c'>lval* builtin_load(lenv* e, lval* a) {
   LASSERT_NUM("load", a, 1);
@@ -306,7 +305,7 @@ if (argc &gt;= 2) {
   return err;
 }</code></pre>
 
-<p>The final step is to register these as builtins. Now finally we can start building up libraries and writing them to files!</p>
+<p>The final step is to register these as builtins. Now finally we can start building up libraries and writing them to files.</p>
 
 <pre><code data-language='c'>/* String Functions */
 lenv_add_builtin(e, "load",  builtin_load); 
@@ -328,9 +327,9 @@ lispy&gt;
 
 <h2>Finishing Up</h2> <hr/>
 
-<p>This is the last chapter in which we are going to explicitly work on our C implementation of Lisp. The result of this chapter will be the final state of your language implementation while I am still involved.</p>
+<p>This is the last chapter in which we are going to explicitly work on our C implementation of Lisp. The result of this chapter will be the final state of your language implementation.</p>
 
-<p>The final line count should clock in somewhere close to 1000 lines of code. Writing this amount of code is not trivial. If you've made it this far you've written a real program and started on a proper project. The skills you've learnt here should be transferable, and give you the confidence to seek out your own goals and targets. You now have a complex and beautiful program which you can interact and play with. This is something you should be proud of. Go show it off to your parents and friends!</p>
+<p>The final line count should clock in somewhere close to 1000 lines of code. Writing this amount of code is not trivial. If you've made it this far you've written a real program and started on a proper project. The skills you've learnt here should be transferable, and give you the confidence to seek out your own goals and targets. You now have a complex and beautiful program which you can interact and play with. This is something you should be proud of. Go show it off to your friends and family!</p>
 
 <p>In the next chapter we start using our Lisp to build up a standard library of common functions. After that I describe some possible improvements and directions in which the language should be taken. Although we've finished with my involvement this is really this is only the beginning. Thanks for following along, and good luck with whatever C you write in the future!</p>
 

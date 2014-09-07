@@ -26,7 +26,7 @@
 
 <p>The compiler is a program that transforms the C source code into a program your computer can run. The installation process for these is different depending on what operating system you are running.</p>
 
-<p>Compiling and running C programs is also going to require really basic usage of the command line. This I will not cover, so I am going to assume you have at least some familiarity with using the command line. If you are are worried about this then search online for information on using it, relevant to your operating system.</p>
+<p>Compiling and running C programs is also going to require really basic usage of the command line. This I will not cover, so I am going to assume you have at least some familiarity with using the command line. If you are are worried about this then search for <a href="http://cli.learncodethehardway.org/book/">online tutorials</a> on using it, relevant to your operating system.</p>
 
 <p>On <strong>Linux</strong> you can install a compiler by downloading some packages. If you are running Ubuntu or Debian you can install everything you need with the following command <code>sudo apt-get install build-essential</code>. If you are running Fedora or a similar Linux variant you can use this command <code>su -c "yum groupinstall development-tools"</code>.</p>
 
@@ -41,7 +41,7 @@
 
 <pre><code>cc --version</code></pre>
 
-<p>If you get some information about the compiler version echoed back then it should be installed correctly. You are ready to go! If you get any sort of error about an unrecognised or not found command, then it is not ready. You may need to restart the command line or your computer for changes to take effect.</p>
+<p>If you get some information about the compiler version echoed back then it should be installed correctly. You are ready to go! If you get any sort of error message about an unrecognised or not found command, then it is not ready. You may need to restart the command line or your computer for changes to take effect.</p>
 
 
 <h2>Hello World</h2> <hr/>
@@ -62,7 +62,7 @@ int main(int argc, char** argv) {
 </div>
 -->
 
-<p>This may look like a lot of crazy symbols that make very little sense. I'll try to explain it step by step.</p>
+<p>This may initially make very little sense. I'll try to explain it step by step.</p>
 
 <p>In the first line we <em>include</em> what is called a <em>header</em>. This statement allows us to use the functions from <code>stdio.h</code>, the standard input and output library which comes included with C. One of the functions from this library is the <code>puts</code> function you see later on in the program.</p>
 
@@ -77,7 +77,7 @@ int main(int argc, char** argv) {
 
 <pre><code>cc -std=c99 -Wall hello_world.c -o hello_world</code></pre>
 
-<p>This compiles the code in <code>hello_world.c</code>, reporting any warnings, and outputs the program to a new file called <code>hello_world</code>. We use the <code>-std=c99</code> flag to tell the compiler which <em>version</em> or <em>standard</em> of C we are programming with. This lets the compiler ensure our code is standardized, so that people with different operating systems or compilers will be able to use our code.</p>
+<p>This compiles the code in <code>hello_world.c</code>, reporting any warnings, and outputs the program to a new file called <code>hello_world</code>. We use the <code>-std=c99</code> flag to tell the compiler which <em>version</em> or <em>standard</em> of C we are programming with. This lets the compiler ensure our code is standardised, so that people with different operating systems or compilers will be able to use our code.</p>
 
 <p>If successful you should see the output file in the current directory. This can be run by typing <code>./hello_world</code> (or just <code>hello_world</code> on Windows). If everything is correct you should see a friendly <code>Hello, world!</code> message appear.</p>
 
@@ -86,7 +86,7 @@ int main(int argc, char** argv) {
 
 <h2>Errors</h2> <hr/>
 
-<p>If there are some problems with your C program the compilation process may fail. These issues can range from simple syntax errors, to other complicated problems that are hard to understand.</p>
+<p>If there are some problems with your C program the compilation process may fail. These issues can range from simple syntax errors, to other complicated problems that are harder to understand.</p>
 
 <p>Sometimes the error message from the compiler will make sense, but if you are having trouble understanding it try searching online for it. You should see if you can find a concise explanation of what it means, and work out how to correct it. Remember this: there are many people before you who have struggled with exactly the same problems.</p>
 
@@ -99,18 +99,18 @@ int main(int argc, char** argv) {
 
 <p>Sometimes the compiler will compile a program, but when you run it it will crash. Debugging C programs in this situation is hard. It can be an art far beyond the scope of this book.</p>
 
-<p>If you are a beginner, my first port of call for debugging a crashing C program would be to print out lots of information as the program is running. Using this method you should try to isolate exactly what part of the code is incorrect and what, if anything, is going wrong. It is a debugging technique which is <em>active</em>. This is the important thing. As long as you are doing <em>something</em>, and not just staring at the code, the process is less painful and the temptation to give up is lessened.</p>
+<p>If you are a beginner, the first port of call for debugging a crashing C program would be to print out lots of information as the program is running. Using this method you should try to isolate exactly what part of the code is incorrect and what, if anything, is going wrong. It is a debugging technique which is <em>active</em>. This is the important thing. As long as you are doing <em>something</em>, and not just staring at the code, the process is less painful and the temptation to give up is lessened.</p>
 
-<p>For people feeling more confident a program called <code>gdb</code> can be used to debug your C programs. This can be difficult and complicated to use, but it is also very powerful and can give you extremely valuable information and what went wrong and where. Information on how to use <code>gdb</code> can be found online.</p>
+<p>For people feeling more confident a program called <code>gdb</code> can be used to debug your C programs. This can be difficult and complicated to use, but it is also very powerful and can give you extremely valuable information and what went wrong and where. Information on how to use <code>gdb</code> can be found <a href="http://www.dirac.org/linux/gdb/">online</a>.</p>
 
 <p>On <strong>Mac</strong> the most recent versions of OS X don't come with <code>gdb</code>. Instead you can use <code>lldb</code> which does largely the same job.</p>
 
-<p>On <strong>Linux</strong> or <strong>Mac</strong> <code>valgrind</code> can be used to aid the debugging of memory leaks and other more nasty errors. Valgrind is a tool that can save you hours, or even days, of debugging. It does not take much to get proficient at it, so investigating it is highly recommended. Information on how to use it can be found online.</p>
+<p>On <strong>Linux</strong> or <strong>Mac</strong> <code>valgrind</code> can be used to aid the debugging of memory leaks and other more nasty errors. Valgrind is a tool that can save you hours, or even days, of debugging. It does not take much to get proficient at it, so investigating it is highly recommended. Information on how to use it can be found <a href="http://www.cprogramming.com/debugging/valgrind.html">online</a>.</p>
 
 
 <h2>Documentation</h2> <hr/>
 
-<p>Through this book you may come across functions in some example code that you don't recognize. You might wonder what it does. In this case you will want to look toward the <a href="http://en.cppreference.com/w/c">online documentation</a> of the standard library. This will explain all the functions included in the standard library, what they do, and how to use them.</p>
+<p>Through this book you may come across a function in some example code that you don't recognise. You might wonder what it does. In this case you will want to look at the <a href="http://en.cppreference.com/w/c">online documentation</a> of the standard library. This will explain all the functions included in the standard library, what they do, and how to use them.</p>
 
 
 <h2>Reference</h2> <hr/>
@@ -132,9 +132,9 @@ int main(int argc, char** argv) {
 
   <p>In this section I'll list some things to try for fun, and learning.</p>
 
-  <p>It is good if you can attempt to do some of these challenges. Some will be easy, while some will be very difficult. For this reason don't worry if you can't figure them all out. Some might not even be possible!</p>
+  <p>It is good if you can attempt to do some of these challenges. Some will be difficult and some will be much easier. For this reason don't worry if you can't figure them all out. Some might not even be possible!</p>
 
-  <p>Many will require some research on the internet. This is an integral part of learning a new language so should not be avoided. The ability to teach yourself things is one of the most valuable skills in programming. See how many you can complete for each chapter. Move on when you get bored.</p>
+  <p>Many will require some research on the internet. This is an integral part of learning a new language so should not be avoided. The ability to teach yourself things is one of the most valuable skills in programming.</p>
 </div>
   
 <div class="alert alert-warning">

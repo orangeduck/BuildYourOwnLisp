@@ -9,7 +9,7 @@
 
 <p>The Lisp we've built has been purposefully minimal. We've only added the fewest number of core structures and builtins. If we chose these carefully, as we did, then it should allow us to add in everything else required to the language.</p>
 
-<p>The motivation behind minimalism is two-fold. The first advantage is that it makes the core language simple to debug and easy to learn. This is a great benefit to developers and users. Like Occam's Razor it is almost always better to trim away any waste if it results in a equally expressive language. The second reason is that having a small language is also aesthetically nicer. It is clever, interesting, and fun to see how small we can make the core of a language, and still get something useful out of the other side. As hackers, which we should be by now, this is something we enjoy.</p>
+<p>The motivation behind minimalism is two-fold. The first advantage is that it makes the core language simple to debug and easy to learn. This is a great benefit to developers and users. Like <a href="http://en.wikipedia.org/wiki/Occam%27s_razor">Occam's Razor</a> it is almost always better to trim away any waste if it results in a equally expressive language. The second reason is that having a small language is also aesthetically nicer. It is clever, interesting and fun to see how small we can make the core of a language, and still get something useful out of the other side. As hackers, which we should be by now, this is something we enjoy.</p>
 
 
 <h2>Atoms</h2> <hr/>
@@ -51,7 +51,7 @@
 (def {curry} unpack)
 (def {uncurry} pack)</code></pre>
 
-<p>Say we want to do several things in order. One way we can do this is to put each thing to do as an argument to some function. We known that arguments are evaluated in order from left to right, which is essentially sequencing events. For functions such as <code>print</code> and <code>load</code> we don't care much about what it evaluates to, but do care about the order in which it happens.</p>
+<p>Say we want to do several things in order. One way we can do this is to put each thing to do as an argument to some function. We know that arguments are evaluated in order from left to right, which is essentially sequencing events. For functions such as <code>print</code> and <code>load</code> we don't care much about what it evaluates to, but do care about the order in which it happens.</p>
 
 <p>Therefore we can create a <code>do</code> function which evaluates a number of expressions in order and returns the last one. This relies on the <code>last</code> function, which returns the final element of a list. We'll define this later.</p>
 
@@ -80,7 +80,7 @@ lispy&gt;</code></pre>
 
 <h2>Logical Operators</h2> <hr/>
 
-<p>We didn't define any local operators such as <code>and</code> and <code>or</code> in our language. This might be a good thing to add in later. For now we can use arithmetic operators to emulate them. Think for a second how these functions work when encountering <code>0</code> or <code>1</code> for their various inputs.</p>
+<p>We didn't define any local operators such as <code>and</code> and <code>or</code> in our language. This might be a good thing to add in later. For now we can use arithmetic operators to emulate them. Think about how these functions work when encountering <code>0</code> or <code>1</code> for their various inputs.</p>
 
 <pre><code data-language='lispy'>; Logical Functions
 (fun {not x}   {- 1 x})
@@ -113,13 +113,13 @@ lispy&gt; y
 lispy>
 </code></pre>
 
-<p>I couldn't think of a use for the <code>ghost</code> function, but it seemed interesting. It simply takes in any number of arguments and evaluates them as if they were the expression itself. So it just sits at the front of an expression like a ghost, not interacting of changing the behaviour of the program at all. If you can think of a use for it I'd love to hear.</p>
+<p>I couldn't think of a use for the <code>ghost</code> function, but it seemed interesting. It simply takes in any number of arguments and evaluates them as if they were the expression itself. So it just sits at the front of an expression like a ghost, not interacting with or changing the behaviour of the program at all. If you can think of a use for it I'd love to hear.</p>
 
 <pre><code data-language='lispy'>lispy&gt; ghost + 2 2
 4
 </code></pre>
 
-<p>The <code>comp</code> function is used to compose two functions. It takes as input <code>f</code>, <code>g</code>, and an argument to <code>g</code>. It then applies this argument to <code>g</code> and applies the result again to <code>f</code>. This can be used to compose two function together into a new function that applies both of them in series. Like before we can use this in combination with partial evaluation to build up complex functions from simpler ones.</p>
+<p>The <code>comp</code> function is used to compose two functions. It takes as input <code>f</code>, <code>g</code>, and an argument to <code>g</code>. It then applies this argument to <code>g</code> and applies the result again to <code>f</code>. This can be used to compose two functions together into a new function that applies both of them in series. Like before, we can use this in combination with partial evaluation to build up complex functions from simpler ones.</p>
 
 <p>For example we can compose two functions. One negates a number and another unpacks a list of numbers for multiplying together with <code>*</code>.</p>
 
@@ -141,7 +141,7 @@ lispy&gt;
 
 <p>The <code>head</code> function is used to get the first element of a list, but what it returns is still wrapped in the list. If we want to actually get the element out of this list we need to extract it somehow.</p>
 
-<p>Single element lists evaluate to just that element, so we can use the <code>eval</code> function to do this extraction. We can also define a couple of helper functions for aid extracting the first, second and third elements of a list. We'll use these function a lot later.</p>
+<p>Single element lists evaluate to just that element, so we can use the <code>eval</code> function to do this extraction. We can also define a couple of helper functions for aid extracting the first, second and third elements of a list. We'll use these function more later.</p>
 
 <pre><code data-language='lispy'>; First, Second, or Third Item in List
 (fun {fst l} { eval (head l) })
@@ -277,7 +277,7 @@ lispy&gt;</code></pre>
     {otherwise "th"}
 })</code></pre>
 
-<p>This is actually somewhat more powerful than the C <code>switch</code> statement. In C rather than passing in conditions the input value is compared only for equality with a number of constant candidates. We can also define this function in our Lisp, where we compare a value to a number of candidates. In this function we take some value <code>x</code> followed by zero or more two-element lists again. If the first element in the two-element list is equal to <code>x</code>, the second element is evaluated, otherwise the process continues down the list.</p>
+<p>This is actually more powerful than the C <code>switch</code> statement. In C rather than passing in conditions the input value is compared only for equality with a number of constant candidates. We can also define this function in our Lisp, where we compare a value to a number of candidates. In this function we take some value <code>x</code> followed by zero or more two-element lists again. If the first element in the two-element list is equal to <code>x</code>, the second element is evaluated, otherwise the process continues down the list.</p>
 
 <pre><code data-language='lispy'>(fun {case x &amp; cs} {
   if (== cs nil)
@@ -286,7 +286,7 @@ lispy&gt;</code></pre>
       unpack case (join (list x) (tail cs))}}
 })</code></pre>
 
-<p>The syntax for this function becomes really nice and simple. See if you can think up any other control structures or useful functions that you'd like to implement using these sorts of methods.</p>
+<p>The syntax for this function becomes really nice and simple. Try to see if you can think up any other control structures or useful functions that you'd like to implement using these sorts of methods.</p>
 
 <pre><code data-language='lispy'>(fun {day-name x} {
   case x
