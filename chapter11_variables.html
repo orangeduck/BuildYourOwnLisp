@@ -191,9 +191,9 @@ struct lval {
   e-&gt;syms = NULL;
   e-&gt;vals = NULL;
   return e;
-}
+}</code></pre>
 
-void lenv_del(lenv* e) {
+<pre><code data-language='c'>void lenv_del(lenv* e) {
   for (int i = 0; i &lt; e-&gt;count; i++) {
     free(e-&gt;syms[i]);
     lval_del(e-&gt;vals[i]);
@@ -223,9 +223,9 @@ void lenv_del(lenv* e) {
   }
   /* If no symbol found return error */
   return lval_err("unbound symbol!");
-}
+}</code></pre>
 
-void lenv_put(lenv* e, lval* k, lval* v) {
+<pre><code data-language='c'>void lenv_put(lenv* e, lval* k, lval* v) {
 
   /* Iterate over all items in environment */
   /* This is to see if variable already exists */

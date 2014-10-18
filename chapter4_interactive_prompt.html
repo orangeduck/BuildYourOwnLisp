@@ -208,7 +208,6 @@ undefined reference to `add_history'
 
 /* If we are compiling on Windows compile these functions */
 #ifdef _WIN32
-
 #include &lt;string.h&gt;
 
 static char buffer[2048];
@@ -228,10 +227,8 @@ void add_history(char* unused) {}
 
 /* Otherwise include the editline headers */
 #else
-
 #include &lt;editline/readline.h&gt;
 #include &lt;editline/history.h&gt;
-
 #endif
 
 int main(int argc, char** argv) {
