@@ -21,7 +21,7 @@
 
 <p>In C no concept of lists can be explored without dealing properly with pointers. Pointers are a famously misunderstood aspect of C. They are difficult to teach because while being conceptually very simple, they come with a lot of new terminology, and often no clear use-case. This makes them appear far more monstrous than they are. Luckily for us, we have a couple ideal use-cases, both of which are extremely typical in C, and will likely end up being how you use pointers 90% of the time.</p>
 
-<p>The reason we need pointers in C is because of how function calling works. When you call a function in C the arguments are always passed <em>by value</em>. This means <em>a copy</em> of them is passed to the function you call. This is true for <code>int</code>, <code>long</code>, <code>char</code>, and user defined <code>struct</code> types such as <code>lval</code>. Most of the time this is great but occasionally it can cause issues.</p>
+<p>The reason we need pointers in C is because of how function calling works. When you call a function in C the arguments are always passed <em>by value</em>. This means <em>a copy</em> of them is passed to the function you call. This is true for <code>int</code>, <code>long</code>, <code>char</code>, and user-defined <code>struct</code> types such as <code>lval</code>. Most of the time this is great but occasionally it can cause issues.</p>
 
 <p>A common problem occurs when we have a large struct containing many other sub structs we wish to pass around. Every time we call a function we must create another copy of it. Suddenly the amount of data that needs to be copied around just to call a function can become huge!</p>
 
@@ -41,7 +41,7 @@
 
 <p>To create a pointer to some data, we need to get its index, or <em>address</em>. To get the address of a some data we use the <em>address of</em> operator <code>&amp;</code>. Again you've seen this before when we passed in a pointer to <code>mpc_parse</code> so it would output into our <code>mpc_result_t</code>.</p>
 
-<p>Finally to get the data at an address, called <em>dereferencing</em>, we use the <code>*</code> operator on the left hand size of a variable. To get the data at the field of a pointer to a struct we use the arrow <code>-&gt;</code>. This you saw in chapter 7.</p>
+<p>Finally to get the data at an address, called <em>dereferencing</em>, we use the <code>*</code> operator on the left-hand side of a variable. To get the data at the field of a pointer to a struct we use the arrow <code>-&gt;</code>. This you saw in chapter 7.</p>
 
 
 <h2>The Stack &amp; The Heap</h2> <hr/>
@@ -80,7 +80,7 @@
 
 <h2>Parsing Expressions</h2> <hr/>
 
-<p>Because we're now thinking in S-Expressions, and not Polish Notation we need to update our parser. The syntax for S-Expressions is simple. It is just a number of other Expressions between parenthesis, where an Expression can be a Number, Operator, or other S-Expression . We can modify our existing parse rules to reflect this. We also are going to rename our <code>operator</code> rule to <code>symbol</code>. This is in anticipation of adding more operators, variables and functions later.</p>
+<p>Because we're now thinking in S-Expressions, and not Polish Notation we need to update our parser. The syntax for S-Expressions is simple. It is just a number of other Expressions between parentheses, where an Expression can be a Number, Operator, or other S-Expression . We can modify our existing parse rules to reflect this. We also are going to rename our <code>operator</code> rule to <code>symbol</code>. This is in anticipation of adding more operators, variables and functions later.</p>
 
 <pre><code data-language='c'>mpc_parser_t* Number = mpc_new("number");
 mpc_parser_t* Symbol = mpc_new("symbol");
