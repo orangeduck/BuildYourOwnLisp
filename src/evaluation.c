@@ -16,10 +16,8 @@ char* readline(char* prompt) {
 void add_history(char* unused) {}
 
 #else
-
 #include <editline/readline.h>
 #include <editline/history.h>
-
 #endif
 
 /* Use operator string to see which operation to perform */
@@ -34,7 +32,9 @@ long eval_op(long x, char* op, long y) {
 long eval(mpc_ast_t* t) {
   
   /* If tagged as number return it directly. */ 
-  if (strstr(t->tag, "number")) { return atoi(t->contents); }
+  if (strstr(t->tag, "number")) {
+    return atoi(t->contents);
+  }
   
   /* The operator is always second child. */
   char* op = t->children[1]->contents;

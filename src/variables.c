@@ -16,10 +16,8 @@ char* readline(char* prompt) {
 void add_history(char* unused) {}
 
 #else
-
 #include <editline/readline.h>
 #include <editline/history.h>
-
 #endif
 
 /* Forward Declarations */
@@ -38,12 +36,10 @@ typedef lval*(*lbuiltin)(lenv*, lval*);
 
 struct lval {
   int type;
-
   long num;
   char* err;
   char* sym;
   lbuiltin fun;
-  
   int count;
   lval** cell;
 };
@@ -180,7 +176,8 @@ lval* lval_join(lval* x, lval* y) {
 
 lval* lval_pop(lval* v, int i) {
   lval* x = v->cell[i];  
-  memmove(&v->cell[i], &v->cell[i+1], sizeof(lval*) * (v->count-i-1));  
+  memmove(&v->cell[i], &v->cell[i+1],
+    sizeof(lval*) * (v->count-i-1));  
   v->count--;  
   v->cell = realloc(v->cell, sizeof(lval*) * v->count);
   return x;
@@ -361,7 +358,9 @@ lval* builtin_eval(lenv* e, lval* a) {
 
 lval* builtin_join(lenv* e, lval* a) {
   
-  for (int i = 0; i < a->count; i++) { LASSERT_TYPE("join", a, i, LVAL_QEXPR); }
+  for (int i = 0; i < a->count; i++) {
+    LASSERT_TYPE("join", a, i, LVAL_QEXPR);
+  }
   
   lval* x = lval_pop(a, 0);
   
@@ -376,11 +375,15 @@ lval* builtin_join(lenv* e, lval* a) {
 
 lval* builtin_op(lenv* e, lval* a, char* op) {
   
-  for (int i = 0; i < a->count; i++) { LASSERT_TYPE(op, a, i, LVAL_NUM); }
+  for (int i = 0; i < a->count; i++) {
+    LASSERT_TYPE(op, a, i, LVAL_NUM);
+  }
   
   lval* x = lval_pop(a, 0);
   
-  if ((strcmp(op, "-") == 0) && a->count == 0) { x->num = -x->num; }
+  if ((strcmp(op, "-") == 0) && a->count == 0) {
+    x->num = -x->num;
+  }
   
   while (a->count > 0) {  
     lval* y = lval_pop(a, 0);
@@ -430,13 +433,15 @@ lval* builtin_def(lenv* e, lval* a) {
   /* Ensure all elements of first list are symbols */
   for (int i = 0; i < syms->count; i++) {
     LASSERT(a, (syms->cell[i]->type == LVAL_SYM),
-      "Function 'def' cannot define non-symbol. Got %s, Expected %s.",
+      "Function 'def' cannot define non-symbol. "
+      "Got %s, Expected %s.",
       ltype_name(syms->cell[i]->type), ltype_name(LVAL_SYM));
   }
   
   /* Check correct number of symbols and values */
   LASSERT(a, (syms->count == a->count-1),
-    "Function 'def' passed too many arguments for symbols. Got %i, Expected %i.",
+    "Function 'def' passed too many arguments for symbols. "
+    "Got %i, Expected %i.",
     syms->count, a->count-1);
   
   /* Assign copies of values to symbols */
@@ -477,8 +482,13 @@ void lenv_add_builtins(lenv* e) {
 
 lval* lval_eval_sexpr(lenv* e, lval* v) {
   
-  for (int i = 0; i < v->count; i++) { v->cell[i] = lval_eval(e, v->cell[i]); }
-  for (int i = 0; i < v->count; i++) { if (v->cell[i]->type == LVAL_ERR) { return lval_take(v, i); } }
+  for (int i = 0; i < v->count; i++) {
+    v->cell[i] = lval_eval(e, v->cell[i]);
+  }
+  
+  for (int i = 0; i < v->count; i++) {
+    if (v->cell[i]->type == LVAL_ERR) { return lval_take(v, i); }
+  }
   
   if (v->count == 0) { return v; }  
   if (v->count == 1) { return lval_take(v, 0); }
@@ -487,7 +497,8 @@ lval* lval_eval_sexpr(lenv* e, lval* v) {
   lval* f = lval_pop(v, 0);
   if (f->type != LVAL_FUN) {
     lval* err = lval_err(
-      "S-Expression starts with incorrect type. Got %s, Expected %s.",
+      "S-Expression starts with incorrect type. "
+      "Got %s, Expected %s.",
       ltype_name(f->type), ltype_name(LVAL_FUN));
     lval_del(f); lval_del(v);
     return err;
@@ -574,11 +585,9 @@ int main(int argc, char** argv) {
     
     mpc_result_t r;
     if (mpc_parse("<stdin>", input, Lispy, &r)) {
-      
       lval* x = lval_eval(e, lval_read(r.output));
       lval_println(x);
       lval_del(x);
-      
       mpc_ast_delete(r.output);
     } else {    
       mpc_err_print(r.error);

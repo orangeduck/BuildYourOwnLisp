@@ -16,10 +16,8 @@ char* readline(char* prompt) {
 void add_history(char* unused) {}
 
 #else
-
 #include <editline/readline.h>
 #include <editline/history.h>
-
 #endif
 
 /* Forward Declarations */
@@ -166,8 +164,12 @@ lval* lval_copy(lval* v) {
       }
     break;
     case LVAL_NUM: x->num = v->num; break;
-    case LVAL_ERR: x->err = malloc(strlen(v->err) + 1); strcpy(x->err, v->err); break;
-    case LVAL_SYM: x->sym = malloc(strlen(v->sym) + 1); strcpy(x->sym, v->sym); break;
+    case LVAL_ERR: x->err = malloc(strlen(v->err) + 1);
+      strcpy(x->err, v->err);
+    break;
+    case LVAL_SYM: x->sym = malloc(strlen(v->sym) + 1);
+      strcpy(x->sym, v->sym);
+    break;
     case LVAL_SEXPR:
     case LVAL_QEXPR:
       x->count = v->count;
@@ -198,7 +200,8 @@ lval* lval_join(lval* x, lval* y) {
 
 lval* lval_pop(lval* v, int i) {
   lval* x = v->cell[i];  
-  memmove(&v->cell[i], &v->cell[i+1], sizeof(lval*) * (v->count-i-1));  
+  memmove(&v->cell[i],
+    &v->cell[i+1], sizeof(lval*) * (v->count-i-1));  
   v->count--;  
   v->cell = realloc(v->cell, sizeof(lval*) * v->count);
   return x;
@@ -346,12 +349,14 @@ void lenv_def(lenv* e, lval* k, lval* v) {
 
 #define LASSERT_TYPE(func, args, index, expect) \
   LASSERT(args, args->cell[index]->type == expect, \
-    "Function '%s' passed incorrect type for argument %i. Got %s, Expected %s.", \
+    "Function '%s' passed incorrect type for argument %i. " \
+    "Got %s, Expected %s.", \
     func, index, ltype_name(args->cell[index]->type), ltype_name(expect))
 
 #define LASSERT_NUM(func, args, num) \
   LASSERT(args, args->count == num, \
-    "Function '%s' passed incorrect number of arguments. Got %i, Expected %i.", \
+    "Function '%s' passed incorrect number of arguments. " \
+    "Got %i, Expected %i.", \
     func, args->count, num)
 
 #define LASSERT_NOT_EMPTY(func, args, index) \
@@ -417,7 +422,9 @@ lval* builtin_eval(lenv* e, lval* a) {
 
 lval* builtin_join(lenv* e, lval* a) {
   
-  for (int i = 0; i < a->count; i++) { LASSERT_TYPE("join", a, i, LVAL_QEXPR); }
+  for (int i = 0; i < a->count; i++) {
+    LASSERT_TYPE("join", a, i, LVAL_QEXPR);
+  }
   
   lval* x = lval_pop(a, 0);
   
@@ -432,7 +439,9 @@ lval* builtin_join(lenv* e, lval* a) {
 
 lval* builtin_op(lenv* e, lval* a, char* op) {
   
-  for (int i = 0; i < a->count; i++) { LASSERT_TYPE(op, a, i, LVAL_NUM); }
+  for (int i = 0; i < a->count; i++) {
+    LASSERT_TYPE(op, a, i, LVAL_NUM);
+  }
   
   lval* x = lval_pop(a, 0);
   
@@ -513,16 +522,21 @@ void lenv_add_builtin(lenv* e, char* name, lbuiltin func) {
 void lenv_add_builtins(lenv* e) {
   /* Variable Functions */
   lenv_add_builtin(e, "\\",  builtin_lambda); 
-  lenv_add_builtin(e, "def", builtin_def); lenv_add_builtin(e, "=", builtin_put);
+  lenv_add_builtin(e, "def", builtin_def);
+  lenv_add_builtin(e, "=",   builtin_put);
   
   /* List Functions */
   lenv_add_builtin(e, "list", builtin_list);
-  lenv_add_builtin(e, "head", builtin_head); lenv_add_builtin(e, "tail",  builtin_tail);
-  lenv_add_builtin(e, "eval", builtin_eval); lenv_add_builtin(e, "join",  builtin_join);
+  lenv_add_builtin(e, "head", builtin_head);
+  lenv_add_builtin(e, "tail", builtin_tail);
+  lenv_add_builtin(e, "eval", builtin_eval);
+  lenv_add_builtin(e, "join", builtin_join);
   
   /* Mathematical Functions */
-  lenv_add_builtin(e, "+",    builtin_add); lenv_add_builtin(e, "-",     builtin_sub);
-  lenv_add_builtin(e, "*",    builtin_mul); lenv_add_builtin(e, "/",     builtin_div);
+  lenv_add_builtin(e, "+", builtin_add);
+  lenv_add_builtin(e, "-", builtin_sub);
+  lenv_add_builtin(e, "*", builtin_mul);
+  lenv_add_builtin(e, "/", builtin_div);
 }
 
 /* Evaluation */
@@ -542,7 +556,8 @@ lval* lval_call(lenv* e, lval* f, lval* a) {
     /* If we've ran out of formal arguments to bind */
     if (f->formals->count == 0) {
       lval_del(a);
-      return lval_err("Function passed too many arguments. Got %i, Expected %i.", given, total); 
+      return lval_err("Function passed too many arguments. "
+        "Got %i, Expected %i.", given, total); 
     }
     
     /* Pop the first symbol from the formals */
@@ -554,7 +569,8 @@ lval* lval_call(lenv* e, lval* f, lval* a) {
       /* Ensure '&' is followed by another symbol */
       if (f->formals->count != 1) {
         lval_del(a);
-        return lval_err("Function format invalid. Symbol '&' not followed by single symbol.");
+        return lval_err("Function format invalid. "
+          "Symbol '&' not followed by single symbol.");
       }
       
       /* Next formal should be bound to remaining arguments */
@@ -583,7 +599,8 @@ lval* lval_call(lenv* e, lval* f, lval* a) {
     
     /* Check to ensure that & is not passed invalidly. */
     if (f->formals->count != 2) {
-      return lval_err("Function format invalid. Symbol '&' not followed by single symbol.");
+      return lval_err("Function format invalid. "
+        "Symbol '&' not followed by single symbol.");
     }
     
     /* Pop and delete '&' symbol */
@@ -616,8 +633,13 @@ lval* lval_call(lenv* e, lval* f, lval* a) {
 
 lval* lval_eval_sexpr(lenv* e, lval* v) {
   
-  for (int i = 0; i < v->count; i++) { v->cell[i] = lval_eval(e, v->cell[i]); }
-  for (int i = 0; i < v->count; i++) { if (v->cell[i]->type == LVAL_ERR) { return lval_take(v, i); } }
+  for (int i = 0; i < v->count; i++) {
+    v->cell[i] = lval_eval(e, v->cell[i]);
+  }
+  
+  for (int i = 0; i < v->count; i++) {
+    if (v->cell[i]->type == LVAL_ERR) { return lval_take(v, i); }
+  }
   
   if (v->count == 0) { return v; }  
   if (v->count == 1) { return lval_eval(e, lval_take(v, 0)); }
@@ -712,11 +734,9 @@ int main(int argc, char** argv) {
     
     mpc_result_t r;
     if (mpc_parse("<stdin>", input, Lispy, &r)) {
-      
       lval* x = lval_eval(e, lval_read(r.output));
       lval_println(x);
       lval_del(x);
-      
       mpc_ast_delete(r.output);
     } else {    
       mpc_err_print(r.error);

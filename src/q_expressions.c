@@ -16,10 +16,8 @@ char* readline(char* prompt) {
 void add_history(char* unused) {}
 
 #else
-
 #include <editline/readline.h>
 #include <editline/history.h>
-
 #endif
 
 /* Add QEXPR as possible lval type */
@@ -27,14 +25,11 @@ enum { LVAL_ERR, LVAL_NUM, LVAL_SYM, LVAL_SEXPR, LVAL_QEXPR };
 
 typedef struct lval {
   int type;
-
   long num;
   char* err;
   char* sym;
-  
   int count;
   struct lval** cell;
-  
 } lval;
 
 lval* lval_num(long x) {
@@ -107,7 +102,8 @@ lval* lval_add(lval* v, lval* x) {
 
 lval* lval_pop(lval* v, int i) {
   lval* x = v->cell[i];
-  memmove(&v->cell[i], &v->cell[i+1], sizeof(lval*) * (v->count-i-1));
+  memmove(&v->cell[i], &v->cell[i+1],
+    sizeof(lval*) * (v->count-i-1));
   v->count--;
   v->cell = realloc(v->cell, sizeof(lval*) * v->count);
   return x;
@@ -356,11 +352,9 @@ int main(int argc, char** argv) {
     
     mpc_result_t r;
     if (mpc_parse("<stdin>", input, Lispy, &r)) {
-      
       lval* x = lval_eval(lval_read(r.output));
       lval_println(x);
       lval_del(x);
-      
       mpc_ast_delete(r.output);
     } else {    
       mpc_err_print(r.error);

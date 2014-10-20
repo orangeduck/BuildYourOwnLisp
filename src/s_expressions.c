@@ -16,10 +16,8 @@ char* readline(char* prompt) {
 void add_history(char* unused) {}
 
 #else
-
 #include <editline/readline.h>
 #include <editline/history.h>
-
 #endif
 
 /* Add SYM and SEXPR as possible lval types */
@@ -27,17 +25,13 @@ enum { LVAL_ERR, LVAL_NUM, LVAL_SYM, LVAL_SEXPR };
 
 typedef struct lval {
   int type;
-
   long num;
-  
   /* Error and Symbol types have some string data */
   char* err;
   char* sym;
-  
   /* Count and Pointer to a list of "lval*"; */
   int count;
   struct lval** cell;
-  
 } lval;
 
 /* Construct a pointer to a new Number lval */ 
@@ -301,11 +295,9 @@ int main(int argc, char** argv) {
     
     mpc_result_t r;
     if (mpc_parse("<stdin>", input, Lispy, &r)) {
-      
       lval* x = lval_eval(lval_read(r.output));
       lval_println(x);
       lval_del(x);
-      
       mpc_ast_delete(r.output);
     } else {    
       mpc_err_print(r.error);
