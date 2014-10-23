@@ -17,7 +17,7 @@ except ImportError:
     from urllib2 import urlopen
 
 pages = [
-    'splash.html', 'contents.html', 'credits.html', 'faq.html', '404.html', 'ebook.html', 'test.html', 'invalid.html',
+    'splash.html', 'contents.html', 'credits.html', 'faq.html', '404.html', 'purchase.html', 'test.html', 'invalid.html',
     'chapter1_introduction.html',       'chapter2_installation.html',   'chapter3_basics.html',
     'chapter4_interactive_prompt.html', 'chapter5_languages.html',      'chapter6_parsing.html',
     'chapter7_evaluation.html',         'chapter8_error_handling.html', 'chapter9_s_expressions.html', 
@@ -27,7 +27,7 @@ pages = [
 ]
 
 titles = [
-    'Learn C', 'Contents', 'Credits', 'Frequently Asked Questions', 'Page Missing', 'eBook', 'Test', 'Invalid Download',
+    'Learn C', 'Contents', 'Credits', 'Frequently Asked Questions', 'Page Missing', 'Buy Now!', 'Test', 'Invalid Download',
     'Introduction &bull; Chapter 1',       'Installation &bull; Chapter 2',   'Basics &bull; Chapter 3',
     'Interactive Prompt &bull; Chapter 4', 'languages &bull; Chapter 5',      'Parsing &bull; Chapter 6',
     'Evaluation &bull; Chapter 7',         'Error Handling &bull; Chapter 8', 'S-Expressions &bull; Chapter 9',
@@ -77,9 +77,10 @@ header = """
       }
   </style>
   </head>
-  <body style="background: url(static/img/tiletop.png) repeat-x;">
+  <body style="background: url(static/img/halftone.png); margin:0px; padding:0px;">
+  <div style="background: url(static/img/tiletop.png) repeat-x; height:100px;">
   
-    <div class='container' style='max-width:750px; margin-top:50px;'>
+    <div class='container' style='max-width:750px; padding-top:50px;'>
         <div class='row'>
          <div class='col-xs-12'>
     
@@ -100,6 +101,7 @@ footer = """
     <script src="static/js/language/generic.js"></script>
     <script src="static/js/language/c.js"></script>
     <script src="static/js/language/lispy.js"></script>
+  </div>
   </body>
 </html>
 """
