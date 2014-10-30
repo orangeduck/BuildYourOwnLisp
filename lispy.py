@@ -78,9 +78,9 @@ header = """
   </style>
   </head>
   <body style="background: url(static/img/halftone.png); margin:0px; padding:0px;">
-  <div style="background: url(static/img/tiletop.png) repeat-x; height:100px;">
+  <div style="background: url(static/img/tiletop.png) repeat-x; height:25px;">
   
-    <div class='container' style='max-width:750px; padding-top:50px;'>
+    <div class='container' style='max-width:750px; padding-top:10px;'>
         <div class='row'>
          <div class='col-xs-12'>
     
