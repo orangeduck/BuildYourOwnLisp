@@ -18,6 +18,7 @@ except ImportError:
 
 pages = [
     'splash.html', 'contents.html', 'credits.html', 'faq.html', '404.html', 'purchase.html', 'test.html', 'invalid.html',
+    'download.html',
     'chapter1_introduction.html',       'chapter2_installation.html',   'chapter3_basics.html',
     'chapter4_interactive_prompt.html', 'chapter5_languages.html',      'chapter6_parsing.html',
     'chapter7_evaluation.html',         'chapter8_error_handling.html', 'chapter9_s_expressions.html', 
@@ -28,6 +29,7 @@ pages = [
 
 titles = [
     'Learn C', 'Contents', 'Credits', 'Frequently Asked Questions', 'Page Missing', 'Buy Now!', 'Test', 'Invalid Download',
+    'Download',
     'Introduction &bull; Chapter 1',       'Installation &bull; Chapter 2',   'Basics &bull; Chapter 3',
     'Interactive Prompt &bull; Chapter 4', 'languages &bull; Chapter 5',      'Parsing &bull; Chapter 6',
     'Evaluation &bull; Chapter 7',         'Error Handling &bull; Chapter 8', 'S-Expressions &bull; Chapter 9',
@@ -38,6 +40,7 @@ titles = [
 
 sources = [
     (), (), (), (), (), (), (), (),
+    (),
     (), ('hello_world.c', ), (),
     ('prompt_unix.c', 'prompt_windows.c', 'prompt.c'), ('doge_code.c', 'doge_grammar.c'),
     ('parsing.c', ), ('evaluation.c', ), ('error_handling.c',), ('s_expressions.c',), ('q_expressions.c',),
@@ -220,9 +223,10 @@ def route_download(id, type):
              < datetime.timedelta(days=60)])
     
     if id in keys:
-        if   type == 'epub': return send_file('BuildYourOwnLisp.epub', mimetype='application/epub+zip')
-        elif type == 'mobi': return send_file('BuildYourOwnLisp.mobi', mimetype='application/x-mobipocket-ebook')
-        elif type ==  'pdf': return send_file('BuildYourOwnLisp.pdf',  mimetype='application/pdf')
+        if   type == 'epub': return send_file('BuildYourOwnLisp.epub',   mimetype='application/epub+zip')
+        elif type == 'mobi': return send_file('BuildYourOwnLisp.mobi',   mimetype='application/x-mobipocket-ebook')
+        elif type ==  'pdf': return send_file('BuildYourOwnLisp.pdf',    mimetype='application/pdf')
+        elif type ==  'tar': return send_file('BuildYourOwnLisp.tar.gz', mimetype='application/tar')
         else: return redirect(url_for('route_page', page='invalid'))
         
     else: return redirect(url_for('route_page', page='invalid'))
