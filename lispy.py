@@ -227,7 +227,7 @@ def route_download(id, type):
         if   type == 'epub': return send_file('BuildYourOwnLisp.epub',   mimetype='application/epub+zip')
         elif type == 'mobi': return send_file('BuildYourOwnLisp.mobi',   mimetype='application/x-mobipocket-ebook')
         elif type ==  'pdf': return send_file('BuildYourOwnLisp.pdf',    mimetype='application/pdf')
-        elif type ==  'tar': return send_file('BuildYourOwnLisp.tar.gz', mimetype='application/tar')
+        elif type ==  'tar': return send_file('BuildYourOwnLisp.tar.gz', mimetype='application/x-gtar')
         else: return redirect(url_for('route_page', page='invalid'))
         
     else: return redirect(url_for('route_page', page='invalid'))
