@@ -169,9 +169,9 @@ lval* builtin_ne(lenv* e, lval* a) {
 <p>All that remains is for us to register all of these new builtins and we are again ready to go.</p>
 
 <pre><code data-language='c'>/* Comparison Functions */
-lenv_add_builtin(e, "if",    builtin_if);
-lenv_add_builtin(e, "==",    builtin_eq);
-lenv_add_builtin(e, "!=",    builtin_ne);
+lenv_add_builtin(e, "if", builtin_if);
+lenv_add_builtin(e, "==", builtin_eq);
+lenv_add_builtin(e, "!=", builtin_ne);
 lenv_add_builtin(e, "&gt;",  builtin_gt);
 lenv_add_builtin(e, "&lt;",  builtin_lt);
 lenv_add_builtin(e, "&gt;=", builtin_ge);
