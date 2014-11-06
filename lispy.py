@@ -210,6 +210,7 @@ def route_404(e):
     return redirect(url_for('route_page', page='404'))
     
 @app.route('/download/<id>/<type>')
+@app.route('/download/<id>/BuildYourOwnLisp.<type>')
 def route_download(id, type):
     
     keys = os.path.join(os.path.split(__file__)[0], 'purchases')
@@ -269,9 +270,9 @@ def route_paypal():
                  "Please follow these download links to download "
                  "the ebook in each of the different formats.\n"
                  "\n"
-                 "http://buildyourownlisp.com/download/%s/epub\n"
-                 "http://buildyourownlisp.com/download/%s/mobi\n"
-                 "http://buildyourownlisp.com/download/%s/pdf\n"
+                 "http://buildyourownlisp.com/download/%s/BuildYourOwnLisp.epub\n"
+                 "http://buildyourownlisp.com/download/%s/BuildYourOwnLisp.mobi\n"
+                 "http://buildyourownlisp.com/download/%s/BuildYourOwnLisp.pdf\n"
                  "\n"
                  "If you need it in a different format to these, or "
                  "need any help using these files don't hesitate to "
