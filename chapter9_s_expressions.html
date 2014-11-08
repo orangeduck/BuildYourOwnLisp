@@ -345,7 +345,7 @@ lispy&gt;</code></pre>
 
 <h2>Evaluating Expressions</h2> <hr/>
 
-<p>The behaviour of our evaluation function is largely the same as before. We need to adapt it to deal with <code>lval*</code> and our more relaxed definition of what constitutes an expression. We can think of our evaluation function as a kind of transformer. It takes in some <code>lval*</code> and transforms it in some way to some new <code>lval*</code>. In some cases it can just return exactly the same thing. In other cases it may modify the input <code>lval*</code> and the return it. In many cases it will delete the input, and return something completely different. If we are going to return something new we must always remember to delete the <code>lval*</code> we get as input.</p>
+<p>The behaviour of our evaluation function is largely the same as before. We need to adapt it to deal with <code>lval*</code> and our more relaxed definition of what constitutes an expression. We can think of our evaluation function as a kind of transformer. It takes in some <code>lval*</code> and transforms it in some way to some new <code>lval*</code>. In some cases it can just return exactly the same thing. In other cases it may modify the input <code>lval*</code> and return it. In many cases it will delete the input, and return something completely different. If we are going to return something new we must always remember to delete the <code>lval*</code> we get as input.</p>
 
 <p>For S-Expressions we first evaluate all the children of the S-Expression. If any of these children are errors we return the first error we encounter using a function we'll define later called <code>lval_take</code>.</p>
 
