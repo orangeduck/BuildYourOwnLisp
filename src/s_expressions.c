@@ -86,7 +86,7 @@ void lval_del(lval* v) {
       }
       /* Also free the memory allocated to contain the pointers */
       free(v->cell);
-    break;
+      break;
   }
   
   /* Free the memory allocated for the "lval" struct itself */
