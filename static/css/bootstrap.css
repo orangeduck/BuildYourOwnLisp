@@ -306,7 +306,7 @@ html {
 
 @font-face{
     font-family: "kalinga";
-    src: url('/static/fonts/kalinga.ttf')
+    src: local('kalinga'), url('/static/fonts/kalinga.ttf');
 }
 
 body {
