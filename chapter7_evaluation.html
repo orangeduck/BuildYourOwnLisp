@@ -87,8 +87,8 @@ printf("First Child Number of children: %i\n",
     for (int i = 0; i < t->children_num; i++) {
       total = total + number_of_nodes(t-&gt;children[i]);
     }
-    return total;
   }
+  return total;
 }</code></pre>
 
 <p>Recursive functions are weird because they require an odd leap of faith. First we have to assume we have a function which does something correctly already, and then we have to go about using this function, to write the initial function we assumed we had!</p>
