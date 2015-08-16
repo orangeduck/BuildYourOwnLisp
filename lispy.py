@@ -300,5 +300,6 @@ def route_paypal():
 """ Main """
     
 if __name__ == '__main__':
-    app.run()
+    port = int(os.getenv('PORT') or 5000)
+    app.run(port=port)
 
