@@ -241,7 +241,7 @@ lenv* lenv_new(void) {
 
 <p>Having parent environments also changes our concept of <em>defining</em> a variable.</p>
 
-<p>There are two ways we could define a variable now. Either we could define it in the local, innermost environment, or we could define it in the global, outermost environment. We will add functions to do both. We'll leave the <code>lenv_put</code> method the same. It can be used for definition in the local environment. But we'll add a new function <code>lenv_def</code> for definition in the global environment. This works by simply following the parent chain up before using <code>lval_put</code> to define locally.</p>
+<p>There are two ways we could define a variable now. Either we could define it in the local, innermost environment, or we could define it in the global, outermost environment. We will add functions to do both. We'll leave the <code>lenv_put</code> method the same. It can be used for definition in the local environment. But we'll add a new function <code>lenv_def</code> for definition in the global environment. This works by simply following the parent chain up before using <code>lenv_put</code> to define locally.</p>
 
 <pre><code data-language='c'>void lenv_def(lenv* e, lval* k, lval* v) {
   /* Iterate till e has no parent */
