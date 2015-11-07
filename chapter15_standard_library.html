@@ -240,7 +240,7 @@ lispy&gt;</code></pre>
 
 <pre><code data-language='lispy'>; Fold Left
 (fun {foldl f z l} {
-  if (== l nil) 
+  if (== l nil)
     {z}
     {foldl f (f z (fst l)) (tail l)}
 })</code></pre>
@@ -307,9 +307,9 @@ lispy&gt;</code></pre>
 <pre><code data-language='lispy'>; Fibonacci
 (fun {fib n} {
   select
-    { (== n 0) {0} }
-    { (== n 1) {1} }
-    { otherwise {+ (fib (- n 1)) (fib (- n 2))} }
+    { (== n 0) 0 }
+    { (== n 1) 1 }
+    { otherwise (+ (fib (- n 1)) (fib (- n 2))) }
 })</code></pre>
 
 <p>This is the end of the standard library I've written. Building up a standard library is a fun part of language design, because you get to be creative and opinionated on what goes in and stays out. Try to come up with something you are happy with. Exploring what is possible to define and do can be very interesting.</p>
