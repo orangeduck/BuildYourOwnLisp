@@ -26,7 +26,7 @@
 
 <h2>Variables</h2> <hr/>
 
-<p>Functions in C consists of manipulating <em>variables</em>. These are items of data which we give a name to.</p>
+<p>Functions in C consist of manipulating <em>variables</em>. These are items of data which we give a name to.</p>
 
 <p>Every variable in C has an explicit <em>type</em>. These types are declared by ourselves or built into the language. We can declare a new variable by writing the name of its type, followed by its name, and optionally setting it to some value using <code>=</code>. This declaration is a <em>statement</em>, and we terminate all <em>statements</em> in C with a semicolon <code>;</code>.</p>
 
@@ -54,7 +54,7 @@
 
 <p>A function is a computation that manipulates variables, and optionally changes the state of the program. It takes as input some variables and returns some single variable as output.</p>
 
-<p>To declare a function we write the type of the variable it returns, the name of the function, and then in parenthesis a list of the variables it takes as input , separated by commas. The contents of the function are put inside curly brackets <code>{}</code>, and lists all of the statements the function executes, terminated by semicolons <code>;</code>. A <code>return</code> statement is used to let the function finish and output a variable.</p>
+<p>To declare a function we write the type of the variable it returns, the name of the function, and then in parenthesis a list of the variables it takes as input, separated by commas. The contents of the function are put inside curly brackets <code>{}</code>, and lists all of the statements the function executes, terminated by semicolons <code>;</code>. A <code>return</code> statement is used to let the function finish and output a variable.</p>
 
 <p>For example a function that takes two <code>int</code> variables called <code>x</code> and <code>y</code> and adds them together could look like this.</p>
 
@@ -63,7 +63,7 @@
   return result;
 }</code></pre>
 
-<p>We call functions by writing their name and putting the arguments to the function in parenthesis, separated by commas. For example to call the above function and store the result in a variable <code>added</code> we would write the following.</p>
+<p>We call functions by writing their name and putting the arguments to the function in parentheses, separated by commas. For example to call the above function and store the result in a variable <code>added</code> we would write the following.</p>
 
 <pre><code data-language='c'>int added = add_together(10, 18);</code></pre>
 
@@ -114,11 +114,11 @@ float length = sqrt(p.x * p.x + p.y * p.y);
 
 <p>Conditional statements let the program perform some code only if certain conditions are met.</p>
 
-<p>To perform code under some condition we use the <code>if</code> statement. This is written as <code>if</code> followed by some condition in parenthesis, followed by the code to execute in curly brackets. An <code>if</code> statement can be followed by an optional <code>else</code> statement, followed by other statements in curly brackets. The code in these brackets will be performed in the case the conditional is false.</p>
+<p>To perform code under some condition we use the <code>if</code> statement. This is written as <code>if</code> followed by some condition in parentheses, followed by the code to execute in curly brackets. An <code>if</code> statement can be followed by an optional <code>else</code> statement, followed by other statements in curly brackets. The code in these brackets will be performed in the case the conditional is false.</p>
 
 <p>We can test for multiple conditions using the logical operators <code>||</code> for <em>or</em>, and <code>&&</code> for <em>and</em>.</p>
 
-<p>Inside a conditional statement's parenthesis any value that is not <code>0</code> will evaluate to true. This is important to remember as many conditions use this to check things implicitly.</p>
+<p>Inside a conditional statement's parentheses any value that is not <code>0</code> will evaluate to true. This is important to remember as many conditions use this to check things implicitly.</p>
 
 <p>If we wished to check if an <code>int</code> called <code>x</code> was greater than <code>10</code> and less then <code>100</code>, we would write the following.</p> 
 
@@ -133,7 +133,7 @@ float length = sqrt(p.x * p.x + p.y * p.y);
 
 <p>Loops allow for some code to be repeated until some condition becomes false, or some counter elapses.</p>
 
-<p>There are two main loops in C. The first is a <code>while</code> loop. This loop repeatedly executes a block of code until some condition becomes false. It is written as <code>while</code> followed by some condition in parenthesis, followed by the code to execute in curly brackets. For example a loop that counts downward from <code>10</code> to <code>1</code> could be written as follows.</p>
+<p>There are two main loops in C. The first is a <code>while</code> loop. This loop repeatedly executes a block of code until some condition becomes false. It is written as <code>while</code> followed by some condition in parentheses, followed by the code to execute in curly brackets. For example a loop that counts downward from <code>10</code> to <code>1</code> could be written as follows.</p>
 
 <pre><code data-language='c'>int i = 10;
 while (i > 0) {
