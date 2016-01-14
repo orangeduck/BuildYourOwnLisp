@@ -34,17 +34,6 @@
 <p>Once comfortable with the method behind C's declaration syntax, I encourage programmers to migrate toward the right-handed version.</p> 
 
 
-<h2>Why isn't the language parser written by hand?</h2> <hr/>
-
-<p>Lots of people tell me that using a library for the parsing is a big turn off for them, because writing a parser by hand is a really fun part of building a language. And for a Lisp it is so simple. There are a few reasons why I did not take this approach.</p>
-
-<p>First of all, when I was learning about programming languages, I found the theory of formal languages fascinating. I really enjoyed getting into the mind set of thinking about languages more abstractly. I think this is a fun thing to teach, as it opens up a lot of new thoughts and avenues of exploration. In my mind, the actual implementation details are less important.</p>
-
-<p>This approach also gives new programmers a chance to learn how to use a library. It gets them comfortable early on with weird interfaces, and other peoples' code. I think <em>Parser Combinator</em> libraries are a really good advert for effective functional composition. So I couldn't help putting in a shameless plug to some of my other work!</p>
-
-<p>If you're curious as to how <em>Parser Combinator</em> libraries work you should check out my article <a href="http://theorangeduck.com/page/you-could-have-invented-parser-combinators">"You could have invented Parser Combinators"</a>.</p>
-
-
 <h2>Why are there no Macros in this Lisp?</h2> <hr/>
 
 <p>By far the biggest gripe conventional Lisp programmers have with the Lisp in this book is the lack of Macros. Instead of Macros a new concept of Q-Expressions is used to delay evaluation. To conventional Lisp programmers Q-Expressions are confusing because their semantics differ subtly from the quote Macro.</p>

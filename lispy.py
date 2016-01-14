@@ -24,7 +24,9 @@ pages = [
     'chapter7_evaluation.html',         'chapter8_error_handling.html', 'chapter9_s_expressions.html', 
     'chapter10_q_expressions.html',     'chapter11_variables.html',     'chapter12_functions.html',        
     'chapter13_conditionals.html',      'chapter14_strings.html',       'chapter15_standard_library.html',
-    'chapter16_bonus_projects.html'
+    'chapter16_bonus_projects.html',
+    
+    'appendix_a_hand_rolled_parser.html',
 ]
 
 titles = [
@@ -35,7 +37,9 @@ titles = [
     'Evaluation &bull; Chapter 7',         'Error Handling &bull; Chapter 8', 'S-Expressions &bull; Chapter 9',
     'Q-Expressions &bull; Chapter 10',     'Variables &bull; Chapter 11',     'Functions &bull; Chapter 12',
     'Conditionals &bull; Chapter 13',      'Strings &bull; Chapter 14',       'Standard Library &bull; Chapter 15',
-    'Bonus Projects &bull; Chapter 16'
+    'Bonus Projects &bull; Chapter 16',
+    
+    'Hand Rolled Parser &bull; Appendix A'
 ]
 
 sources = [
@@ -45,6 +49,7 @@ sources = [
     ('prompt_unix.c', 'prompt_windows.c', 'prompt.c'), ('doge_code.c', 'doge_grammar.c'),
     ('parsing.c', ), ('evaluation.c', ), ('error_handling.c',), ('s_expressions.c',), ('q_expressions.c',),
     ('variables.c',), ('functions.c',), ('conditionals.c',), ('strings.c',), ('prelude.lspy',), (),
+    ('hand_rolled_parser.c',)
 ]
 
 header = """
@@ -301,5 +306,5 @@ def route_paypal():
     
 if __name__ == '__main__':
     port = int(os.getenv('PORT') or 5000)
-    app.run(port=port)
+    app.run(port=port, debug=True)
 
