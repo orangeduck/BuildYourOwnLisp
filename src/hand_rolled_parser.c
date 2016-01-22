@@ -641,15 +641,15 @@ lval* builtin_if(lenv* e, lval* a) {
   return x;
 }
 
-/* Chanage forward declaration */
-int lval_read_expr(lval* v, char* s, int i, char end);
+/* Change forward declaration */
+lval* lval_read_expr(char* s, int* i, char end);
 
 lval* builtin_load(lenv* e, lval* a) {
   LASSERT_NUM("load", a, 1);
   LASSERT_TYPE("load", a, 0, LVAL_STR);
   
   /* Open file and check it exists */
-  FILE* f = fopen(a->cell[0]->str, "r");
+  FILE* f = fopen(a->cell[0]->str, "rb");
   if (f == NULL) {
     lval* err = lval_err("Could not load Library %s", a->cell[0]->str);
     lval_del(a);
@@ -660,19 +660,23 @@ lval* builtin_load(lenv* e, lval* a) {
   fseek(f, 0, SEEK_END);
   long length = ftell(f);
   fseek(f, 0, SEEK_SET);
-  char* input = calloc(length+1, 1);
+  char* input = calloc(length+10, 1);
   fread(input, 1, length, f);
   fclose(f);
   
   /* Create new S-Expr and read file into it */
-  lval* expr = lval_sexpr();
-  lval_read_expr(expr, input, 0, '\0');
+  int pos = 0;
+  lval* expr = lval_read_expr(input, &pos, '\0');
   
   /* Evaluate all expressions contained in S-Expr */
-  while (expr->count) {
-    lval* x = lval_eval(e, lval_pop(expr, 0));
-    if (x->type == LVAL_ERR) { lval_println(x); }
-    lval_del(x);
+  if (expr->type != LVAL_ERR) {
+    while (expr->count) {
+      lval* x = lval_eval(e, lval_pop(expr, 0));
+      if (x->type == LVAL_ERR) { lval_println(x); }
+      lval_del(x);
+    }
+  } else {
+    lval_println(expr);
   }
   
   lval_del(expr);    
@@ -839,7 +843,7 @@ lval* lval_eval(lenv* e, lval* v) {
 
 /* Reading */
 
-int lval_read_sym(lval* v, char* s, int i) {
+lval* lval_read_sym(char* s, int* i) {
   
   /* Allocate Empty String */
   char* part = calloc(1,1);
@@ -848,63 +852,65 @@ int lval_read_sym(lval* v, char* s, int i) {
   while (strchr(
       "abcdefghijklmnopqrstuvwxyz"
       "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-      "0123456789_+-*\\/=<>!&", s[i]) && s[i] != '\0') {
+      "0123456789_+-*\\/=<>!&", s[*i]) && s[*i] != '\0') {
     
     /* Append character to end of string */
     part = realloc(part, strlen(part)+2);
     part[strlen(part)+1] = '\0';
-    part[strlen(part)+0] = s[i];
-    i++;
+    part[strlen(part)+0] = s[*i];
+    (*i)++;
   }
   
   /* Check if Identifier looks like number */
-  int is_num = strchr("-0123456789", part[0]);
-  for (int i = 1; i < strlen(part); i++) {
-    if (!strchr("0123456789", part[i])) { is_num = 0; break; }
+  int is_num = strchr("-0123456789", part[0]) != NULL;
+  for (int j = 1; j < strlen(part); j++) {
+    if (strchr("0123456789", part[j]) != NULL) { is_num = 0; break; }
   }
+  if (strlen(part) == 1 && part[0] == '-') { is_num = 0; }
   
   /* Add Symbol or Number as lval */
+  lval* x = NULL;
   if (is_num) {
     errno = 0;
-    long x = strtol(part, NULL, 10);
-    lval_add(v, errno != ERANGE ? lval_num(x) : lval_err("Invalid Number %s", part));
+    long v = strtol(part, NULL, 10);
+    x = (errno != ERANGE) ? lval_num(v) : lval_err("Invalid Number %s", part);
   } else {
-    lval_add(v, lval_sym(part));
+    x = lval_sym(part);
   }
   
   /* Free temp string */
   free(part);
   
-  /* Return updated position in input */
-  return i;
+  /* Return lval */
+  return x;
 }
 
-int lval_read_str(lval* v, char* s, int i) {
+lval* lval_read_str(char* s, int* i) {
   
   /* Allocate empty string */
   char* part = calloc(1,1);
   
-  while (s[i] != '"') {
+  /* More forward one step past initial " character */
+  (*i)++;
+  while (s[*i] != '"') {
     
-    char c = s[i];
+    char c = s[*i];
     
     /* If end of input then there is an unterminated string literal */
     if (c == '\0') {
-      lval_add(v, lval_err("Unexpected end of input at string literal"));
       free(part);
-      return strlen(s);
+      return lval_err("Unexpected end of input");
     }
     
     /* If backslash then unescape character after it */
     if (c == '\\') {
-      i++;
+      (*i)++;
       /* Check next character is escapable */
-      if (strchr(lval_str_unescapable, s[i])) {        
-        c = lval_str_unescape(s[i]);
+      if (strchr(lval_str_unescapable, s[*i])) {        
+        c = lval_str_unescape(s[*i]);
       } else {
-        lval_add(v, lval_err("Invalid escape character %c", c));
         free(part);
-        return strlen(s);
+        return lval_err("Invalid escape sequence \\%c", s[*i]);
       }
     }
     
@@ -912,77 +918,102 @@ int lval_read_str(lval* v, char* s, int i) {
     part = realloc(part, strlen(part)+2);
     part[strlen(part)+1] = '\0';
     part[strlen(part)+0] = c;
-    i++;    
+    (*i)++;    
   }
+  /* Move forward past final " character */
+  (*i)++;
   
-  /* Add lval and free temp string */
-  lval_add(v, lval_str(part));
+  lval* x = lval_str(part);
   
+  /* free temp string */
   free(part);
   
-  return i+1;
+  return x;
 }
 
-int lval_read_expr(lval* v, char* s, int i, char end) {
+lval* lval_read(char* s, int* i);
+
+lval* lval_read_expr(char* s, int* i, char end) {
   
-  while (s[i] != end) {
-    
-    /* If we reach end of input then there is some missing terminal character */
-    if (s[i] == '\0') {
-      lval_add(v, lval_err("Missing %c at end of input", end));
-      return strlen(s)+1;
+  /* Either create new qexpr or sexpr */
+  lval* x = (end == '}') ? lval_qexpr() : lval_sexpr();
+  
+  /* While not at end character keep reading lvals */
+  while (s[*i] != end) {
+    lval* y = lval_read(s, i);
+    /* If an error then return this and stop */
+    if (y->type == LVAL_ERR) {
+      lval_del(x);
+      return y;
+    } else {
+      lval_add(x, y);
     }
-    
-    /* Skip all whitespace */
-    if (strchr(" \t\v\r\n", s[i])) {
-      i++;
-      continue;
+  }
+
+  /* Move past end character */
+  (*i)++;
+  
+  return x;
+
+}
+
+lval* lval_read(char* s, int* i) {
+  
+  /* Skip all trailing whitespace and comments */
+  while (strchr(" \t\v\r\n;", s[*i]) && s[*i] != '\0') {
+    if (s[*i] == ';') {
+      while (s[*i] != '\n' && s[*i] != '\0') { (*i)++; }
     }
-    
-    /* If next char is ; then read comment */
-    if (s[i] == ';') {
-      while (s[i] != '\n' && s[i] != '\0') { i++; }
-      i++;
-      continue;
-    }
-    
-    /* If next character is ( then read S-Expr */
-    if (s[i] == '(') {
-      lval* x = lval_sexpr();
-      lval_add(v, x);
-      i = lval_read_expr(x, s, i+1, ')');
-      continue;
-    }
-    
-    /* If next character is { then read Q-Expr */
-    if (s[i] == '{') {
-      lval* x = lval_qexpr();
-      lval_add(v, x);
-      i = lval_read_expr(x, s, i+1, '}');
-      continue;
-    }
-    
-    /* If next character is part of a symbol then read symbol */
-    if (strchr(
-      "abcdefghijklmnopqrstuvwxyz"
-      "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-      "0123456789_+-*\\/=<>!&", s[i])) {
-      i = lval_read_sym(v, s, i);
-      continue;
-    }
-    
-    /* If next character is " then read string */
-    if (strchr("\"", s[i])) {
-      i = lval_read_str(v, s, i+1);
-      continue;
-    }
-    
-    /* Encountered some unknown character */
-    lval_add(v, lval_err("Unknown Character %c", s[i]));
-    return strlen(s)+1;
+    (*i)++;
   }
   
-  return i+1;
+  lval* x = NULL;
+
+  /* If we reach end of input then we're missing something */
+  if (s[*i] == '\0') {
+    return lval_err("Unexpected end of input");
+  }
+  
+  /* If next character is ( then read S-Expr */
+  else if (s[*i] == '(') {
+    (*i)++;
+    x = lval_read_expr(s, i, ')');
+  }
+  
+  /* If next character is { then read Q-Expr */
+  else if (s[*i] == '{') {
+    (*i)++;
+    x = lval_read_expr(s, i, '}');
+  }
+  
+  /* If next character is part of a symbol then read symbol */
+  else if (strchr(
+    "abcdefghijklmnopqrstuvwxyz"
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    "0123456789_+-*\\/=<>!&", s[*i])) {
+    x = lval_read_sym(s, i);
+  }
+  
+  /* If next character is " then read string */
+  else if (strchr("\"", s[*i])) {
+    x = lval_read_str(s, i);
+  }
+  
+  /* Encountered some unexpected character */
+  else {
+    x = lval_err("Unexpected character %c", s[*i]);
+  }
+  
+  /* Skip all trailing whitespace and comments */
+  while (strchr(" \t\v\r\n;", s[*i]) && s[*i] != '\0') {
+    if (s[*i] == ';') {
+      while (s[*i] != '\n' && s[*i] != '\0') { (*i)++; }
+    }
+    (*i)++;
+  }
+  
+  return x;
+  
 }
 
 /* Main */    
@@ -1004,8 +1035,8 @@ int main(int argc, char** argv) {
       add_history(input);
       
       /* Create Empty S-Expr and Read input */
-      lval* expr = lval_sexpr();
-      lval_read_expr(expr, input, 0, '\0');
+      int pos = 0;
+      lval* expr = lval_read_expr(input, &pos, '\0');
       
       /* Evaluate and print input */
       lval* x = lval_eval(e, expr);
