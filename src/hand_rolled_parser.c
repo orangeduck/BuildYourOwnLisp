@@ -667,6 +667,7 @@ lval* builtin_load(lenv* e, lval* a) {
   /* Create new S-Expr and read file into it */
   int pos = 0;
   lval* expr = lval_read_expr(input, &pos, '\0');
+  free(input);
   
   /* Evaluate all expressions contained in S-Expr */
   if (expr->type != LVAL_ERR) {
@@ -864,7 +865,7 @@ lval* lval_read_sym(char* s, int* i) {
   /* Check if Identifier looks like number */
   int is_num = strchr("-0123456789", part[0]) != NULL;
   for (int j = 1; j < strlen(part); j++) {
-    if (strchr("0123456789", part[j]) != NULL) { is_num = 0; break; }
+    if (strchr("0123456789", part[j]) == NULL) { is_num = 0; break; }
   }
   if (strlen(part) == 1 && part[0] == '-') { is_num = 0; }
   
