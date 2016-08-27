@@ -1,7 +1,7 @@
 <h1>Languages <small>&bull; Chapter 5</small></h1>
 
 
-<h2>What is a Programming Language?</h2> <hr/>
+<h2 id='what_is_a_programming_language'>What is a Programming Language?</h2> <hr/>
 
 <p>A programming language is very similar to a real language. There is a structure behind it, and some rules which dictate what is, and isn't, a valid thing to say. When we read and write natural language, we are unconsciously learning these rules, and the same is true for programming languages. We can utilise these rules to understand others, and generate our own speech, or code.</p>
 
@@ -43,14 +43,14 @@
 <p>This is where a library called <code>mpc</code> comes in.</p>
 
 
-<h2>Parser Combinators</h2> <hr/>
+<h2 id='parser_combinators'>Parser Combinators</h2> <hr/>
 
 <p><code>mpc</code> is a <em>Parser Combinator</em> library I have written. This means it is a library that allows you to build programs that understand and process particular languages. These are known as <em>parsers</em>. There are many different ways of building parsers, but the cool thing about using a <em>Parser Combinator</em> library is that it lets you build <em>parsers</em> easily, just by specifying the <em>grammar</em> ... sort of.</p>
 
 <p>Many Parser Combinator libraries actually work by letting you write normal code that <em>looks a bit like</em> a grammar, not by actually specifying a grammar directly. In many situations this is fine, but sometimes it can get clunky and complicated. Luckily for us <code>mpc</code> allows us to write normal code that just looks like a grammar, <em>or</em> we can use special notation to write a grammar directly!</p>
 
 
-<h2>Coding Grammars</h2> <hr/>
+<h2 id='coding_grammars'>Coding Grammars</h2> <hr/>
 
 <p>So what does code that looks like a grammar...<em>look like</em>? Let us take a look at <code>mpc</code> by trying to write code for a grammar that recognizes <a href="http://knowyourmeme.com/memes/doge">the language of Shiba Inu</a>. More colloquially known as <em>Doge</em>. This language we are going to define as follows.</p>
 
@@ -64,7 +64,7 @@
 <p>If you squint you could attempt to read the code as if it were the rules we specified above.</p>
 
 <pre><code data-language='c'>/* Build a parser 'Adjective' to recognize descriptions */
-mpc_parser_t* Adjective = mpc_or(4, 
+mpc_parser_t* Adjective = mpc_or(4,
   mpc_sym("wow"), mpc_sym("many"),
   mpc_sym("so"),  mpc_sym("such")
 );
@@ -72,20 +72,20 @@ mpc_parser_t* Adjective = mpc_or(4,
 /* Build a parser 'Noun' to recognize things */
 mpc_parser_t* Noun = mpc_or(5,
   mpc_sym("lisp"), mpc_sym("language"),
-  mpc_sym("book"),mpc_sym("build"), 
+  mpc_sym("book"),mpc_sym("build"),
   mpc_sym("c")
 );
 </code></pre>
 
 <div class="alert alert-warning">
   <p><strong>How can I access these <code>mpc</code> functions?</strong></p>
-  
+
   <p>For now don't worry about compiling or running any of the sample code in this chapter. Just focus on understanding the theory behind grammars. In the next chapter we'll get set up with <code>mpc</code> and use it for a language closer to our Lisp.</p>
 </div>
 
 <p>To define <code>Phrase</code> we can reference our existing parsers. We need to use the function <code>mpc_and</code>, that specifies one thing is required then another. As input we pass it <code>Adjective</code> and <code>Noun</code>, our previously defined parsers. This function also takes the arguments <code>mpcf_strfold</code> and <code>free</code>, which say how to join or delete the results of these parsers. Ignore these arguments for now.</p>
 
-<pre><code data-language='c'>mpc_parser_t* Phrase = mpc_and(2, mpcf_strfold, 
+<pre><code data-language='c'>mpc_parser_t* Phrase = mpc_and(2, mpcf_strfold,
   Adjective, Noun, free);</code></pre>
 
 <p>To define <em>Doge</em> we must specify that <em>zero or more</em> of some parser is required. For this we need to use the function <code>mpc_many</code>. As before, this function requires the special variable <code>mpcf_strfold</code> to say how the results are joined together, which we can ignore.</p>
@@ -105,7 +105,7 @@ mpc_parser_t* Noun = mpc_or(5,
 <p>If we use more <code>mpc</code> functions, we can slowly build up parsers that parse more and more complicated languages. The code we use <em>sort of</em> reads like a grammar, but becomes much more messy with added complexity. Due to this, taking this approach isn't always an easy task. A whole set of helper functions that build on simple constructs to make frequent tasks easy are all documented on the <a href="http://github.com/orangeduck/mpc">mpc repository</a>. This is a good approach for complicated languages, as it allows for fine-grained control, but won't be required for our needs.</p>
 
 
-<h2>Natural Grammars</h2> <hr/>
+<h2 id='natural_grammars'>Natural Grammars</h2> <hr/>
 
 <p><code>mpc</code> lets us write grammars in a more natural form too. Rather than using C functions that look less like a grammar, we can specify the whole thing in one long string. When using this method we don't have to worry about how to join or discard inputs, with functions such as <code>mpcf_strfold</code>, or <code>free</code>. All of that is done automatically for us.</p>
 
