@@ -1,6 +1,6 @@
 <h1>Standard Library <small>&bull; Chapter 15</small></h1>
 
-<h2>Minimalism</h2> <hr/>
+<h2 id='minimalism'>Minimalism</h2> <hr/>
 
 <div class='pull-right alert alert-warning' style="margin: 15px; text-align: center;">
   <img src="/static/img/library.png" alt="library" class="img-responsive" width="299px" height="444px"/>
@@ -12,7 +12,7 @@
 <p>The motivation behind minimalism is two-fold. The first advantage is that it makes the core language simple to debug and easy to learn. This is a great benefit to developers and users. Like <a href="http://en.wikipedia.org/wiki/Occam%27s_razor">Occam's Razor</a> it is almost always better to trim away any waste if it results in a equally expressive language. The second reason is that having a small language is also aesthetically nicer. It is clever, interesting and fun to see how small we can make the core of a language, and still get something useful out of the other side. As hackers, which we should be by now, this is something we enjoy.</p>
 
 
-<h2>Atoms</h2> <hr/>
+<h2 id='atoms'>Atoms</h2> <hr/>
 
 <p>When dealing with conditionals we added no new boolean type to our language. Because of this we didn't add <code>true</code> or <code>false</code> either. Instead we just used numbers. Readability is still important though, so we can define some constants to represent these values.</p>
 
@@ -27,7 +27,7 @@
 (def {false} 0)</code></pre>
 
 
-<h2>Building Blocks</h2> <hr/>
+<h2 id='building_blocks'>Building Blocks</h2> <hr/>
 
 <p>We've already come up with a number of cool functions I've been using in the examples. One of these is our <code>fun</code> function that allows us to declare functions in a neater way. We should definitely include this in our standard library.</p>
 
@@ -78,7 +78,7 @@ Error: Unbound Symbol 'x'
 lispy&gt;</code></pre>
 
 
-<h2>Logical Operators</h2> <hr/>
+<h2 id='logical_operators'>Logical Operators</h2> <hr/>
 
 <p>We didn't define any local operators such as <code>and</code> and <code>or</code> in our language. This might be a good thing to add in later. For now we can use arithmetic operators to emulate them. Think about how these functions work when encountering <code>0</code> or <code>1</code> for their various inputs.</p>
 
@@ -88,7 +88,7 @@ lispy&gt;</code></pre>
 (fun {and x y} {* x y})</code></pre>
 
 
-<h2>Miscellaneous Functions</h2> <hr/>
+<h2 id='miscellaneous_functions'>Miscellaneous Functions</h2> <hr/>
 
 <p>Here are a couple of miscellaneous functions that don't really fit in anywhere. See if you can guess their intended functionality.</p>
 
@@ -137,7 +137,7 @@ lispy&gt;
 </code></pre>
 
 
-<h2>List Functions</h2> <hr/>
+<h2 id='list_functions'>List Functions</h2> <hr/>
 
 <p>The <code>head</code> function is used to get the first element of a list, but what it returns is still wrapped in the list. If we want to actually get the element out of this list we need to extract it somehow.</p>
 
@@ -251,7 +251,7 @@ lispy&gt;</code></pre>
 (fun {product l} {foldl * 1 l})</code></pre>
 
 
-<h2>Conditional Functions</h2> <hr/>
+<h2 id='conditional_functions'>Conditional Functions</h2> <hr/>
 
 <p>By defining our <code>fun</code> function we've already shown how powerful our language is in its ability to define functions that look like new syntax. Another example of this is found in emulating the C <code>switch</code> and <code>case</code> statements. In C these are built into the language, but for our language we can define them as part of a library.</p>
 
@@ -300,7 +300,7 @@ lispy&gt;</code></pre>
 })</code></pre>
 
 
-<h2>Fibonacci</h2> <hr/>
+<h2 id='fibonacci'>Fibonacci</h2> <hr/>
 
 <p>No standard library would be complete without an obligatory definition of the Fibonacci function. Using all of the above things we've defined  we can write a cute little <code>fib</code> function that is really quite readable, and clear semantically.</p>
 
