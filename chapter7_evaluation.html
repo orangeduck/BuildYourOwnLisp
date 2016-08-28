@@ -1,7 +1,7 @@
 <h1>Evaluation <small>&bull; Chapter 7</small></h1>
 
 
-<h2>Trees</h2> <hr/>
+<h2 id='trees'>Trees</h2> <hr/>
 
 <p>Now we can read input, and we have it structured internally, but we are still unable to evaluate it. In this chapter we add the code that evaluates this structure and actually performs the computations encoded within.</p>
 
@@ -55,7 +55,7 @@ printf("First Child Number of children: %i\n",
 </code></pre>
 
 
-<h2>Recursion</h2> <hr/>
+<h2 id='recursion'>Recursion</h2> <hr/>
 
 <p>There is a odd thing about this tree structure. It refers to itself. Each of its children are themselves trees again, and the children of those children are trees yet again. Just like our languages and re-write rules, data in this structure contains repeated substructures that resemble their parents.</p>
 
@@ -99,7 +99,7 @@ printf("First Child Number of children: %i\n",
 <p>Recursive functions can take some thought, so pause now and ensure you understand them before continuing onto other chapters because we'll be making good use of them in the rest of the book. If you are still uncertain, you can attempt some of the bonus marks for this chapter.</p>
 
 
-<h2>Evaluation</h2> <hr/>
+<h2 id='evaluation'>Evaluation</h2> <hr/>
 
 <p>To evaluate the parse tree we are going to write a recursive function. But before we get started, let us try and see what observations we can make about the structure of the tree we get as input. Try printing out some expressions using your program from the previous chapter. What do you notice?</p>
 
@@ -134,26 +134,26 @@ printf("First Child Number of children: %i\n",
 <p>We can use <code>strcmp</code> to check which operator to use, and <code>strstr</code> to check if a tag contains some substring. Altogether our recursive evaluation function looks like this.</p>
 
 <pre><code data-language='c'>long eval(mpc_ast_t* t) {
-  
-  /* If tagged as number return it directly. */ 
+
+  /* If tagged as number return it directly. */
   if (strstr(t-&gt;tag, "number")) {
     return atoi(t-&gt;contents);
   }
-  
+
   /* The operator is always second child. */
   char* op = t-&gt;children[1]-&gt;contents;
-  
+
   /* We store the third child in `x` */
   long x = eval(t-&gt;children[2]);
-  
+
   /* Iterate the remaining children and combining. */
   int i = 3;
   while (strstr(t-&gt;children[i]-&gt;tag, "expr")) {
     x = eval_op(x, op, eval(t-&gt;children[i]));
     i++;
   }
-  
-  return x;  
+
+  return x;
 }</code></pre>
 
 <p>We can define the <code>eval_op</code> function as follows. It takes in a number, an operator string, and another number. It tests for which operator is passed in, and performs the corresponding C operation on the inputs.</p>
@@ -168,7 +168,7 @@ long eval_op(long x, char* op, long y) {
 }</code></pre>
 
 
-<h2>Printing</h2> <hr/>
+<h2 id='printing'>Printing</h2> <hr/>
 
 <p>Instead of printing the tree, we now want to print the result of the evaluation. Therefore we need to pass the tree into our <code>eval</code> function, and print the result we get using <code>printf</code> and the specifier <code>%li</code>, which is used for <code>long</code> type.</p>
 

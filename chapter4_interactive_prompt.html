@@ -1,7 +1,7 @@
 <h1>An Interactive Prompt <small>&bull; Chapter 4</small></h1>
 
 
-<h2>Read, Evaluate, Print</h2> <hr/>
+<h2 id='read_evaluate_print'>Read, Evaluate, Print</h2> <hr/>
 
 <div class='pull-right alert alert-warning' style="margin: 15px; text-align: center;">
   <img src="/static/img/reptile.png" alt="reptile" class="img-responsive" width="187px" height="273px"/>
@@ -15,7 +15,7 @@
 <p>Before building a full <em>REPL</em> we'll start with something simpler. We are going to make a system that prompts the user, and echoes any input straight back. If we make this we can later extend it to parse the user input and evaluate it, as if it were an actual Lisp program.</p>
 
 
-<h2>An Interactive Prompt</h2> <hr/>
+<h2 id='an_interactive_prompt'>An Interactive Prompt</h2> <hr/>
 
 <p>For the basic setup we want to write a loop which repeatedly writes out a message, and then waits for some input. To get user input we can use a function called <code>fgets</code>, which reads any input up until a new line. We need somewhere to store this user input. For this we can declare a constantly sized input buffer.</p>
 
@@ -68,14 +68,14 @@ int main(int argc, char** argv) {
 
 <div class="alert alert-warning">
   <p><strong>How am I meant to know about functions like <code>fgets</code> and <code>printf</code>?</strong></p>
-  
+
   <p>It isn't immediately obvious how to know about these standard functions, and when to use them. When faced with a problem it takes experience to know when it has been solved for you by library functions.</p>
 
   <p>Luckily C has a very small standard library and almost all of it can be learnt in practice. If you want to do something that seems quite basic, or fundamental, it is worth looking at the <a href="http://en.cppreference.com/w/c">reference documentation</a> for the standard library and checking if there are any functions included that do what you want.</p>
 </div>
 
 
-<h2>Compilation</h2> <hr/>
+<h2 id='compilation'>Compilation</h2> <hr/>
 
 <p>You can compile this with the same command as was used in the second chapter.</p>
 
@@ -95,14 +95,14 @@ No You're a Stop being so rude!
 lispy&gt;</code></pre>
 
 
-<h2>Editing input</h2> <hr/>
+<h2 id='editing_input'>Editing input</h2> <hr/>
 
 <p>If you're working on Linux or Mac you'll notice some weird behaviour when you use the arrow keys to attempt to edit your input.</p>
 
 <pre><code data-language='lispy'>Lispy Version 0.0.0.0.3
 Press Ctrl+c to Exit
-  
-lispy> hel^[[D^[[C           
+
+lispy> hel^[[D^[[C
 </code></pre>
 
 <p>Using the arrow keys is creating these weird characters <code>^[[D</code> or <code>^[[C</code>, rather than moving the cursor around in the input. What we really want is to be able to move around on the line, deleting and editing the input in case we make a mistake.</p>
@@ -124,28 +124,28 @@ lispy> hel^[[D^[[C
 #include &lt;editline/history.h&gt;
 
 int main(int argc, char** argv) {
-   
+
   /* Print Version and Exit Information */
   puts("Lispy Version 0.0.0.0.1");
   puts("Press Ctrl+c to Exit\n");
-   
+
   /* In a never ending loop */
   while (1) {
-    
+
     /* Output our prompt and get input */
     char* input = readline("lispy&gt; ");
-    
+
     /* Add input to history */
     add_history(input);
-    
-    /* Echo input back to user */    
+
+    /* Echo input back to user */
     printf("No you're a %s\n", input);
 
     /* Free retrieved input */
     free(input);
-    
+
   }
-  
+
   return 0;
 }</code></pre>
 
@@ -184,7 +184,7 @@ undefined reference to `add_history'
 </div>
 
 
-<h2>The C Preprocessor</h2> <hr/>
+<h2 id='the_c_preprocessor'>The C Preprocessor</h2> <hr/>
 
 <p>For such a small project it might be okay that we have to program differently depending on what operating system we are using, but if I want to send my source code to a friend on different operating system to give me a hand with the programming, it is going to cause problems. In an ideal world I'd wish for my source code to be able to compile no matter where, or on what computer, it is being compiled. This is a general problem in C, and it is called <em>portability</em>. There is not always an easy or correct solution.</p>
 
@@ -232,21 +232,21 @@ void add_history(char* unused) {}
 #endif
 
 int main(int argc, char** argv) {
-   
+
   puts("Lispy Version 0.0.0.0.1");
   puts("Press Ctrl+c to Exit\n");
-   
+
   while (1) {
-    
+
     /* Now in either case readline will be correctly defined */
     char* input = readline("lispy&gt; ");
     add_history(input);
 
     printf("No you're a %s\n", input);
     free(input);
-    
+
   }
-  
+
   return 0;
 }</code></pre>
 
@@ -281,4 +281,3 @@ int main(int argc, char** argv) {
     <td class="text-right"><a href="chapter5_languages"><h4>Languages &rsaquo;</h4></a></td>
   </tr>
 </table>
-

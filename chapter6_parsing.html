@@ -7,7 +7,7 @@
 </div>
 
 
-<h2>Polish Notation</h2> <hr/>
+<h2 id='polish_notation'>Polish Notation</h2> <hr/>
 
 <p>To try out <code>mpc</code> we're going to implement a simple grammar that resembles a mathematical subset of our Lisp. It's called <a href="http://en.wikipedia.org/wiki/Polish_notation">Polish Notation</a> and is a notation for arithmetic where the operator comes before the operands.</p>
 
@@ -34,7 +34,7 @@
 </table>
 
 
-<h2>Regular Expressions</h2> <hr/>
+<h2 id='regular_expressions'>Regular Expressions</h2> <hr/>
 
 <p>We should be able to encode most of the above rules using things we know already, but <em>Number</em> and <em>Program</em> might pose some trouble. They contain a couple of constructs we've not learnt how to express yet. We don't know how to express the start or the end of input, optional characters, or range of characters.</p>
 
@@ -57,7 +57,7 @@
 <p>In an <code>mpc</code> grammar we write regular expressions by putting them between forward slashes <code>/</code>. Using the above guide our <em>Number</em> rule can be expressed as a regular expression using the string <code>/-?[0-9]+/</code>.</p>
 
 
-<h2>Installing mpc</h2> <hr/>
+<h2 id='installing_mpc'>Installing mpc</h2> <hr/>
 
 <p>Before we work on writing this grammar we first need to <em>include</em> the <code>mpc</code> headers, and then <em>link</em> to the <code>mpc</code> library, just as we did for <code>editline</code> on Linux and Mac. Starting with your code from chapter 4, you can rename the file to <code>parsing.c</code> and download <code>mpc.h</code> and <code>mpc.c</code> from the <a href="http://github.com/orangeduck/mpc">mpc repo</a>. Put these in the same directory as your source file.</p>
 
@@ -75,12 +75,12 @@
   <p><strong>Hold on, don't you mean <code>#include &lt;mpc.h&gt;</code>?</strong></p>
 
   <p>There are actually two ways to include files in C. One is using angular brackets <code>&lt;&gt;</code> as we've seen so far, and the other is with quotation marks <code>""</code>.</p>
-  
+
   <p>The only difference between the two is that using angular brackets searches the system locations for headers first, while quotation marks searches the current directory first. Because of this system headers such as <code>&lt;stdio.h&gt;</code> are typically put in angular brackets, while local headers such as <code>"mpc.h"</code> are typically put in quotation marks.</p>
 </div>
 
 
-<h2>Polish Notation Grammar</h2> <hr/>
+<h2 id='polish_notation_grammar'>Polish Notation Grammar</h2> <hr/>
 
 <p>Formalising the above rules further, and using some regular expressions, we can write a final grammar for the language of polish notation as follows. Read the below code and verify that it matches what we had written textually, and our ideas of polish notation.</p>
 
@@ -112,7 +112,7 @@ mpc_cleanup(4, Number, Operator, Expr, Lispy);</code></pre>
   <p>That should be <code>mpca_lang</code>, with an <code>a</code> at the end!</p>
 </div>
 
-<h2>Parsing User Input</h2> <hr/>
+<h2 id='parsing_user_input'>Parsing User Input</h2> <hr/>
 
 <p>Our new code creates a <code>mpc</code> parser for our <em>Polish Notation</em> language, but we still need to actually <em>use</em> it on the user input supplied each time from the prompt. We need to edit our <code>while</code> loop so that rather than just echoing user input back, it actually attempts to parse the input using our parser. We can do this by replacing the call to <code>printf</code> with the following <code>mpc</code> code, that makes use of our program parser <code>Lispy</code>.</p>
 

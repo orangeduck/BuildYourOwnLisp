@@ -1,21 +1,21 @@
 <h1>Bonus Projects <small>&bull; Chapter 16</small></h1>
 
 
-<h2>Only the Beginning</h2> <hr/>
+<h2 id='only_the_beginning'>Only the Beginning</h2> <hr/>
 
 <p>Although we've done a lot with our Lisp, it is still some way off from a fully complete, production-strength programming language. If you tried to use it for any sufficiently large project there are a number of issues you would eventually run into and improvements you'd have to make. Solving these problems would be what would bring it more into the scope of a fully fledged programming language.</p>
 
 <p>Here are some of these issues you would likely encounter, potential solutions to these problems, and some other fun ideas for other improvements. Some may take a few hundred lines of code, others a few thousand. The choice of what to tackle is up to you. If you've become fond of your language you may enjoy doing some of these projects.</p>
 
 
-<h2>Native Types</h2> <hr/>
+<h2 id='native_types'>Native Types</h2> <hr/>
 
 <p>Currently our language only wraps the native C <code>long</code> and <code>char*</code> types. This is pretty limiting if you want to do any kind of useful computation. Our operations on these data types are also pretty limited. Ideally our language should wrap all of the native C types and allow for methods of manipulating them. One of the most important additions would be the ability to manipulate decimal numbers. For this you could wrap the <code>double</code> type and relevant operations. With more than one number type we need to make sure the arithmetic operators such as <code>+</code> and <code>-</code> work on them all, and them in combination.</p>
 
 <p>Adding support for native types should be interesting for people wishing to do computation with decimal and floating-point numbers in their language.</p>
 
 
-<h2>User Defined Types</h2> <hr/>
+<h2 id='user_defined_types'>User Defined Types</h2> <hr/>
 
 <p>As well as adding support for native types it would be good to give users the ability to add their own new types, just like how we use structs in C. The syntax or method you use to do this would be up to you. This is a really essential part making our language usable for any reasonably sized project.</p>
 
@@ -27,14 +27,14 @@
   <p><small>Important List &bull; Play! BE HAPPY and go home.</small></p>
 </div>
 
-<h2>List Literal</h2> <hr/>
+<h2 id='list_literal'>List Literal</h2> <hr/>
 
 <p>Some lisps use square brackets <code>[]</code> to give a literal notation for lists of evaluated values lists. This syntactic sugar for writing something like <code>list 100 (+ 10 20) 300</code>. Instead it lets you write <code>[100 (+ 10 20) 300]</code>. In some situations this is clearly nicer, but it does use up the <code>[]</code> characters which could possibly be used for more interesting purposes.</p>
 
 <p>This should be a simple addition for people looking to try out adding extra syntax.</p>
 
 
-<h2>Operating System Interaction</h2> <hr/>
+<h2 id='operating_system_interaction'>Operating System Interaction</h2> <hr/>
 
 <p>One essential part of bootstrapping a language is to give it proper abilities for opening, reading, and writing files. This means wrapping all the C functions such as <code>fread</code>, <code>fwrite</code>, <code>fgetc</code>, etc in Lisp equivalents. This is a fairly straight forward task, but does require writing quite a large number of wrapper functions. This is why we've not done it for our language so far.</p>
 
@@ -43,7 +43,7 @@
 <p>People who wish to make use of their language for doing simple scripting tasks and string manipulation may be interested in implementing this project.</p>
 
 
-<h2>Macros</h2> <hr/>
+<h2 id='macros'>Macros</h2> <hr/>
 
 <p>Many other Lisps allow you to write things like <code>(def x 100)</code> to define the value <code>100</code> to <code>x</code>. In our lisp this wouldn't work because it would attempt to evaluate the <code>x</code> to whatever value was stored as <code>x</code> in the environment. In other Lisps these functions are called <em>macros</em>, and when encountered they stop the evaluation of their arguments, and manipulate them un-evaluated. They let you write things that look like normal function calls, but actually do complex and interesting things.</p>
 
@@ -52,16 +52,16 @@
 <p>I like how our language handles things like <code>def</code> and <code>if</code> without resorting to macros, but if you dislike how it works currently, and want it to be more similar to conventional Lisps, this might be something you are interested in implementing.</p>
 
 
-<h2>Variable Hashtable</h2> <hr/>
+<h2 id='variable_hashtable'>Variable Hashtable</h2> <hr/>
 
 <p>At the moment when we lookup variable names in our language we just do a linear search over all of the variables in the environment. This gets more and more inefficient the more variables we have defined.</p>
 
 <p>A more efficient way to do this is to implement a <em>Hash Table</em>. This technique converts the variable name to an integer and uses this to index into an array of a known size to find the value associated with this symbol. This is a really important data structure in programming and will crop up everywhere because of its fantastic performance under heavy loads.</p>
 
-<p>Anyone who is interested in learning more about data structures and algorithms would be smart to take a shot at implementing this data structure or one of its variations.</p> 
+<p>Anyone who is interested in learning more about data structures and algorithms would be smart to take a shot at implementing this data structure or one of its variations.</p>
 
 
-<h2>Pool Allocation</h2> <hr/>
+<h2 id='pool_allocation'>Pool Allocation</h2> <hr/>
 
 <p>Our Lisp is very simple, it is not fast. Its performance is relative to some scripting languages such as Python and Ruby. Most of the performance overhead in our program comes from the fact that doing almost anything requires us to construct and destruct <code>lval</code>. We therefore call <code>malloc</code> very often. This is a slow function as it requires the operating system to do some management for us. When doing calculations there is lots of copying, allocation and deallocation of <code>lval</code> types.</p>
 
@@ -70,7 +70,7 @@
 <p>This can be tricky to implement correctly, but conceptually does not need to be complex. If you want a quick method for getting large gains in performance, looking into this might interest you.</p>
 
 
-<h2>Garbage Collection</h2> <hr/>
+<h2 id='garbage_collection'>Garbage Collection</h2> <hr/>
 
 <p>Almost all other implementations of Lisps assign variables differently to ours. They do not store a copy of a value in the environment, but actually a pointer, or reference, to it directly. Because pointers are used, rather than copies, just like in C, there is much less overhead required when using large data structures.</p>
 
@@ -86,7 +86,7 @@
 <p>This should interest anyone who is concerned with the language's performance and wishes to change the semantics of how variables are stored and modified in the language.</p>
 
 
-<h2>Tail Call Optimisation</h2> <hr/>
+<h2 id='tail_call_optimisation'>Tail Call Optimisation</h2> <hr/>
 
 <p>Our programming language uses <em>recursion</em> to do its looping. This is conceptually a really clever way to do it, but practically it is quite poor. Recursive functions call themselves to collect all of the partial results of a computation, and only then combine all the results together. This is a wasteful way of doing computation when partial results can be accumulated as some total over a loop. This is particularly problematic for loops that are intended to run for many, or infinite, iterations.</p>
 
@@ -95,7 +95,7 @@
 <p>People who are interested in compiler optimisations and the correspondences between different forms of computation might find this project interesting.</p>
 
 
-<h2>Lexical Scoping</h2> <hr/>
+<h2 id='lexical_scoping'>Lexical Scoping</h2> <hr/>
 
 <p>When our language tries to lookup a variable that has been undefined it throws an error. It would be better if it could tell us which variables are undefined before evaluating the program. This would let us avoid typos and other annoying bugs. Finding these issues before the program is run is called <em>lexical scoping</em>, and uses the rules for variable definition to try and infer which variables are defined and which aren't at each point in the program, without doing any evaluation.</p>
 
@@ -107,14 +107,14 @@
   <p><small>Static Electricity &bull; A hair-raising alternative.</small></p>
 </div>
 
-<h2>Static Typing</h2> <hr/>
+<h2 id='static_typing'>Static Typing</h2> <hr/>
 
 <p>Every value in our program has an associated type with it. This we know before any evaluation has taken place. Our builtin functions also only take certain types as input. We should be able to use this information to infer the types of new user defined functions and values. We can also use this information to check that functions are being called with the correct types before we run the program. This will reduce any errors stemming from calling functions with incorrect types before evaluation. This checking is called <em>static typing</em>.</p>
 
 <p>Type systems are a really interesting and fundamental part of computer science. They are currently the best method we know of detecting errors before running a program. Anyone interesting in programming language safety and type systems should find this project really interesting.</p>
 
 
-<h2>Conclusion</h2> <hr/>
+<h2 id='conclusion'>Conclusion</h2> <hr/>
 
 <p>Many thanks for reading this book. I hope you've found something of interest in its pages. If you did enjoy it please tell your friends about it. If you are going to continue developing your language then best of luck and I hope you learn many more things about C, programming languages, and computer science.</p>
 
