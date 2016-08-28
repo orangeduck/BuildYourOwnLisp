@@ -1,7 +1,7 @@
 <h1>Error Handling <small>&bull; Chapter 8</small></h1>
 
 
-<h2>Crashes</h2> <hr/>
+<h2 id='crashes'>Crashes</h2> <hr/>
 
 <p>Some of you may have noticed a problem with the previous chapter's program. Try entering this into the prompt and see what happens.</p>
 
@@ -23,7 +23,7 @@ lispy&gt; / 10 0</code></pre>
 
 <p>But there is no magic in how C programs work. If you face a really troublesome bug don't give up or sit and stare at the screen till your eyes bleed. Take this chance to properly learn how to use <code>gdb</code> and <code>valgrind</code>. These will be more weapons in your tool-kit, and after the initial investment, save you a lot of time and pain.</p>
 
-<h2>Lisp Value</h2> <hr/>
+<h2 id='lisp_value'>Lisp Value</h2> <hr/>
 
 <p>There are several ways to deal with errors in C, but in this context my preferred method is to make errors a possible result of evaluating an expression. Then we can say that, in Lispy, an expression will evaluate to <em>either</em> a <em>number</em>, or an <em>error</em>. For example <code>+ 1 2</code> will evaluate to a number, but <code>/ 10 0</code> will evaluate to an error.</p>
 
@@ -39,7 +39,7 @@ typedef struct {
 } lval;</code></pre>
 
 
-<h2>Enumerations</h2> <hr/>
+<h2 id='enumerations'>Enumerations</h2> <hr/>
 
 <p>You'll notice the type of the fields <code>type</code>, and <code>err</code>, is <code>int</code>. This means they are represented by a single integer number.</p>
 
@@ -60,7 +60,7 @@ enum { LVAL_NUM, LVAL_ERR };</code></pre>
 enum { LERR_DIV_ZERO, LERR_BAD_OP, LERR_BAD_NUM };</code></pre>
 
 
-<h2>Lisp Value Functions</h2> <hr/>
+<h2 id='lisp_value_functions'>Lisp Value Functions</h2> <hr/>
 
 <p>Our <code>lval</code> type is almost ready to go. Unlike the previous <code>long</code> type we have no current method for creating new instances of it. To do this we can declare two functions that construct an <code>lval</code> of either an <em>error</em> type or a <em>number</em> type.</p>
 
@@ -113,7 +113,7 @@ void lval_print(lval v) {
 void lval_println(lval v) { lval_print(v); putchar('\n'); }</code></pre>
 
 
-<h2>Evaluating Errors</h2> <hr/>
+<h2 id='evaluating_errors'>Evaluating Errors</h2> <hr/>
 
 <p>Now that we know how to work with the <code>lval</code> type, we need to change our evaluation functions to use it instead of <code>long</code>.</p>
 
@@ -133,8 +133,8 @@ void lval_println(lval v) { lval_print(v); putchar('\n'); }</code></pre>
   if (strcmp(op, "*") == 0) { return lval_num(x.num * y.num); }
   if (strcmp(op, "/") == 0) {
     /* If second operand is zero return error */
-    return y.num == 0 
-      ? lval_err(LERR_DIV_ZERO) 
+    return y.num == 0
+      ? lval_err(LERR_DIV_ZERO)
       : lval_num(x.num / y.num);
   }
 
@@ -156,24 +156,24 @@ void lval_println(lval v) { lval_print(v); putchar('\n'); }</code></pre>
 <p>In this case we use the <code>strtol</code> function to convert from string to <code>long</code>. This allows us to check a special variable <code>errno</code> to ensure the conversion goes correctly. This is a more robust way to convert numbers than our previous method using <code>atoi</code>.</p>
 
 <pre><code data-language='c'>lval eval(mpc_ast_t* t) {
-  
+
   if (strstr(t-&gt;tag, "number")) {
     /* Check if there is some error in conversion */
     errno = 0;
     long x = strtol(t-&gt;contents, NULL, 10);
     return errno != ERANGE ? lval_num(x) : lval_err(LERR_BAD_NUM);
   }
-  
-  char* op = t-&gt;children[1]-&gt;contents;  
+
+  char* op = t-&gt;children[1]-&gt;contents;
   lval x = eval(t-&gt;children[2]);
-  
+
   int i = 3;
   while (strstr(t-&gt;children[i]-&gt;tag, "expr")) {
     x = eval_op(x, op, eval(t-&gt;children[i]));
     i++;
   }
-  
-  return x;  
+
+  return x;
 }</code></pre>
 
 <p>The final small step is to change how we print the result found by our evaluation to use our newly defined printing function which can print any type of <code>lval</code>.</p>
@@ -190,7 +190,7 @@ lispy&gt; / 10 2
 5</code></pre>
 
 
-<h2>Plumbing</h2> <hr/>
+<h2 id='plumbing'>Plumbing</h2> <hr/>
 
 <div class='pull-right alert alert-warning' style="margin: 15px; text-align: center;">
   <img src="/static/img/plumbing.png" alt="plumbing" class="img-responsive" width="368px" height="302px"/>
