@@ -78,7 +78,7 @@
   lval** cell;
 };</code></pre>
 
-<p>We've renamed the <code>lbuiltin</code> field from <code>func</code> to <code>builtin</code>. We should make sure to change this in all the places it is used in our code.</p>
+<p>We've renamed the <code>lbuiltin</code> field from <code>fun</code> to <code>builtin</code>. We should make sure to change this in all the places it is used in our code.</p>
 
 <p>We also need to create a constructor for user defined <code>lval</code> functions. Here we build a new environment for the function, and assign the <code>formals</code> and <code>body</code> values to those passed in. </p>
 
