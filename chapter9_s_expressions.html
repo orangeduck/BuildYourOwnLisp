@@ -267,8 +267,6 @@ lval* lval_sexpr(void) {
   for (int i = 0; i &lt; t-&gt;children_num; i++) {
     if (strcmp(t-&gt;children[i]-&gt;contents, "(") == 0) { continue; }
     if (strcmp(t-&gt;children[i]-&gt;contents, ")") == 0) { continue; }
-    if (strcmp(t-&gt;children[i]-&gt;contents, "}") == 0) { continue; }
-    if (strcmp(t-&gt;children[i]-&gt;contents, "{") == 0) { continue; }
     if (strcmp(t-&gt;children[i]-&gt;tag,  "regex") == 0) { continue; }
     x = lval_add(x, lval_read(t-&gt;children[i]));
   }
