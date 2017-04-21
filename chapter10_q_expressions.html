@@ -113,7 +113,7 @@ lval* lval_qexpr(void) {
 
 <p>We also need to update <code>lval_read</code> to recognize the curly bracket characters when they appear.</p>
 
-<pre><code data-lanuage='C'>    if (strcmp(t->children[i]->contents, "(") == 0) { continue; }
+<pre><code data-language='C'>    if (strcmp(t->children[i]->contents, "(") == 0) { continue; }
     if (strcmp(t->children[i]->contents, ")") == 0) { continue; }
     if (strcmp(t->children[i]->contents, "}") == 0) { continue; }
     if (strcmp(t->children[i]->contents, "{") == 0) { continue; }
