@@ -1,6 +1,6 @@
 <h1>Conditionals <small>&bull; Chapter 13</small></h1>
 
-<h2>Doing it yourself</h2> <hr/>
+<h2 id='doing_it_yourself'>Doing it yourself</h2> <hr/>
 
 <p>We've come quite far now. Your knowledge of C should be good enough for you to stand on your own feet a little more. If you're feeling confident, this chapter is a perfect opportunity to stretch your wings out and attempt something on your own. It is a fairly short chapter and essentially consists of adding a couple of new builtin functions to deal with comparison and ordering.</p>
 
@@ -14,7 +14,7 @@
 <p>If you still feel uncertain don't worry. Follow along and I'll explain my approach.</p>
 
 
-<h2>Ordering</h2> <hr/>
+<h2 id='ordering'>Ordering</h2> <hr/>
 
 <p>For simplicity's sake I'm going to re-use our number data type to represent the result of comparisons. I'll make a rule similar to C, to say that any number that isn't <code>0</code> evaluates to true in an <code>if</code> statement, while <code>0</code> always evaluates to false.</p>
 
@@ -48,7 +48,7 @@
   LASSERT_NUM(op, a, 2);
   LASSERT_TYPE(op, a, 0, LVAL_NUM);
   LASSERT_TYPE(op, a, 1, LVAL_NUM);
-  
+
   int r;
   if (strcmp(op, "&gt;")  == 0) {
     r = (a-&gt;cell[0]-&gt;num &gt;  a-&gt;cell[1]-&gt;num);
@@ -68,7 +68,7 @@
 </code></pre>
 
 
-<h2>Equality</h2> <hr/>
+<h2 id='equality'>Equality</h2> <hr/>
 
 <p>Equality is going to be different to ordering because we want it to work on more than number types. It will be useful to see if an input is equal to an empty list, or to see if two functions passed in are the same. Therefore we need to define a function which can test for equality between two different types of <code>lval</code>.</p>
 
@@ -93,7 +93,7 @@
       if (x-&gt;builtin || y-&gt;builtin) {
         return x-&gt;builtin == y-&gt;builtin;
       } else {
-        return lval_eq(x-&gt;formals, y-&gt;formals) 
+        return lval_eq(x-&gt;formals, y-&gt;formals)
           &amp;&amp; lval_eq(x-&gt;body, y-&gt;body);
       }
 
@@ -136,7 +136,7 @@ lval* builtin_ne(lenv* e, lval* a) {
 }</code></pre>
 
 
-<h2>If Function</h2> <hr/>
+<h2 id='if_function'>If Function</h2> <hr/>
 
 <p>To make our comparison operators useful we'll need an <code>if</code> function. This function is a little like the ternary operation in C. Upon some condition being true it evaluates to one thing, and if the condition is false, it evaluates to another.</p>
 
@@ -147,12 +147,12 @@ lval* builtin_ne(lenv* e, lval* a) {
   LASSERT_TYPE("if", a, 0, LVAL_NUM);
   LASSERT_TYPE("if", a, 1, LVAL_QEXPR);
   LASSERT_TYPE("if", a, 2, LVAL_QEXPR);
-  
+
   /* Mark Both Expressions as evaluable */
   lval* x;
   a-&gt;cell[1]-&gt;type = LVAL_SEXPR;
   a-&gt;cell[2]-&gt;type = LVAL_SEXPR;
-  
+
   if (a-&gt;cell[0]-&gt;num) {
     /* If condition is true evaluate first expression */
     x = lval_eval(e, lval_pop(a, 1));
@@ -160,7 +160,7 @@ lval* builtin_ne(lenv* e, lval* a) {
     /* Otherwise evaluate second expression */
     x = lval_eval(e, lval_pop(a, 2));
   }
-  
+
   /* Delete argument list and return */
   lval_del(a);
   return x;
@@ -201,7 +201,7 @@ lispy&gt; if (== x y) {+ x y} {- x y}
 </code></pre>
 
 
-<h2>Recursive Functions</h2> <hr/>
+<h2 id='recursive_functions'>Recursive Functions</h2> <hr/>
 
 <p>By introducing conditionals we've actually made our language a lot more powerful. This is because they effectively let us implement recursive functions.</p>
 

@@ -1,7 +1,7 @@
 <h1>S-Expressions <small>&bull; Chapter 9</small></h1>
 
 
-<h2>Lists and Lisps</h2> <hr/>
+<h2 id='lists_and_lisps'>Lists and Lisps</h2> <hr/>
 
 <div class='pull-right alert alert-warning' style="margin: 15px; text-align: center;">
   <img src="/static/img/lisp.png" alt="lisp" class="img-responsive" width="253px" height="300px"/>
@@ -17,9 +17,9 @@
 <p>By introducing S-Expressions we'll finally be entering the world of Lisp.</p>
 
 
-<h2>Pointers</h2> <hr/>
+<h2 id='pointers'>Pointers</h2> <hr/>
 
-<p>In C no concept of lists can be explored without dealing properly with pointers. Pointers are a famously misunderstood aspect of C. They are difficult to teach because while being conceptually very simple, they come with a lot of new terminology, and often no clear use-case. This makes them appear far more monstrous than they are. Luckily for us, we have a couple ideal use-cases, both of which are extremely typical in C, and will likely end up being how you use pointers 90% of the time.</p>
+<p>In C no concept of lists can be explored without dealing properly with pointers. Pointers are a famously misunderstood aspect of C. They are difficult to teach because while being conceptually very simple, they come with a lot of new terminology, and often no clear use-case. This makes them appear far more monstrous than they are. Luckily for us, we have a couple of ideal use-cases, both of which are extremely typical in C, and will likely end up being how you use pointers 90% of the time.</p>
 
 <p>The reason we need pointers in C is because of how function calling works. When you call a function in C the arguments are always passed <em>by value</em>. This means <em>a copy</em> of them is passed to the function you call. This is true for <code>int</code>, <code>long</code>, <code>char</code>, and user-defined <code>struct</code> types such as <code>lval</code>. Most of the time this is great but occasionally it can cause issues.</p>
 
@@ -44,7 +44,7 @@
 <p>Finally to get the data at an address, called <em>dereferencing</em>, we use the <code>*</code> operator on the left-hand side of a variable. To get the data at the field of a pointer to a struct we use the arrow <code>-&gt;</code>. This you saw in chapter 7.</p>
 
 
-<h2>The Stack &amp; The Heap</h2> <hr/>
+<h2 id='the_stack_and_the_heap'>The Stack &amp; The Heap</h2> <hr/>
 
 <p>I said that memory can be visualised of as one long list of bytes. Actually it is better to imagine it split into two sections. These sections are called <em>The Stack</em> and <em>The Heap</em>.</p>
 
@@ -78,7 +78,7 @@
 <p>I Imagine the Heap like a huge U-Store-It. We can call up the reception with <code>malloc</code> and request a number of boxes. With these boxes we can do what we want, and we know they will persist no matter how messy the building site gets. We can take things to and from the U-Store-It and the building site. It is useful to store materials and large objects which we only need to retrieve once in a while. The only problem is we need to remember to call the receptionist again with <code>free</code> when we are done. Otherwise soon we'll have requested all the boxes, have no space, and run up a huge bill.</p>
 
 
-<h2>Parsing Expressions</h2> <hr/>
+<h2 id='parsing_expressions'>Parsing Expressions</h2> <hr/>
 
 <p>Because we're now thinking in S-Expressions, and not Polish Notation we need to update our parser. The syntax for S-Expressions is simple. It is just a number of other Expressions between parentheses, where an Expression can be a Number, Operator, or other S-Expression . We can modify our existing parse rules to reflect this. We also are going to rename our <code>operator</code> rule to <code>symbol</code>. This is in anticipation of adding more operators, variables and functions later.</p>
 
@@ -103,13 +103,13 @@ mpca_lang(MPCA_LANG_DEFAULT,
 <pre><code data-language='c'>mpc_cleanup(5, Number, Symbol, Sexpr, Expr, Lispy);</code></pre>
 
 
-<h2>Expression Structure</h2> <hr/>
+<h2 id='expression_structure'>Expression Structure</h2> <hr/>
 
 <p>We need a way to store S-Expressions as <code>lval</code>. This means we'll also need to store <em>Symbols</em> and <em>Numbers</em>. We're going to add two new <code>lval</code> types to the <code>enum</code>. The first is <code>LVAL_SYM</code>, which we're going to use to represent operators such as <code>+</code>. The second new type is <code>LVAL_SEXPR</code> which we're going to use to represent S-Expressions.</p>
 
 <pre><code data-language='c'>enum { LVAL_ERR, LVAL_NUM, LVAL_SYM, LVAL_SEXPR };</code></pre>
 
-<p>S-Expressions are variable length <em>lists</em> of other values. As we learnt at the beginning of this chapter we can't create variable length structs, so we are going to need to use a pointer. We are going to create a pointer field <code>cell</code> which points to a location where we store a list of <code>lval*</code>. More specifically pointers to the other individual <code>lval</code>. Our field should therefore be a double pointer type <code>lval**</code>. A <em>pointer to <code>lval</code> pointers</em>. We will also need to keep track of how many <code>lval*</code> are in this list, so we add an extra field <code>count</code> to record this.</p> 
+<p>S-Expressions are variable length <em>lists</em> of other values. As we learnt at the beginning of this chapter we can't create variable length structs, so we are going to need to use a pointer. We are going to create a pointer field <code>cell</code> which points to a location where we store a list of <code>lval*</code>. More specifically pointers to the other individual <code>lval</code>. Our field should therefore be a double pointer type <code>lval**</code>. A <em>pointer to <code>lval</code> pointers</em>. We will also need to keep track of how many <code>lval*</code> are in this list, so we add an extra field <code>count</code> to record this.</p>
 
 <p>To represent symbols we're going to use a string. We're also going to change the representation of errors to a string. This means we can store a unique error message rather than just an error code. This will make our error reporting better and more flexible, and we can get rid of the original error <code>enum</code>. Our updated <code>lval</code> struct looks like this.</p>
 
@@ -130,7 +130,7 @@ mpca_lang(MPCA_LANG_DEFAULT,
   <p>There is an old programming joke which says you can rate C programmers by how many stars are on their pointers.</p>
 
   <p>Beginner's programs might only use <code>char*</code> or the odd <code>int*</code>, so they were called <em>one star programmers</em>. Most intermediate programs contain double pointer types such as <code>lval**</code>. These programmers are therefore called <em>two star programmers</em>. To spot a triple pointer is something special. You would be viewing the work of someone grand and terrible, writing code not meant to be read with mortal eyes. As such being called a <em>three star programmer</em> is rarely a compliment.</p>
-  
+
   <p>As far as I know, a quadruple pointer has never been seen in the wild.</p>
 </div>
 
@@ -140,13 +140,13 @@ mpca_lang(MPCA_LANG_DEFAULT,
   <p>Our new definition of <code>lval</code> needs to contain a reference to itself. This means we have to slightly change how it is defined. Before we open the curly brackets we can put the name of the struct, and then refer to this inside the definition using <code>struct lval</code>. Even though a struct can refer to its own type, it must only contain pointers to its own type, not its own type directly. Otherwise the size of the struct would refer to itself, and grow infinite in size when you tried to calculate it!</p>
 </div>
 
-<h2>Constructors &amp; Destructors</h2> <hr/>
+<h2 id="constructors_and_destructors">Constructors &amp; Destructors</h2> <hr/>
 
 <p>We can change our <code>lval</code> construction functions to return pointers to an <code>lval</code>, rather than one directly. This will make keeping track of <code>lval</code> variables easier. For this we need to use <code>malloc</code> with the <code>sizeof</code> function to allocate enough space for the <code>lval</code> struct, and then to fill in the fields with the relevant information using the arrow operator <code>-&gt;</code>.</p>
 
 <p>When we construct an <code>lval</code> its fields may contain pointers to other things that have been allocated on the heap. This means we need to be careful. Whenever we are finished with an <code>lval</code> we also need to delete the things it points to on the heap. We will have to make a rule for ourselves. Whenever we free the memory allocated for an <code>lval</code>, we also free all the things it points to.</p>
 
-<pre><code data-language='c'>/* Construct a pointer to a new Number lval */ 
+<pre><code data-language='c'>/* Construct a pointer to a new Number lval */
 lval* lval_num(long x) {
   lval* v = malloc(sizeof(lval));
   v-&gt;type = LVAL_NUM;
@@ -155,7 +155,7 @@ lval* lval_num(long x) {
 }
 </code></pre>
 
-<pre><code data-language='c'>/* Construct a pointer to a new Error lval */ 
+<pre><code data-language='c'>/* Construct a pointer to a new Error lval */
 lval* lval_err(char* m) {
   lval* v = malloc(sizeof(lval));
   v-&gt;type = LVAL_ERR;
@@ -165,7 +165,7 @@ lval* lval_err(char* m) {
 }
 </code></pre>
 
-<pre><code data-language='c'>/* Construct a pointer to a new Symbol lval */ 
+<pre><code data-language='c'>/* Construct a pointer to a new Symbol lval */
 lval* lval_sym(char* s) {
   lval* v = malloc(sizeof(lval));
   v-&gt;type = LVAL_SYM;
@@ -195,7 +195,7 @@ lval* lval_sexpr(void) {
   <p><strong>Why are you using <code>strlen(s) + 1</code>?</strong></p>
 
   <p>In C strings are <em>null terminated</em>. This means that the final character of them is always the zero character <code>\0</code>. This is a convention in C to signal the end of a string. It is important that all strings are stored this way otherwise programs will break in nasty ways.</p>
-  
+
   <p>The <code>strlen</code> function only returns the number of bytes in a string <em>excluding</em> the null terminator. This is why we need to add one, to ensure there is enough allocated space for it all!</p>
 </div>
 
@@ -224,9 +224,9 @@ lval* lval_sexpr(void) {
   /* Free the memory allocated for the "lval" struct itself */
   free(v);
 }</code></pre>
-    
-    
-<h2>Reading Expressions</h2> <hr/>
+
+
+<h2 id='reading_expressions'>Reading Expressions</h2> <hr/>
 
 <p>First we are going to <em>read</em> in the program and construct an <code>lval*</code> that represents it all. Then we are going to <em>evaluate</em> this <code>lval*</code> to get the result of our program. This first stage should convert the <em>abstract syntax tree</em> into an S-Expression, and the second stage should evaluate this S-Expression using our normal Lisp rules.</p>
 
@@ -240,7 +240,7 @@ lval* lval_sexpr(void) {
   <p><strong>Don't Lisps use <a href="http://en.wikipedia.org/wiki/Cons">Cons cells</a>?</strong></p>
 
   <p>Other Lisps have a slightly different definition of what an S-Expression is. In most other Lisps S-Expressions are defined inductively as either an <em>atom</em> such as a symbol of number, or two other S-Expressions joined, or <em>cons</em>, together.</p>
-  
+
   <p>This naturally leads to an implementation using <em>linked lists</em>, a different data structure to the one we are using. I choose to represent S-Expressions as a variable sized array in this book for the purposes of simplicity, but it is important to be aware that the official definition, and typical implementation are both subtly different.</p>
 </div>
 
@@ -260,15 +260,13 @@ lval* lval_sexpr(void) {
 
   /* If root (&gt;) or sexpr then create empty list */
   lval* x = NULL;
-  if (strcmp(t-&gt;tag, "&gt;") == 0) { x = lval_sexpr(); } 
+  if (strcmp(t-&gt;tag, "&gt;") == 0) { x = lval_sexpr(); }
   if (strstr(t-&gt;tag, "sexpr"))  { x = lval_sexpr(); }
 
   /* Fill this list with any valid expression contained within */
   for (int i = 0; i &lt; t-&gt;children_num; i++) {
     if (strcmp(t-&gt;children[i]-&gt;contents, "(") == 0) { continue; }
     if (strcmp(t-&gt;children[i]-&gt;contents, ")") == 0) { continue; }
-    if (strcmp(t-&gt;children[i]-&gt;contents, "}") == 0) { continue; }
-    if (strcmp(t-&gt;children[i]-&gt;contents, "{") == 0) { continue; }
     if (strcmp(t-&gt;children[i]-&gt;tag,  "regex") == 0) { continue; }
     x = lval_add(x, lval_read(t-&gt;children[i]));
   }
@@ -284,7 +282,7 @@ lval* lval_sexpr(void) {
 }
 </code></pre>
 
-<h2>Printing Expressions</h2> <hr/>
+<h2 id='printing_expressions'>Printing Expressions</h2> <hr/>
 
 <p>We are now so close to trying out all of our new changes. We need to modify our print function to print out S-Expressions types. Using this we can double check that the <em>reading</em> phase is working correctly by printing out the S-Expressions we read in and verifying they match those we input.</p>
 
@@ -321,7 +319,7 @@ void lval_println(lval* v) { lval_print(v); putchar('\n'); }</code></pre>
   <p><strong>I can't declare these functions because they call each other.</strong></p>
 
   <p>The <code>lval_expr_print</code> function calls the <code>lval_print</code> function and vice-versa. There is no way we can order them in the source file to resolve this dependency. Instead we need to <em>forward declare</em> one of them. This is declaring a function without giving it a body. It lets other functions call it, while allowing you to define it properly later on. To write a forward declaration, write the function definition but instead of the body put a semicolon <code>;</code>. In this example we should put <code>void lval_print(lval* v);</code> somewhere in the source file before <code>lval_expr_print</code>.</p>
-  
+
   <p>You'll definitely run into this later, and I won't always alert you to it, so try to remember how to fix it!</p>
 </div>
 
@@ -343,7 +341,7 @@ lispy&gt; *     55     101  (+ 0 0 0)
 lispy&gt;</code></pre>
 
 
-<h2>Evaluating Expressions</h2> <hr/>
+<h2 id='evaluating_expressions'>Evaluating Expressions</h2> <hr/>
 
 <p>The behaviour of our evaluation function is largely the same as before. We need to adapt it to deal with <code>lval*</code> and our more relaxed definition of what constitutes an expression. We can think of our evaluation function as a kind of transformer. It takes in some <code>lval*</code> and transforms it in some way to some new <code>lval*</code>. In some cases it can just return exactly the same thing. In other cases it may modify the input <code>lval*</code> and return it. In many cases it will delete the input, and return something completely different. If we are going to return something new we must always remember to delete the <code>lval*</code> we get as input.</p>
 
@@ -432,7 +430,7 @@ lispy&gt;</code></pre>
 <p>If there have been no errors the input arguments are deleted and the new expression returned.</p>
 
 <pre><code data-language="c">lval* builtin_op(lval* a, char* op) {
-  
+
   /* Ensure all arguments are numbers */
   for (int i = 0; i < a->count; i++) {
     if (a-&gt;cell[i]-&gt;type != LVAL_NUM) {
@@ -440,7 +438,7 @@ lispy&gt;</code></pre>
       return lval_err("Cannot operate on non-number!");
     }
   }
-  
+
   /* Pop the first element */
   lval* x = lval_pop(a, 0);
 
