@@ -660,11 +660,11 @@ lval* builtin_load(lenv* e, lval* a) {
   fseek(f, 0, SEEK_END);
   long length = ftell(f);
   fseek(f, 0, SEEK_SET);
-  char* input = calloc(length+10, 1);
+  char* input = calloc(length+1, 1);
   fread(input, 1, length, f);
   fclose(f);
   
-  /* Create new S-Expr and read file into it */
+  /* Read from input to create an S-Expr */
   int pos = 0;
   lval* expr = lval_read_expr(input, &pos, '\0');
   free(input);
@@ -1035,7 +1035,7 @@ int main(int argc, char** argv) {
       char* input = readline("lispy> ");
       add_history(input);
       
-      /* Create Empty S-Expr and Read input */
+      /* Read from input to create an S-Expr */
       int pos = 0;
       lval* expr = lval_read_expr(input, &pos, '\0');
       

@@ -7,9 +7,9 @@
   <p><small>Steam Roller &bull; We're gonna be rolling <em>machines</em>.</small></p>
 </div>
 
-<p>So far we've been using <code>mpc</code> to do all the parsing, but in this appendix we're going to replace <code>mpc</code> with our own hand rolled parser. The choice to use <code>mpc</code> has by far been the main source of complaints by readers of this book, and before we dive into the details of hand-rolling I want to talk about some of the reasons I decided on using a parsing library in the first place.</p>
+<p>In this book we used <code>mpc</code> to do all the parsing, but in this appendix we're going to replace <code>mpc</code> with our own hand rolled parser. The choice to use <code>mpc</code> has by far been the main source of complaints by readers of this book, and before we dive into the details of hand-rolling I want to talk about some of the reasons I decided on using a parsing library in the first place.</p>
 
-<p>The main reason is that when I was learning about programming languages, I found the theory of formal languages fascinating. I really enjoyed getting into the mind set of thinking about languages more abstractly. I think this is a fun thing to teach, as it opens up a lot of new avenues of exploration.</p>
+<p>The main reason was that when I was learning about programming languages, I found the theory of formal languages fascinating. I really enjoyed getting into the mind set of thinking about languages more abstractly. I think this is a fun thing to teach, as it opens up a lot of new avenues of exploration.</p>
 
 <p>Another reason is that it gives new programmers a chance to learn how to use a library. It gets them comfortable early on with weird interfaces, and other peoples' code.</p>
 
@@ -24,45 +24,22 @@
 </div>
 
 
+<h2>Replacing mpc</h2>
 
+<p>The output of <code>mpc</code> was an <em>Abstract Syntax Tree</em>, but because our language is so simple, when we replace it we're going to go directly from the input string to an S-Expressions (which is pretty much like abstract syntax tree anyway). So let us declare a function which takes some string <code>s</code>, some pointer to a position in that string <code>i</code> and some terminal character <code>end</code> and which outputs an <code>lval</code>. We'll call it <code>lval_read_expr</code>.</p>
 
-<h2>A Character at a Time</h2> <hr/>
-
-<div class='pull-left alert alert-warning' style="margin: 15px; text-align: center;">
-  <img src="/static/img/reading_with_pipe.png" alt="reading with pipe" class="img-responsive" width="278px" height="308px"/>
-  <p><small>Reading &bull; A Jolly Good Time (tm).</small></p>
-</div>
-
-<p>The way to think about implementing a parser is quite different to the high level abstract view we were given with <code>mpc</code>. Instead of thinking about the <em>language</em> we instead need to think about the <em>process</em>.</p>
-
-<p>Usually this <em>process</em> takes a very simple form - a parser is almost always just a loop, which repeatedly reads a character at a time from the input, and each time decides what to do with it. The challenge is in programming this process elegantly.</p>
-
-<p>To give an idea of how it might work - in our Lisp, if we encounter the character <code>d</code> in the input, we can store it in some string, and also we know we must be reading in a symbol, so can enter a state where we look for more letters, each time adding them to the string. Once we're found no more letters in the input we can return the whole thing as a symbol (for example <code>def</code>) and start again.</p>
-
-<p>This is how we're going to get started - we're going to create a function which takes as input some string, some position in that string, and decides what to do next.</p>
-
-<p>Now, when we used <code>mpc</code> it gave us an <em>Abstract Syntax Tree</em> as output, but because our language is so simple, we are going to go directly from the input string to an S-Expressions (which is pretty much like abstract syntax tree anyway).</p>
-
-<p>The function we'll use for reading in the input we'll call <code>lval_read_expr</code> and this will be the declaration type. It might look a little weird now, but will hopefully make perfect sense one you see how it works.</p>
-
-<pre><code data-language='c'>int lval_read_expr(lval* v, char* s, int i, char end);
+<pre><code data-language='c'>lval* lval_read_expr(char* s, int* i, char end);
 </code></pre>
 
-<p>Lets go ahead and replace the places we call <code>mpc</code> with this new function. In our <code>main</code> function we can replace our calls to <code>mpc</code>. Notice that we create a new S-Expression <code>lval</code> for the read function to write into and also no longer have to do any error handling - we'll get <code>lval_read_expr</code> to return an error <code>lval</code> if something goes wrong.</p>
+<p>We'll define the implementation later. For now lets go ahead and replace the places we call <code>mpc</code> with this new function. For error handling we'll get <code>lval_read_expr</code> to return an error <code>lval</code> if something goes wrong. The terminal character when we're reading from a C string is just the null character <code>\0</code>.</p>
 
 <pre><code data-language='c'>  char* input = readline("lispy&gt; ");
-  add_history(input);
-  
-  /* Create Empty S-Expr and Read input */
-  lval* expr = lval_sexpr();
-  lval_read_expr(expr, input, 0, '\0');
-  
-  /* Evaluate and print input */
-  lval* x = lval_eval(e, expr);
-  lval_println(x);
-  lval_del(x);
-  
-  free(input);
+      /* Read from input to create an S-Expr */
+      int pos = 0;
+      lval* expr = lval_read_expr(input, &pos, '\0');
+      
+      /* Evaluate and print input */
+      lval* x = lval_eval(e, expr);
 </code></pre>
 
 <p>We also need to replace <code>mpc</code> in our function <code>builtin_load</code>. Here, because we only support strings in our read function, we first need to load in the contents of the file. To do this we use <code>fseek</code> and <code>ftell</code> to find out how many characters are in the file before allocating a string of that size (plus one) and reading the file into it.</p>
@@ -72,7 +49,7 @@
   LASSERT_TYPE("load", a, 0, LVAL_STR);
   
   /* Open file and check it exists */
-  FILE* f = fopen(a-&gt;cell[0]-&gt;str, "r");
+  FILE* f = fopen(a-&gt;cell[0]-&gt;str, "rb");
   if (f == NULL) {
     lval* err = lval_err("Could not load Library %s", a-&gt;cell[0]-&gt;str);
     lval_del(a);
@@ -90,15 +67,20 @@
 
 <p>We can then easily read from this string as we did in <code>main</code>.</p>
 
-<pre><code data-language='c'>  /* Create new S-Expr and read file into it */
-  lval* expr = lval_sexpr();
-  lval_read_expr(expr, input, 0, '\0');
+<pre><code data-language='c'>  /* Read from input to create an S-Expr */
+  int pos = 0;
+  lval* expr = lval_read_expr(input, &pos, '\0');
+  free(input);
   
   /* Evaluate all expressions contained in S-Expr */
-  while (expr-&gt;count) {
-    lval* x = lval_eval(e, lval_pop(expr, 0));
-    if (x-&gt;type == LVAL_ERR) { lval_println(x); }
-    lval_del(x);
+  if (expr-&gt;type != LVAL_ERR) {
+    while (expr-&gt;count) {
+      lval* x = lval_eval(e, lval_pop(expr, 0));
+      if (x-&gt;type == LVAL_ERR) { lval_println(x); }
+      lval_del(x);
+    }
+  } else {
+    lval_println(expr);
   }
   
   lval_del(expr);    
@@ -108,10 +90,25 @@
 }
 </code></pre>
 
+<p>And with those calls replaced we can start defining <code>lval_read_expr</code>.</p>
 
-<h2>Reading Loop</h2> <hr/>
+
+<h2>A Character at a Time</h2> <hr/>
+
+<div class='pull-left alert alert-warning' style="margin: 15px; text-align: center;">
+  <img src="/static/img/reading_with_pipe.png" alt="reading with pipe" class="img-responsive" width="278px" height="308px"/>
+  <p><small>Reading &bull; A Jolly Good Time (tm).</small></p>
+</div>
+
+<p>The way we think about implementing a parser is quite different to the high level abstract view we were given with <code>mpc</code>. Instead of thinking about the <em>language</em> we instead need to think about the <em>process</em>.</p>
+
+<p>Usually this <em>process</em> takes a very simple form - a parser is almost always just a loop, which repeatedly reads a character at a time from the input, and each time decides what to do with it. The challenge is in programming this process elegantly. It all starts to get a little messy when we think about whitespace, and comments, and everything else.</p>
 
 <p>With our calls to <code>mpc</code> replaced we can get about to the business of actually reading from the string into an S-Expression.</p>
+
+<p>To give an idea of how it might work - in our Lisp, if we encounter the character <code>d</code> in the input, we can store it in some string, and also we know we must be reading in a symbol, so can enter a state where we look for more letters, each time adding them to the string. Once we're found no more letters in the input we can return the whole thing as a symbol (for example <code>def</code>) and start again.</p>
+
+<p>This is how we're going to get started - we're going to create a function which takes as input some string, some position in that string, and decides what to do next.</p>
 
 <p>The function <code>lval_read_expr</code> is basically going to work like this. While the next character isn't the one specified by the argument <code>end</code> we will try to read in whatever thing appears next, create an <code>lval</code> object from it, and append it to the argument <code>v</code>.<p>
 
