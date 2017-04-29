@@ -160,6 +160,10 @@ break;</code></pre>
   return lval_lambda(formals, body);
 }</code></pre>
 
+<p>Let's register this with the other builtins.</p>
+
+<pre><code data-language='c'>lenv_add_builtin(e, "\\", builtin_lambda);</code></pre>
+
 <div class="alert alert-warning">
   <p><strong>Where did <code>LASSERT_NUM</code> and <code>LASSERT_TYPE</code> come from?</strong></p>
 
