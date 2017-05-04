@@ -440,7 +440,7 @@ lval* builtin_join(lenv* e, lval* a) {
 lval* builtin_op(lenv* e, lval* a, char* op) {
   
   for (int i = 0; i < a->count; i++) {
-    LASSERT_TYPE(op, a, i, LVAL_NUM);
+    LASSERT_TYPE("op", a, i, LVAL_NUM);
   }
   
   lval* x = lval_pop(a, 0);
