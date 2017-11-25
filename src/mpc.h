@@ -16,15 +16,16 @@
 #include <string.h>
 #include <math.h>
 #include <errno.h>
+#include <ctype.h>
 
 /*
 ** State Type
 */
 
 typedef struct {
-  int pos;
-  int row;
-  int col;
+  long pos;
+  long row;
+  long col;
 } mpc_state_t;
 
 /*
@@ -107,7 +108,7 @@ mpc_parser_t *mpc_fail(const char *m);
 mpc_parser_t *mpc_failf(const char *fmt, ...);
 mpc_parser_t *mpc_lift(mpc_ctor_t f);
 mpc_parser_t *mpc_lift_val(mpc_val_t *x);
-mpc_parser_t *mpc_boundary(void);
+mpc_parser_t *mpc_anchor(int(*f)(char,char));
 mpc_parser_t *mpc_state(void);
 
 /*
@@ -139,6 +140,8 @@ mpc_parser_t *mpc_predictive(mpc_parser_t *a);
 
 mpc_parser_t *mpc_eoi(void);
 mpc_parser_t *mpc_soi(void);
+
+mpc_parser_t *mpc_boundary(void);
 
 mpc_parser_t *mpc_whitespace(void);
 mpc_parser_t *mpc_whitespaces(void);
@@ -216,6 +219,9 @@ mpc_val_t *mpcf_int(mpc_val_t *x);
 mpc_val_t *mpcf_hex(mpc_val_t *x);
 mpc_val_t *mpcf_oct(mpc_val_t *x);
 mpc_val_t *mpcf_float(mpc_val_t *x);
+mpc_val_t *mpcf_strtriml(mpc_val_t *x);
+mpc_val_t *mpcf_strtrimr(mpc_val_t *x);
+mpc_val_t *mpcf_strtrim(mpc_val_t *x);
 
 mpc_val_t *mpcf_escape(mpc_val_t *x);
 mpc_val_t *mpcf_escape_regex(mpc_val_t *x);
@@ -267,6 +273,7 @@ mpc_ast_t *mpc_ast_state(mpc_ast_t *a, mpc_state_t s);
 
 void mpc_ast_delete(mpc_ast_t *a);
 void mpc_ast_print(mpc_ast_t *a);
+void mpc_ast_print_to(mpc_ast_t *a, FILE *fp);
 
 /*
 ** Warning: This function currently doesn't test for equality of the `state` member!
@@ -307,20 +314,23 @@ mpc_err_t *mpca_lang_pipe(int flags, FILE *f, ...);
 mpc_err_t *mpca_lang_contents(int flags, const char *filename, ...);
 
 /*
-** Debug & Testing
+** Misc
 */
 
+
 void mpc_print(mpc_parser_t *p);
+void mpc_optimise(mpc_parser_t *p);
+void mpc_stats(mpc_parser_t *p);
 
-int mpc_test_pass(mpc_parser_t *p, const char *s, void *d,
-  int(*tester)(void*, void*), 
+int mpc_test_pass(mpc_parser_t *p, const char *s, const void *d,
+  int(*tester)(const void*, const void*), 
   mpc_dtor_t destructor, 
-  void(*printer)(void*));
+  void(*printer)(const void*));
 
-int mpc_test_fail(mpc_parser_t *p, const char *s, void *d,
-  int(*tester)(void*, void*),
+int mpc_test_fail(mpc_parser_t *p, const char *s, const void *d,
+  int(*tester)(const void*, const void*),
   mpc_dtor_t destructor,
-  void(*printer)(void*));
+  void(*printer)(const void*));
 
 
 
