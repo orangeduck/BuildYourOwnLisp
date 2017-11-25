@@ -1,33 +1,19 @@
 <h1>Basics <small>&bull; Chapter 3</small></h1>
 
 
-<h2>Overview</h2> <hr/>
-
-<!--
-<div class='pull-right alert alert-warning' style="margin: 15px; text-align: center;">
-  <img src="/static/img/crash.png" alt="crash"/>
-  <p><small>Crash &bull; of course</small></p>
-</div>
--->
-
-<!--
-<div class='pull-right alert alert-warning' style="margin: 15px; text-align: center;">
-  <img src="/static/img/breakfast.png" alt="breakfast"/>
-  <p><small>Fried Breakfast &bull; The basics in life.</small></p>
-</div>
--->
+<h2 id='overview'>Overview</h2> <hr/>
 
 <div class='pull-right alert alert-warning' style="margin: 15px; text-align: center;">
-  <img src="/static/img/programs.png" alt="programs" class="img-responsive"/>
+  <img src="/static/img/programs.png" alt="programs" class="img-responsive" width="251px" height="410px"/>
   <p><small>Programs &bull; Useful for the theatre.</small></p>
 </div>
 
 <p>In this chapter I've prepared a quick overview of the basic features of C. There are very few <em>features</em> in C, and the syntax is relatively simple. But this doesn't mean it is easy. All the depth hides below the surface. Because of this we're going to cover the <em>features</em> and <em>syntax</em> fairly quickly now, and see them in greater depth as we continue.</p>
 
-<p>The goal of this chapter is get everyone on the same page. People totally new to C should therefore read it in some consideration, and take some time over it, while those with some existing experience may find it easier to skim and return to later as required.</p>
+<p>The goal of this chapter is to get everyone on the same page. People totally new to C should therefore take some time over it, while those with some existing experience may find it easier to skim and return to later as required.</p>
 
 
-<h2>Programs</h2> <hr/>
+<h2 id='programs'>Programs</h2> <hr/>
 
 <p>A program in C consists of only <em>function definitions</em> and <em>structure definitions</em>.</p>
 
@@ -38,13 +24,13 @@
 <p>As we saw in the previous chapter, the execution of a C program always starts in the function called <code>main</code>. From here it calls more and more functions, to perform all the actions it requires.</p>
 
 
-<h2>Variables</h2> <hr/>
+<h2 id='variables'>Variables</h2> <hr/>
 
-<p>Functions in C consists of manipulating <em>variables</em>. These are items of data which we give a name to.</p>
+<p>Functions in C consist of manipulating <em>variables</em>. These are items of data which we give a name to.</p>
 
-<p>Every variable in C has an explicit <em>type</em>. These types are declared by ourselves or built into the language. We can declare a new variable by writing the name of its type, followed by its name, and optionally setting it to some value using <code>=</code>. This declaration is called a <em>statement</em>, and we terminate all <em>statements</em> in C with a semicolon <code>;</code>.</p>
+<p>Every variable in C has an explicit <em>type</em>. These types are declared by ourselves or built into the language. We can declare a new variable by writing the name of its type, followed by its name, and optionally setting it to some value using <code>=</code>. This declaration is a <em>statement</em>, and we terminate all <em>statements</em> in C with a semicolon <code>;</code>.</p>
 
-<p>To create a new <code>int</code> called <code>count</code> we could write the following...</p> 
+<p>To create a new <code>int</code> called <code>count</code> we could write the following...</p>
 
 <pre><code data-language='c'>int count;</code></pre>
 
@@ -64,11 +50,11 @@
 </table>
 
 
-<h2>Function Declarations</h2> <hr/>
+<h2 id='function_declarations'>Function Declarations</h2> <hr/>
 
-<p>A Function is a computation that manipulates variables, and optionally changes the state of the program. It takes as input some variables and returns some single variable as output.</p>
+<p>A function is a computation that manipulates variables, and optionally changes the state of the program. It takes as input some variables and returns some single variable as output.</p>
 
-<p>To declare a function we write the type of the variable it returns, the name of the function, and then in parenthesis a list of the variables it takes as input , separated by commas. The contents of the function are put inside curly brackets <code>{}</code>, and lists all of the statements the function executes, terminated by semicolons <code>;</code>. A <code>return</code> statement is used to let the function finish and output a variable.</p>
+<p>To declare a function we write the type of the variable it returns, the name of the function, and then in parenthesis a list of the variables it takes as input, separated by commas. The contents of the function are put inside curly brackets <code>{}</code>, and lists all of the statements the function executes, terminated by semicolons <code>;</code>. A <code>return</code> statement is used to let the function finish and output a variable.</p>
 
 <p>For example a function that takes two <code>int</code> variables called <code>x</code> and <code>y</code> and adds them together could look like this.</p>
 
@@ -77,12 +63,12 @@
   return result;
 }</code></pre>
 
-<p>We call functions by writing their name and putting the arguments to the function in parenthesis, separated by commas. For example to call the above function and store the result in a variable <code>added</code> we would write the following.</p>
+<p>We call functions by writing their name and putting the arguments to the function in parentheses, separated by commas. For example to call the above function and store the result in a variable <code>added</code> we would write the following.</p>
 
 <pre><code data-language='c'>int added = add_together(10, 18);</code></pre>
 
 
-<h2>Structure Declarations</h2> <hr/>
+<h2 id='structure_declarations'>Structure Declarations</h2> <hr/>
 
 <p>Structures are used to declare new <em>types</em>. Structures are several variables bundled together into a single package.</p>
 
@@ -105,10 +91,10 @@ float length = sqrt(p.x * p.x + p.y * p.y);
 
 
 
-<h2>Pointers</h2> <hr/>
+<h2 id='pointers'>Pointers</h2> <hr/>
 
 <div class='pull-right alert alert-warning' style="margin: 15px; text-align: center;">
-  <img src="/static/img/pointer.png" alt="pointer" class="img-responsive"/>
+  <img src="/static/img/pointer.png" alt="pointer" class="img-responsive" width="251px" height="384px"/>
   <p><small>Pointer &bull; A short haired one</small></p>
 </div>
 
@@ -117,37 +103,37 @@ float length = sqrt(p.x * p.x + p.y * p.y);
 <p>Pointers are used for a whole number of different things such as for strings or lists. These are a difficult part of C and will be explained in much greater detail in later chapters. We won't make use of them for a while, so for now it is good to simply know they exist, and how to spot them. Don't let them scare you off!</p>
 
 
-<h2>Strings</h2> <hr/>
+<h2 id='strings'>Strings</h2> <hr/>
 
-<p>In C strings are represented by the pointer type <code>char*</code>. Under the hood they are stored as a list of characters, where the final character is a special character called the <em>null terminator</em>. Strings are a complicated, and important part of C, which we'll learn to use effectively in the next few chapters.</p>
+<p>In C strings are represented by the pointer type <code>char*</code>. Under the hood they are stored as a list of characters, where the final character is a special character called the <em>null terminator</em>. Strings are a complicated and important part of C, which we'll learn to use effectively in the next few chapters.</p>
 
-<p>Strings can also be declared literally by putting text between quotation marks. We used this in the previous chapter with our string <code>"Hello, World!"</code>. For now, remember that if you see <code>char*</code>, you can read it as a <em>string</em>.</p> 
+<p>Strings can also be declared literally by putting text between quotation marks. We used this in the previous chapter with our string <code>"Hello, World!"</code>. For now, remember that if you see <code>char*</code>, you can read it as a <em>string</em>.</p>
 
 
-<h2>Conditionals</h2> <hr/>
+<h2 id='conditionals'>Conditionals</h2> <hr/>
 
 <p>Conditional statements let the program perform some code only if certain conditions are met.</p>
 
-<p>To perform code under some condition we use the <code>if</code> statement. This is written as <code>if</code> followed by some condition in parenthesis, followed by the code to execute in curly brackets. An <code>if</code> statement can be followed by an optional <code>else</code> statement, followed by other statements in curly brackets. The code in these brackets will be performed in the case the conditional is false.</p>
+<p>To perform code under some condition we use the <code>if</code> statement. This is written as <code>if</code> followed by some condition in parentheses, followed by the code to execute in curly brackets. An <code>if</code> statement can be followed by an optional <code>else</code> statement, followed by other statements in curly brackets. The code in these brackets will be performed in the case the conditional is false.</p>
 
 <p>We can test for multiple conditions using the logical operators <code>||</code> for <em>or</em>, and <code>&&</code> for <em>and</em>.</p>
 
-<p>Inside a conditional statement's parenthesis any value that is not <code>0</code> will evaluate to true. This is important to remember as many conditions use this to check things implicitly.</p>
+<p>Inside a conditional statement's parentheses any value that is not <code>0</code> will evaluate to true. This is important to remember as many conditions use this to check things implicitly.</p>
 
-<p>If we wished to check if an <code>int</code> called <code>x</code> was greater than <code>10</code> and less then <code>100</code>, we would write the following.</p> 
+<p>If we wished to check if an <code>int</code> called <code>x</code> was greater than <code>10</code> and less than <code>100</code>, we would write the following.</p>
 
 <pre><code data-language='c'>if (x > 10 && x < 100) {
-  puts("x is greater than ten and less than one hundred!");
+  puts("x is greater than 10 and less than 100!");
 } else {
-  puts("x is either less than eleven or greater than ninety-nine!");
+  puts("x is less than 11 or greater than 99!");
 }</code></pre>
 
 
-<h2>Loops</h2> <hr/>
+<h2 id='loops'>Loops</h2> <hr/>
 
 <p>Loops allow for some code to be repeated until some condition becomes false, or some counter elapses.</p>
 
-<p>There are two main loops in C. The first is a <code>while</code> loop. This loop repeatedly executes a block of code until some condition becomes false. It is written as <code>while</code> followed by some condition in parenthesis, followed by the code to execute in curly brackets. For example a loop that counts downward from <code>10</code> to <code>1</code> could be written as follows.</p>
+<p>There are two main loops in C. The first is a <code>while</code> loop. This loop repeatedly executes a block of code until some condition becomes false. It is written as <code>while</code> followed by some condition in parentheses, followed by the code to execute in curly brackets. For example a loop that counts downward from <code>10</code> to <code>1</code> could be written as follows.</p>
 
 <pre><code data-language='c'>int i = 10;
 while (i > 0) {
@@ -183,7 +169,7 @@ while (i > 0) {
   </ul>
 </div>
 
-<h2>Navigation</h2> 
+<h2>Navigation</h2>
 
 
 <table class="table" style='table-layout: fixed;'>

@@ -433,6 +433,7 @@ static void mpc_input_mark(mpc_input_t *i) {
   if (i->backtrack < 1) { return; }
   
   i->marks_num++;
+<<<<<<< HEAD
   
   if (i->marks_num > i->marks_slots) {
     i->marks_slots = i->marks_num + i->marks_num / 2;
@@ -440,6 +441,10 @@ static void mpc_input_mark(mpc_input_t *i) {
     i->lasts = realloc(i->lasts, sizeof(char) * i->marks_slots);
   }
 
+=======
+  i->marks = realloc(i->marks, sizeof(mpc_state_t) * i->marks_num);
+  i->lasts = realloc(i->lasts, sizeof(char) * i->marks_num);
+>>>>>>> 9f9925ba69dda75ffc204da4c7809d793510885f
   i->marks[i->marks_num-1] = i->state;
   i->lasts[i->marks_num-1] = i->last;
   
@@ -454,6 +459,7 @@ static void mpc_input_unmark(mpc_input_t *i) {
   if (i->backtrack < 1) { return; }
   
   i->marks_num--;
+<<<<<<< HEAD
   
   if (i->marks_slots > i->marks_num + i->marks_num / 2
   &&  i->marks_slots > MPC_INPUT_MARKS_MIN) {
@@ -463,6 +469,10 @@ static void mpc_input_unmark(mpc_input_t *i) {
     i->marks = realloc(i->marks, sizeof(mpc_state_t) * i->marks_slots);
     i->lasts = realloc(i->lasts, sizeof(char) * i->marks_slots);      
   }
+=======
+  i->marks = realloc(i->marks, sizeof(mpc_state_t) * i->marks_num);
+  i->lasts = realloc(i->lasts, sizeof(char) * i->marks_num);
+>>>>>>> 9f9925ba69dda75ffc204da4c7809d793510885f
   
   if (i->type == MPC_INPUT_PIPE && i->marks_num == 0) {
     free(i->buffer);
@@ -1015,6 +1025,7 @@ int mpc_parse_input(mpc_input_t *i, mpc_parser_t *init, mpc_result_t *final) {
       
       /* Basic Parsers */
 
+<<<<<<< HEAD
       case MPC_TYPE_ANY:       MPC_PRIMITIVE(s, mpc_input_any(i, &s));
       case MPC_TYPE_SINGLE:    MPC_PRIMITIVE(s, mpc_input_char(i, p->data.single.x, &s));
       case MPC_TYPE_RANGE:     MPC_PRIMITIVE(s, mpc_input_range(i, p->data.range.x, p->data.range.y, &s));
@@ -1022,6 +1033,15 @@ int mpc_parse_input(mpc_input_t *i, mpc_parser_t *init, mpc_result_t *final) {
       case MPC_TYPE_NONEOF:    MPC_PRIMITIVE(s, mpc_input_noneof(i, p->data.string.x, &s));
       case MPC_TYPE_SATISFY:   MPC_PRIMITIVE(s, mpc_input_satisfy(i, p->data.satisfy.f, &s));
       case MPC_TYPE_STRING:    MPC_PRIMITIVE(s, mpc_input_string(i, p->data.string.x, &s));
+=======
+      case MPC_TYPE_ANY:       MPC_PRIMATIVE(s, mpc_input_any(i, &s));
+      case MPC_TYPE_SINGLE:    MPC_PRIMATIVE(s, mpc_input_char(i, p->data.single.x, &s));
+      case MPC_TYPE_RANGE:     MPC_PRIMATIVE(s, mpc_input_range(i, p->data.range.x, p->data.range.y, &s));
+      case MPC_TYPE_ONEOF:     MPC_PRIMATIVE(s, mpc_input_oneof(i, p->data.string.x, &s));
+      case MPC_TYPE_NONEOF:    MPC_PRIMATIVE(s, mpc_input_noneof(i, p->data.string.x, &s));
+      case MPC_TYPE_SATISFY:   MPC_PRIMATIVE(s, mpc_input_satisfy(i, p->data.satisfy.f, &s));
+      case MPC_TYPE_STRING:    MPC_PRIMATIVE(s, mpc_input_string(i, p->data.string.x, &s));
+>>>>>>> 9f9925ba69dda75ffc204da4c7809d793510885f
       
       /* Other parsers */
       
@@ -1981,6 +2001,14 @@ static mpc_val_t *mpcf_re_range(mpc_val_t *x) {
   const char *s = x;
   int comp = s[0] == '^' ? 1 : 0;
   char *range = calloc(1,1);
+<<<<<<< HEAD
+=======
+  const char *tmp = NULL;
+  const char *s = x;
+  int comp = s[0] == '^' ? 1 : 0;
+  size_t start, end;
+  size_t i, j;
+>>>>>>> 9f9925ba69dda75ffc204da4c7809d793510885f
   
   if (s[0] == '\0') { free(x); return mpc_fail("Invalid Regex Range Expression"); } 
   if (s[0] == '^' && 
@@ -2140,6 +2168,7 @@ mpc_val_t *mpcf_float(mpc_val_t *x) {
   return y;
 }
 
+<<<<<<< HEAD
 mpc_val_t *mpcf_strtriml(mpc_val_t *x) {
   char *s = x;
   while (isspace(*s)) {
@@ -2161,6 +2190,8 @@ mpc_val_t *mpcf_strtrim(mpc_val_t *x) {
   return mpcf_strtriml(mpcf_strtrimr(x));
 }
 
+=======
+>>>>>>> 9f9925ba69dda75ffc204da4c7809d793510885f
 static const char mpc_escape_input_c[]  = {
   '\a', '\b', '\f', '\n', '\r',
   '\t', '\v', '\\', '\'', '\"', '\0'};
@@ -2663,12 +2694,15 @@ mpc_ast_t *mpc_ast_state(mpc_ast_t *a, mpc_state_t s) {
 static void mpc_ast_print_depth(mpc_ast_t *a, int d, FILE *fp) {
   
   int i;
+<<<<<<< HEAD
   
   if (a == NULL) {
     fprintf(fp, "NULL\n");
     return;
   }
   
+=======
+>>>>>>> 9f9925ba69dda75ffc204da4c7809d793510885f
   for (i = 0; i < d; i++) { fprintf(fp, "  "); }
   
   if (strlen(a->contents)) {

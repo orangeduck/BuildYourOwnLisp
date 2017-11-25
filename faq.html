@@ -1,8 +1,8 @@
 
-<h1>Frequently Asked Questions <small>&bull; Build Your Own Lisp</small></h1>
+<h1>Frequently Asked Questions</h1>
 
 <div class='pull-right alert alert-warning' style="margin: 15px; text-align: center;">
-  <img src="/static/img/me.png" alt="me"/>
+  <img src="/static/img/me.png" alt="me" class="img-responsive" width="224px" height="264px"/>
   <p><small>Me &bull; Drinking a beer.</small></p>
 </div>
 
@@ -11,7 +11,7 @@
 
 <p>Hello, my name is Daniel Holden. I'm from the UK, and currently studying for a PhD at Edinburgh University. My research is in data driven tools for character animation.</p>
 
-<p>You may know me from one of my other projects such as <a href="http://libcello.org">Cello</a> or <a href="https://github.com/orangeduck/Corange">Corange</a>. As well as hacking on C, I enjoy graphics, game development, and theory of computation.</p>
+<p>You may know me from one of my other projects such as <a href="http://libcello.org">Cello</a> or <a href="https://github.com/orangeduck/Corange">Corange</a>. As well as hacking on C, I enjoy writing short stories, digital art, and game development.</p>
 
 <p>You can take a look at my <a href="http://theorangeduck.com/">personal website</a>. Or you can <a href="https://twitter.com/anorangeduck">follow me on twitter</a>.</p>
 
@@ -29,18 +29,9 @@
 
 <p>Ultimately this distinction is one of personal preference, but the vast majority of C code, as well as the C standards, are written using the right-handed style. This is clearly the default, and most correct way to write pointers, and so my choice might seem odd.</p>
 
-<p>I picked the left-handed version because I believe it is easier to teach to beginners. Having the asterisk on the left hand side emphasises <em>the type</em>. It is clearer to read, and makes it obvious that the asterisk is not a weird operator or modification to the variable. With the omission of arrays, and multi-variable declarations, this notation is also almost entirely consistent within this book, and when not, it is noted. K&R themselves have <a href="http://blog.golang.org/gos-declaration-syntax">admitted</a> the <a href="http://cm.bell-labs.com/cm/cs/who/dmr/chist.html">confusion</a> of the right-handed syntax, made worse by historical baggage and rogue compiler implementations of the early years. For a learning resource I believe picking the left-handed version was the best approach.</p> 
+<p>I picked the left-handed version because I believe it is easier to teach to beginners. Having the asterisk on the left hand side emphasises <em>the type</em>. It is clearer to read, and makes it obvious that the asterisk is not a weird operator or modification to the variable. With the omission of arrays, and multi-variable declarations, this notation is also almost entirely consistent within this book, and when not, it is noted. K&R themselves have <a href="http://blog.golang.org/gos-declaration-syntax">admitted</a> the <a href="https://www.bell-labs.com/usr/dmr/www/chist.html">confusion</a> of the right-handed syntax, made worse by historical baggage and rogue compiler implementations of the early years. For a learning resource I believe picking the left-handed version was the best approach.</p> 
 
 <p>Once comfortable with the method behind C's declaration syntax, I encourage programmers to migrate toward the right-handed version.</p> 
-
-
-<h2>Why isn't the language parser written by hand?</h2> <hr/>
-
-<p>Lots of people tell me that using a library for the parsing is a big turn off for them, because writing a parser by hand is a really fun part of building a language. And for a Lisp it is so simple. There are a few reasons why I did not take this approach.</p>
-
-<p>First of all, when I was learning about programming languages, I found the theory of formal languages fascinating. I really enjoyed getting into the mind set of thinking about languages more abstractly. I think this is a fun thing to teach, as it opens up a lot of new thoughts and avenues of exploration. In my mind, the actual implementation details are less important.</p>
-
-<p>This approach also gives new programmers a chance to learn how to use a library. It gets them comfortable early on with weird interfaces, and other peoples' code. I think <em>Parser Combinator</em> libraries are a really good advert for effective functional composition. So I couldn't help putting in a shameless plug to some of my other work!</p>
 
 
 <h2>Why are there no Macros in this Lisp?</h2> <hr/>
@@ -55,6 +46,12 @@
 
 <p>Finally, Q-Expressions are distinctively more powerful than Macros. Using Q-Expressions it is possible to pass an argument to a function that evaluates to a Q-Expression, making input arguments capable of being dynamic. In conventional Lisps passing an expression to a Macro will always pause the evaluation, and so the arguments cannot be dynamic, only symbolic.</p>
 
+
+<h2>Where are the answers to the exercises?</h2> <hr/>
+
+<p>There are none. In the real world no one is going to pass you an answer booklet, or check your work for you. Ensuring your code does as <em>you</em> intended is an essential skill to learn. Some readers ask for the answers because they are concerned that they might not have done <em>the right thing</em>. But testing <em>the right thing</em> in this case is just testing understanding of the question; a pretty pointless exercise. Additionally there is not always a wrong or right way to approach the <em>Bonus Marks</em>. They are intended as suggestions to help people check their understanding, or to explore other ideas and thoughts.</p>
+
+<p>If you want to do a <em>Bonus Mark</em> question but are unsure what it means, feel free to send me an e-mail and I will try to clarify it! Otherwise don't fret over the answer. Giving it a try is the important part, not getting it right!</p>
 
 
 <table class="table">

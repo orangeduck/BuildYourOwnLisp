@@ -1,37 +1,37 @@
 <h1>Standard Library <small>&bull; Chapter 15</small></h1>
 
-<h2>Minimalism</h2> <hr/>
+<h2 id='minimalism'>Minimalism</h2> <hr/>
 
 <div class='pull-right alert alert-warning' style="margin: 15px; text-align: center;">
-  <img src="/static/img/library.png" alt="library" class="img-responsive"/>
+  <img src="/static/img/library.png" alt="library" class="img-responsive" width="299px" height="444px"/>
   <p><small>Library &bull; Built with just leather, paper, wood, and ink.</small></p>
 </div>
 
 <p>The Lisp we've built has been purposefully minimal. We've only added the fewest number of core structures and builtins. If we chose these carefully, as we did, then it should allow us to add in everything else required to the language.</p>
 
-<p>The motivation behind minimalism is two-fold. The first advantage is that it makes the core language simple to debug and easy to learn. This is a great benefit to developers and users. Like Occam's Razor it is almost always better to trim away any waste if it results in a equally expressive language. The second reason is that having a small language is also aesthetically nicer. It is clever, interesting, and fun to see how small we can make the core of a language, and still get something useful out of the other side. As hackers, which we should be by now, this is something we enjoy.</p>
+<p>The motivation behind minimalism is two-fold. The first advantage is that it makes the core language simple to debug and easy to learn. This is a great benefit to developers and users. Like <a href="http://en.wikipedia.org/wiki/Occam%27s_razor">Occam's Razor</a> it is almost always better to trim away any waste if it results in a equally expressive language. The second reason is that having a small language is also aesthetically nicer. It is clever, interesting and fun to see how small we can make the core of a language, and still get something useful out of the other side. As hackers, which we should be by now, this is something we enjoy.</p>
 
 
-<h2>Atoms</h2> <hr/>
+<h2 id='atoms'>Atoms</h2> <hr/>
 
 <p>When dealing with conditionals we added no new boolean type to our language. Because of this we didn't add <code>true</code> or <code>false</code> either. Instead we just used numbers. Readability is still important though, so we can define some constants to represent these values.</p>
 
-<p>On a similar note, many lisps use the word <code>nil</code> to represent the empty list <code>{}</code>. We can add this in too. These constants are sometimes called <em>atoms</em> because of their fundamental and constant behaviour.</p>
+<p>On a similar note, many lisps use the word <code>nil</code> to represent the empty list <code>{}</code>. We can add this in too. These constants are sometimes called <em>atoms</em> because they are fundamental and constant.</p>
 
 <p>The user is not forced to use these named constants, and can use numbers and empty lists instead as they like. This choice empowers users, something we believe in.</p>
 
 
-<pre><code data-language='lispy'>&#59; Atoms
+<pre><code data-language='lispy'>; Atoms
 (def {nil} {})
 (def {true} 1)
 (def {false} 0)</code></pre>
 
 
-<h2>Building Blocks</h2> <hr/>
+<h2 id='building_blocks'>Building Blocks</h2> <hr/>
 
 <p>We've already come up with a number of cool functions I've been using in the examples. One of these is our <code>fun</code> function that allows us to declare functions in a neater way. We should definitely include this in our standard library.</p>
 
-<pre><code data-language='lispy'>&#59; Function Definitions
+<pre><code data-language='lispy'>; Function Definitions
 (def {fun} (\ {f b} {
   def (head f) (\ (tail f) b)
 }))</code></pre>
@@ -39,23 +39,23 @@
 <p>We also had our <code>unpack</code> and <code>pack</code> functions. These too are going to be essential for users. We should include these along with their <code>curry</code> and <code>uncurry</code> aliases.</p>
 
 
-<pre><code data-language='lispy'>&#59; Unpack List for Function
+<pre><code data-language='lispy'>; Unpack List for Function
 (fun {unpack f l} {
   eval (join (list f) l)
 })
 
-&#59; Pack List for Function
+; Pack List for Function
 (fun {pack f &amp; xs} {f xs})
 
-&#59; Curried and Uncurried calling
+; Curried and Uncurried calling
 (def {curry} unpack)
 (def {uncurry} pack)</code></pre>
 
-<p>Say we want to do several things in order. One way we can do this is to put each thing to do as an argument to some function. We known that arguments are evaluated in order from left to right, which is essentially sequencing events. For functions such as <code>print</code> and <code>load</code> we don't care much about what it evaluates to, but do care about the order in which it happens.</p>
+<p>Say we want to do several things in order. One way we can do this is to put each thing to do as an argument to some function. We know that arguments are evaluated in order from left to right, which is essentially sequencing events. For functions such as <code>print</code> and <code>load</code> we don't care much about what it evaluates to, but do care about the order in which it happens.</p>
 
 <p>Therefore we can create a <code>do</code> function which evaluates a number of expressions in order and returns the last one. This relies on the <code>last</code> function, which returns the final element of a list. We'll define this later.</p>
 
-<pre><code data-language='lispy'>&#59; Perform Several things in Sequence
+<pre><code data-language='lispy'>; Perform Several things in Sequence
 (fun {do &amp; l} {
   if (== l nil)
     {nil}
@@ -64,7 +64,7 @@
 
 <p>Sometimes we want to save results to local variables using the <code>=</code> operator. When we're inside a function this will implicitly only save results locally, but sometimes we want to open up an even more local scope. For this we can create a function <code>let</code> which creates an empty function for code to take place in, and evaluates it.</p>
 
-<pre><code data-language='lispy'>&#59; Open new scope
+<pre><code data-language='lispy'>; Open new scope
 (fun {let b} {
   ((\ {_} b) ())
 })</code></pre>
@@ -78,17 +78,17 @@ Error: Unbound Symbol 'x'
 lispy&gt;</code></pre>
 
 
-<h2>Logical Operators</h2> <hr/>
+<h2 id='logical_operators'>Logical Operators</h2> <hr/>
 
-<p>We didn't define any local operators such as <code>and</code> and <code>or</code> in our language. This might be a good thing to add in later. For now we can use arithmetic operators to emulate them. Think for a second how these functions work when encountering <code>0</code> or <code>1</code> for their various inputs.</p>
+<p>We didn't define any local operators such as <code>and</code> and <code>or</code> in our language. This might be a good thing to add in later. For now we can use arithmetic operators to emulate them. Think about how these functions work when encountering <code>0</code> or <code>1</code> for their various inputs.</p>
 
-<pre><code data-language='lispy'>&#59; Logical Functions
+<pre><code data-language='lispy'>; Logical Functions
 (fun {not x}   {- 1 x})
 (fun {or x y}  {+ x y})
 (fun {and x y} {* x y})</code></pre>
 
 
-<h2>Miscellaneous Functions</h2> <hr/>
+<h2 id='miscellaneous_functions'>Miscellaneous Functions</h2> <hr/>
 
 <p>Here are a couple of miscellaneous functions that don't really fit in anywhere. See if you can guess their intended functionality.</p>
 
@@ -113,15 +113,15 @@ lispy&gt; y
 lispy>
 </code></pre>
 
-<p>I couldn't think of a use for the <code>ghost</code> function, but it seemed interesting. It simply takes in any number of arguments and evaluates them as if they were the expression itself. So it just sits at the front of an expression like a ghost, not interacting of changing the behaviour of the program at all. If you can think of a use for it I'd love to hear.</p>
+<p>I couldn't think of a use for the <code>ghost</code> function, but it seemed interesting. It simply takes in any number of arguments and evaluates them as if they were the expression itself. So it just sits at the front of an expression like a ghost, not interacting with or changing the behaviour of the program at all. If you can think of a use for it I'd love to hear.</p>
 
 <pre><code data-language='lispy'>lispy&gt; ghost + 2 2
 4
 </code></pre>
 
-<p>The <code>comp</code> function is used to compose two functions. It takes as input <code>f</code>, <code>g</code>, and an argument to <code>g</code>. It then applies this argument to <code>g</code> and applies the result again to <code>f</code>. This can be used to compose two function together into a new function that applies both of them in series. Like before we can use this in combination with partial evaluation to build up complex functions from simpler ones.</p>
+<p>The <code>comp</code> function is used to compose two functions. It takes as input <code>f</code>, <code>g</code>, and an argument to <code>g</code>. It then applies this argument to <code>g</code> and applies the result again to <code>f</code>. This can be used to compose two functions together into a new function that applies both of them in series. Like before, we can use this in combination with partial evaluation to build up complex functions from simpler ones.</p>
 
-<p>For example we can compose two functions. One that negates a number and another that unpacks a list of numbers for multiplying together using <code>*</code>.</p>
+<p>For example we can compose two functions. One negates a number and another unpacks a list of numbers for multiplying together with <code>*</code>.</p>
 
 <pre><code data-language='lispy'>lispy&gt; (unpack *) {2 2}
 4
@@ -137,13 +137,13 @@ lispy&gt;
 </code></pre>
 
 
-<h2>List Functions</h2> <hr/>
+<h2 id='list_functions'>List Functions</h2> <hr/>
 
 <p>The <code>head</code> function is used to get the first element of a list, but what it returns is still wrapped in the list. If we want to actually get the element out of this list we need to extract it somehow.</p>
 
-<p>Single element lists evaluate to just that element, so we can use the <code>eval</code> function to do this extraction. We can also define a couple of helper functions for aid extracting the first, second and third elements of a list. We'll use these function a lot later.</p>
+<p>Single element lists evaluate to just that element, so we can use the <code>eval</code> function to do this extraction. We can also define a couple of helper functions for aid extracting the first, second and third elements of a list. We'll use these function more later.</p>
 
-<pre><code data-language='lispy'>&#59; First, Second, or Third Item in List
+<pre><code data-language='lispy'>; First, Second, or Third Item in List
 (fun {fst l} { eval (head l) })
 (fun {snd l} { eval (head (tail l)) })
 (fun {trd l} { eval (head (tail (tail l))) })</code></pre>
@@ -152,43 +152,43 @@ lispy&gt;
 
 <p>To find the length of a list we can recursive over it adding <code>1</code> to the length of the tail. To find the <code>nth</code> element of a list we can perform the <code>tail</code> operation and count down until we reach <code>0</code>. To get the last element of a list we can just access the element at the length minus one.</p>
 
-<pre><code data-language='lispy'>&#59; List Length
+<pre><code data-language='lispy'>; List Length
 (fun {len l} {
   if (== l nil)
     {0}
     {+ 1 (len (tail l))}
-})
+})</code></pre>
 
-&#59; Nth item in List
+<pre><code data-language='lispy'>; Nth item in List
 (fun {nth n l} {
   if (== n 0)
     {fst l}
     {nth (- n 1) (tail l)}
-})
+})</code></pre>
 
-&#59; Last item in List
+<pre><code data-language='lispy'>; Last item in List
 (fun {last l} {nth (- (len l) 1) l})</code></pre>
 
 <p>There are lots of other useful functions that follow this same pattern. We can define functions for taking and dropping the first so many elements of a list, or functions for checking if a value is an element of a list.</p>
 
-<pre><code data-language='lispy'>&#59; Take N items
+<pre><code data-language='lispy'>; Take N items
 (fun {take n l} {
   if (== n 0)
     {nil}
     {join (head l) (take (- n 1) (tail l))}
-})
+})</code></pre>
 
-&#59; Drop N items
+<pre><code data-language='lispy'>; Drop N items
 (fun {drop n l} {
   if (== n 0)
     {l}
     {drop (- n 1) (tail l)}
-})
+})</code></pre>
 
-&#59; Split at N
-(fun {split n l} {list (take n l) (drop n l)})
+<pre><code data-language='lispy'>; Split at N
+(fun {split n l} {list (take n l) (drop n l)})</code></pre>
 
-&#59; Element of List
+<pre><code data-language='lispy'>; Element of List
 (fun {elem x l} {
   if (== l nil)
     {false}
@@ -198,7 +198,7 @@ lispy&gt;
 
 <p>These functions all follow similar patterns. It would be great if there was some way to extract this pattern so we don't have to type it out every time. For example we may want a way we can perform some function on every element of a list. This is a function we can define called  <code>map</code>. It takes as input some function, and some list. For each item in the list it applies <code>f</code> to that item and appends it back onto the front of the list. It then applies <code>map</code> to the tail of the list.</p>
 
-<pre><code data-language='lispy'>&#59; Apply Function to List
+<pre><code data-language='lispy'>; Apply Function to List
 (fun {map f l} {
   if (== l nil)
     {nil}
@@ -222,7 +222,7 @@ lispy&gt;</code></pre>
 
 <p>An adaptation of this idea is a <code>filter</code> function which, takes in some functional condition, and only includes items of a list which match that condition.</p>
 
-<pre><code data-language='lispy'>&#59; Apply Filter to List
+<pre><code data-language='lispy'>; Apply Filter to List
 (fun {filter f l} {
   if (== l nil)
     {nil}
@@ -238,9 +238,9 @@ lispy&gt;</code></pre>
 
 <p>These are called <em>folds</em> and they work like this. Supplied with a function <code>f</code>, a <em>base value</em> <code>z</code> and a list <code>l</code> they merge each element in the list with the total, starting with the base value.</p>
 
-<pre><code data-language='lispy'>&#59; Fold Left
+<pre><code data-language='lispy'>; Fold Left
 (fun {foldl f z l} {
-  if (== l nil) 
+  if (== l nil)
     {z}
     {foldl f (f z (fst l)) (tail l)}
 })</code></pre>
@@ -251,7 +251,7 @@ lispy&gt;</code></pre>
 (fun {product l} {foldl * 1 l})</code></pre>
 
 
-<h2>Conditional Functions</h2> <hr/>
+<h2 id='conditional_functions'>Conditional Functions</h2> <hr/>
 
 <p>By defining our <code>fun</code> function we've already shown how powerful our language is in its ability to define functions that look like new syntax. Another example of this is found in emulating the C <code>switch</code> and <code>case</code> statements. In C these are built into the language, but for our language we can define them as part of a library.</p>
 
@@ -265,10 +265,10 @@ lispy&gt;</code></pre>
 
 <p>We can also define a function <code>otherwise</code> to always evaluate to <code>true</code>. This works a little bit like the <code>default</code> keyword in C.</p>
 
-<pre><code data-language='lispy'>&#59; Default Case
+<pre><code data-language='lispy'>; Default Case
 (def {otherwise} true)
 
-&#59; Print Day of Month suffix
+; Print Day of Month suffix
 (fun {month-day-suffix i} {
   select
     {(== i 0)  "st"}
@@ -277,15 +277,16 @@ lispy&gt;</code></pre>
     {otherwise "th"}
 })</code></pre>
 
-<p>This is actually somewhat more powerful than the C <code>switch</code> statement. In C rather than passing in conditions the input value is compared only for equality with a number of constant candidates. We can also define this function in our Lisp, where we compare a value to a number of candidates. In this function we take some value <code>x</code> followed by zero or more two-element lists again. If the first element in the two-element list is equal to <code>x</code>, the second element is evaluated, otherwise the process continues down the list.</p>
+<p>This is actually more powerful than the C <code>switch</code> statement. In C rather than passing in conditions the input value is compared only for equality with a number of constant candidates. We can also define this function in our Lisp, where we compare a value to a number of candidates. In this function we take some value <code>x</code> followed by zero or more two-element lists again. If the first element in the two-element list is equal to <code>x</code>, the second element is evaluated, otherwise the process continues down the list.</p>
 
 <pre><code data-language='lispy'>(fun {case x &amp; cs} {
   if (== cs nil)
     {error "No Case Found"}
-    {if (== x (fst (fst cs))) {snd (fst cs)} {unpack case (join (list x) (tail cs))}}
+    {if (== x (fst (fst cs))) {snd (fst cs)} {
+      unpack case (join (list x) (tail cs))}}
 })</code></pre>
 
-<p>The syntax for this function becomes really nice and simple. See if you can think up any other control structures or useful functions that you'd like to implement using these sorts of methods.</p>
+<p>The syntax for this function becomes really nice and simple. Try to see if you can think up any other control structures or useful functions that you'd like to implement using these sorts of methods.</p>
 
 <pre><code data-language='lispy'>(fun {day-name x} {
   case x
@@ -299,16 +300,16 @@ lispy&gt;</code></pre>
 })</code></pre>
 
 
-<h2>Fibonacci</h2> <hr/>
+<h2 id='fibonacci'>Fibonacci</h2> <hr/>
 
 <p>No standard library would be complete without an obligatory definition of the Fibonacci function. Using all of the above things we've defined  we can write a cute little <code>fib</code> function that is really quite readable, and clear semantically.</p>
 
-<pre><code data-language='lispy'>&#59; Fibonacci
+<pre><code data-language='lispy'>; Fibonacci
 (fun {fib n} {
   select
-    { (== n 0) {0} }
-    { (== n 1) {1} }
-    { otherwise {+ (fib (- n 1)) (fib (- n 2))} }
+    { (== n 0) 0 }
+    { (== n 1) 1 }
+    { otherwise (+ (fib (- n 1)) (fib (- n 2))) }
 })</code></pre>
 
 <p>This is the end of the standard library I've written. Building up a standard library is a fun part of language design, because you get to be creative and opinionated on what goes in and stays out. Try to come up with something you are happy with. Exploring what is possible to define and do can be very interesting.</p>
@@ -316,261 +317,7 @@ lispy&gt;</code></pre>
 
 <h2>Reference</h2> <hr/>
 
-<div class="panel-group alert alert-warning" id="accordion">
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <h4 class="panel-title">
-        <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
-          prelude.lspy
-        </a>
-      </h4>
-    </div>
-    <div id="collapseOne" class="panel-collapse collapse">
-      <div class="panel-body">
-<pre><code data-language='lispy'>&#59;&#59;&#59;
-&#59;&#59;&#59;   Lispy Standard Prelude
-&#59;&#59;&#59;
-
-&#59;&#59;&#59; Atoms
-(def {nil} {})
-(def {true} 1)
-(def {false} 0)
-
-&#59;&#59;&#59; Functional Functions
-
-&#59; Function Definitions
-(def {fun} (\ {f b} {
-  def (head f) (\ (tail f) b)
-}))
-
-&#59; Open new scope
-(fun {let b} {
-  ((\ {_} b) ())
-})
-
-&#59; Unpack List to Function
-(fun {unpack f l} {
-  eval (join (list f) l)
-})
-
-&#59; Unapply List to Function
-(fun {pack f & xs} {f xs})
-
-&#59; Curried and Uncurried calling
-(def {curry} unpack)
-(def {uncurry} pack)
-
-&#59; Perform Several things in Sequence
-(fun {do & l} {
-  if (== l nil)
-    {nil}
-    {last l}
-})
-
-&#59;&#59;&#59; Logical Functions
-
-&#59; Logical Functions
-(fun {not x}   {- 1 x})
-(fun {or x y}  {+ x y})
-(fun {and x y} {* x y})
-
-
-&#59;&#59;&#59; Numeric Functions
-
-&#59; Minimum of Arguments
-(fun {min & xs} {
-  if (== (tail xs) nil) {fst xs}
-    {do 
-      (= {rest} (unpack min (tail xs)))
-      (= {item} (fst xs))
-      (if (< item rest) {item} {rest})
-    }
-})
-
-&#59; Maximum of Arguments
-(fun {max & xs} {
-  if (== (tail xs) nil) {fst xs}
-    {do 
-      (= {rest} (unpack max (tail xs)))
-      (= {item} (fst xs))
-      (if (> item rest) {item} {rest})
-    }  
-})
-
-&#59;&#59;&#59; Conditional Functions
-
-(fun {select & cs} {
-  if (== cs nil)
-    {error "No Selection Found"}
-    {if (fst (fst cs)) {snd (fst cs)} {unpack select (tail cs)}}
-})
-
-(fun {case x & cs} {
-  if (== cs nil)
-    {error "No Case Found"}
-    {if (== x (fst (fst cs))) {snd (fst cs)} {unpack case (join (list x) (tail cs))}}
-})
-
-(def {otherwise} true)
-
-
-&#59;&#59;&#59; Misc Functions
-
-(fun {flip f a b} {f b a})
-(fun {ghost & xs} {eval xs})
-(fun {comp f g x} {f (g x)})
-
-&#59;&#59;&#59; List Functions
-
-&#59; First, Second, or Third Item in List
-(fun {fst l} { eval (head l) })
-(fun {snd l} { eval (head (tail l)) })
-(fun {trd l} { eval (head (tail (tail l))) })
-
-&#59; List Length
-(fun {len l} {
-  if (== l nil)
-    {0}
-    {+ 1 (len (tail l))}
-})
-
-&#59; Nth item in List
-(fun {nth n l} {
-  if (== n 0)
-    {fst l}
-    {nth (- n 1) (tail l)}
-})
-
-&#59; Last item in List
-(fun {last l} {nth (- (len l) 1) l})
-
-&#59; Apply Function to List
-(fun {map f l} {
-  if (== l nil)
-    {nil}
-    {join (list (f (fst l))) (map f (tail l))}
-})
-
-&#59; Apply Filter to List
-(fun {filter f l} {
-  if (== l nil)
-    {nil}
-    {join (if (f (fst l)) {head l} {nil}) (filter f (tail l))}
-})
-
-&#59; Return all of list but last element
-(fun {init l} {
-  if (== (tail l) nil)
-    {nil}
-    {join (head l) (init (tail l))}
-})
-
-&#59; Reverse List
-(fun {reverse l} {
-  if (== l nil)
-    {nil}
-    {join (reverse (tail l)) (head l)}
-})
-
-&#59; Fold Left
-(fun {foldl f z l} {
-  if (== l nil) 
-    {z}
-    {foldl f (f z (fst l)) (tail l)}
-})
-
-&#59; Fold Right
-(fun {foldr f z l} {
-  if (== l nil) 
-    {z}
-    {f (fst l) (foldr f z (tail l))}
-})
-
-(fun {sum l} {foldl + 0 l})
-(fun {product l} {foldl * 1 l})
-
-&#59; Take N items
-(fun {take n l} {
-  if (== n 0)
-    {nil}
-    {join (head l) (take (- n 1) (tail l))}
-})
-
-&#59; Drop N items
-(fun {drop n l} {
-  if (== n 0)
-    {l}
-    {drop (- n 1) (tail l)}
-})
-
-&#59; Split at N
-(fun {split n l} {list (take n l) (drop n l)})
-
-&#59; Take While
-(fun {take-while f l} {
-  if (not (unpack f (head l)))
-    {nil}
-    {join (head l) (take-while f (tail l))}
-})
-
-&#59; Drop While
-(fun {drop-while f l} {
-  if (not (unpack f (head l)))
-    {l}
-    {drop-while f (tail l)}
-})
-
-&#59; Element of List
-(fun {elem x l} {
-  if (== l nil)
-    {false}
-    {if (== x (fst l)) {true} {elem x (tail l)}}
-})
-
-&#59; Find element in list of pairs
-(fun {lookup x l} {
-  if (== l nil)
-    {error "No Element Found"}
-    {do
-      (= {key} (fst (fst l)))
-      (= {val} (snd (fst l)))
-      (if (== key x) {val} {lookup x (tail l)})
-    }
-})
-
-&#59; Zip two lists together into a list of pairs
-(fun {zip x y} {
-  if (or (== x nil) (== y nil))
-    {nil}
-    {join (list (join (head x) (head y))) (zip (tail x) (tail y))}
-})
-
-&#59; Unzip a list of pairs into two lists
-(fun {unzip l} {
-  if (== l nil)
-    {{nil nil}}
-    {do
-      (= {x} (fst l))
-      (= {xs} (unzip (tail l)))
-      (list (join (head x) (fst xs)) (join (tail x) (snd xs)))
-    }
-})
-
-&#59;&#59;&#59; Other Fun
-
-&#59; Fibonacci
-(fun {fib n} {
-  select
-    { (== n 0) 0 }
-    { (== n 1) 1 }
-    { otherwise (+ (fib (- n 1)) (fib (- n 2))) }
-})
-</code></pre>
-      </div>
-    </div>
-  </div>
-</div>
-
+<references />
 
 <h2>Bonus Marks</h2> <hr/>
 

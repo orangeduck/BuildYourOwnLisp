@@ -147,7 +147,8 @@ window['Rainbow'] = (function() {
         // this means if for example you have: <pre data-language="php">
         // with a bunch of <code> blocks inside then you do not have
         // to specify the language for each block
-        var language = _attr(block, 'data-language') || _attr(block.parentNode, 'data-language');
+        var language = _attr(block, 'data-language') || _attr(block.parentNode, 'data-language') ||
+                       _attr(block, 'lang') || _attr(block.parentNode, 'lang');
 
         // this adds support for specifying language via a css class
         // you can use the Google Code Prettify style: <pre class="lang-php">

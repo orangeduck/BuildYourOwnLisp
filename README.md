@@ -24,8 +24,14 @@ You can't just browse the raw HTML files of the site. The links wont work, and i
 
 ```
 pip install Flask
-pip install Flask-BasicAuth
+pip install Flask-Mail
 python lispy.py
+```
+
+You can specify port via `$PORT`.
+
+```
+env PORT=5000 python lispy.py
 ```
 
 This will serve the site locally at `http://127.0.0.1:5000/`. You can browse it from there.

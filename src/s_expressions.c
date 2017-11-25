@@ -16,10 +16,8 @@ char* readline(char* prompt) {
 void add_history(char* unused) {}
 
 #else
-
 #include <editline/readline.h>
 #include <editline/history.h>
-
 #endif
 
 /* Add SYM and SEXPR as possible lval types */
@@ -27,17 +25,13 @@ enum { LVAL_ERR, LVAL_NUM, LVAL_SYM, LVAL_SEXPR };
 
 typedef struct lval {
   int type;
-
   long num;
-  
   /* Error and Symbol types have some string data */
   char* err;
   char* sym;
-  
   /* Count and Pointer to a list of "lval*"; */
   int count;
   struct lval** cell;
-  
 } lval;
 
 /* Construct a pointer to a new Number lval */ 
@@ -95,7 +89,7 @@ void lval_del(lval* v) {
     break;
   }
   
-  /* Finally free the memory allocated for the "lval" struct itself */
+  /* Free the memory allocated for the "lval" struct itself */
   free(v);
 }
 
@@ -110,8 +104,9 @@ lval* lval_pop(lval* v, int i) {
   /* Find the item at "i" */
   lval* x = v->cell[i];
   
-  /* Shift the memory following the item at "i" over the top of it */
-  memmove(&v->cell[i], &v->cell[i+1], sizeof(lval*) * (v->count-i-1));
+  /* Shift memory after the item at "i" over the top */
+  memmove(&v->cell[i], &v->cell[i+1],
+    sizeof(lval*) * (v->count-i-1));
   
   /* Decrease the count of items in the list */
   v->count--;
@@ -169,7 +164,9 @@ lval* builtin_op(lval* a, char* op) {
   lval* x = lval_pop(a, 0);
   
   /* If no arguments and sub then perform unary negation */
-  if ((strcmp(op, "-") == 0) && a->count == 0) { x->num = -x->num; }
+  if ((strcmp(op, "-") == 0) && a->count == 0) {
+    x->num = -x->num;
+  }
   
   /* While there are still elements remaining */
   while (a->count > 0) {
@@ -242,7 +239,8 @@ lval* lval_eval(lval* v) {
 lval* lval_read_num(mpc_ast_t* t) {
   errno = 0;
   long x = strtol(t->contents, NULL, 10);
-  return errno != ERANGE ? lval_num(x) : lval_err("invalid number");
+  return errno != ERANGE ?
+    lval_num(x) : lval_err("invalid number");
 }
 
 lval* lval_read(mpc_ast_t* t) {
@@ -260,8 +258,6 @@ lval* lval_read(mpc_ast_t* t) {
   for (int i = 0; i < t->children_num; i++) {
     if (strcmp(t->children[i]->contents, "(") == 0) { continue; }
     if (strcmp(t->children[i]->contents, ")") == 0) { continue; }
-    if (strcmp(t->children[i]->contents, "}") == 0) { continue; }
-    if (strcmp(t->children[i]->contents, "{") == 0) { continue; }
     if (strcmp(t->children[i]->tag,  "regex") == 0) { continue; }
     x = lval_add(x, lval_read(t->children[i]));
   }
@@ -297,11 +293,9 @@ int main(int argc, char** argv) {
     
     mpc_result_t r;
     if (mpc_parse("<stdin>", input, Lispy, &r)) {
-      
       lval* x = lval_eval(lval_read(r.output));
       lval_println(x);
       lval_del(x);
-      
       mpc_ast_delete(r.output);
     } else {    
       mpc_err_print(r.error);

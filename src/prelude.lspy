@@ -79,7 +79,8 @@
 (fun {case x & cs} {
   if (== cs nil)
     {error "No Case Found"}
-    {if (== x (fst (fst cs))) {snd (fst cs)} {unpack case (join (list x) (tail cs))}}
+    {if (== x (fst (fst cs))) {snd (fst cs)} {
+	  unpack case (join (list x) (tail cs))}}
 })
 
 (def {otherwise} true)

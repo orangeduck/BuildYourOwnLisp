@@ -3,7 +3,6 @@
 
 /* If we are compiling on Windows compile these functions */
 #ifdef _WIN32
-
 #include <string.h>
 
 static char buffer[2048];
@@ -23,10 +22,8 @@ void add_history(char* unused) {}
 
 /* Otherwise include the editline headers */
 #else
-
 #include <editline/readline.h>
 #include <editline/history.h>
-
 #endif
 
 int main(int argc, char** argv) {

@@ -304,8 +304,13 @@ html {
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
+@font-face{
+    font-family: "kalinga";
+    src: local('kalinga'), url('/static/fonts/kalinga.ttf');
+}
+
 body {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: kalinga, "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 14px;
   line-height: 1.428571429;
   color: #333333;
@@ -481,7 +486,7 @@ h6,
 .h4,
 .h5,
 .h6 {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: kalinga, "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-weight: 500;
   line-height: 1.1;
   color: inherit;
@@ -555,7 +560,7 @@ h1,
 
 h2,
 .h2 {
-  font-size: 30px;
+  font-size: 29px;
 }
 
 h3,
