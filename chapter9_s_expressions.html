@@ -39,7 +39,7 @@
 
 <p>We can declare pointer types by suffixing existing ones with the <code>*</code> character. We've seen some examples of this already with <code>mpc_parser_t*</code>, <code>mpc_ast_t*</code>, or <code>char*</code>.</p>
 
-<p>To create a pointer to some data, we need to get its index, or <em>address</em>. To get the address of a some data we use the <em>address of</em> operator <code>&amp;</code>. Again you've seen this before when we passed in a pointer to <code>mpc_parse</code> so it would output into our <code>mpc_result_t</code>.</p>
+<p>To create a pointer to some data, we need to get its index, or <em>address</em>. To get the address of some data we use the <em>address of</em> operator <code>&amp;</code>. Again you've seen this before when we passed in a pointer to <code>mpc_parse</code> so it would output into our <code>mpc_result_t</code>.</p>
 
 <p>Finally to get the data at an address, called <em>dereferencing</em>, we use the <code>*</code> operator on the left-hand side of a variable. To get the data at the field of a pointer to a struct we use the arrow <code>-&gt;</code>. This you saw in chapter 7.</p>
 
