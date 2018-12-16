@@ -30,6 +30,7 @@ typedef struct {
   long pos;
   long row;
   long col;
+  int term;
 } mpc_state_t;
 
 /*
@@ -155,6 +156,7 @@ mpc_parser_t *mpc_eoi(void);
 mpc_parser_t *mpc_soi(void);
 
 mpc_parser_t *mpc_boundary(void);
+mpc_parser_t *mpc_boundary_newline(void);
 
 mpc_parser_t *mpc_whitespace(void);
 mpc_parser_t *mpc_whitespaces(void);
@@ -254,6 +256,7 @@ mpc_val_t *mpcf_trd(int n, mpc_val_t** xs);
 mpc_val_t *mpcf_fst_free(int n, mpc_val_t** xs);
 mpc_val_t *mpcf_snd_free(int n, mpc_val_t** xs);
 mpc_val_t *mpcf_trd_free(int n, mpc_val_t** xs);
+mpc_val_t *mpcf_all_free(int n, mpc_val_t** xs);
 
 mpc_val_t *mpcf_strfold(int n, mpc_val_t** xs);
 mpc_val_t *mpcf_maths(int n, mpc_val_t** xs);
@@ -262,7 +265,16 @@ mpc_val_t *mpcf_maths(int n, mpc_val_t** xs);
 ** Regular Expression Parsers
 */
 
+enum {
+  MPC_RE_DEFAULT   = 0,
+  MPC_RE_M         = 1,
+  MPC_RE_S         = 2,
+  MPC_RE_MULTILINE = 1,
+  MPC_RE_DOTALL    = 2
+};
+
 mpc_parser_t *mpc_re(const char *re);
+mpc_parser_t *mpc_re_mode(const char *re, int mode);
   
 /*
 ** AST
