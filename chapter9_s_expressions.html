@@ -25,7 +25,7 @@
 
 <p>A common problem occurs when we have a large struct containing many other sub structs we wish to pass around. Every time we call a function we must create another copy of it. Suddenly the amount of data that needs to be copied around just to call a function can become huge!</p>
 
-<p>A second problem is this. When we define a <code>struct</code>, it is always a fixed size. It has a limited number of fields, and each of these fields must be a struct which itself is limited in size. If I want to call a function with just <em>a list of things</em>, where the number of <em>things</em> varies from call to call, clearly I can't use a <code>struct</code> to do this.</p>
+<p>A second problem is this. When we define a <code>struct</code>, it is always a fixed size. It has a limited number of fields, and each field is itself a fixed size. If I want to call a function with just <em>a list of things</em>, where the number of <em>things</em> varies from call to call, clearly I can't use a <code>struct</code> to do this.</p>
 
 <p>To get around these issues the developers of C (or y'know...someone) came up with a clever idea. They imagined computer memory as a single huge list of bytes. In this list each byte can be given a global index, or position. A bit like a house number. The first byte is numbered <code>0</code>, the second is <code>1</code>, etc.</p>
 
@@ -39,7 +39,7 @@
 
 <p>We can declare pointer types by suffixing existing ones with the <code>*</code> character. We've seen some examples of this already with <code>mpc_parser_t*</code>, <code>mpc_ast_t*</code>, or <code>char*</code>.</p>
 
-<p>To create a pointer to some data, we need to get its index, or <em>address</em>. To get the address of a some data we use the <em>address of</em> operator <code>&amp;</code>. Again you've seen this before when we passed in a pointer to <code>mpc_parse</code> so it would output into our <code>mpc_result_t</code>.</p>
+<p>To create a pointer to some data, we need to get its index, or <em>address</em>. To get the address of some data we use the <em>address of</em> operator <code>&amp;</code>. Again you've seen this before when we passed in a pointer to <code>mpc_parse</code> so it would output into our <code>mpc_result_t</code>.</p>
 
 <p>Finally to get the data at an address, called <em>dereferencing</em>, we use the <code>*</code> operator on the left-hand side of a variable. To get the data at the field of a pointer to a struct we use the arrow <code>-&gt;</code>. This you saw in chapter 7.</p>
 
