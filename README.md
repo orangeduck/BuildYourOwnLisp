@@ -24,7 +24,6 @@ You can't just browse the raw HTML files of the site. The links wont work, and i
 
 ```
 pip install Flask
-pip install Flask-Mail
 python lispy.py
 ```
 
