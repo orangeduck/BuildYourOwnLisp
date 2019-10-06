@@ -7,7 +7,6 @@ from werkzeug.contrib.cache import MemcachedCache
 from werkzeug.datastructures import ImmutableOrderedMultiDict
 
 from flask import Flask, jsonify, request, send_file, redirect, url_for
-from flask.ext.mail import Mail, Message
 
 try:
     # For Python 3.0 and later
@@ -125,7 +124,6 @@ except RuntimeError:
     cache = FakeCache()
 
 app  = Flask(__name__)
-mail = Mail(app)
 
 handler = logging.FileHandler(os.path.join(os.path.split(__file__)[0], 'error.log'))
 handler.setLevel(logging.INFO)
@@ -245,63 +243,6 @@ def ordered_storage(f):
         request.parameter_storage_class = ImmutableOrderedMultiDict
         return f(*args, **kwargs)
     return decorator
-
-@app.route('/paypal', methods=['POST'])
-@ordered_storage
-def route_paypal():
-    
-    verify_string = '&'.join(('%s=%s' % (param, value) for param, value in request.form.iteritems()))
-    verify_string = verify_string + '&%s=%s' % ('cmd', '_notify-validate')
-    
-    status = urlopen('https://www.paypal.com/cgi-bin/webscr', data=verify_string).read()
-    
-    if status == 'VERIFIED':
-        
-        id = ''.join([chr(i) for i in [random.randrange(97, 122) for _ in xrange(25)]])
-        
-        keys = os.path.join(os.path.split(__file__)[0], 'purchases')
-        with open(keys, 'a') as keyfile:
-            keyfile.write(datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S')+' '+id+'\n')
-        
-        msg = Message("Build Your Own Lisp - eBook Download",
-            sender="contact@buildyourownlisp.com",
-            recipients=[request.form.get('payer_email')],
-            
-            body="Hello,\n"
-                 "\n"
-                 "Many thanks for purchasing the eBook for Build Your Own Lisp. "
-                 "I really appreciate your contribution and support!\n"
-                 "\n"
-                 "Please follow these download links to download "
-                 "the ebook in each of the different formats.\n"
-                 "\n"
-                 "http://buildyourownlisp.com/download/%s/BuildYourOwnLisp.epub\n"
-                 "http://buildyourownlisp.com/download/%s/BuildYourOwnLisp.mobi\n"
-                 "http://buildyourownlisp.com/download/%s/BuildYourOwnLisp.pdf\n"
-                 "\n"
-                 "If you need it in a different format to these, or "
-                 "need any help using these files don't hesitate to "
-                 "get in contact.\n"
-                 "\n"
-                 "This e-mail should be considered a proof of purchase. "
-                 "These links will expire in 60 days, so if you want an "
-                 "updated version of the eBook please contact this address, "
-                 "with a copy of this e-mail. I will supply you with new "
-                 "links to an updated version. If you have any other "
-                 "problems or questions, please contact this address "
-                 "and I will try to resolve them as soon as possible.\n"
-                 "\n"
-                 "Thanks again, and I hope you enjoy the book!\n"
-                 "\n"
-                 "* Dan\n" % (id, id, id))
-        
-        mail.send(msg)
-        
-    else:
-        app.logger.error('Paypal IPN string %s did not validate' % verify_string)
-
-    return jsonify({'status': 'complete'})
-    
 """ Main """
     
 if __name__ == '__main__':
