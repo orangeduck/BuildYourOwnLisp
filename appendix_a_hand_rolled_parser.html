@@ -1,6 +1,6 @@
 <h1>Hand Rolled Parser<small>&bull; Appendix A</small></h1>
 
-<h2>Hand Rolling</h2> <hr/>
+<h2 id='hand_rolling'>Hand Rolling</h2> <hr/>
 
 <div class='pull-right alert alert-warning' style="margin: 15px; text-align: center;">
   <img src="/static/img/steamroller.png" alt="steamroller" class="img-responsive" width="278px" height="308px"/>
@@ -24,7 +24,7 @@
 </div>
 
 
-<h2>Replacing mpc</h2>
+<h2 id='replacing_mpc'>Replacing mpc</h2>
 
 <p>The output of <code>mpc</code> was an <em>Abstract Syntax Tree</em>, but because our language is so simple, when we replace it we're going to go directly from the input string to an S-Expressions (which is pretty much like abstract syntax tree anyway). So let us declare a function which takes some string <code>s</code>, some pointer to a position in that string <code>i</code> and some terminal character <code>end</code> and which outputs an <code>lval</code>. We'll call it <code>lval_read_expr</code>.</p>
 
@@ -33,13 +33,13 @@
 
 <p>We'll define the implementation later. For now lets go ahead and replace the places we call <code>mpc</code> with this new function. For error handling we'll get <code>lval_read_expr</code> to return an error <code>lval</code> if something goes wrong. The terminal character when we're reading from a C string is just the null character <code>\0</code>.</p>
 
-<pre><code data-language='c'>  char* input = readline("lispy&gt; ");
-      /* Read from input to create an S-Expr */
-      int pos = 0;
-      lval* expr = lval_read_expr(input, &pos, '\0');
-      
-      /* Evaluate and print input */
-      lval* x = lval_eval(e, expr);
+<pre><code data-language='c'>char* input = readline("lispy&gt; ");
+/* Read from input to create an S-Expr */
+int pos = 0;
+lval* expr = lval_read_expr(input, &pos, '\0');
+
+/* Evaluate and print input */
+lval* x = lval_eval(e, expr);
 </code></pre>
 
 <p>We also need to replace <code>mpc</code> in our function <code>builtin_load</code>. Here, because we only support strings in our read function, we first need to load in the contents of the file. To do this we use <code>fseek</code> and <code>ftell</code> to find out how many characters are in the file before allocating a string of that size (plus one) and reading the file into it.</p>
@@ -93,7 +93,7 @@
 <p>And with those calls replaced we can start defining <code>lval_read_expr</code>.</p>
 
 
-<h2>A Character at a Time</h2> <hr/>
+<h2 id='a_character_at_a_time'>A Character at a Time</h2> <hr/>
 
 <div class='pull-left alert alert-warning' style="margin: 15px; text-align: center;">
   <img src="/static/img/reading_with_pipe.png" alt="reading with pipe" class="img-responsive" width="278px" height="308px"/>
@@ -102,17 +102,13 @@
 
 <p>The way we think about implementing a parser is quite different to the high level abstract view we were given with <code>mpc</code>. Instead of thinking about the <em>language</em> we instead need to think about the <em>process</em>.</p>
 
-<p>Usually this <em>process</em> takes a very simple form - a parser is almost always just a loop, which repeatedly reads a character at a time from the input, and each time decides what to do with it. The challenge is in programming this process elegantly. It all starts to get a little messy when we think about whitespace, and comments, and everything else.</p>
-
-<p>With our calls to <code>mpc</code> replaced we can get about to the business of actually reading from the string into an S-Expression.</p>
+<p>Usually this <em>process</em> takes a very simple form - a parser is almost always just a loop, which repeatedly reads a character at a time from the input, and each time decides what to do with it. The challenge is in making this process elegant. It all starts to get a little messy when we think about whitespace, and comments, and everything else.</p>
 
 <p>To give an idea of how it might work - in our Lisp, if we encounter the character <code>d</code> in the input, we can store it in some string, and also we know we must be reading in a symbol, so can enter a state where we look for more letters, each time adding them to the string. Once we're found no more letters in the input we can return the whole thing as a symbol (for example <code>def</code>) and start again.</p>
 
-<p>This is how we're going to get started - we're going to create a function which takes as input some string, some position in that string, and decides what to do next.</p>
+<p>The function <code>lval_read_expr</code> is basically going to work like this. We're going to take as input some string, some position in that string, and decide what to do next. When the next character isn't the one specified by the argument <code>end</code> we will try to read in whatever thing appears next, create an <code>lval</code> object from it, and append it to the first argument <code>v</code>.<p>
 
-<p>The function <code>lval_read_expr</code> is basically going to work like this. While the next character isn't the one specified by the argument <code>end</code> we will try to read in whatever thing appears next, create an <code>lval</code> object from it, and append it to the argument <code>v</code>.<p>
-
-<p>If instead we've reached the character specified by <code>end</code> we're going to return the next position in the string and return to the caller. This return value will help whoever calls <code>lval_read_expr</code> to see how much of the string it has consumed.</p>
+<p>If instead we reach the character specified by <code>end</code> we're going to return the next position in the string and return to the caller. This return value will help whoever calls <code>lval_read_expr</code> to see how much of the string it has consumed and how much is left.</p>
 
 <p>For now let us assume the next character isn't the <code>end</code> character. The first thing we need to check is that we've not reached the end of the input. If we've reached the end of the input without encountering the <code>end</code> character then we can throw a syntax error and jump to the end of the input to ensure no more is consumed.</p>
 
@@ -199,7 +195,7 @@
 
 <p>That completes the body of our function <code>lval_read_expr</code>. Now we just need to fill in the gaps.</p>
 
-<h2>Reading Symbols</h2> <hr/>
+<h2 id="reading_symbols">Reading Symbols</h2> <hr/>
 
 <p>Reading in symbols is fairly straight forward. We start by allocating some 
 empty string, and then, for each character in the input which is valid as part 
@@ -230,7 +226,7 @@ if all of the characters are digits.</p>
 
 <pre><code data-language='c'>  /* Check if Identifier looks like number */
   int is_num = strchr("-0123456789", part[0]);
-  for (int i = 1; i &ly; strlen(part); i++) {
+  for (int i = 1; i &lt; strlen(part); i++) {
     if (!strchr("0123456789", part[i])) { is_num = 0; break; }
   }
 </code></pre>
@@ -258,11 +254,11 @@ temporary string we allocated and return the new position in the input.<p>
 
 <p>And we are done with reading symbols. Onto strings!</p>
 
-<h2>Reading Strings</h2> <hr/>
+<h2 id="reading_strings">Reading Strings</h2> <hr/>
 
 <p>When we read in strings things get a little more complicated. This is because of <em>escaping</em>. We're covered this a little in earlier chapters but now we're going to have to deal with it head on.</p>
 
-<p>Escaping is the name we give to the way we let users enter special characters by using special combinations of symbols starting with a backslash <code>\</code>. For example the most famous of these is the newline character which we encode using <code>\n</code>. When converting to the several character representation to the real representation we call this <em>unescaping</em> and when converting from the real representation to the two character encoding we call this <em>escaping</em>.</p>
+<p>Escaping is the name we give to the way we let users enter special characters by using special combinations of symbols starting with a backslash <code>\</code>. For example the most famous of these is the newline character which we encode using <code>\n</code>. When converting from the multi-character representation to the real representation we call this <em>unescaping</em> and when converting from the real representation to the two character encoding we call this <em>escaping</em>.</p>
 
 <p>When we read in user strings we'll need to convert these pairs of characters into the single special character they represent. If we ignore the leading backslash we can make a function in C that tells us this mapping.</p>
 
@@ -314,7 +310,7 @@ char* lval_str_escape(char x) {
 }
 </code></pre>
 
-<p>With these we can begin our functions for reading strings. It starts off straight forward. We allocate a temporary string and while we're not reached the terminal <code>"</code> character we're going to process the incoming characters.</p>
+<p>With these we can begin to write our functions for reading strings. First we allocate a temporary string and while we're not reading the terminal <code>"</code> character we're going to process the incoming characters.</p>
 
 <pre><code data-language='c'>int lval_read_str(lval* v, char* s, int i) {
   
@@ -334,7 +330,6 @@ char* lval_str_escape(char x) {
       free(part);
       return strlen(s);
     }
-    
 </code></pre>
 
 <p>We then check if the next character is a backslash. If we have a backslash then we need to escape the next character after it. Given the previous functions we're already defined this is easy. If it is unescapable then we unescape it - otherwise we throw some error.</p> 
@@ -372,7 +367,7 @@ char* lval_str_escape(char x) {
 }
 </code></pre>
 
-<h2>Printing Strings</h2> <hr/>
+<h2 id="printing_strings">Printing Strings</h2> <hr/>
 
 <p>As well as using <code>mpc</code> to <em>unescape</em> strings we also used <code>mpc</code> to <em>escape</em> strings when we printed them out.</p>
 
@@ -394,7 +389,7 @@ char* lval_str_escape(char x) {
 }
 </code></pre>
 
-<h2>Cleaning Up</h2> <hr/>
+<h2 id="cleaning_up">Cleaning Up</h2> <hr/>
 
 <p>With that done we can finally remove our include for <code>mpc</code>. We'll need to replace it with includes for some of the libraries <code>mpc</code> included for us. The top of our file should now look like this.</p>
 
