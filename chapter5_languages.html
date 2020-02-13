@@ -40,57 +40,57 @@
 
 <p>To write a programming language such as our Lisp we are going to need to understand grammars. For reading in the user input we need to write a <em>grammar</em> which describes it. Then we can use it along with our user input, to decide if the input is valid. We can also use it to build a structured internal representation, which will make the job of understanding it, and then evaluating it, performing the computations encoded within, much easier.</p>
 
-<p>This is where a library called <code>mpc</code> comes in.</p>
+<p>This is where a library called <code>pcq</code> comes in.</p>
 
 
 <h2 id='parser_combinators'>Parser Combinators</h2> <hr/>
 
-<p><code>mpc</code> is a <em>Parser Combinator</em> library I have written. This means it is a library that allows you to build programs that understand and process particular languages. These are known as <em>parsers</em>. There are many different ways of building parsers, but the cool thing about using a <em>Parser Combinator</em> library is that it lets you build <em>parsers</em> easily, just by specifying the <em>grammar</em> ... sort of.</p>
+<p><code>pcq</code> is a <em>Parser Combinator</em> library I have written. This means it is a library that allows you to build programs that understand and process particular languages. These are known as <em>parsers</em>. There are many different ways of building parsers, but the cool thing about using a <em>Parser Combinator</em> library is that it lets you build <em>parsers</em> easily, just by specifying the <em>grammar</em> ... sort of.</p>
 
-<p>Many Parser Combinator libraries actually work by letting you write normal code that <em>looks a bit like</em> a grammar, not by actually specifying a grammar directly. In many situations this is fine, but sometimes it can get clunky and complicated. Luckily for us <code>mpc</code> allows us to write normal code that just looks like a grammar, <em>or</em> we can use special notation to write a grammar directly!</p>
+<p>Many Parser Combinator libraries actually work by letting you write normal code that <em>looks a bit like</em> a grammar, not by actually specifying a grammar directly. In many situations this is fine, but sometimes it can get clunky and complicated. Luckily for us <code>pcq</code> allows us to write normal code that just looks like a grammar, <em>or</em> we can use special notation to write a grammar directly!</p>
 
 
 <h2 id='coding_grammars'>Coding Grammars</h2> <hr/>
 
-<p>So what does code that looks like a grammar...<em>look like</em>? Let us take a look at <code>mpc</code> by trying to write code for a grammar that recognizes <a href="http://knowyourmeme.com/memes/doge">the language of Shiba Inu</a>. More colloquially known as <em>Doge</em>. This language we are going to define as follows.</p>
+<p>So what does code that looks like a grammar...<em>look like</em>? Let us take a look at <code>pcq</code> by trying to write code for a grammar that recognizes <a href="http://knowyourmeme.com/memes/doge">the language of Shiba Inu</a>. More colloquially known as <em>Doge</em>. This language we are going to define as follows.</p>
 
 <p>&rsaquo; An <em>Adjective</em> is either <em>"wow"</em>, <em>"many"</em>, <em>"so"</em> or <em>"such"</em>.</p>
 <p>&rsaquo; A <em>Noun</em> is either <em>"lisp"</em>, <em>"language"</em>, <em>"c"</em>, <em>"book"</em> or <em>"build"</em>.</p>
 <p>&rsaquo; A <em>Phrase</em> is an <em>Adjective</em> followed by a <em>Noun</em>.</p>
 <p>&rsaquo; A <em>Doge</em> is zero or more <em>Phrases</em>.</p>
 
-<p>We can start by trying to define <em>Adjective</em> and <em>Noun</em>. To do this we create two new parsers, represented by the type <code>mpc_parser_t*</code>, and we store them in the variables <code>Adjective</code> and <code>Noun</code>. We use the function <code>mpc_or</code> to create a parser where one of several options should be used, and the function <code>mpc_sym</code> to wrap our initial strings.</p>
+<p>We can start by trying to define <em>Adjective</em> and <em>Noun</em>. To do this we create two new parsers, represented by the type <code>pcq_parser_t*</code>, and we store them in the variables <code>Adjective</code> and <code>Noun</code>. We use the function <code>pcq_or</code> to create a parser where one of several options should be used, and the function <code>pcq_sym</code> to wrap our initial strings.</p>
 
 <p>If you squint you could attempt to read the code as if it were the rules we specified above.</p>
 
 <pre><code data-language='c'>/* Build a parser 'Adjective' to recognize descriptions */
-mpc_parser_t* Adjective = mpc_or(4,
-  mpc_sym("wow"), mpc_sym("many"),
-  mpc_sym("so"),  mpc_sym("such")
+pcq_parser_t* Adjective = pcq_or(4,
+  pcq_sym("wow"), pcq_sym("many"),
+  pcq_sym("so"),  pcq_sym("such")
 );
 
 /* Build a parser 'Noun' to recognize things */
-mpc_parser_t* Noun = mpc_or(5,
-  mpc_sym("lisp"), mpc_sym("language"),
-  mpc_sym("book"),mpc_sym("build"),
-  mpc_sym("c")
+pcq_parser_t* Noun = pcq_or(5,
+  pcq_sym("lisp"), pcq_sym("language"),
+  pcq_sym("book"),pcq_sym("build"),
+  pcq_sym("c")
 );
 </code></pre>
 
 <div class="alert alert-warning">
-  <p><strong>How can I access these <code>mpc</code> functions?</strong></p>
+  <p><strong>How can I access these <code>pcq</code> functions?</strong></p>
 
-  <p>For now don't worry about compiling or running any of the sample code in this chapter. Just focus on understanding the theory behind grammars. In the next chapter we'll get set up with <code>mpc</code> and use it for a language closer to our Lisp.</p>
+  <p>For now don't worry about compiling or running any of the sample code in this chapter. Just focus on understanding the theory behind grammars. In the next chapter we'll get set up with <code>pcq</code> and use it for a language closer to our Lisp.</p>
 </div>
 
-<p>To define <code>Phrase</code> we can reference our existing parsers. We need to use the function <code>mpc_and</code>, that specifies one thing is required then another. As input we pass it <code>Adjective</code> and <code>Noun</code>, our previously defined parsers. This function also takes the arguments <code>mpcf_strfold</code> and <code>free</code>, which say how to join or delete the results of these parsers. Ignore these arguments for now.</p>
+<p>To define <code>Phrase</code> we can reference our existing parsers. We need to use the function <code>pcq_and</code>, that specifies one thing is required then another. As input we pass it <code>Adjective</code> and <code>Noun</code>, our previously defined parsers. This function also takes the arguments <code>pcqf_strfold</code> and <code>free</code>, which say how to join or delete the results of these parsers. Ignore these arguments for now.</p>
 
-<pre><code data-language='c'>mpc_parser_t* Phrase = mpc_and(2, mpcf_strfold,
+<pre><code data-language='c'>pcq_parser_t* Phrase = pcq_and(2, pcqf_strfold,
   Adjective, Noun, free);</code></pre>
 
-<p>To define <em>Doge</em> we must specify that <em>zero or more</em> of some parser is required. For this we need to use the function <code>mpc_many</code>. As before, this function requires the special variable <code>mpcf_strfold</code> to say how the results are joined together, which we can ignore.</p>
+<p>To define <em>Doge</em> we must specify that <em>zero or more</em> of some parser is required. For this we need to use the function <code>pcq_many</code>. As before, this function requires the special variable <code>pcqf_strfold</code> to say how the results are joined together, which we can ignore.</p>
 
-<pre><code data-language='c'>mpc_parser_t* Doge = mpc_many(mpcf_strfold, Phrase);</code></pre>
+<pre><code data-language='c'>pcq_parser_t* Doge = pcq_many(pcqf_strfold, Phrase);</code></pre>
 
 <p>By creating a parser that looks for <em>zero or more</em> occurrences of another parser an interesting thing has happened. Our <code>Doge</code> parser accepts inputs of any length. This means its language is <em>infinite</em>. Here are just some examples of possible strings <code>Doge</code> could accept. Just as we discovered in the first section of this chapter we have used a finite number of re-write rules to create an infinite language.</p>
 
@@ -102,21 +102,21 @@ mpc_parser_t* Noun = mpc_or(5,
 "so c"
 </code></pre>
 
-<p>If we use more <code>mpc</code> functions, we can slowly build up parsers that parse more and more complicated languages. The code we use <em>sort of</em> reads like a grammar, but becomes much more messy with added complexity. Due to this, taking this approach isn't always an easy task. A whole set of helper functions that build on simple constructs to make frequent tasks easy are all documented on the <a href="http://github.com/orangeduck/mpc">mpc repository</a>. This is a good approach for complicated languages, as it allows for fine-grained control, but won't be required for our needs.</p>
+<p>If we use more <code>pcq</code> functions, we can slowly build up parsers that parse more and more complicated languages. The code we use <em>sort of</em> reads like a grammar, but becomes much more messy with added complexity. Due to this, taking this approach isn't always an easy task. A whole set of helper functions that build on simple constructs to make frequent tasks easy are all documented on the <a href="http://github.com/orangeduck/pcq">pcq repository</a>. This is a good approach for complicated languages, as it allows for fine-grained control, but won't be required for our needs.</p>
 
 
 <h2 id='natural_grammars'>Natural Grammars</h2> <hr/>
 
-<p><code>mpc</code> lets us write grammars in a more natural form too. Rather than using C functions that look less like a grammar, we can specify the whole thing in one long string. When using this method we don't have to worry about how to join or discard inputs, with functions such as <code>mpcf_strfold</code>, or <code>free</code>. All of that is done automatically for us.</p>
+<p><code>pcq</code> lets us write grammars in a more natural form too. Rather than using C functions that look less like a grammar, we can specify the whole thing in one long string. When using this method we don't have to worry about how to join or discard inputs, with functions such as <code>pcqf_strfold</code>, or <code>free</code>. All of that is done automatically for us.</p>
 
 <p>Here is how we would recreate the previous examples using this method.</p>
 
-<pre><code data-language='c'>mpc_parser_t* Adjective = mpc_new("adjective");
-mpc_parser_t* Noun      = mpc_new("noun");
-mpc_parser_t* Phrase    = mpc_new("phrase");
-mpc_parser_t* Doge      = mpc_new("doge");
+<pre><code data-language='c'>pcq_parser_t* Adjective = pcq_new("adjective");
+pcq_parser_t* Noun      = pcq_new("noun");
+pcq_parser_t* Phrase    = pcq_new("phrase");
+pcq_parser_t* Doge      = pcq_new("doge");
 
-mpca_lang(MPCA_LANG_DEFAULT,
+pcqa_lang(PCQA_LANG_DEFAULT,
   "                                           \
     adjective : \"wow\" | \"many\"            \
               |  \"so\" | \"such\";           \
@@ -129,14 +129,14 @@ mpca_lang(MPCA_LANG_DEFAULT,
 
 /* Do some parsing here... */
 
-mpc_cleanup(4, Adjective, Noun, Phrase, Doge);
+pcq_cleanup(4, Adjective, Noun, Phrase, Doge);
 </code></pre>
 
 <p>Without having an exact understanding of the syntax for that long string, it should be obvious how much <em>clearer</em> the grammar is in this format. If we learn what all the special symbols mean we barely need to squint.</p>
 
-<p>Another thing to notice is that the process is now in two steps. First we create and name several rules using <code>mpc_new</code> and then we define them using <code>mpca_lang</code>.</p>
+<p>Another thing to notice is that the process is now in two steps. First we create and name several rules using <code>pcq_new</code> and then we define them using <code>pcqa_lang</code>.</p>
 
-<p>The first argument to <code>mpca_lang</code> are the options flags. For this we just use the defaults. The second is a long multi-line string in C. This is the <em>grammar</em> specification. It consists of a number of <em>re-write rules</em>. Each rule has the name of the rule on the left, a colon <code>:</code>, and on the right its definition terminated with a semicolon <code>;</code>.</p>
+<p>The first argument to <code>pcqa_lang</code> are the options flags. For this we just use the defaults. The second is a long multi-line string in C. This is the <em>grammar</em> specification. It consists of a number of <em>re-write rules</em>. Each rule has the name of the rule on the left, a colon <code>:</code>, and on the right its definition terminated with a semicolon <code>;</code>.</p>
 
 <p>The special symbols used to define the rules on the right hand side work as follows.</p>
 
@@ -153,7 +153,7 @@ mpc_cleanup(4, Adjective, Noun, Phrase, Doge);
 <div class="alert alert-warning">
   <p><strong>Sounds familiar...</strong></p>
 
-  <p>Did you notice that the description of what the input string to <code>mpca_lang</code> should look like sounded like I was specifying a grammar? That's because it was. <code>mpc</code> uses itself internally to parse the input you give it to <code>mpca_lang</code>. It does it by specifying a <em>grammar</em> in code using the previous method. How neat is that?</p>
+  <p>Did you notice that the description of what the input string to <code>pcqa_lang</code> should look like sounded like I was specifying a grammar? That's because it was. <code>pcq</code> uses itself internally to parse the input you give it to <code>pcqa_lang</code>. It does it by specifying a <em>grammar</em> in code using the previous method. How neat is that?</p>
 </div>
 
 <p>Using the table described above verify that what I've written above is equal to what we specified in code.</p>
