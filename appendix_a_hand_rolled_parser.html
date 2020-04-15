@@ -7,7 +7,7 @@
   <p><small>Steam Roller &bull; We're gonna be rolling <em>machines</em>.</small></p>
 </div>
 
-<p>In this book we used <code>mpc</code> to do all the parsing, but in this appendix we're going to replace <code>mpc</code> with our own hand rolled parser. The choice to use <code>mpc</code> has by far been the main source of complaints by readers of this book, and before we dive into the details of hand-rolling I want to talk about some of the reasons I decided on using a parsing library in the first place.</p>
+<p>In this book we used <code>pcq</code> to do all the parsing, but in this appendix we're going to replace <code>pcq</code> with our own hand rolled parser. The choice to use <code>pcq</code> has by far been the main source of complaints by readers of this book, and before we dive into the details of hand-rolling I want to talk about some of the reasons I decided on using a parsing library in the first place.</p>
 
 <p>The main reason was that when I was learning about programming languages, I found the theory of formal languages fascinating. I really enjoyed getting into the mind set of thinking about languages more abstractly. I think this is a fun thing to teach, as it opens up a lot of new avenues of exploration.</p>
 
@@ -24,14 +24,14 @@
 </div>
 
 
-<h2 id='replacing_mpc'>Replacing mpc</h2>
+<h2 id='replacing_pcq'>Replacing pcq</h2>
 
-<p>The output of <code>mpc</code> was an <em>Abstract Syntax Tree</em>, but because our language is so simple, when we replace it we're going to go directly from the input string to an S-Expressions (which is pretty much like abstract syntax tree anyway). So let us declare a function which takes some string <code>s</code>, some pointer to a position in that string <code>i</code> and some terminal character <code>end</code> and which outputs an <code>lval</code>. We'll call it <code>lval_read_expr</code>.</p>
+<p>The output of <code>pcq</code> was an <em>Abstract Syntax Tree</em>, but because our language is so simple, when we replace it we're going to go directly from the input string to an S-Expressions (which is pretty much like abstract syntax tree anyway). So let us declare a function which takes some string <code>s</code>, some pointer to a position in that string <code>i</code> and some terminal character <code>end</code> and which outputs an <code>lval</code>. We'll call it <code>lval_read_expr</code>.</p>
 
 <pre><code data-language='c'>lval* lval_read_expr(char* s, int* i, char end);
 </code></pre>
 
-<p>We'll define the implementation later. For now lets go ahead and replace the places we call <code>mpc</code> with this new function. For error handling we'll get <code>lval_read_expr</code> to return an error <code>lval</code> if something goes wrong. The terminal character when we're reading from a C string is just the null character <code>\0</code>.</p>
+<p>We'll define the implementation later. For now lets go ahead and replace the places we call <code>pcq</code> with this new function. For error handling we'll get <code>lval_read_expr</code> to return an error <code>lval</code> if something goes wrong. The terminal character when we're reading from a C string is just the null character <code>\0</code>.</p>
 
 <pre><code data-language='c'>char* input = readline("lispy&gt; ");
 /* Read from input to create an S-Expr */
@@ -42,7 +42,7 @@ lval* expr = lval_read_expr(input, &pos, '\0');
 lval* x = lval_eval(e, expr);
 </code></pre>
 
-<p>We also need to replace <code>mpc</code> in our function <code>builtin_load</code>. Here, because we only support strings in our read function, we first need to load in the contents of the file. To do this we use <code>fseek</code> and <code>ftell</code> to find out how many characters are in the file before allocating a string of that size (plus one) and reading the file into it.</p>
+<p>We also need to replace <code>pcq</code> in our function <code>builtin_load</code>. Here, because we only support strings in our read function, we first need to load in the contents of the file. To do this we use <code>fseek</code> and <code>ftell</code> to find out how many characters are in the file before allocating a string of that size (plus one) and reading the file into it.</p>
 
 <pre><code data-language='c'>lval* builtin_load(lenv* e, lval* a) {
   LASSERT_NUM("load", a, 1);
@@ -100,7 +100,7 @@ lval* x = lval_eval(e, expr);
   <p><small>Reading &bull; A Jolly Good Time (tm).</small></p>
 </div>
 
-<p>The way we think about implementing a parser is quite different to the high level abstract view we were given with <code>mpc</code>. Instead of thinking about the <em>language</em> we instead need to think about the <em>process</em>.</p>
+<p>The way we think about implementing a parser is quite different to the high level abstract view we were given with <code>pcq</code>. Instead of thinking about the <em>language</em> we instead need to think about the <em>process</em>.</p>
 
 <p>Usually this <em>process</em> takes a very simple form - a parser is almost always just a loop, which repeatedly reads a character at a time from the input, and each time decides what to do with it. The challenge is in making this process elegant. It all starts to get a little messy when we think about whitespace, and comments, and everything else.</p>
 
@@ -232,7 +232,7 @@ if all of the characters are digits.</p>
 </code></pre>
 
 <p>Finally, if the symbol is a number we convert it with similar code to the
-previous code we used when we were reading from the <code>mpc</code> AST, or otherwise we just use it as a normal symbol. Then we <code>free</code> the 
+previous code we used when we were reading from the <code>pcq</code> AST, or otherwise we just use it as a normal symbol. Then we <code>free</code> the 
 temporary string we allocated and return the new position in the input.<p>
 
 <pre><code data-language='c'>  /* Add Symbol or Number as lval */
@@ -369,9 +369,9 @@ char* lval_str_escape(char x) {
 
 <h2 id="printing_strings">Printing Strings</h2> <hr/>
 
-<p>As well as using <code>mpc</code> to <em>unescape</em> strings we also used <code>mpc</code> to <em>escape</em> strings when we printed them out.</p>
+<p>As well as using <code>pcq</code> to <em>unescape</em> strings we also used <code>pcq</code> to <em>escape</em> strings when we printed them out.</p>
 
-<p>So if we're going to replace all uses of <code>mpc</code> we better do it here too. Given our functions we already defined for escaping and unescaping characters this wont be too difficult. We'll just loop over each character in the string and if it is esapable then we'll escape it, otherwise we'll print it out as normal.<p>
+<p>So if we're going to replace all uses of <code>pcq</code> we better do it here too. Given our functions we already defined for escaping and unescaping characters this wont be too difficult. We'll just loop over each character in the string and if it is esapable then we'll escape it, otherwise we'll print it out as normal.<p>
 
 <pre><code data-language='c'>void lval_print_str(lval* v) {
   putchar('"');
@@ -391,7 +391,7 @@ char* lval_str_escape(char x) {
 
 <h2 id="cleaning_up">Cleaning Up</h2> <hr/>
 
-<p>With that done we can finally remove our include for <code>mpc</code>. We'll need to replace it with includes for some of the libraries <code>mpc</code> included for us. The top of our file should now look like this.</p>
+<p>With that done we can finally remove our include for <code>pcq</code>. We'll need to replace it with includes for some of the libraries <code>pcq</code> included for us. The top of our file should now look like this.</p>
 
 <pre><code data-language='c'>#include &lt;string.h&gt;
 #include &lt;stdio.h&gt;
@@ -403,14 +403,14 @@ char* lval_str_escape(char x) {
 
 <pre><code data-language='c'>/* Parser Declariations */
 
-mpc_parser_t* Number; 
-mpc_parser_t* Symbol; 
-mpc_parser_t* String; 
-mpc_parser_t* Comment;
-mpc_parser_t* Sexpr;  
-mpc_parser_t* Qexpr;  
-mpc_parser_t* Expr; 
-mpc_parser_t* Lispy;
+pcq_parser_t* Number; 
+pcq_parser_t* Symbol; 
+pcq_parser_t* String; 
+pcq_parser_t* Comment;
+pcq_parser_t* Sexpr;  
+pcq_parser_t* Qexpr;  
+pcq_parser_t* Expr; 
+pcq_parser_t* Lispy;
 </code></pre>
 
 <p>And with that we're really done! Enjoy your new hand rolled parser.</p>
