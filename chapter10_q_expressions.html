@@ -31,14 +31,14 @@
   <p>The way I've used <em>S-Expression</em> and <em>Q-Expression</em> in this book is a slight abuse of terminology, but I hope this misdemeanor makes the behaviour of our Lisp clearer.</p>
 </div>
 
-<pre><code data-language='c'>mpc_parser_t* Number = mpc_new("number");
-mpc_parser_t* Symbol = mpc_new("symbol");
-mpc_parser_t* Sexpr  = mpc_new("sexpr");
-mpc_parser_t* Qexpr  = mpc_new("qexpr");
-mpc_parser_t* Expr   = mpc_new("expr");
-mpc_parser_t* Lispy  = mpc_new("lispy");
+<pre><code data-language='c'>pcq_parser_t* Number = pcq_new("number");
+pcq_parser_t* Symbol = pcq_new("symbol");
+pcq_parser_t* Sexpr  = pcq_new("sexpr");
+pcq_parser_t* Qexpr  = pcq_new("qexpr");
+pcq_parser_t* Expr   = pcq_new("expr");
+pcq_parser_t* Lispy  = pcq_new("lispy");
 
-mpca_lang(MPCA_LANG_DEFAULT,
+pcqa_lang(PCQA_LANG_DEFAULT,
   "                                                    \
     number : /-?[0-9]+/ ;                              \
     symbol : '+' | '-' | '*' | '/' ;                   \
@@ -51,7 +51,7 @@ mpca_lang(MPCA_LANG_DEFAULT,
 
 <p>We also must remember to update our cleanup function to deal with the new rule we've added.</p>
 
-<pre><code data-language='c'>mpc_cleanup(6, Number, Symbol, Sexpr, Qexpr, Expr, Lispy);</code></pre>
+<pre><code data-language='c'>pcq_cleanup(6, Number, Symbol, Sexpr, Qexpr, Expr, Lispy);</code></pre>
 
 
 <h2 id='reading_q-expressions'>Reading Q-Expressions</h2> <hr/>
@@ -146,7 +146,7 @@ lispy&gt;
 
 <p>Like with our mathematical operators we should add these functions as possible valid symbols. Afterward we can go about trying to define their behaviour in a similar way to <code>builtin_op</code>.</p>
 
-<pre><code data-language='c'>mpca_lang(MPCA_LANG_DEFAULT,
+<pre><code data-language='c'>pcqa_lang(PCQA_LANG_DEFAULT,
   "                                                        \
     number : /-?[0-9]+/ ;                                  \
     symbol : \"list\" | \"head\" | \"tail\"                \
