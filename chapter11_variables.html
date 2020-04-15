@@ -37,7 +37,7 @@
 
 <p>This rule lets symbols be any of the normal C identifier characters <code>a-zA-Z0-9_</code> the arithmetic operator characters <code>+\\-*\\/</code> the backslash character <code>\\\\</code> the comparison operator characters <code>=&lt;&gt;!</code> or an ampersands <code>&amp;</code>. This will give us all the flexibility we need for defining new and existing symbols.</p>
 
-<pre><code data-language='C'>mpca_lang(MPCA_LANG_DEFAULT,
+<pre><code data-language='C'>pcqa_lang(PCQA_LANG_DEFAULT,
   "                                                     \
     number : /-?[0-9]+/ ;                               \
     symbol : /[a-zA-Z0-9_+\\-*\\/\\\\=&lt;&gt;!&amp;]+/ ;         \
@@ -356,17 +356,17 @@ while (1) {
   char* input = readline("lispy&gt; ");
   add_history(input);
 
-  mpc_result_t r;
-  if (mpc_parse("&lt;stdin&gt;", input, Lispy, &r)) {
+  pcq_result_t r;
+  if (pcq_parse("&lt;stdin&gt;", input, Lispy, &r)) {
 
     lval* x = lval_eval(e, lval_read(r.output));
     lval_println(x);
     lval_del(x);
 
-    mpc_ast_delete(r.output);
+    pcq_ast_delete(r.output);
   } else {
-    mpc_err_print(r.error);
-    mpc_err_delete(r.error);
+    pcq_err_print(r.error);
+    pcq_err_delete(r.error);
   }
 
   free(input);
