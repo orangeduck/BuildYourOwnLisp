@@ -37,9 +37,9 @@
 
 <p>So a pointer is just a number. A number representing the starting index of some data in memory. The type of the pointer hints to us, and the compiler, what type of data might be accessible at this location.</p>
 
-<p>We can declare pointer types by suffixing existing ones with the <code>*</code> character. We've seen some examples of this already with <code>mpc_parser_t*</code>, <code>mpc_ast_t*</code>, or <code>char*</code>.</p>
+<p>We can declare pointer types by suffixing existing ones with the <code>*</code> character. We've seen some examples of this already with <code>pcq_parser_t*</code>, <code>pcq_ast_t*</code>, or <code>char*</code>.</p>
 
-<p>To create a pointer to some data, we need to get its index, or <em>address</em>. To get the address of some data we use the <em>address of</em> operator <code>&amp;</code>. Again you've seen this before when we passed in a pointer to <code>mpc_parse</code> so it would output into our <code>mpc_result_t</code>.</p>
+<p>To create a pointer to some data, we need to get its index, or <em>address</em>. To get the address of some data we use the <em>address of</em> operator <code>&amp;</code>. Again you've seen this before when we passed in a pointer to <code>pcq_parse</code> so it would output into our <code>pcq_result_t</code>.</p>
 
 <p>Finally to get the data at an address, called <em>dereferencing</em>, we use the <code>*</code> operator on the left-hand side of a variable. To get the data at the field of a pointer to a struct we use the arrow <code>-&gt;</code>. This you saw in chapter 7.</p>
 
@@ -82,13 +82,13 @@
 
 <p>Because we're now thinking in S-Expressions, and not Polish Notation we need to update our parser. The syntax for S-Expressions is simple. It is just a number of other Expressions between parentheses, where an Expression can be a Number, Operator, or other S-Expression . We can modify our existing parse rules to reflect this. We also are going to rename our <code>operator</code> rule to <code>symbol</code>. This is in anticipation of adding more operators, variables and functions later.</p>
 
-<pre><code data-language='c'>mpc_parser_t* Number = mpc_new("number");
-mpc_parser_t* Symbol = mpc_new("symbol");
-mpc_parser_t* Sexpr  = mpc_new("sexpr");
-mpc_parser_t* Expr   = mpc_new("expr");
-mpc_parser_t* Lispy  = mpc_new("lispy");
+<pre><code data-language='c'>pcq_parser_t* Number = pcq_new("number");
+pcq_parser_t* Symbol = pcq_new("symbol");
+pcq_parser_t* Sexpr  = pcq_new("sexpr");
+pcq_parser_t* Expr   = pcq_new("expr");
+pcq_parser_t* Lispy  = pcq_new("lispy");
 
-mpca_lang(MPCA_LANG_DEFAULT,
+pcqa_lang(PCQA_LANG_DEFAULT,
   "                                          \
     number : /-?[0-9]+/ ;                    \
     symbol : '+' | '-' | '*' | '/' ;         \
@@ -100,7 +100,7 @@ mpca_lang(MPCA_LANG_DEFAULT,
 
 <p>We should also remember to cleanup these rules on exit.</p>
 
-<pre><code data-language='c'>mpc_cleanup(5, Number, Symbol, Sexpr, Expr, Lispy);</code></pre>
+<pre><code data-language='c'>pcq_cleanup(5, Number, Symbol, Sexpr, Expr, Lispy);</code></pre>
 
 
 <h2 id='expression_structure'>Expression Structure</h2> <hr/>
@@ -244,7 +244,7 @@ lval* lval_sexpr(void) {
   <p>This naturally leads to an implementation using <em>linked lists</em>, a different data structure to the one we are using. I choose to represent S-Expressions as a variable sized array in this book for the purposes of simplicity, but it is important to be aware that the official definition, and typical implementation are both subtly different.</p>
 </div>
 
-<pre><code data-language='c'>lval* lval_read_num(mpc_ast_t* t) {
+<pre><code data-language='c'>lval* lval_read_num(pcq_ast_t* t) {
   errno = 0;
   long x = strtol(t-&gt;contents, NULL, 10);
   return errno != ERANGE ?
@@ -252,7 +252,7 @@ lval* lval_sexpr(void) {
 }
 </code></pre>
 
-<pre><code data-language='c'>lval* lval_read(mpc_ast_t* t) {
+<pre><code data-language='c'>lval* lval_read(pcq_ast_t* t) {
 
   /* If Symbol or Number return conversion to that type */
   if (strstr(t-&gt;tag, "number")) { return lval_read_num(t); }
