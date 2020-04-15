@@ -60,7 +60,7 @@ char* str;
 
 <p>For <strong>Printing</strong> we need to do a little more. The string we store internally is different to the string we want to print. We want to print a string as a user might input it, using escape characters such as <code>\n</code> to represent a new line.</p>
 
-<p>We therefore need to escape it before we print it. Luckily we can make use of a <code>mpc</code> function that will do this for us.</p>
+<p>We therefore need to escape it before we print it. Luckily we can make use of a <code>pcq</code> function that will do this for us.</p>
 
 <p>In the printing function we add the following...</p>
 
@@ -73,7 +73,7 @@ char* str;
   char* escaped = malloc(strlen(v-&gt;str)+1);
   strcpy(escaped, v-&gt;str);
   /* Pass it through the escape function */
-  escaped = mpcf_escape(escaped);
+  escaped = pcqf_escape(escaped);
   /* Print it between " characters */
   printf("\"%s\"", escaped);
   /* free the copied string */
@@ -97,14 +97,14 @@ char* str;
 
 <p>Because the input string is input in an escaped form we need to create a function <code>lval_read_str</code> which deals with this. This function is a little tricky because it has to do a few tasks. First it must strip the input string of the <code>"</code> characters on either side. Then it must unescape the string, converting series of characters such as <code>\n</code> to their actual encoded characters. Finally it has to create a new <code>lval</code> and clean up anything that has happened in-between.</p>
 
-<pre><code data-language='c'>lval* lval_read_str(mpc_ast_t* t) {
+<pre><code data-language='c'>lval* lval_read_str(pcq_ast_t* t) {
   /* Cut off the final quote character */
   t-&gt;contents[strlen(t-&gt;contents)-1] = '\0';
   /* Copy the string missing out the first quote character */
   char* unescaped = malloc(strlen(t-&gt;contents+1)+1);
   strcpy(unescaped, t-&gt;contents+1);
   /* Pass through the unescape function */
-  unescaped = mpcf_unescape(unescaped);
+  unescaped = pcqf_unescape(unescaped);
   /* Construct a new lval using the string */
   lval* str = lval_str(unescaped);
   /* Free the string and return */
@@ -139,11 +139,11 @@ lispy&gt;</code></pre>
 
 <pre><code>comment : /;[^\\r\\n]*/ ;</code></pre>
 
-<p>As with strings we need to create a new parser and use this to update our language in <code>mpca_lang</code>. We also need to remember to add the parser to <code>mpc_cleanup</code>, and update the first integer argument to reflect the new number of parsers passed in.</p>
+<p>As with strings we need to create a new parser and use this to update our language in <code>pcqa_lang</code>. We also need to remember to add the parser to <code>pcq_cleanup</code>, and update the first integer argument to reflect the new number of parsers passed in.</p>
 
 <p>Our final grammar now looks like this.</p>
 
-<pre><code data-language='c'>mpca_lang(MPCA_LANG_DEFAULT,
+<pre><code data-language='c'>pcqa_lang(PCQA_LANG_DEFAULT,
   "                                              \
     number  : /-?[0-9]+/ ;                       \
     symbol  : /[a-zA-Z0-9_+\\-*\\/\\\\=&lt;&gt;!&amp;]+/ ; \
@@ -160,7 +160,7 @@ lispy&gt;</code></pre>
 
 <p>And the cleanup function looks like this.</p>
 
-<pre><code data-language='c'>mpc_cleanup(8,
+<pre><code data-language='c'>pcq_cleanup(8,
   Number, Symbol, String, Comment,
   Sexpr,  Qexpr,  Expr,   Lispy);</code></pre>
 
@@ -173,21 +173,21 @@ lispy&gt;</code></pre>
 
 <h2 id='load_function'>Load Function</h2>
 
-<p>We want to built a function that can load and evaluate a file when passed a string of its name. To implement this function we'll need to make use of our grammar as we'll need it to to read in the file contents, parse, and evaluate them. Our load function is going to rely on our <code>mpc_parser*</code> called <code>Lispy</code>.</p>
+<p>We want to built a function that can load and evaluate a file when passed a string of its name. To implement this function we'll need to make use of our grammar as we'll need it to to read in the file contents, parse, and evaluate them. Our load function is going to rely on our <code>pcq_parser*</code> called <code>Lispy</code>.</p>
 
 <p>Therefore, just like with functions, we need to forward declare our parser pointers, and place them at the top of the file.</p>
 
-<pre><code data-language='c'>mpc_parser_t* Number;
-mpc_parser_t* Symbol;
-mpc_parser_t* String;
-mpc_parser_t* Comment;
-mpc_parser_t* Sexpr;
-mpc_parser_t* Qexpr;
-mpc_parser_t* Expr;
-mpc_parser_t* Lispy;
+<pre><code data-language='c'>pcq_parser_t* Number;
+pcq_parser_t* Symbol;
+pcq_parser_t* String;
+pcq_parser_t* Comment;
+pcq_parser_t* Sexpr;
+pcq_parser_t* Qexpr;
+pcq_parser_t* Expr;
+pcq_parser_t* Lispy;
 </code></pre>
 
-<p>Our <code>load</code> function will be just like any other builtin. We need to start by checking that the input argument is a single string. Then we can use the <code>mpc_parse_contents</code> function to read in the contents of a file using a grammar. Just like <code>mpc_parse</code> this parses the contents of a file into some <code>mpc_result</code> object, which is our case is an <em>abstract syntax tree</em> again or an <em>error</em>.</p>
+<p>Our <code>load</code> function will be just like any other builtin. We need to start by checking that the input argument is a single string. Then we can use the <code>pcq_parse_contents</code> function to read in the contents of a file using a grammar. Just like <code>pcq_parse</code> this parses the contents of a file into some <code>pcq_result</code> object, which is our case is an <em>abstract syntax tree</em> again or an <em>error</em>.</p>
 
 <p>Slightly differently to our command prompt, on successfully parsing a file we shouldn't treat it like one expression. When typing into a file we let users list multiple expressions and evaluate all of them individually. To achieve this behaviour we need to loop over each expression in the contents of the file and evaluate it one by one. If there are any errors we should print them and continue.</p>
 
@@ -198,12 +198,12 @@ mpc_parser_t* Lispy;
   LASSERT_TYPE("load", a, 0, LVAL_STR);
 
   /* Parse File given by string name */
-  mpc_result_t r;
-  if (mpc_parse_contents(a-&gt;cell[0]-&gt;str, Lispy, &r)) {
+  pcq_result_t r;
+  if (pcq_parse_contents(a-&gt;cell[0]-&gt;str, Lispy, &r)) {
 
     /* Read contents */
     lval* expr = lval_read(r.output);
-    mpc_ast_delete(r.output);
+    pcq_ast_delete(r.output);
 
     /* Evaluate each Expression */
     while (expr-&gt;count) {
@@ -222,8 +222,8 @@ mpc_parser_t* Lispy;
 
   } else {
     /* Get Parse Error as String */
-    char* err_msg = mpc_err_string(r.error);
-    mpc_err_delete(r.error);
+    char* err_msg = pcq_err_string(r.error);
+    pcq_err_delete(r.error);
 
     /* Create new error message using it */
     lval* err = lval_err("Could not load Library %s", err_msg);
