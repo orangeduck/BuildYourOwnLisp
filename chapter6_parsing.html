@@ -9,7 +9,7 @@
 
 <h2 id='polish_notation'>Polish Notation</h2> <hr/>
 
-<p>To try out <code>mpc</code> we're going to implement a simple grammar that resembles a mathematical subset of our Lisp. It's called <a href="http://en.wikipedia.org/wiki/Polish_notation">Polish Notation</a> and is a notation for arithmetic where the operator comes before the operands.</p>
+<p>To try out <code>pcq</code> we're going to implement a simple grammar that resembles a mathematical subset of our Lisp. It's called <a href="http://en.wikipedia.org/wiki/Polish_notation">Polish Notation</a> and is a notation for arithmetic where the operator comes before the operands.</p>
 
 <p>For example...</p>
 
@@ -54,29 +54,29 @@
 
 <p>These are all the regular expression rules we need for now. <a href="http://regex.learncodethehardway.org/">Whole books</a> have been written on learning regular expressions. For the curious much more information can be found online or from these sources. We will be using them in later chapters, so some basic knowledge will be required, but you won't need to master them for now.</p>
 
-<p>In an <code>mpc</code> grammar we write regular expressions by putting them between forward slashes <code>/</code>. Using the above guide our <em>Number</em> rule can be expressed as a regular expression using the string <code>/-?[0-9]+/</code>.</p>
+<p>In an <code>pcq</code> grammar we write regular expressions by putting them between forward slashes <code>/</code>. Using the above guide our <em>Number</em> rule can be expressed as a regular expression using the string <code>/-?[0-9]+/</code>.</p>
 
 
-<h2 id='installing_mpc'>Installing mpc</h2> <hr/>
+<h2 id='installing_pcq'>Installing pcq</h2> <hr/>
 
-<p>Before we work on writing this grammar we first need to <em>include</em> the <code>mpc</code> headers, and then <em>link</em> to the <code>mpc</code> library, just as we did for <code>editline</code> on Linux and Mac. Starting with your code from chapter 4, you can rename the file to <code>parsing.c</code> and download <code>mpc.h</code> and <code>mpc.c</code> from the <a href="http://github.com/orangeduck/mpc">mpc repo</a>. Put these in the same directory as your source file.</p>
+<p>Before we work on writing this grammar we first need to <em>include</em> the <code>pcq</code> headers, and then <em>link</em> to the <code>pcq</code> library, just as we did for <code>editline</code> on Linux and Mac. Starting with your code from chapter 4, you can rename the file to <code>parsing.c</code> and download <code>pcq.h</code> and <code>pcq.c</code> from the <a href="http://github.com/orangeduck/pcq">pcq repo</a>. Put these in the same directory as your source file.</p>
 
-<p>To <em>include</em> <code>mpc</code> put <code>#include "mpc.h"</code> at the top of the file. To <em>link</em> to <code>mpc</code> put <code>mpc.c</code> directly into the compile command. On Linux you will also have to link to the maths library by adding the flag <code>-lm</code>.</p>
+<p>To <em>include</em> <code>pcq</code> put <code>#include "pcq.h"</code> at the top of the file. To <em>link</em> to <code>pcq</code> put <code>pcq.c</code> directly into the compile command. On Linux you will also have to link to the maths library by adding the flag <code>-lm</code>.</p>
 
 <p>On <strong>Linux</strong> and <strong>Mac</strong></p>
 
-<pre><code>cc -std=c99 -Wall parsing.c mpc.c -ledit -lm -o parsing</code></pre>
+<pre><code>cc -std=c99 -Wall parsing.c pcq.c -ledit -lm -o parsing</code></pre>
 
 <p>On <strong>Windows</strong></p>
 
-<pre><code>cc -std=c99 -Wall parsing.c mpc.c -o parsing</code></pre>
+<pre><code>cc -std=c99 -Wall parsing.c pcq.c -o parsing</code></pre>
 
 <div class="alert alert-warning">
-  <p><strong>Hold on, don't you mean <code>#include &lt;mpc.h&gt;</code>?</strong></p>
+  <p><strong>Hold on, don't you mean <code>#include &lt;pcq.h&gt;</code>?</strong></p>
 
   <p>There are actually two ways to include files in C. One is using angular brackets <code>&lt;&gt;</code> as we've seen so far, and the other is with quotation marks <code>""</code>.</p>
 
-  <p>The only difference between the two is that using angular brackets searches the system locations for headers first, while quotation marks searches the current directory first. Because of this system headers such as <code>&lt;stdio.h&gt;</code> are typically put in angular brackets, while local headers such as <code>"mpc.h"</code> are typically put in quotation marks.</p>
+  <p>The only difference between the two is that using angular brackets searches the system locations for headers first, while quotation marks searches the current directory first. Because of this system headers such as <code>&lt;stdio.h&gt;</code> are typically put in angular brackets, while local headers such as <code>"pcq.h"</code> are typically put in quotation marks.</p>
 </div>
 
 
@@ -85,13 +85,13 @@
 <p>Formalising the above rules further, and using some regular expressions, we can write a final grammar for the language of polish notation as follows. Read the below code and verify that it matches what we had written textually, and our ideas of polish notation.</p>
 
 <pre><code data-language='c'>/* Create Some Parsers */
-mpc_parser_t* Number   = mpc_new("number");
-mpc_parser_t* Operator = mpc_new("operator");
-mpc_parser_t* Expr     = mpc_new("expr");
-mpc_parser_t* Lispy    = mpc_new("lispy");
+pcq_parser_t* Number   = pcq_new("number");
+pcq_parser_t* Operator = pcq_new("operator");
+pcq_parser_t* Expr     = pcq_new("expr");
+pcq_parser_t* Lispy    = pcq_new("lispy");
 
 /* Define them with the following Language */
-mpca_lang(MPCA_LANG_DEFAULT,
+pcqa_lang(PCQA_LANG_DEFAULT,
   "                                                     \
     number   : /-?[0-9]+/ ;                             \
     operator : '+' | '-' | '*' | '/' ;                  \
@@ -104,35 +104,35 @@ mpca_lang(MPCA_LANG_DEFAULT,
 <p>We need to add this to the interactive prompt we started on in chapter 4. Put this code right at the beginning of the <code>main</code> function before we print the <em>Version</em> and <em>Exit</em> information. At the end of our program we also need to delete the parsers when we are done with them. Right before <code>main</code> returns we should place the following clean-up code.</p>
 
 <pre><code data-language='c'>/* Undefine and Delete our Parsers */
-mpc_cleanup(4, Number, Operator, Expr, Lispy);</code></pre>
+pcq_cleanup(4, Number, Operator, Expr, Lispy);</code></pre>
 
 <div class="alert alert-warning">
-  <p><strong>I'm getting an error <code>undefined reference to `mpc_lang'</code></strong></p>
+  <p><strong>I'm getting an error <code>undefined reference to `pcq_lang'</code></strong></p>
 
-  <p>That should be <code>mpca_lang</code>, with an <code>a</code> at the end!</p>
+  <p>That should be <code>pcqa_lang</code>, with an <code>a</code> at the end!</p>
 </div>
 
 <h2 id='parsing_user_input'>Parsing User Input</h2> <hr/>
 
-<p>Our new code creates a <code>mpc</code> parser for our <em>Polish Notation</em> language, but we still need to actually <em>use</em> it on the user input supplied each time from the prompt. We need to edit our <code>while</code> loop so that rather than just echoing user input back, it actually attempts to parse the input using our parser. We can do this by replacing the call to <code>printf</code> with the following <code>mpc</code> code, that makes use of our program parser <code>Lispy</code>.</p>
+<p>Our new code creates a <code>pcq</code> parser for our <em>Polish Notation</em> language, but we still need to actually <em>use</em> it on the user input supplied each time from the prompt. We need to edit our <code>while</code> loop so that rather than just echoing user input back, it actually attempts to parse the input using our parser. We can do this by replacing the call to <code>printf</code> with the following <code>pcq</code> code, that makes use of our program parser <code>Lispy</code>.</p>
 
 <pre><code data-language='c'>/* Attempt to Parse the user Input */
-mpc_result_t r;
-if (mpc_parse("&lt;stdin&gt;", input, Lispy, &amp;r)) {
+pcq_result_t r;
+if (pcq_parse("&lt;stdin&gt;", input, Lispy, &amp;r)) {
   /* On Success Print the AST */
-  mpc_ast_print(r.output);
-  mpc_ast_delete(r.output);
+  pcq_ast_print(r.output);
+  pcq_ast_delete(r.output);
 } else {
   /* Otherwise Print the Error */
-  mpc_err_print(r.error);
-  mpc_err_delete(r.error);
+  pcq_err_print(r.error);
+  pcq_err_delete(r.error);
 }</code></pre>
 
-<p>This code calls the <code>mpc_parse</code> function with our parser <code>Lispy</code>, and the input string <code>input</code>. It copies the result of the parse into <code>r</code> and returns <code>1</code> on success and <code>0</code> on failure. We use the address of operator <code>&amp;</code> on <code>r</code> when we pass it to the function. This operator will be explained in more detail in later chapters.</p>
+<p>This code calls the <code>pcq_parse</code> function with our parser <code>Lispy</code>, and the input string <code>input</code>. It copies the result of the parse into <code>r</code> and returns <code>1</code> on success and <code>0</code> on failure. We use the address of operator <code>&amp;</code> on <code>r</code> when we pass it to the function. This operator will be explained in more detail in later chapters.</p>
 
-<p>On success an internal structure is copied into <code>r</code>, in the field <code>output</code>. We can print out this structure using <code>mpc_ast_print</code> and delete it using <code>mpc_ast_delete</code>.</p>
+<p>On success an internal structure is copied into <code>r</code>, in the field <code>output</code>. We can print out this structure using <code>pcq_ast_print</code> and delete it using <code>pcq_ast_delete</code>.</p>
 
-<p>Otherwise there has been an error, which is copied into <code>r</code> in the field <code>error</code>. We can print it out using <code>mpc_err_print</code> and delete it using <code>mpc_err_delete</code>.</p>
+<p>Otherwise there has been an error, which is copied into <code>r</code> in the field <code>error</code>. We can print it out using <code>pcq_err_print</code> and delete it using <code>pcq_err_delete</code>.</p>
 
 <p>Compile these updates, and take this program for a spin. Try out different inputs and see how the system reacts. Correct behaviour should look like the following.</p>
 
@@ -160,7 +160,7 @@ lispy&gt;</code></pre>
 <div class="alert alert-warning">
   <p><strong>I'm getting an error <code>&lt;stdin&gt;:1:1: error: Parser Undefined!</code>.</strong></p>
 
-  <p>This error is due to the syntax for your grammar supplied to <code>mpca_lang</code> being incorrect. See if you can work out what part of the grammar is incorrect. You can use the reference code for this chapter to help you find this, and verify how the grammar should look.</p>
+  <p>This error is due to the syntax for your grammar supplied to <code>pcqa_lang</code> being incorrect. See if you can work out what part of the grammar is incorrect. You can use the reference code for this chapter to help you find this, and verify how the grammar should look.</p>
 </div>
 
 
