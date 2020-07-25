@@ -23,7 +23,7 @@ Running
 You can't just browse the raw HTML files of the site. The links wont work, and it wont have a proper header or footer. If you want to run this website locally, you should install Flask and run the website as follows.
 
 ```
-pip install Flask
+pip install Flask cachelib
 python lispy.py
 ```
 

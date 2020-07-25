@@ -3,7 +3,7 @@ import logging
 import random
 import datetime
 
-from werkzeug.contrib.cache import MemcachedCache
+from cachelib import MemcachedCache
 from werkzeug.datastructures import ImmutableOrderedMultiDict
 
 from flask import Flask, jsonify, request, send_file, redirect, url_for
