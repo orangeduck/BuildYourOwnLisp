@@ -34,3 +34,10 @@ env PORT=5000 python lispy.py
 ```
 
 This will serve the site locally at `http://127.0.0.1:5000/`. You can browse it from there.
+
+Or, if you have docker installed, and don't want to install the dependencies locally, run:
+```
+docker build --tag buildyourownlisp --build-arg PORT=5000 .
+docker run --rm --publish 5000:5000 buildyourownlisp
+```
+Or, perhaps, just let `make` take care of it all with `make [PORT=5000] byol-docker`
