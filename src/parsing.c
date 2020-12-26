@@ -1,4 +1,4 @@
-#include "mpc.h"
+#include "pcq.h"
 
 #ifdef _WIN32
 
@@ -23,13 +23,13 @@ void add_history(char* unused) {}
 int main(int argc, char** argv) {
   
   /* Create Some Parsers */
-  mpc_parser_t* Number   = mpc_new("number");
-  mpc_parser_t* Operator = mpc_new("operator");
-  mpc_parser_t* Expr     = mpc_new("expr");
-  mpc_parser_t* Lispy    = mpc_new("lispy");
+  pcq_parser_t* Number   = pcq_new("number");
+  pcq_parser_t* Operator = pcq_new("operator");
+  pcq_parser_t* Expr     = pcq_new("expr");
+  pcq_parser_t* Lispy    = pcq_new("lispy");
   
   /* Define them with the following Language */
-  mpca_lang(MPCA_LANG_DEFAULT,
+  pcqa_lang(PCQA_LANG_DEFAULT,
     "                                                     \
       number   : /-?[0-9]+/ ;                             \
       operator : '+' | '-' | '*' | '/' ;                  \
@@ -47,22 +47,22 @@ int main(int argc, char** argv) {
     add_history(input);
     
     /* Attempt to parse the user input */
-    mpc_result_t r;
-    if (mpc_parse("<stdin>", input, Lispy, &r)) {
+    pcq_result_t r;
+    if (pcq_parse("<stdin>", input, Lispy, &r)) {
       /* On success print and delete the AST */
-      mpc_ast_print(r.output);
-      mpc_ast_delete(r.output);
+      pcq_ast_print(r.output);
+      pcq_ast_delete(r.output);
     } else {
       /* Otherwise print and delete the Error */
-      mpc_err_print(r.error);
-      mpc_err_delete(r.error);
+      pcq_err_print(r.error);
+      pcq_err_delete(r.error);
     }
     
     free(input);
   }
   
   /* Undefine and delete our parsers */
-  mpc_cleanup(4, Number, Operator, Expr, Lispy);
+  pcq_cleanup(4, Number, Operator, Expr, Lispy);
   
   return 0;
 }

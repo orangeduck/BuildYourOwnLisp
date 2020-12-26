@@ -1,4 +1,4 @@
-#include "mpc.h"
+#include "pcq.h"
 
 #ifdef _WIN32
 
@@ -22,14 +22,14 @@ void add_history(char* unused) {}
 
 /* Parser Declariations */
 
-mpc_parser_t* Number; 
-mpc_parser_t* Symbol; 
-mpc_parser_t* String; 
-mpc_parser_t* Comment;
-mpc_parser_t* Sexpr;  
-mpc_parser_t* Qexpr;  
-mpc_parser_t* Expr; 
-mpc_parser_t* Lispy;
+pcq_parser_t* Number; 
+pcq_parser_t* Symbol; 
+pcq_parser_t* String; 
+pcq_parser_t* Comment;
+pcq_parser_t* Sexpr;  
+pcq_parser_t* Qexpr;  
+pcq_parser_t* Expr; 
+pcq_parser_t* Lispy;
 
 /* Forward Declarations */
 
@@ -250,7 +250,7 @@ void lval_print_str(lval* v) {
   char* escaped = malloc(strlen(v->str)+1);
   strcpy(escaped, v->str);
   /* Pass it through the escape function */
-  escaped = mpcf_escape(escaped);
+  escaped = pcqf_escape(escaped);
   /* Print it between " characters */
   printf("\"%s\"", escaped);
   /* free the copied string */
@@ -605,19 +605,19 @@ lval* builtin_if(lenv* e, lval* a) {
   return x;
 }
 
-lval* lval_read(mpc_ast_t* t);
+lval* lval_read(pcq_ast_t* t);
 
 lval* builtin_load(lenv* e, lval* a) {
   LASSERT_NUM("load", a, 1);
   LASSERT_TYPE("load", a, 0, LVAL_STR);
   
   /* Parse File given by string name */
-  mpc_result_t r;
-  if (mpc_parse_contents(a->cell[0]->str, Lispy, &r)) {
+  pcq_result_t r;
+  if (pcq_parse_contents(a->cell[0]->str, Lispy, &r)) {
     
     /* Read contents */
     lval* expr = lval_read(r.output);
-    mpc_ast_delete(r.output);
+    pcq_ast_delete(r.output);
 
     /* Evaluate each Expression */
     while (expr->count) {
@@ -636,8 +636,8 @@ lval* builtin_load(lenv* e, lval* a) {
     
   } else {
     /* Get Parse Error as String */
-    char* err_msg = mpc_err_string(r.error);
-    mpc_err_delete(r.error);
+    char* err_msg = pcq_err_string(r.error);
+    pcq_err_delete(r.error);
     
     /* Create new error message using it */
     lval* err = lval_err("Could not load Library %s", err_msg);
@@ -816,20 +816,20 @@ lval* lval_eval(lenv* e, lval* v) {
 
 /* Reading */
 
-lval* lval_read_num(mpc_ast_t* t) {
+lval* lval_read_num(pcq_ast_t* t) {
   errno = 0;
   long x = strtol(t->contents, NULL, 10);
   return errno != ERANGE ? lval_num(x) : lval_err("Invalid Number.");
 }
 
-lval* lval_read_str(mpc_ast_t* t) {
+lval* lval_read_str(pcq_ast_t* t) {
   /* Cut off the final quote character */
   t->contents[strlen(t->contents)-1] = '\0';
   /* Copy the string missing out the first quote character */
   char* unescaped = malloc(strlen(t->contents+1)+1);
   strcpy(unescaped, t->contents+1);
   /* Pass through the unescape function */
-  unescaped = mpcf_unescape(unescaped);
+  unescaped = pcqf_unescape(unescaped);
   /* Construct a new lval using the string */
   lval* str = lval_str(unescaped);
   /* Free the string and return */
@@ -837,7 +837,7 @@ lval* lval_read_str(mpc_ast_t* t) {
   return str;
 }
 
-lval* lval_read(mpc_ast_t* t) {
+lval* lval_read(pcq_ast_t* t) {
   
   if (strstr(t->tag, "number")) { return lval_read_num(t); }
   if (strstr(t->tag, "string")) { return lval_read_str(t); }
@@ -865,16 +865,16 @@ lval* lval_read(mpc_ast_t* t) {
 
 int main(int argc, char** argv) {
   
-  Number  = mpc_new("number");
-  Symbol  = mpc_new("symbol");
-  String  = mpc_new("string");
-  Comment = mpc_new("comment");
-  Sexpr   = mpc_new("sexpr");
-  Qexpr   = mpc_new("qexpr");
-  Expr    = mpc_new("expr");
-  Lispy   = mpc_new("lispy");
+  Number  = pcq_new("number");
+  Symbol  = pcq_new("symbol");
+  String  = pcq_new("string");
+  Comment = pcq_new("comment");
+  Sexpr   = pcq_new("sexpr");
+  Qexpr   = pcq_new("qexpr");
+  Expr    = pcq_new("expr");
+  Lispy   = pcq_new("lispy");
   
-  mpca_lang(MPCA_LANG_DEFAULT,
+  pcqa_lang(PCQA_LANG_DEFAULT,
     "                                              \
       number  : /-?[0-9]+/ ;                       \
       symbol  : /[a-zA-Z0-9_+\\-*\\/\\\\=<>!&]+/ ; \
@@ -902,17 +902,17 @@ int main(int argc, char** argv) {
       char* input = readline("lispy> ");
       add_history(input);
       
-      mpc_result_t r;
-      if (mpc_parse("<stdin>", input, Lispy, &r)) {
+      pcq_result_t r;
+      if (pcq_parse("<stdin>", input, Lispy, &r)) {
         
         lval* x = lval_eval(e, lval_read(r.output));
         lval_println(x);
         lval_del(x);
         
-        mpc_ast_delete(r.output);
+        pcq_ast_delete(r.output);
       } else {    
-        mpc_err_print(r.error);
-        mpc_err_delete(r.error);
+        pcq_err_print(r.error);
+        pcq_err_delete(r.error);
       }
       
       free(input);
@@ -940,7 +940,7 @@ int main(int argc, char** argv) {
   
   lenv_del(e);
   
-  mpc_cleanup(8, 
+  pcq_cleanup(8, 
     Number, Symbol, String, Comment, 
     Sexpr,  Qexpr,  Expr,   Lispy);
   

@@ -1,4 +1,4 @@
-#include "mpc.h"
+#include "pcq.h"
 
 #ifdef _WIN32
 
@@ -95,7 +95,7 @@ lval eval_op(lval x, char* op, lval y) {
   return lval_err(LERR_BAD_OP);
 }
 
-lval eval(mpc_ast_t* t) {
+lval eval(pcq_ast_t* t) {
   
   if (strstr(t->tag, "number")) {
     /* Check if there is some error in conversion */
@@ -118,12 +118,12 @@ lval eval(mpc_ast_t* t) {
 
 int main(int argc, char** argv) {
   
-  mpc_parser_t* Number = mpc_new("number");
-  mpc_parser_t* Operator = mpc_new("operator");
-  mpc_parser_t* Expr = mpc_new("expr");
-  mpc_parser_t* Lispy = mpc_new("lispy");
+  pcq_parser_t* Number = pcq_new("number");
+  pcq_parser_t* Operator = pcq_new("operator");
+  pcq_parser_t* Expr = pcq_new("expr");
+  pcq_parser_t* Lispy = pcq_new("lispy");
   
-  mpca_lang(MPCA_LANG_DEFAULT,
+  pcqa_lang(PCQA_LANG_DEFAULT,
     "                                                     \
       number   : /-?[0-9]+/ ;                             \
       operator : '+' | '-' | '*' | '/' ;                  \
@@ -140,21 +140,21 @@ int main(int argc, char** argv) {
     char* input = readline("lispy> ");
     add_history(input);
     
-    mpc_result_t r;
-    if (mpc_parse("<stdin>", input, Lispy, &r)) {
+    pcq_result_t r;
+    if (pcq_parse("<stdin>", input, Lispy, &r)) {
       lval result = eval(r.output);
       lval_println(result);
-      mpc_ast_delete(r.output);
+      pcq_ast_delete(r.output);
     } else {    
-      mpc_err_print(r.error);
-      mpc_err_delete(r.error);
+      pcq_err_print(r.error);
+      pcq_err_delete(r.error);
     }
     
     free(input);
     
   }
   
-  mpc_cleanup(4, Number, Operator, Expr, Lispy);
+  pcq_cleanup(4, Number, Operator, Expr, Lispy);
   
   return 0;
 }

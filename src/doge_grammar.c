@@ -1,13 +1,13 @@
-#include "mpc.h"
+#include "pcq.h"
 
 int main(int argc, char** argv) {
 
-  mpc_parser_t* Adjective = mpc_new("adjective");
-  mpc_parser_t* Noun      = mpc_new("noun");
-  mpc_parser_t* Phrase    = mpc_new("phrase");
-  mpc_parser_t* Doge      = mpc_new("doge");
+  pcq_parser_t* Adjective = pcq_new("adjective");
+  pcq_parser_t* Noun      = pcq_new("noun");
+  pcq_parser_t* Phrase    = pcq_new("phrase");
+  pcq_parser_t* Doge      = pcq_new("doge");
 
-  mpca_lang(MPCA_LANG_DEFAULT,
+  pcqa_lang(PCQA_LANG_DEFAULT,
     "                                           \
       adjective : \"wow\" | \"many\"            \
                 |  \"so\" | \"such\";           \
@@ -20,7 +20,7 @@ int main(int argc, char** argv) {
 
   /* Do some parsing here... */
 
-  mpc_cleanup(4, Adjective, Noun, Phrase, Doge);
+  pcq_cleanup(4, Adjective, Noun, Phrase, Doge);
   
   return 0;
   

@@ -20,6 +20,6 @@ endif
 
 all: $(FILES)
 
-%: %.c mpc.c
+%: %.c pcq.c
 	$(CC) $(CFLAGS) $^ $(LFLAGS) -o $@
   
