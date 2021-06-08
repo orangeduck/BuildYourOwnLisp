@@ -297,7 +297,7 @@ struct lval {
 
 <h2 id='builtins'>Builtins</h2> <hr/>
 
-<p>Now that our evaluation relies on the new function type we need to make sure we can register all of our builtin functions with the environment before we start the interactive prompt. At the moment our builtin functions are not the correct type. We need to change their type signature such that they take in some environment, and where appropriate change them to pass this environment into other calls that require it. I won't post the code for this, so go ahead and change the type signatures of the buildin functions to take an <code>lenv*</code> as their first argument now. If you are confused you can look at the sample code for this chapter.</p>
+<p>Now that our evaluation relies on the new function type we need to make sure we can register all of our builtin functions with the environment before we start the interactive prompt. At the moment our builtin functions are not the correct type. We need to change their type signature such that they take in some environment, and where appropriate change them to pass this environment into other calls that require it. I won't post the code for this, so go ahead and change the type signatures of the builtin functions to take an <code>lenv*</code> as their first argument now. If you are confused you can look at the sample code for this chapter.</p>
 
 <p>As an example we can make use of our <code>builtin_op</code> function to define separate builtins for each of the maths functions our language supports.</p>
 
