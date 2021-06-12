@@ -483,7 +483,7 @@ lispy&gt;</code></pre>
 
 <p>The first step is to create a <code>va_list</code> struct and initialise it with <code>va_start</code>, passing in the last named argument. For other purposes it is possible to examine each argument passed in using <code>va_arg</code>, but we are going to pass our whole variable argument list directly to the <code>vsnprintf</code> function. This function acts like <code>printf</code> but instead writes to a string and takes in a <code>va_list</code>. Once we are done with our variable arguments, we should call <code>va_end</code> to cleanup any resources used.</p>
 
-<p>The <code>vsnprintf</code> function outputs to a string, which we need to allocate some first. Because we don't know the size of this string until we've run the function we first allocate a buffer <code>512</code> characters big and then reallocate to a smaller buffer once we've output to it. If an error message is going to be longer than 512 characters it will just get cut off, but hopefully this won't happen.</p>
+<p>The <code>vsnprintf</code> function outputs to a string, which we need to allocate first. Because we don't know the size of this string until we've run the function we first allocate a buffer <code>512</code> characters big and then reallocate to a smaller buffer once we've output to it. If an error message is going to be longer than 512 characters it will just get cut off, but hopefully this won't happen.</p>
 
 <p>Putting it all together our new error function looks like this.</p>
 
