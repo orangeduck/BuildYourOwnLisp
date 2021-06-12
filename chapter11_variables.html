@@ -297,7 +297,7 @@ struct lval {
 
 <h2 id='builtins'>Builtins</h2> <hr/>
 
-<p>Now that our evaluation relies on the new function type we need to make sure we can register all of our builtin functions with the environment before we start the interactive prompt. At the moment our builtin functions are not the correct type. We need to change their type signature such that they take in some environment, and where appropriate change them to pass this environment into other calls that require it. I won't post the code for this, so go ahead and change the type signatures of the buildin functions to take an <code>lenv*</code> as their first argument now. If you are confused you can look at the sample code for this chapter.</p>
+<p>Now that our evaluation relies on the new function type we need to make sure we can register all of our builtin functions with the environment before we start the interactive prompt. At the moment our builtin functions are not the correct type. We need to change their type signature such that they take in some environment, and where appropriate change them to pass this environment into other calls that require it. I won't post the code for this, so go ahead and change the type signatures of the builtin functions to take an <code>lenv*</code> as their first argument now. If you are confused you can look at the sample code for this chapter.</p>
 
 <p>As an example we can make use of our <code>builtin_op</code> function to define separate builtins for each of the maths functions our language supports.</p>
 
@@ -475,7 +475,7 @@ lispy&gt;</code></pre>
 
 <p>We'll modify <code>lval_err</code> to act in the same way as <code>printf</code>, taking in a format string, and after that a variable number of arguments to match into this string.</p>
 
-<p>To declare that a function takes variables arguments in the type signature you use the special syntax of ellipsis <code>...</code>, which represent the rest of the arguments.</p>
+<p>To declare that a function takes variable arguments in the type signature you use the special syntax of ellipsis <code>...</code>, which represent the rest of the arguments.</p>
 
 <pre><code data-language='c'>lval* lval_err(char* fmt, ...);</code></pre>
 
@@ -483,7 +483,7 @@ lispy&gt;</code></pre>
 
 <p>The first step is to create a <code>va_list</code> struct and initialise it with <code>va_start</code>, passing in the last named argument. For other purposes it is possible to examine each argument passed in using <code>va_arg</code>, but we are going to pass our whole variable argument list directly to the <code>vsnprintf</code> function. This function acts like <code>printf</code> but instead writes to a string and takes in a <code>va_list</code>. Once we are done with our variable arguments, we should call <code>va_end</code> to cleanup any resources used.</p>
 
-<p>The <code>vsnprintf</code> function outputs to a string, which we need to allocate some first. Because we don't know the size of this string until we've run the function we first allocate a buffer <code>512</code> characters big and then reallocate to a smaller buffer once we've output to it. If an error message is going to be longer than 512 characters it will just get cut off, but hopefully this won't happen.</p>
+<p>The <code>vsnprintf</code> function outputs to a string, which we need to allocate first. Because we don't know the size of this string until we've run the function we first allocate a buffer <code>512</code> characters big and then reallocate to a smaller buffer once we've output to it. If an error message is going to be longer than 512 characters it will just get cut off, but hopefully this won't happen.</p>
 
 <p>Putting it all together our new error function looks like this.</p>
 
