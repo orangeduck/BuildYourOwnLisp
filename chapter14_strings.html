@@ -191,7 +191,7 @@ mpc_parser_t* Lispy;
 
 <p>Slightly differently to our command prompt, on successfully parsing a file we shouldn't treat it like one expression. When typing into a file we let users list multiple expressions and evaluate all of them individually. To achieve this behaviour we need to loop over each expression in the contents of the file and evaluate it one by one. If there are any errors we should print them and continue.</p>
 
-<p>If there is a parse error we're going to extract the message and put it into a error <code>lval</code> which we return. If there are no errors the return value for this builtin can just be the empty expression. The full code for this looks like this.</p>
+<p>If there is a parse error we're going to extract the message and put it into an error <code>lval</code> which we return. If there are no errors the return value for this builtin can just be the empty expression. The full code for this looks like this.</p>
 
 <pre><code data-language='c'>lval* builtin_load(lenv* e, lval* a) {
   LASSERT_NUM("load", a, 1);
