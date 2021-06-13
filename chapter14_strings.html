@@ -29,7 +29,7 @@ char* sym;
 char* str;
 </code></pre>
 
-<p>Next we can add a function for constructing string <code>lval</code>, very similar to how we construct constructing symbols.</p>
+<p>Next we can add a function for constructing string <code>lval</code>, very similar to how we construct symbols.</p>
 
 <pre><code data-language='c'>lval* lval_str(char* s) {
   lval* v = malloc(sizeof(lval));
