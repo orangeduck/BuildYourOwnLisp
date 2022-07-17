@@ -60,6 +60,7 @@ header = """
     <!-- Bootstrap -->
     <link href="static/css/bootstrap.css" rel="stylesheet">
     <link href="static/css/code.css" rel="stylesheet">
+    <link href="static/css/main.css" rel="stylesheet">
     <link rel="icon" type="image/png" href="/static/img/favicon.png" />
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -84,12 +85,11 @@ header = """
       }
   </style>
   </head>
-  <body style="background: url(static/img/halftone.png); margin:0px; padding:0px;">
-  <div style="background: url(static/img/tiletop.png) repeat-x; height:25px;">
-
-    <div class='container' style='max-width:750px; padding-top:10px;'>
-        <div class='row'>
-         <div class='col-xs-12'>
+  <body>
+  <div class="tiled-roof">
+    <div class="container">
+        <div class="row">
+         <div class="col-xs-12">
 
 """
 
