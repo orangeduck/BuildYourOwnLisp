@@ -1,0 +1,195 @@
+:root {
+	/* Colour palette */
+	--beige      : hsl(50.4, 80.6%, 93.9%);
+	--brown      : hsl(38, 46.4%, 53.9%);
+	--brown-dark : hsl(40, 42.9%, 5.5%);
+	--grey-dark  : hsl(0, 0%, 20%);
+	--leather    : hsl(19.3, 41.6%, 41%);
+	--brown-faint: hsl(46.7, 41.5%, 12.7%);
+	--rouge      : hsl(10.4, 90.9%, 52.7%);
+
+	/* Default (light-mode) colours */
+	--text-color               : var(--grey-dark);
+	--text-color-secondary     : hsl(0, 0%, 60%);
+	--boxout-text-color        : var(--brown);
+	--boxout-bg-color          : var(--beige);
+	--boxout-bg-color-secondary: var(--leather);
+	--border-color             : hsla(0, 0%, 0%, 0.1);
+	--accent-color             : var(--rouge);
+
+	/* Other page-wide stylistic consistencies that aren't colours */
+	--border-radius: 4px;
+}
+
+
+
+/* Book content & default framing */
+body {
+	font-size : 16px;
+
+	background-image: url(/static/img/halftone_light.png);
+	margin          : 0px;
+	padding         : 0px;
+	color           : var(--text-color);
+}
+
+a {
+	color: var(--accent-color);
+}
+a:hover, a:focus {
+	color: var(--accent-color); /* Override Bootstrap's desaturated default */
+}
+
+/* Isn't HTML's headings system just the worst? */
+h1 small, h2 small, h3 small, h4 small, h5 small, h6 small,
+.h1 small, .h2 small, .h3 small, .h4 small, .h5 small, .h6 small,
+h1 .small, h2 .small, h3 .small, h4 .small, h5 .small, h6 .small,
+.h1 .small, .h2 .small, .h3 .small, .h4 .small, .h5 .small, .h6 .small {
+	color: var(--text-color-secondary);
+}
+
+td {
+	border-top: 1px solid var(--border-color) !important; /* HACK: Override Bootstrap's ultra-high specificity table selectors */
+}
+
+/* Main content flow */
+.container {
+	max-width  : 750px;
+	padding-top: 10px;
+}
+
+.tiled-roof {
+	background: url(/static/img/tiletop_light.png) repeat-x;
+}
+
+/* All of the "boxout" / "aside" content is wrapped with this class (semantically innacurate - naughty, naughty!) */
+.alert-warning {
+	color           : var(--boxout-text-color);
+	background-color: var(--boxout-bg-color);
+	border-color    : var(--border-color);
+}
+.alert-warning img {
+	margin-bottom: 3px;
+	margin-left  : auto;
+	margin-right : auto;
+}
+
+.list-group-item {
+	background-color: var(--boxout-bg-color);
+	border          : 1px solid var(--boxout-text-color);
+}
+
+.panel {
+	background-color: var(--boxout-bg-color);
+	border: none;
+}
+/* HACK: These !importants are for out-specifying the bootstrap.css defaults */
+.panel-heading {
+	color           : var(--text-color) !important;
+	background-color: var(--boxout-bg-color-secondary) !important;
+	border-color    : var(--boxout-text-color) !important;
+}
+.panel-heading a:hover {
+	color: var(--text-color); /* Not an actual link, and atop an active cover already, so no typical <a> highlight */
+}
+.panel-body {
+	border                 : 1px solid var(--boxout-bg-color-secondary) !important;
+	border-radius          : var(--border-radius);
+	border-top-right-radius: 0; /* Blend into panel-heading's background color; tab-like */
+	border-top-left-radius : 0;
+}
+.panel-group .panel {
+	margin-bottom: 0.6em;
+}
+.panel-group .panel:last-child {
+	margin-bottom: 0;
+}
+
+/* Handle dark mode */
+@media (prefers-color-scheme: dark) {
+	:root {
+		--text-color          : var(--beige);
+		--text-color-secondary: var(--brown);
+		--boxout-text-color   : var(--text-color);
+		--boxout-bg-color     : var(--brown-dark);
+		--border-color        : var(--brown-faint);
+		--code-bg-color       : var(--boxout-bg-color);
+		--code-text-color     : var(--beige);
+
+		/* Syntax highlighting colours */
+		--syntax-red    : hsl(0, 100%, 70.8%);
+		--syntax-blue   : hsl(240, 39%, 67.8%);
+		--syntax-cyan   : hsl(180, 66.1%, 76.9%);
+		--syntax-grey   : hsl(0, 0%, 81.2%);
+		--syntax-pink   : hsl(333.3, 100%, 78.4%);
+		--syntax-orange : hsl(30.3, 100%, 59.6%);
+		--syntax-slate  : hsl(240, 13%, 48%);
+		--syntax-yellow : hsl(60, 55%, 63%);
+		--syntax-teal   : hsl(144, 41%, 61%);
+	}
+
+	body {
+		background-image: url(/static/img/halftone_dark.png);
+		background-color: var(--brown-dark); /* Even covered by an image, browsers may use bg:c to infer a suitable colour for things like the scroll bar. Also a good fallback. */
+	}
+
+	hr {
+		border-color: var(--brown-faint);
+	}
+
+	.tiled-roof {
+		background-image: url(/static/img/tiletop_dark.png);
+	}
+
+	pre,
+	code {
+		color           : var(--boxout-text-color);
+		background-color: var(--boxout-bg-color);
+		border-color    : var(--brown-faint);
+	}
+
+	.rainbow .comment {
+		color: var(--syntax-teal);
+	}
+
+	.rainbow .builtin {
+		color: var(--syntax-red);
+	}
+
+	.rainbow .keyword {
+		color: var(--syntax-cyan);
+	}
+
+	.rainbow .operator {
+		color: var(--syntax-blue);
+	}
+
+	.rainbow .numeric {
+		color: var(--syntax-orange);
+	}
+
+	.rainbow .string,
+	.rainbow .character {
+		color: var(--syntax-grey);
+	}
+
+	.rainbow .meta {
+		color: var(--syntax-slate);
+	}
+
+	.rainbow .preprocessor {
+		color: var(--syntax-yellow);
+	}
+
+	.rainbow .type {
+		color: var(--syntax-red);
+	}
+
+	.rainbow .storage {
+		color: var(--syntax-pink);
+	}
+}
+
+
+
+

@@ -1,101 +1,80 @@
- 
+/* Code examples & syntax highlighting. Syntax-related CSS classes added via Rainbow.js */
+pre,
+code {
+	font-size: 0.9em; /* Looks balanced against surrounding inline text */
+
+	border: 1px solid #eaeaea;
+	font-family  : Consolas, 'Liberation Mono', 'DejaVu Sans Mono', 'Courier New', monospace;
+	color        : #333;
+	background   : #fcfcfc;
+	border-radius: 3px;
+}
+
 pre {
-    font-family: Consolas, 'Liberation Mono', 'DejaVu Sans Mono', 'Courier New', monospace;
-    border: 1px solid #ccc;
-    word-wrap: break-word;
-    padding: 6px 10px;
-    line-height: 19px;
-    margin-bottom: 20px;
+ 	word-wrap    : break-word;
+ 	padding      : 6px 10px;
+ 	line-height  : 19px;
+ 	margin-bottom: 20px;
 }
 
 code {
-    font-family: Consolas, 'Liberation Mono', 'DejaVu Sans Mono', 'Courier New', monospace;
-    border: 1px solid #eaeaea;
-    margin: 0px 2px;
-    padding: 0px 5px;
-    font-size: 12px;
+	margin     : 0px 2px;
+	padding    : 0px 5px;
 }
 
-pre code {
-    font-family: Consolas, 'Liberation Mono', 'DejaVu Sans Mono', 'Courier New', monospace;
-    border: 0px;
-    padding: 0px;
-    margin: 0px;
-    -moz-border-radius: 0px;
-    -webkit-border-radius: 0px;
-    border-radius: 0px;
+/* Sometimes a <code> inside a <pre> is being informally used to denote command-line content */
+pre code, .rainbow {
+	border               : 0px;
+	padding              : 0px;
+	margin               : 0px;
+	border-radius        : 0px;
 }
 
-pre, code {
-    font-family: Consolas, 'Liberation Mono', 'DejaVu Sans Mono', 'Courier New', monospace;
-    color: #333;
-    background: #fcfcfc;
-    -moz-border-radius: 3px;
-    -webkit-border-radius: 3px;
-    border-radius: 3px;
+.rainbow .comment {
+	color      : #679b7c;
 }
 
-pre, pre code {
-    font-family: Consolas, 'Liberation Mono', 'DejaVu Sans Mono', 'Courier New', monospace;
-    font-size: 13px;
+.rainbow .keyword {
+	font-weight: bold;
+	color      : #0080c0;
 }
 
-pre .comment {
-    font-family: Consolas, 'Liberation Mono', 'DejaVu Sans Mono', 'Courier New', monospace;
-    color: #679b7c;
+.rainbow .operator {
+	color      : #0000a0;
 }
 
-pre .keyword {
-    font-family: Consolas, 'Liberation Mono', 'DejaVu Sans Mono', 'Courier New', monospace;
-    font-weight: bold;
-    color: #0080c0;
+.rainbow .builtin {
+	color      : #800000;
 }
 
-pre .keyword.operator {
-    font-family: Consolas, 'Liberation Mono', 'DejaVu Sans Mono', 'Courier New', monospace;
-    color: #0000a0;
+.rainbow .numeric {
+	color      : #ff8000;
 }
 
-pre .keyword.builtin {
-    font-family: Consolas, 'Liberation Mono', 'DejaVu Sans Mono', 'Courier New', monospace;
-    color: #800000;
+.rainbow .string {
+	color      : #808080;
 }
 
-pre .constant.numeric {
-    font-family: Consolas, 'Liberation Mono', 'DejaVu Sans Mono', 'Courier New', monospace;
-    color: #ff8000;
+.rainbow .character {
+	color      : #808080;
 }
 
-pre .constant.string {
-    font-family: Consolas, 'Liberation Mono', 'DejaVu Sans Mono', 'Courier New', monospace;
-    color: #808080;
+.rainbow .meta {
+	font-weight: bold;
+	color      : #2f2f46;
 }
 
-pre .constant.character {
-    font-family: Consolas, 'Liberation Mono', 'DejaVu Sans Mono', 'Courier New', monospace;
-    color: #808080;
+.rainbow .preprocessor {
+	font-weight: normal;
+	color      : #808040;
 }
 
-pre .meta {
-    font-family: Consolas, 'Liberation Mono', 'DejaVu Sans Mono', 'Courier New', monospace;
-    font-weight: bold;
-    color: #2f2f46;
+.rainbow .type {
+	font-weight: bold;
+	color      : #800000;
 }
 
-pre .meta.preprocessor {
-    font-family: Consolas, 'Liberation Mono', 'DejaVu Sans Mono', 'Courier New', monospace;
-    font-weight: normal;
-    color: #808040;
-}
-
-pre .support.type {
-    font-family: Consolas, 'Liberation Mono', 'DejaVu Sans Mono', 'Courier New', monospace;
-    font-weight: bold;
-    color: #800000;
-}
-
-pre .storage {
-    font-family: Consolas, 'Liberation Mono', 'DejaVu Sans Mono', 'Courier New', monospace;
-    font-weight: bold;
-    color: #ae3f71;
+.rainbow .storage {
+	font-weight: bold;
+	color      : #ae3f71;
 }
