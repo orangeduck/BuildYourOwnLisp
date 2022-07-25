@@ -58,9 +58,9 @@ header = """
     <title>%s &bull; Build Your Own Lisp</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Bootstrap -->
-    <link href="static/css/bootstrap.css" rel="stylesheet">
-    <link href="static/css/code.css" rel="stylesheet">
-    <link href="static/css/main.css" rel="stylesheet">
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <link href="/static/css/code.css" rel="stylesheet">
+    <link href="/static/css/main.css" rel="stylesheet">
     <link rel="icon" type="image/png" href="/static/img/favicon.png" />
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -101,15 +101,14 @@ footer = """
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://code.jquery.com/jquery.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="static/js/bootstrap.js"></script>
+    <script src="/static/js/bootstrap.js"></script>
 
     <!-- Syntax Highlighting -->
-    <script src="static/js/rainbow.js"></script>
-    <script src="static/js/language/generic.js"></script>
-    <script src="static/js/language/c.js"></script>
-    <script src="static/js/language/lispy.js"></script>
 
-    <script type="module" src="static/js/main.js"></script>
+    <script src="/static/js/rainbow.js"></script>
+    <script src="/static/js/language/generic.js"></script>
+    <script src="/static/js/language/c.js"></script>
+    <script src="/static/js/language/lispy.js"></script>
   </div>
   </body>
 </html>
