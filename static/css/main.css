@@ -225,7 +225,7 @@ td {
 		background-color: var(--accent-color);
 		border-color    : hsl(var(--accent-h), var(--accent-s), calc(var(--accent-l) + 10%)); /* Brighten */
 	}
-	.btn-primary:hover {
+	.btn-primary:hover, .btn-primary:focus, .btn-primary:active {
 		background-color: hsl(var(--accent-h), calc(var(--accent-s) + 10%), calc(var(--accent-l) - 10%)); /* Darken and saturate */
 		border-color    : hsl(var(--accent-h), calc(var(--accent-s) + 10%), calc(var(--accent-l) + 5%)); /* Darken and saturate */
 	}
