@@ -16,6 +16,13 @@
 	--boxout-bg-color-secondary: var(--leather);
 	--border-color             : hsla(0, 0%, 0%, 0.1);
 	--accent-color             : var(--rouge);
+	/*
+		HACK: These are hard-baked to be the same as --rouge
+		FIX: Programmatically extract the hue, lightness, and saturation values (so if we change the accent colour due to, e.g., colour scheme, we can make our styling robust to that.
+	*/
+	--accent-h: 10.4; /* NB. Hue is a number (of degrees), not a percentage */
+	--accent-l: 52.7%;
+	--accent-s: 90.9%;
 
 	/* Other page-wide stylistic consistencies that aren't colours */
 	--border-radius: 4px;
@@ -25,7 +32,7 @@
 
 /* Book content & default framing */
 body {
-	font-size : 16px;
+	font-size: 16px;
 
 	background-image: url(/static/img/halftone_light.png);
 	margin          : 0px;
@@ -58,6 +65,7 @@ td {
 	padding-top: 10px;
 }
 
+/* Header garnish */
 .tiled-roof {
 	background: url(/static/img/tiletop_light.png) repeat-x;
 }
@@ -79,6 +87,7 @@ td {
 	border          : 1px solid var(--boxout-text-color);
 }
 
+/* These are primarily being used as containers for end-of-chapter questions and accordioned code snippets */
 .panel {
 	background-color: var(--boxout-bg-color);
 	border: none;
@@ -89,7 +98,8 @@ td {
 	background-color: var(--boxout-bg-color-secondary) !important;
 	border-color    : var(--boxout-text-color) !important;
 }
-.panel-heading a:hover {
+.panel-heading a:hover,
+.panel-heading a:focus {
 	color: var(--text-color); /* Not an actual link, and atop an active cover already, so no typical <a> highlight */
 }
 .panel-body {
@@ -103,6 +113,60 @@ td {
 }
 .panel-group .panel:last-child {
 	margin-bottom: 0;
+}
+
+.table-of-contents {
+	padding-bottom: 3em; /* Prevent content riding right up against the lower edge of the window */
+	--table-of-contents-chapter-margin: 3rem;
+}
+.table-of-contents a {
+	color: var(--text-color); /* Even though these are links, we remove the "accent" colour because the whole page would otherwise be "accented" */
+	text-decoration: none;
+}
+.table-of-contents a:hover {
+	text-decoration      : underline;
+	text-decoration-style: dotted;
+	text-decoration-color: var(--accent-color);
+	color                : var(--accent-color);
+}
+.table-of-contents__chapter-name {
+	font-style: italic;
+	font-size: 100%;
+	color: var(--text-color);
+}
+.table-of-contents__chapter-meta {
+	font-size: 75%;
+	color: var(--text-color-secondary);
+}
+.table-of-contents a:hover .table-of-contents__chapter-meta {
+	color: var(--accent-color);
+}
+.table-of-contents__chapter-meta::after {
+	content   : " •"; /* Inserting interpuncts in stylesheets lets us change/tweak them all in one spot */
+}
+.table-of-contents h3 {
+	margin-top : var(--table-of-contents-chapter-margin);
+	margin-bottom: var(--table-of-contents-chapter-margin);
+}
+.table-of-contents h3 a {
+	text-decoration-style: solid;
+}
+.table-of-contents li {
+	list-style-type: lower-roman;
+	padding-left   : 0.6em;
+}
+.table-of-contents ul {
+	padding-bottom: var(--table-of-contents-chapter-margin);
+	border-bottom: 1px solid var(--border-color);
+}
+
+.table-of-contents li::marker {
+	font-size: 0.8em;
+	color    : var(--text-color-secondary);
+}
+
+.testimonials {
+	 margin-top: 2em;
 }
 
 /* Handle dark mode */
@@ -137,9 +201,38 @@ td {
 		border-color: var(--brown-faint);
 	}
 
+	button, input, textarea {
+		border: 1px solid var(--border-color);
+		border-radius: var(--border-radius);
+		background-color: var(--boxout-bg-color);
+		color: var(--text-color);
+	}
+	button:hover, input[type="button"]:hover, input[type="submit"]:hover,
+	button:focus, input[type="button"]:focus, input[type="submit"]:focus {
+		background-color: var(--accent-color);
+	}
+	button:active, input[type="button"]:active, input[type="submit"]:active {
+		background-color: hsl(var(--accent-h), calc(var(--accent-s) + 10%), calc(var(--accent-l) - 10%));
+	}
+
+
 	.tiled-roof {
 		background-image: url(/static/img/tiletop_dark.png);
 	}
+
+	/* Bootstrap overrides */
+	.btn-primary {
+		background-color: var(--accent-color);
+		border-color    : hsl(var(--accent-h), var(--accent-s), calc(var(--accent-l) + 10%)); /* Brighten */
+	}
+	.btn-primary:hover {
+		background-color: hsl(var(--accent-h), calc(var(--accent-s) + 10%), calc(var(--accent-l) - 10%)); /* Darken and saturate */
+		border-color    : hsl(var(--accent-h), calc(var(--accent-s) + 10%), calc(var(--accent-l) + 5%)); /* Darken and saturate */
+	}
+
+	/*
+		Dark syntax highlighting (overrides contents of code.css)
+	*/
 
 	pre,
 	code {
