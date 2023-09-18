@@ -12,9 +12,13 @@ Corrections / Edits / Contributions Welcome
 
 `contact@theorangeduck.com`
 
-Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 3.0
+Book contents licensed under Creative Commons Attribution-NonCommercial-ShareAlike 3.0
 
 http://creativecommons.org/licenses/by-nc-sa/3.0/
+
+Source code licensed under BSD3
+
+https://opensource.org/license/bsd-3-clause/
 
 
 Running
