@@ -1,4 +1,4 @@
-<h1>Hand Rolled Parser<small>&bull; Appendix A</small></h1>
+<h1>Hand Rolled Parser<small> &bull; Appendix A</small></h1>
 
 <h2 id='hand_rolling'>Hand Rolling</h2> <hr/>
 
@@ -19,7 +19,7 @@
 
 <div class="alert alert-warning">
   <p><strong>Can I do this if I've not finished the book?</strong></p>
-  
+
   <p>If you've not completed all the chapters of this book it is probably not a good idea to attempt this appendix. It may be possible to complete this appendix if you're already past <a href="/chapter9_s_expressions">Chapter 9 &bull; S-Expressions</a>, but if you're not completed this chapter already it might not make much sense. Sorry!</p>
 </div>
 
@@ -47,7 +47,7 @@ lval* x = lval_eval(e, expr);
 <pre><code data-language='c'>lval* builtin_load(lenv* e, lval* a) {
   LASSERT_NUM("load", a, 1);
   LASSERT_TYPE("load", a, 0, LVAL_STR);
-  
+
   /* Open file and check it exists */
   FILE* f = fopen(a-&gt;cell[0]-&gt;str, "rb");
   if (f == NULL) {
@@ -55,7 +55,7 @@ lval* x = lval_eval(e, expr);
     lval_del(a);
     return err;
   }
-  
+
   /* Read File Contents */
   fseek(f, 0, SEEK_END);
   long length = ftell(f);
@@ -71,7 +71,7 @@ lval* x = lval_eval(e, expr);
   int pos = 0;
   lval* expr = lval_read_expr(input, &pos, '\0');
   free(input);
-  
+
   /* Evaluate all expressions contained in S-Expr */
   if (expr-&gt;type != LVAL_ERR) {
     while (expr-&gt;count) {
@@ -82,10 +82,10 @@ lval* x = lval_eval(e, expr);
   } else {
     lval_println(expr);
   }
-  
-  lval_del(expr);    
+
+  lval_del(expr);
   lval_del(a);
-  
+
   return lval_sexpr();
 }
 </code></pre>
@@ -113,9 +113,9 @@ lval* x = lval_eval(e, expr);
 <p>For now let us assume the next character isn't the <code>end</code> character. The first thing we need to check is that we've not reached the end of the input. If we've reached the end of the input without encountering the <code>end</code> character then we can throw a syntax error and jump to the end of the input to ensure no more is consumed.</p>
 
 <pre><code data-language='c'>int lval_read_expr(lval* v, char* s, int i, char end) {
-  
+
   while (s[i] != end) {
-    
+
     /* If we reach end of input then there is some syntax error */
     if (s[i] == '\0') {
       lval_add(v, lval_err("Missing %c at end of input", end));
@@ -151,7 +151,7 @@ lval* x = lval_eval(e, expr);
       i = lval_read_expr(x, s, i+1, ')');
       continue;
     }
-    
+
     /* If next character is { then read Q-Expr */
     if (s[i] == '{') {
       lval* x = lval_qexpr();
@@ -188,7 +188,7 @@ lval* x = lval_eval(e, expr);
     lval_add(v, lval_err("Unknown Character %c", s[i]));
     return strlen(s)+1;
   }
-  
+
   return i+1;
 }
 </code></pre>
@@ -197,21 +197,21 @@ lval* x = lval_eval(e, expr);
 
 <h2 id="reading_symbols">Reading Symbols</h2> <hr/>
 
-<p>Reading in symbols is fairly straight forward. We start by allocating some 
-empty string, and then, for each character in the input which is valid as part 
+<p>Reading in symbols is fairly straight forward. We start by allocating some
+empty string, and then, for each character in the input which is valid as part
 of a symbol we append this character to the string.</p>
 
 <pre><code data-language="c">int lval_read_sym(lval* v, char* s, int i) {
-  
+
   /* Allocate Empty String */
   char* part = calloc(1,1);
-  
+
   /* While valid identifier characters */
   while (strchr(
       "abcdefghijklmnopqrstuvwxyz"
       "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
       "0123456789_+-*\\/=&lt;&gt;!&amp;", s[i]) &amp;&amp; s[i] != '\0') {
-    
+
     /* Append character to end of string */
     part = realloc(part, strlen(part)+2);
     part[strlen(part)+1] = '\0';
@@ -220,8 +220,8 @@ of a symbol we append this character to the string.</p>
   }
 </code></pre>
 
-<p>You'll notice that we're also reading in numbers with this code. So the next 
-step is to check if this symbol is actually a number. To do this we just check 
+<p>You'll notice that we're also reading in numbers with this code. So the next
+step is to check if this symbol is actually a number. To do this we just check
 if all of the characters are digits.</p>
 
 <pre><code data-language='c'>  /* Check if Identifier looks like number */
@@ -232,7 +232,7 @@ if all of the characters are digits.</p>
 </code></pre>
 
 <p>Finally, if the symbol is a number we convert it with similar code to the
-previous code we used when we were reading from the <code>mpc</code> AST, or otherwise we just use it as a normal symbol. Then we <code>free</code> the 
+previous code we used when we were reading from the <code>mpc</code> AST, or otherwise we just use it as a normal symbol. Then we <code>free</code> the
 temporary string we allocated and return the new position in the input.<p>
 
 <pre><code data-language='c'>  /* Add Symbol or Number as lval */
@@ -243,10 +243,10 @@ temporary string we allocated and return the new position in the input.<p>
   } else {
     lval_add(v, lval_sym(part));
   }
-  
+
   /* Free temp string */
   free(part);
-  
+
   /* Return updated position in input */
   return i;
 }
@@ -313,12 +313,12 @@ char* lval_str_escape(char x) {
 <p>With these we can begin to write our functions for reading strings. First we allocate a temporary string and while we're not reading the terminal <code>"</code> character we're going to process the incoming characters.</p>
 
 <pre><code data-language='c'>int lval_read_str(lval* v, char* s, int i) {
-  
+
   /* Allocate empty string */
   char* part = calloc(1,1);
-  
+
   while (s[i] != '"') {
-    
+
     char c = s[i];
 </code></pre>
 
@@ -332,13 +332,13 @@ char* lval_str_escape(char x) {
     }
 </code></pre>
 
-<p>We then check if the next character is a backslash. If we have a backslash then we need to escape the next character after it. Given the previous functions we're already defined this is easy. If it is unescapable then we unescape it - otherwise we throw some error.</p> 
+<p>We then check if the next character is a backslash. If we have a backslash then we need to escape the next character after it. Given the previous functions we're already defined this is easy. If it is unescapable then we unescape it - otherwise we throw some error.</p>
 
 <pre><code data-language='c'>    /* If backslash then unescape character after it */
     if (c == '\\') {
       i++;
       /* Check next character is escapable */
-      if (strchr(lval_str_unescapable, s[i])) {        
+      if (strchr(lval_str_unescapable, s[i])) {
         c = lval_str_unescape(s[i]);
       } else {
         lval_add(v, lval_err("Invalid escape character %c", c));
@@ -355,14 +355,14 @@ char* lval_str_escape(char x) {
     part = realloc(part, strlen(part)+2);
     part[strlen(part)+1] = '\0';
     part[strlen(part)+0] = c;
-    i++;    
+    i++;
   }
-  
+
   /* Add lval and free temp string */
   lval_add(v, lval_str(part));
-  
+
   free(part);
-  
+
   return i+1;
 }
 </code></pre>
@@ -403,13 +403,13 @@ char* lval_str_escape(char x) {
 
 <pre><code data-language='c'>/* Parser Declariations */
 
-mpc_parser_t* Number; 
-mpc_parser_t* Symbol; 
-mpc_parser_t* String; 
+mpc_parser_t* Number;
+mpc_parser_t* Symbol;
+mpc_parser_t* String;
 mpc_parser_t* Comment;
-mpc_parser_t* Sexpr;  
-mpc_parser_t* Qexpr;  
-mpc_parser_t* Expr; 
+mpc_parser_t* Sexpr;
+mpc_parser_t* Qexpr;
+mpc_parser_t* Expr;
 mpc_parser_t* Lispy;
 </code></pre>
 
@@ -421,7 +421,7 @@ mpc_parser_t* Lispy;
 <references />
 
 <h2>Bonus Marks</h2> <hr/>
-  
+
 <div class="alert alert-warning">
   <ul class="list-group">
     <li class="list-group-item">&rsaquo; Make syntax errors give the line and column where the error occured.</li>

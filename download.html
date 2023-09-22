@@ -5,7 +5,7 @@
 <p>Please enter your download password.</p>
 
 <form name="download" action="download/" method="get">
-  <input id="password" type="text">
+  <input id="password" type="text" required>
   <input type="submit" value="Submit" onclick='this.form.action="download/"+document.getElementById("password").value+"/tar";'>
 </form>
 

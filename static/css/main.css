@@ -1,0 +1,288 @@
+:root {
+	/* Colour palette */
+	--beige      : hsl(50.4, 80.6%, 93.9%);
+	--brown      : hsl(38, 46.4%, 53.9%);
+	--brown-dark : hsl(40, 42.9%, 5.5%);
+	--grey-dark  : hsl(0, 0%, 20%);
+	--leather    : hsl(19.3, 41.6%, 41%);
+	--brown-faint: hsl(46.7, 41.5%, 12.7%);
+	--rouge      : hsl(10.4, 90.9%, 52.7%);
+
+	/* Default (light-mode) colours */
+	--text-color               : var(--grey-dark);
+	--text-color-secondary     : hsl(0, 0%, 60%);
+	--boxout-text-color        : var(--brown);
+	--boxout-bg-color          : var(--beige);
+	--boxout-bg-color-secondary: var(--leather);
+	--border-color             : hsla(0, 0%, 0%, 0.1);
+	--accent-color             : var(--rouge);
+	/*
+		HACK: These are hard-baked to be the same as --rouge
+		FIX: Programmatically extract the hue, lightness, and saturation values (so if we change the accent colour due to, e.g., colour scheme, we can make our styling robust to that.
+	*/
+	--accent-h: 10.4; /* NB. Hue is a number (of degrees), not a percentage */
+	--accent-l: 52.7%;
+	--accent-s: 90.9%;
+
+	/* Other page-wide stylistic consistencies that aren't colours */
+	--border-radius: 4px;
+}
+
+
+
+/* Book content & default framing */
+body {
+	font-size: 16px;
+
+	background-image: url(/static/img/halftone_light.png);
+	margin          : 0px;
+	padding         : 0px;
+	color           : var(--text-color);
+}
+
+a {
+	color: var(--accent-color);
+}
+a:hover, a:focus {
+	color: var(--accent-color); /* Override Bootstrap's desaturated default */
+}
+
+/* Isn't HTML's headings system just the worst? */
+h1 small, h2 small, h3 small, h4 small, h5 small, h6 small,
+.h1 small, .h2 small, .h3 small, .h4 small, .h5 small, .h6 small,
+h1 .small, h2 .small, h3 .small, h4 .small, h5 .small, h6 .small,
+.h1 .small, .h2 .small, .h3 .small, .h4 .small, .h5 .small, .h6 .small {
+	color: var(--text-color-secondary);
+}
+
+td {
+	border-top: 1px solid var(--border-color) !important; /* HACK: Override Bootstrap's ultra-high specificity table selectors */
+}
+
+/* Main content flow */
+.container {
+	max-width  : 750px;
+	padding-top: 10px;
+}
+
+/* Header garnish */
+.tiled-roof {
+	background: url(/static/img/tiletop_light.png) repeat-x;
+}
+
+/* All of the "boxout" / "aside" content is wrapped with this class (semantically innacurate - naughty, naughty!) */
+.alert-warning {
+	color           : var(--boxout-text-color);
+	background-color: var(--boxout-bg-color);
+	border-color    : var(--border-color);
+}
+.alert-warning img {
+	margin-bottom: 3px;
+	margin-left  : auto;
+	margin-right : auto;
+}
+
+.list-group-item {
+	background-color: var(--boxout-bg-color);
+	border          : 1px solid var(--boxout-text-color);
+}
+
+/* These are primarily being used as containers for end-of-chapter questions and accordioned code snippets */
+.panel {
+	background-color: var(--boxout-bg-color);
+	border: none;
+}
+/* HACK: These !importants are for out-specifying the bootstrap.css defaults */
+.panel-heading {
+	color           : var(--text-color) !important;
+	background-color: var(--boxout-bg-color-secondary) !important;
+	border-color    : var(--boxout-text-color) !important;
+}
+.panel-heading a:hover,
+.panel-heading a:focus {
+	color: var(--text-color); /* Not an actual link, and atop an active cover already, so no typical <a> highlight */
+}
+.panel-body {
+	border                 : 1px solid var(--boxout-bg-color-secondary) !important;
+	border-radius          : var(--border-radius);
+	border-top-right-radius: 0; /* Blend into panel-heading's background color; tab-like */
+	border-top-left-radius : 0;
+}
+.panel-group .panel {
+	margin-bottom: 0.6em;
+}
+.panel-group .panel:last-child {
+	margin-bottom: 0;
+}
+
+.table-of-contents {
+	padding-bottom: 3em; /* Prevent content riding right up against the lower edge of the window */
+	--table-of-contents-chapter-margin: 3rem;
+}
+.table-of-contents a {
+	color: var(--text-color); /* Even though these are links, we remove the "accent" colour because the whole page would otherwise be "accented" */
+	text-decoration: none;
+}
+.table-of-contents a:hover {
+	text-decoration      : underline;
+	text-decoration-style: dotted;
+	text-decoration-color: var(--accent-color);
+	color                : var(--accent-color);
+}
+.table-of-contents__chapter-name {
+	font-style: italic;
+	font-size: 100%;
+	color: var(--text-color);
+}
+.table-of-contents__chapter-meta {
+	font-size: 75%;
+	color: var(--text-color-secondary);
+}
+.table-of-contents a:hover .table-of-contents__chapter-meta {
+	color: var(--accent-color);
+}
+.table-of-contents__chapter-meta::after {
+	content   : " •"; /* Inserting interpuncts in stylesheets lets us change/tweak them all in one spot */
+}
+.table-of-contents h3 {
+	margin-top : var(--table-of-contents-chapter-margin);
+	margin-bottom: var(--table-of-contents-chapter-margin);
+}
+.table-of-contents h3 a {
+	text-decoration-style: solid;
+}
+.table-of-contents li {
+	list-style-type: lower-roman;
+	padding-left   : 0.6em;
+}
+.table-of-contents ul {
+	padding-bottom: var(--table-of-contents-chapter-margin);
+	border-bottom: 1px solid var(--border-color);
+}
+
+.table-of-contents li::marker {
+	font-size: 0.8em;
+	color    : var(--text-color-secondary);
+}
+
+.testimonials {
+	 margin-top: 2em;
+}
+
+/* Handle dark mode */
+@media (prefers-color-scheme: dark) {
+	:root {
+		--text-color          : var(--beige);
+		--text-color-secondary: var(--brown);
+		--boxout-text-color   : var(--text-color);
+		--boxout-bg-color     : var(--brown-dark);
+		--border-color        : var(--brown-faint);
+		--code-bg-color       : var(--boxout-bg-color);
+		--code-text-color     : var(--beige);
+
+		/* Syntax highlighting colours */
+		--syntax-red    : hsl(0, 100%, 70.8%);
+		--syntax-blue   : hsl(240, 39%, 67.8%);
+		--syntax-cyan   : hsl(180, 66.1%, 76.9%);
+		--syntax-grey   : hsl(0, 0%, 81.2%);
+		--syntax-pink   : hsl(333.3, 100%, 78.4%);
+		--syntax-orange : hsl(30.3, 100%, 59.6%);
+		--syntax-slate  : hsl(240, 13%, 48%);
+		--syntax-yellow : hsl(60, 55%, 63%);
+		--syntax-teal   : hsl(144, 41%, 61%);
+	}
+
+	body {
+		background-image: url(/static/img/halftone_dark.png);
+		background-color: var(--brown-dark); /* Even covered by an image, browsers may use bg:c to infer a suitable colour for things like the scroll bar. Also a good fallback. */
+	}
+
+	hr {
+		border-color: var(--brown-faint);
+	}
+
+	button, input, textarea {
+		border: 1px solid var(--border-color);
+		border-radius: var(--border-radius);
+		background-color: var(--boxout-bg-color);
+		color: var(--text-color);
+	}
+	button:hover, input[type="button"]:hover, input[type="submit"]:hover,
+	button:focus, input[type="button"]:focus, input[type="submit"]:focus {
+		background-color: var(--accent-color);
+	}
+	button:active, input[type="button"]:active, input[type="submit"]:active {
+		background-color: hsl(var(--accent-h), calc(var(--accent-s) + 10%), calc(var(--accent-l) - 10%));
+	}
+
+
+	.tiled-roof {
+		background-image: url(/static/img/tiletop_dark.png);
+	}
+
+	/* Bootstrap overrides */
+	.btn-primary {
+		background-color: var(--accent-color);
+		border-color    : hsl(var(--accent-h), var(--accent-s), calc(var(--accent-l) + 10%)); /* Brighten */
+	}
+	.btn-primary:hover, .btn-primary:focus, .btn-primary:active {
+		background-color: hsl(var(--accent-h), calc(var(--accent-s) + 10%), calc(var(--accent-l) - 10%)); /* Darken and saturate */
+		border-color    : hsl(var(--accent-h), calc(var(--accent-s) + 10%), calc(var(--accent-l) + 5%)); /* Darken and saturate */
+	}
+
+	/*
+		Dark syntax highlighting (overrides contents of code.css)
+	*/
+
+	pre,
+	code {
+		color           : var(--boxout-text-color);
+		background-color: var(--boxout-bg-color);
+		border-color    : var(--brown-faint);
+	}
+
+	.rainbow .comment {
+		color: var(--syntax-teal);
+	}
+
+	.rainbow .builtin {
+		color: var(--syntax-red);
+	}
+
+	.rainbow .keyword {
+		color: var(--syntax-cyan);
+	}
+
+	.rainbow .operator {
+		color: var(--syntax-blue);
+	}
+
+	.rainbow .numeric {
+		color: var(--syntax-orange);
+	}
+
+	.rainbow .string,
+	.rainbow .character {
+		color: var(--syntax-grey);
+	}
+
+	.rainbow .meta {
+		color: var(--syntax-slate);
+	}
+
+	.rainbow .preprocessor {
+		color: var(--syntax-yellow);
+	}
+
+	.rainbow .type {
+		color: var(--syntax-red);
+	}
+
+	.rainbow .storage {
+		color: var(--syntax-pink);
+	}
+}
+
+
+
+
