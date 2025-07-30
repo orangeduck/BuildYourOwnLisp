@@ -47,7 +47,7 @@
 
 <p>Many other Lisps allow you to write things like <code>(def x 100)</code> to define the value <code>100</code> to <code>x</code>. In our lisp this wouldn't work because it would attempt to evaluate the <code>x</code> to whatever value was stored as <code>x</code> in the environment. In other Lisps these functions are called <em>macros</em>, and when encountered they stop the evaluation of their arguments, and manipulate them un-evaluated. They let you write things that look like normal function calls, but actually do complex and interesting things.</p>
 
-<p>These are fun thing to have in a language. They make it so you can add a little bit of <em>magic</em> to some of the workings. In many cases this can make syntax nicer or allow a user to not repeat themselves.</p>
+<p>These are fun things to have in a language. They make it so you can add a little bit of <em>magic</em> to some of the workings. In many cases this can make syntax nicer or allow a user to not repeat themselves.</p>
 
 <p>I like how our language handles things like <code>def</code> and <code>if</code> without resorting to macros, but if you dislike how it works currently, and want it to be more similar to conventional Lisps, this might be something you are interested in implementing.</p>
 
