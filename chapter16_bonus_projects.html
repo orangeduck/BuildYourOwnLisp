@@ -47,7 +47,7 @@
 
 <p>Many other Lisps allow you to write things like <code>(def x 100)</code> to define the value <code>100</code> to <code>x</code>. In our lisp this wouldn't work because it would attempt to evaluate the <code>x</code> to whatever value was stored as <code>x</code> in the environment. In other Lisps these functions are called <em>macros</em>, and when encountered they stop the evaluation of their arguments, and manipulate them un-evaluated. They let you write things that look like normal function calls, but actually do complex and interesting things.</p>
 
-<p>These are fun thing to have in a language. They make it so you can add a little bit of <em>magic</em> to some of the workings. In many cases this can make syntax nicer or allow a user to not repeat themselves.</p>
+<p>These are fun things to have in a language. They make it so you can add a little bit of <em>magic</em> to some of the workings. In many cases this can make syntax nicer or allow a user to not repeat themselves.</p>
 
 <p>I like how our language handles things like <code>def</code> and <code>if</code> without resorting to macros, but if you dislike how it works currently, and want it to be more similar to conventional Lisps, this might be something you are interested in implementing.</p>
 
@@ -111,7 +111,7 @@
 
 <p>Every value in our program has an associated type with it. This we know before any evaluation has taken place. Our builtin functions also only take certain types as input. We should be able to use this information to infer the types of new user defined functions and values. We can also use this information to check that functions are being called with the correct types before we run the program. This will reduce any errors stemming from calling functions with incorrect types before evaluation. This checking is called <em>static typing</em>.</p>
 
-<p>Type systems are a really interesting and fundamental part of computer science. They are currently the best method we know of detecting errors before running a program. Anyone interesting in programming language safety and type systems should find this project really interesting.</p>
+<p>Type systems are a really interesting and fundamental part of computer science. They are currently the best method we know of detecting errors before running a program. Anyone interested in programming language safety and type systems should find this project really interesting.</p>
 
 
 <h2 id='conclusion'>Conclusion</h2> <hr/>
