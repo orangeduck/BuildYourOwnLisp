@@ -286,15 +286,15 @@ lenv_add_builtin(e, "=",   builtin_put);</code></pre>
     "Function '%s' passed too many arguments for symbols. "
     "Got %i, Expected %i.", func, syms-&gt;count, a-&gt;count-1);
 
-  for (int i = 0; i &lt; syms-&gt;count; i++) {
-    /* If 'def' define in globally. If 'put' define in locally */
-    if (strcmp(func, "def") == 0) {
-      lenv_def(e, syms-&gt;cell[i], a-&gt;cell[i+1]);
-    }
-
-    if (strcmp(func, "=")   == 0) {
-      lenv_put(e, syms-&gt;cell[i], a-&gt;cell[i+1]);
-    }
+  /* If 'def' define symbol globally. If 'put' define symbol locally */
+  if (strcmp(func, "def") == 0) {
+      for (int i = 0; i < syms->count; i++) {
+          lenv_def(e, syms->cell[i], a->cell[i + 1]);
+      }
+  } else if (strcmp(func, "=") == 0) {
+      for (int i = 0; i < syms->count; i++) {
+          lenv_put(e, syms->cell[i], a->cell[i + 1]);
+      }
   }
 
   lval_del(a);
