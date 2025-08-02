@@ -489,7 +489,7 @@ lval* builtin_var(lenv* e, lval* a, char* func) {
     "Function '%s' passed too many arguments for symbols. "
     "Got %i, Expected %i.", func, syms->count, a->count-1);
     
-  /* If 'def' define in globally. If 'put' define in locally */
+  /* If 'def' define symbol globally. If 'put' define symbol locally */
   if (strcmp(func, "def") == 0) {
       for (int i = 0; i < syms->count; i++) {
           lenv_def(e, syms->cell[i], a->cell[i + 1]);
