@@ -36,7 +36,7 @@ int main(int argc, char** argv) {
       expr     : <number> | '(' <operator> <expr>+ ')' ;  \
       lispy    : /^/ <operator> <expr>+ /$/ ;             \
     ",
-    Number, Operator, Expr, Lispy);
+    Number, Operator, Expr, Lispy, NULL);
   
   puts("Lispy Version 0.0.0.0.2");
   puts("Press Ctrl+c to Exit\n");

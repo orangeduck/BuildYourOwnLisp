@@ -16,7 +16,7 @@ int main(int argc, char** argv) {
       phrase    : <adjective> <noun>;           \
       doge      : <phrase>*;                    \
     ",
-    Adjective, Noun, Phrase, Doge);
+    Adjective, Noun, Phrase, Doge, NULL);
 
   /* Do some parsing here... */
 

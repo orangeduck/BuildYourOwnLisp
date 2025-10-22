@@ -886,7 +886,7 @@ int main(int argc, char** argv) {
               | <comment> | <sexpr>  | <qexpr>;    \
       lispy   : /^/ <expr>* /$/ ;                  \
     ",
-    Number, Symbol, String, Comment, Sexpr, Qexpr, Expr, Lispy);
+    Number, Symbol, String, Comment, Sexpr, Qexpr, Expr, Lispy, NULL);
   
   lenv* e = lenv_new();
   lenv_add_builtins(e);
