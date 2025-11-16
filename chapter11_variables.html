@@ -320,7 +320,7 @@ lval* builtin_div(lenv* e, lval* a) {
 
 <p>Once we've changed the builtins to the correct type we can create a function that registers all of our builtins into an environment.</p>
 
-<p>For each builtin we want to create a function <code>lval</code> and symbol <code>lval</code> with the given name. We then register these with the environment using <code>lenv_put</code>. The environment always takes or returns copies of a values, so we need to remember to delete these two <code>lval</code> after registration as we won't need them any more.</p>
+<p>For each builtin we want to create a function <code>lval</code> and symbol <code>lval</code> with the given name. We then register these with the environment using <code>lenv_put</code>. The environment always takes or returns copies of a value, so we need to remember to delete these two <code>lval</code> after registration as we won't need them any more.</p>
 
 <p>If we split this task into two functions we can neatly register all of our builtins with some environment.</p>
 
