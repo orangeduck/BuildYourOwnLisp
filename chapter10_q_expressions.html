@@ -47,7 +47,7 @@ mpca_lang(MPCA_LANG_DEFAULT,
     expr   : &lt;number&gt; | &lt;symbol&gt; | &lt;sexpr&gt; | &lt;qexpr&gt; ; \
     lispy  : /^/ &lt;expr&gt;* /$/ ;                         \
   ",
-  Number, Symbol, Sexpr, Qexpr, Expr, Lispy);</code></pre>
+  Number, Symbol, Sexpr, Qexpr, Expr, Lispy, NULL);</code></pre>
 
 <p>We also must remember to update our cleanup function to deal with the new rule we've added.</p>
 
@@ -156,7 +156,7 @@ lispy&gt;
     expr   : &lt;number&gt; | &lt;symbol&gt; | &lt;sexpr&gt; | &lt;qexpr&gt; ;     \
     lispy  : /^/ &lt;expr&gt;* /$/ ;                             \
   ",
-  Number, Symbol, Sexpr, Qexpr, Expr, Lispy)
+  Number, Symbol, Sexpr, Qexpr, Expr, Lispy, NULL)
 </code></pre>
 
 

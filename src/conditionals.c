@@ -792,7 +792,7 @@ int main(int argc, char** argv) {
       expr   : <number> | <symbol> | <sexpr> | <qexpr> ;  \
       lispy  : /^/ <expr>* /$/ ;                          \
     ",
-    Number, Symbol, Sexpr, Qexpr, Expr, Lispy);
+    Number, Symbol, Sexpr, Qexpr, Expr, Lispy, NULL);
   
   puts("Lispy Version 0.0.0.0.9");
   puts("Press Ctrl+c to Exit\n");

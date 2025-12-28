@@ -98,7 +98,7 @@ mpca_lang(MPCA_LANG_DEFAULT,
     expr     : &lt;number&gt; | '(' &lt;operator&gt; &lt;expr&gt;+ ')' ;  \
     lispy    : /^/ &lt;operator&gt; &lt;expr&gt;+ /$/ ;             \
   ",
-  Number, Operator, Expr, Lispy);
+  Number, Operator, Expr, Lispy, NULL);
 </code></pre>
 
 <p>We need to add this to the interactive prompt we started on in chapter 4. Put this code right at the beginning of the <code>main</code> function before we print the <em>Version</em> and <em>Exit</em> information. At the end of our program we also need to delete the parsers when we are done with them. Right before <code>main</code> returns we should place the following clean-up code.</p>
